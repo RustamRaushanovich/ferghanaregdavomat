@@ -11,6 +11,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     fetchWeather();
     injectTestModeBanner();
 
+    // Admin Mode Indicator
+    if (localStorage.getItem('dashboard_token')) {
+        const badge = document.createElement('div');
+        badge.innerHTML = '<i class="fas fa-user-shield"></i> Admin Access';
+        badge.style.cssText = 'position:fixed; bottom:20px; right:20px; background:linear-gradient(135deg, #6366f1, #8b5cf6); color:white; padding:10px 20px; border-radius:30px; font-size:13px; font-weight:600; z-index:9999; box-shadow:0 10px 25px rgba(99,102,241,0.4); display:flex; align-items:center; gap:8px; border:1px solid rgba(255,255,255,0.2);';
+        document.body.appendChild(badge);
+    }
+
     // Load Districts
     const distSelect = document.getElementById('district');
     if (distSelect) {
@@ -28,6 +36,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     const inputs = document.querySelectorAll('input[type="number"]');
     inputs.forEach(input => {
         input.addEventListener('input', calculateTotals);
+    });
+
+    // Navigation Buttons Logic
+    document.querySelectorAll('.btn-next').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (btn.getAttribute('type') === 'submit') return;
+            e.preventDefault();
+            nextStep(currentStep + 1);
+        });
+    });
+
+    document.querySelectorAll('.btn-prev').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            goToStep(currentStep - 1);
+        });
     });
 
     // PWA Install Logic

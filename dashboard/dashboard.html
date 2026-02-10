@@ -852,8 +852,8 @@
                 const districtSafe = item.district.replace(/'/g, "\\'");
 
                 const row = `<tr>
-                    <td style="cursor:pointer; color:#818cf8; transition:0.2s" onclick="openDistrictStats('${districtSafe}')" onmouseover="this.style.color='#6366f1'" onmouseout="this.style.color='#818cf8'">
-                        <b><i class="fas fa-chart-bar" style="margin-right:8px"></i> ${item.district}</b>
+                    <td style="cursor:pointer; color:#fff !important; font-weight:700; background:rgba(255,255,255,0.05); border-radius:8px" onclick="openDistrictStats('${districtSafe}')">
+                        <i class="fas fa-chart-bar" style="margin-right:8px; color:#818cf8"></i> ${item.district}
                     </td>
                     <td>${item.entries}</td>
                     <td>${item.students}</td>
