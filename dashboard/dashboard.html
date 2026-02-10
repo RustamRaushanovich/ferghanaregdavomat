@@ -848,6 +848,7 @@
                 totalSababsiz += item.sababsiz;
                 avgP += item.avg_percent;
 
+                const diff = item.avg_percent - item.yesterday_percent;
                 const isLower = diff < 0;
                 const districtSafe = item.district.replace(/'/g, "\\'");
 

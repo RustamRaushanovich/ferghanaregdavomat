@@ -14,5 +14,7 @@ services:
         sync: false
       - key: PORT
         value: 3000
-    # Note: SQLite database will reset on redeployment unless a disk is attached.
-    # To persist data, upgrade to a paid plan and add a 'disk' section here.
+    disk:
+      name: ferghana-data
+      mountPath: /opt/render/project/src/database
+      sizeGB: 1
