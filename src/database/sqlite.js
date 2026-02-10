@@ -40,9 +40,17 @@ function initDb() {
             fio TEXT,
             phone TEXT,
             inspector TEXT,
-            user_id UNSIGNED BIG INT
+            user_id UNSIGNED BIG INT,
+            source TEXT DEFAULT 'bot'
         )
     `).run();
+
+    // Migration: add source column if it doesn't exist
+    try {
+        db.prepare(`ALTER TABLE attendance ADD COLUMN source TEXT DEFAULT 'bot'`).run();
+    } catch (e) {
+        // Column already exists
+    }
 
     // Absent Students Table
     db.prepare(`

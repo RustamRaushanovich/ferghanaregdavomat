@@ -449,6 +449,7 @@ const attendanceWizard = new Scenes.WizardScene(
         try {
             const d = ctx.wizard.state.data;
             d.user_id = uid;
+            d.source = 'bot';
             const success = await saveData(d);
 
             if (success) {
@@ -458,15 +459,18 @@ const attendanceWizard = new Scenes.WizardScene(
                 const now = getFargonaTime();
                 const percent = d.total_students > 0 ? ((d.total_students - d.total_absent) / d.total_students * 100).toFixed(1) : 0;
 
-                let report = `📍 <b>${d.district}, ${d.school}</b>
-📊 Davomat ko'rsatkichi: <b>${percent}%</b>
-🎒 Jami sinflar soni: ${d.classes_count}
-👥 Jami o'quvchilar: ${d.total_students}
-✅ Sababli kelmaganlar: ${d.sababli_jami}
-🚫 Sababsiz kelmaganlar: ${d.sababsiz_jami}
-📉 Jami kelmaganlar: ${d.total_absent}
-☎️ Tel: ${maskPhone(d.phone)}
-👤 Mas'ul: ${d.fio}`;
+                let report = `🤖 <b>BOT ORQALI KIRITILDI</b>\n\n` +
+                    `📍 <b>${d.district}, ${d.school}</b>\n` +
+                    `📊 Davomat ko'rsatkichi: <b>${percent}%</b>\n` +
+                    `🎒 Jami sinflar soni: ${d.classes_count}\n` +
+                    `👥 Jami o'quvchilar: ${d.total_students}\n` +
+                    `✅ Sababli kelmaganlar: ${d.sababli_jami}\n` +
+                    `🚫 Sababsiz kelmaganlar: ${d.sababsiz_jami}\n` +
+                    `📉 Jami kelmaganlar: ${d.total_absent}\n` +
+                    `☎️ Tel: ${maskPhone(d.phone)}\n` +
+                    `👤 Mas'ul: ${d.fio}\n\n` +
+                    `🔗 <a href="https://t.me/ferghanaregdavomat_bot">ferghanaregdavomat_bot</a>\n` +
+                    `🌐 <a href="https://ferghanaregdavomat.uz">ferghanaregdavomat web</a>`;
 
                 // Send to Report Group (Main Text)
                 const tid = getTopicId(d.district);

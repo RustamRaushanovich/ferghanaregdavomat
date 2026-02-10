@@ -34,7 +34,12 @@ app.post('/api/login', (req, res) => {
         const token = generateToken();
         // Store user with username for easy lookup later
         tokens.set(token, { ...user, username });
-        res.json({ token, role: user.role, district: user.district });
+        res.json({
+            token,
+            role: user.role,
+            district: user.district,
+            school: user.school || null
+        });
     } else {
         res.status(401).json({ error: 'Login yoki parol xato' });
     }
@@ -143,6 +148,27 @@ app.get('/api/stats/recent', auth, async (req, res) => {
     res.json(data.slice(0, 30));
 });
 
+app.get('/api/stats/school', auth, async (req, res) => {
+    if (req.user.role !== 'school') return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    try {
+        const history = db.prepare(`SELECT * FROM attendance WHERE district = ? AND school = ? ORDER BY date DESC LIMIT 30`).all(req.user.district, req.user.school);
+        res.json(history);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/api/stats/trends', auth, async (req, res) => {
+    try {
+        const { getTrendStats } = require('./src/services/dataService');
+        const district = req.user.role === 'district' ? req.user.district : null;
+        const data = await getTrendStats(district);
+        res.json(data);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 app.get('/api/export/viloyat', auth, async (req, res) => {
     if (req.user.role !== 'superadmin') return res.status(403).send("Ruxsat yo'q");
     const { date } = req.query;
@@ -171,6 +197,14 @@ app.get('/api/districts', (req, res) => {
     res.json(Object.keys(TOPICS));
 });
 
+app.get('/api/check-pro', (req, res) => {
+    const { phone } = req.query;
+    if (!phone) return res.json({ is_pro: false });
+    const cleanPhone = phone.replace(/\D/g, '');
+    const is_pro = Object.values(db.users_db).some(u => u.phone && u.phone.replace(/\D/g, '') === cleanPhone && new Date(u.pro_expire_date) > new Date());
+    res.json({ is_pro });
+});
+
 app.get('/api/schools', async (req, res) => {
     const { district } = req.query;
     if (!district) return res.status(400).json({ error: 'District required' });
@@ -178,25 +212,88 @@ app.get('/api/schools', async (req, res) => {
     res.json(schools || []);
 });
 
+app.post('/api/contact', async (req, res) => {
+    const { name, message } = req.body;
+    if (!name || !message) return res.status(400).json({ error: 'Name and message required' });
+
+    const report = `📩 <b>Mushtariydan habar:</b>\n\n` +
+        `👤 Ism: ${name}\n` +
+        `💬 Habar: ${message}`;
+
+    const groupId = "-1003662758005";
+    try {
+        await bot.telegram.sendMessage(groupId, report, { parse_mode: 'HTML' });
+        res.json({ result: 'success' });
+    } catch (e) {
+        res.status(500).json({ error: 'TG Error' });
+    }
+});
+
 app.post('/api/submit', async (req, res) => {
     const d = req.body;
-    const success = await saveData(d);
+
+    // Flatten data for saveData/SQLite
+    const flatData = {
+        ...d,
+        sababli_kasal: parseInt(d.sababli?.kasal) || 0,
+        sababli_tadbirlar: parseInt(d.sababli?.tadbirlar) || 0,
+        sababli_oilaviy: parseInt(d.sababli?.oilaviy) || 0,
+        sababli_ijtimoiy: parseInt(d.sababli?.ijtimoiy) || 0,
+        sababli_boshqa: parseInt(d.sababli?.boshqa) || 0,
+        sababli_total: parseInt(d.sababli?.total) || 0,
+        sababsiz_muntazam: parseInt(d.sababsiz?.muntazam) || 0,
+        sababsiz_qidiruv: parseInt(d.sababsiz?.qidiruv) || 0,
+        sababsiz_chetel: parseInt(d.sababsiz?.chetel) || 0,
+        sababsiz_boyin: parseInt(d.sababsiz?.boyin) || 0,
+        sababsiz_ishlab: parseInt(d.sababsiz?.ishlab) || 0,
+        sababsiz_qarshilik: parseInt(d.sababsiz?.qarshilik) || 0,
+        sababsiz_jazo: parseInt(d.sababsiz?.jazo) || 0,
+        sababsiz_nazoratsiz: parseInt(d.sababsiz?.nazoratsiz) || 0,
+        sababsiz_boshqa: parseInt(d.sababsiz?.boshqa) || 0,
+        sababsiz_turmush: parseInt(d.sababsiz?.turmush) || 0,
+        sababsiz_total: parseInt(d.sababsiz?.total) || 0,
+        students_list: d.absent_students || [],
+        inspector: d.inspektor || '',
+        source: 'web'
+    };
+
+    const success = await saveData(flatData);
 
     if (success) {
-        // TELEGRAM NOTIFICATION (Mirroring the bot behavior)
-        const percent = d.total_students > 0 ? ((d.total_students - (parseInt(d.sababli_kasal) + parseInt(d.sababli_tadbirlar) + parseInt(d.sababli_oilaviy) + parseInt(d.sababli_ijtimoiy))) / d.total_students * 100).toFixed(1) : 0;
+        // TELEGRAM NOTIFICATION
+        const jamiKelmagan = flatData.sababli_total + flatData.sababsiz_total;
+        const percent = d.total_students > 0 ? (((d.total_students - jamiKelmagan) / d.total_students) * 100).toFixed(1) : 0;
 
-        const report = `🌐 <b>Veb-shakl orqali kiritildi:</b>\n\n` +
+        const maskPhone = (p) => {
+            const c = p.replace(/\D/g, '');
+            if (c.length < 9) return p;
+            return `998*****${c.slice(-4)}`;
+        };
+
+        let report = `🌐 <b>WEB SAHIFA ORQALI KIRITILDI</b>\n\n` +
             `📍 <b>${d.district}, ${d.school}</b>\n` +
-            `📊 Davomat ko'rsatkichi: <b>${percent}%</b>\n` +
+            `📊 Davomat ko'rsatkichi: <b>${percent} %</b>\n` +
             `🎒 Jami sinflar soni: ${d.classes_count}\n` +
             `👥 Jami o'quvchilar: ${d.total_students}\n` +
-            `👤 Mas'ul: ${d.fio}\n` +
-            `📞 Tel: ${d.phone}`;
+            `✅ Sababli kelmaganlar: <b>${flatData.sababli_total}</b>\n` +
+            `🚫 Sababsiz kelmaganlar: <b>${flatData.sababsiz_total}</b>\n` +
+            `📉 Jami kelmaganlar: <b>${jamiKelmagan}</b>\n` +
+            `☎️ Tel: ${maskPhone(d.phone)}\n` +
+            `👤 Mas'ul: ${d.fio}\n\n` +
+            `🔗 <a href="https://t.me/ferghanaregdavomat_bot">ferghanaregdavomat_bot</a>\n` +
+            `🌐 <a href="https://ferghanaregdavomat.uz">ferghanaregdavomat web</a>`;
 
         const tid = getTopicId(d.district);
-        if (tid) {
-            await bot.telegram.sendMessage(config.REPORT_GROUP_ID, report, { parse_mode: 'HTML', message_thread_id: tid }).catch(() => { });
+        const groupId = "-1003662758005"; // User provided groupId
+
+        try {
+            if (tid) {
+                await bot.telegram.sendMessage(groupId, report, { parse_mode: 'HTML', message_thread_id: tid });
+            } else {
+                await bot.telegram.sendMessage(groupId, report, { parse_mode: 'HTML' });
+            }
+        } catch (err) {
+            console.error("TG Send Error:", err.message);
         }
 
         res.json({ result: 'success' });

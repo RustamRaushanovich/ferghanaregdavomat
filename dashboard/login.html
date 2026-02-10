@@ -95,56 +95,122 @@
     </style>
 </head>
 
-<body>
-    <div class="login-card">
-        <img src="/assets/logo.png" alt="Logo" class="logo">
-        <h2>Dashboard Kirish</h2>
+<script src="script.js?v=2"></script>
+<div class="login-card">
+    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div class="nav-controls" style="display:flex; align-items:center; gap:15px;">
+            <div id="userProfileDisplay"></div>
+            <button onclick="toggleTheme()" class="theme-toggle-btn icon-btn" title="Mavzu"><i
+                    class="fas fa-moon"></i></button>
+            <div class="lang-switcher">
+                <button onclick="changeLang('uz')" class="lang-btn" id="uz_btn">UZ</button>
+                <button onclick="changeLang('ru')" class="lang-btn" id="ru_btn">RU</button>
+            </div>
+        </div>
+        <a href="/" style="color:#94a3b8; text-decoration:none; font-size:12px;"><i class="fas fa-home"></i> Bosh
+            sahifa</a>
+    </div>
+    <h2 data-i18n="nav_login">Kirish</h2>
+    <form id="loginForm">
         <div class="input-group">
             <label>Login</label>
-            <input type="text" id="username" placeholder="Foydalanuvchi nomi">
+            <input type="text" id="username" data-i18n="ph_login" placeholder="Foydalanuvchi nomi" required>
         </div>
         <div class="input-group">
             <label>Parol</label>
-            <input type="password" id="password" placeholder="••••••••">
+            <input type="password" id="password" data-i18n="ph_password" placeholder="Parol" required>
         </div>
-        <button class="login-btn" onclick="login()">Kirish</button>
-        <div id="errorMsg" class="error">Login yoki parol xato!</div>
-    </div>
+        <button type="submit" class="login-btn" data-i18n="nav_login">Kirish</button>
+    </form>
+    <div class="error" id="errorMsg" style="color: #f43f5e; margin-top: 15px; font-size: 0.9rem; display: none;">
+        Login yoki parol xato!</div>
+</div>
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const errorMsg = document.getElementById('errorMsg');
+        errorMsg.style.display = 'none';
 
-    <script>
-        async function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('errorMsg');
+        try {
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
 
-            errorMsg.style.display = 'none';
-
-            try {
-                const res = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    localStorage.setItem('dashboard_token', data.token);
-                    localStorage.setItem('dashboard_role', data.role);
-                    localStorage.setItem('dashboard_district', data.district);
-                    window.location.href = 'dashboard.html';
-                } else {
-                    errorMsg.style.display = 'block';
-                }
-            } catch (e) {
-                alert("Xatolik yuz berdi ulanishda");
+            if (res.ok) {
+                const data = await res.json();
+                localStorage.setItem('dashboard_token', data.token);
+                localStorage.setItem('dashboard_role', data.role);
+                localStorage.setItem('dashboard_district', data.district);
+                localStorage.setItem('dashboard_school', data.school);
+                window.location.href = 'dashboard.html';
+            } else {
+                errorMsg.style.display = 'block';
             }
+        } catch (e) {
+            alert("Xatolik yuz berdi");
         }
+    });
+</script>
 
-        // Enter key
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') login();
-        });
-    </script>
+<section class="app-download-section">
+    <div class="app-download-content">
+        <h2 data-i18n="app_download_title">Mobil ilovani yuklab oling</h2>
+        <p data-i18n="app_download_subtitle">Davomat tizimidan yanada qulay foydalanish uchun rasmiy mobil ilovani
+            o'rnatib oling.</p>
+        <div class="app-store-btns">
+            <a href="#" class="store-btn install-trigger" onclick="installApp()">
+                <i class="fab fa-google-play"></i>
+                <div>
+                    <small>Get it on</small>
+                    <strong data-i18n="btn_google_play">Google Play</strong>
+                </div>
+            </a>
+            <a href="#" class="store-btn install-trigger" onclick="installApp()">
+                <i class="fab fa-apple"></i>
+                <div>
+                    <small>Download on the</small>
+                    <strong data-i18n="btn_app_store">App Store</strong>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <img src="logo.png" style="width: 40px; height: auto;">
+                <h4 style="margin:0;">Ferghanaregdavomat</h4>
+            </div>
+            <p data-i18n="footer_desc">Farg'ona viloyati Maktabgacha va maktab ta'limi boshqarmasi tizimidagi
+                o‘quvchilar davomati bo‘yicha maxsus portal.</p>
+        </div>
+        <div class="footer-section">
+            <h4 data-i18n="footer_contact">Bog'lanish</h4>
+            <p><i class="fas fa-map-marker-alt"></i> Farg‘ona v., Dodxox ko‘chasi 2 uy</p>
+            <p><i class="fas fa-phone"></i> +998 (88) 595-23-23</p>
+            <p><i class="fas fa-envelope"></i> imronbekr@gmail.com</p>
+        </div>
+        <div class="footer-section">
+            <h4 data-i18n="footer_links">Tezkor havolalar</h4>
+            <ul style="padding:0; list-style:none;">
+                <li><a href="/" data-i18n="nav_home">Bosh sahifa</a></li>
+                <li><a href="/davomat.html" data-i18n="nav_form">Davomat kiritish</a></li>
+                <li><a href="/dashboard.html" data-i18n="nav_dashboard">Dashboard</a></li>
+                <li><a href="/about.html" data-i18n="nav_about">Biz haqimizda</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 Ferghanaregdavomat. All rights reserved.</p>
+    </div>
+</footer>
+<script src="script.js?v=2"></script>
 </body>
 
 </html>

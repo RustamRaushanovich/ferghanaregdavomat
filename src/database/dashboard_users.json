@@ -98,5 +98,5789 @@
     "password": "123",
     "role": "district",
     "district": "Yozyovon tumani"
+  },
+  "1maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "1 maktab"
+  },
+  "2maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "2 maktab"
+  },
+  "3maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "3 maktab"
+  },
+  "4maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "4 maktab"
+  },
+  "5maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "5 maktab"
+  },
+  "6maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "6 maktab"
+  },
+  "7maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "7 maktab"
+  },
+  "8maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "8 maktab"
+  },
+  "9maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "9 maktab"
+  },
+  "10-maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "10-maktab"
+  },
+  "11maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "11 maktab"
+  },
+  "12maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "12 maktab"
+  },
+  "13maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "13 maktab"
+  },
+  "14maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "14 maktab"
+  },
+  "15maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "15 maktab"
+  },
+  "16maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "16 maktab"
+  },
+  "17maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "17 maktab"
+  },
+  "18maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "18 maktab"
+  },
+  "19maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "19 maktab"
+  },
+  "20maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "20 maktab"
+  },
+  "21maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "21 maktab"
+  },
+  "22maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "22 maktab"
+  },
+  "23maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "23 maktab"
+  },
+  "24maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "24 maktab"
+  },
+  "25maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "25 maktab"
+  },
+  "26maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "26 maktab"
+  },
+  "27maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "27 maktab"
+  },
+  "28maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "28 maktab"
+  },
+  "29maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "29 maktab"
+  },
+  "30maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "30 maktab"
+  },
+  "31maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "31 maktab"
+  },
+  "32maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "32 maktab"
+  },
+  "33maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "33 maktab"
+  },
+  "34maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "34 maktab"
+  },
+  "35maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "35 maktab"
+  },
+  "36maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "36 maktab"
+  },
+  "37maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "37 maktab"
+  },
+  "38maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "38 maktab"
+  },
+  "39maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "39 maktab"
+  },
+  "40maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "40 maktab"
+  },
+  "41maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "41 maktab"
+  },
+  "42maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "42 maktab"
+  },
+  "43maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "43 maktab"
+  },
+  "44maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "44 maktab"
+  },
+  "45maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "45 maktab"
+  },
+  "46maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "46 maktab"
+  },
+  "47maktab_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "47 maktab"
+  },
+  "4vidumi_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "4 VIDUMI"
+  },
+  "chetimi_fargonash": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona shahri",
+    "school": "Chet IMI"
+  },
+  "1-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "1-maktab"
+  },
+  "2-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "2-maktab"
+  },
+  "3-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "3-maktab"
+  },
+  "4-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "4-maktab"
+  },
+  "5-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "5-maktab"
+  },
+  "6-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "6-maktab"
+  },
+  "7-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "7-maktab"
+  },
+  "8-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "8-maktab"
+  },
+  "9-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "9-maktab"
+  },
+  "10-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "10-maktab"
+  },
+  "11-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "11-maktab"
+  },
+  "12-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "12-maktab"
+  },
+  "13-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "13-maktab"
+  },
+  "14-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "14-maktab"
+  },
+  "15-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "15-maktab"
+  },
+  "16-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "16-maktab"
+  },
+  "17-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "17-maktab"
+  },
+  "18-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "18-maktab"
+  },
+  "19-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "19-maktab"
+  },
+  "20-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "20-maktab"
+  },
+  "21-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "21-maktab"
+  },
+  "23-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "23-maktab"
+  },
+  "24-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "24-maktab"
+  },
+  "25-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "25-maktab"
+  },
+  "26-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "26-maktab"
+  },
+  "27-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "27-maktab"
+  },
+  "28-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "28-maktab"
+  },
+  "29-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "29-maktab"
+  },
+  "30-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "30-maktab"
+  },
+  "31-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "31-maktab"
+  },
+  "32-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "32-maktab"
+  },
+  "33-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "33-maktab"
+  },
+  "34-maktab_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "34-maktab"
+  },
+  "1-dium_margilonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Marg'ilon shahri",
+    "school": "1-DIUM"
+  },
+  "1мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "1 мактаб"
+  },
+  "2мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "2 мактаб"
+  },
+  "3мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "3 мактаб"
+  },
+  "4мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "4 мактаб"
+  },
+  "5мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "5 мактаб"
+  },
+  "6-maktab_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "6-maktab"
+  },
+  "7мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "7 мактаб"
+  },
+  "8мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "8 мактаб"
+  },
+  "9мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "9 мактаб"
+  },
+  "10мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "10 мактаб"
+  },
+  "11мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "11 мактаб"
+  },
+  "12-maktab_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "12-maktab"
+  },
+  "13мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "13 мактаб"
+  },
+  "14-maktab_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "14-maktab"
+  },
+  "15мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "15 мактаб"
+  },
+  "16-maktab_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "16-maktab"
+  },
+  "17-maktab_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "17-maktab"
+  },
+  "18мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "18 мактаб"
+  },
+  "19-maktab_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "19-maktab"
+  },
+  "20мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "20 мактаб"
+  },
+  "21мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "21 мактаб"
+  },
+  "22мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "22 мактаб"
+  },
+  "23мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "23 мактаб"
+  },
+  "24-maktab_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "24-maktab"
+  },
+  "25-maktab_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "25-maktab"
+  },
+  "26мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "26 мактаб"
+  },
+  "27мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "27 мактаб"
+  },
+  "28мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "28 мактаб"
+  },
+  "29мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "29 мактаб"
+  },
+  "30мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "30 мактаб"
+  },
+  "31мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "31 мактаб"
+  },
+  "32-maktab_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "32-maktab"
+  },
+  "33мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "33 мактаб"
+  },
+  "34мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "34 мактаб"
+  },
+  "35-maktab_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "35-maktab"
+  },
+  "36мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "36 мактаб"
+  },
+  "37мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "37 мактаб"
+  },
+  "38-maktab_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "38-maktab"
+  },
+  "39мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "39 мактаб"
+  },
+  "40мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "40 мактаб"
+  },
+  "41-maktab_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "41-maktab"
+  },
+  "42мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "42 мактаб"
+  },
+  "43мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "43 мактаб"
+  },
+  "44-maktab_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "44-maktab"
+  },
+  "45-maktab_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "45-maktab"
+  },
+  "46мактаб_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "46 мактаб"
+  },
+  "5-видуми_qoqonsh": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'qon shahri",
+    "school": "5-ВИДУМИ"
+  },
+  "1-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "1-maktab"
+  },
+  "2-idum_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "2-IDUM"
+  },
+  "3-idum_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "3-IDUM"
+  },
+  "4-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "4-maktab"
+  },
+  "5-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "5-maktab"
+  },
+  "6-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "6-maktab"
+  },
+  "7-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "7-maktab"
+  },
+  "8-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "8-maktab"
+  },
+  "9-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "9-maktab"
+  },
+  "10-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "10-maktab"
+  },
+  "11-idum_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "11-IDUM"
+  },
+  "12-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "12-maktab"
+  },
+  "13-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "13-maktab"
+  },
+  "14-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "14-maktab"
+  },
+  "15-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "15-maktab"
+  },
+  "16-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "16-maktab"
+  },
+  "17-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "17-maktab"
+  },
+  "18-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "18-maktab"
+  },
+  "19-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "19-maktab"
+  },
+  "20-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "20-maktab"
+  },
+  "21-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "21-maktab"
+  },
+  "22-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "22-maktab"
+  },
+  "23-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "23-maktab"
+  },
+  "24-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "24-maktab"
+  },
+  "25-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "25-maktab"
+  },
+  "26-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "26-maktab"
+  },
+  "27-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "27-maktab"
+  },
+  "28-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "28-maktab"
+  },
+  "29-maktab_quvasoysh": {
+    "password": "123",
+    "role": "school",
+    "district": "Quvasoy shahri",
+    "school": "29-maktab"
+  },
+  "1maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "1 maktab"
+  },
+  "2maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "2 maktab"
+  },
+  "3maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "3 maktab"
+  },
+  "4maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "4 maktab"
+  },
+  "5maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "5 maktab"
+  },
+  "6maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "6 maktab"
+  },
+  "7maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "7 maktab"
+  },
+  "8maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "8 maktab"
+  },
+  "9maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "9 maktab"
+  },
+  "10maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "10 maktab"
+  },
+  "11maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "11 maktab"
+  },
+  "12maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "12 maktab"
+  },
+  "13maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "13 maktab"
+  },
+  "14maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "14 maktab"
+  },
+  "15maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "15 maktab"
+  },
+  "16maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "16 maktab"
+  },
+  "17maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "17 maktab"
+  },
+  "18maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "18 maktab"
+  },
+  "19maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "19 maktab"
+  },
+  "20maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "20 maktab"
+  },
+  "21maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "21 maktab"
+  },
+  "22maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "22 maktab"
+  },
+  "23maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "23 maktab"
+  },
+  "24maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "24 maktab"
+  },
+  "25maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "25 maktab"
+  },
+  "26maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "26 maktab"
+  },
+  "27maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "27 maktab"
+  },
+  "28maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "28 maktab"
+  },
+  "29maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "29 maktab"
+  },
+  "30maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "30 maktab"
+  },
+  "31maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "31 maktab"
+  },
+  "32maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "32 maktab"
+  },
+  "33maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "33 maktab"
+  },
+  "34maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "34 maktab"
+  },
+  "35maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "35 maktab"
+  },
+  "36maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "36 maktab"
+  },
+  "37maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "37 maktab"
+  },
+  "38maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "38 maktab"
+  },
+  "39maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "39 maktab"
+  },
+  "40maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "40 maktab"
+  },
+  "41maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "41 maktab"
+  },
+  "42maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "42 maktab"
+  },
+  "43maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "43 maktab"
+  },
+  "44maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "44 maktab"
+  },
+  "45maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "45 maktab"
+  },
+  "46maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "46 maktab"
+  },
+  "47maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "47 maktab"
+  },
+  "48maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "48 maktab"
+  },
+  "49maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "49 maktab"
+  },
+  "50maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "50 maktab"
+  },
+  "51maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "51 maktab"
+  },
+  "52maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "52 maktab"
+  },
+  "53maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "53 maktab"
+  },
+  "54maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "54 maktab"
+  },
+  "55maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "55 maktab"
+  },
+  "56maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "56 maktab"
+  },
+  "57maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "57 maktab"
+  },
+  "58maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "58 maktab"
+  },
+  "59maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "59 maktab"
+  },
+  "60maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "60 maktab"
+  },
+  "61maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "61 maktab"
+  },
+  "62maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "62 maktab"
+  },
+  "63maktab_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "63 maktab"
+  },
+  "2idum_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "2 IDUM"
+  },
+  "3idumi_bagdodt": {
+    "password": "123",
+    "role": "school",
+    "district": "Bag'dod tumani",
+    "school": "3 IDUMI"
+  },
+  "1-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "1-maktab"
+  },
+  "2-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "2-maktab"
+  },
+  "3-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "3-maktab"
+  },
+  "4-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "4-maktab"
+  },
+  "5-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "5-maktab"
+  },
+  "6-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "6-maktab"
+  },
+  "7-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "7-maktab"
+  },
+  "8-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "8-maktab"
+  },
+  "9-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "9-maktab"
+  },
+  "10-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "10-maktab"
+  },
+  "11-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "11-maktab"
+  },
+  "12-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "12-maktab"
+  },
+  "13-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "13-maktab"
+  },
+  "14-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "14-maktab"
+  },
+  "15-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "15-maktab"
+  },
+  "16-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "16-maktab"
+  },
+  "17-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "17-maktab"
+  },
+  "18-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "18-maktab"
+  },
+  "19-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "19-maktab"
+  },
+  "20-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "20-maktab"
+  },
+  "21-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "21-maktab"
+  },
+  "22-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "22-maktab"
+  },
+  "23-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "23-maktab"
+  },
+  "24-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "24-maktab"
+  },
+  "25-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "25-maktab"
+  },
+  "26-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "26-maktab"
+  },
+  "27-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "27-maktab"
+  },
+  "28-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "28-maktab"
+  },
+  "29-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "29-maktab"
+  },
+  "30-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "30-maktab"
+  },
+  "31-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "31-maktab"
+  },
+  "32-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "32-maktab"
+  },
+  "33-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "33-maktab"
+  },
+  "34-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "34-maktab"
+  },
+  "35maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "35maktab"
+  },
+  "36-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "36-maktab"
+  },
+  "37-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "37-maktab"
+  },
+  "38-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "38-maktab"
+  },
+  "39-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "39-maktab"
+  },
+  "40-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "40-maktab"
+  },
+  "41-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "41-maktab"
+  },
+  "42-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "42-maktab"
+  },
+  "43-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "43-maktab"
+  },
+  "44-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "44-maktab"
+  },
+  "45-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "45-maktab"
+  },
+  "46-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "46-maktab"
+  },
+  "47-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "47-maktab"
+  },
+  "48-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "48-maktab"
+  },
+  "49-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "49-maktab"
+  },
+  "50-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "50-maktab"
+  },
+  "51-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "51-maktab"
+  },
+  "52-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "52-maktab"
+  },
+  "53-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "53-maktab"
+  },
+  "54-idum_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "54-IDUM"
+  },
+  "55-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "55-maktab"
+  },
+  "56-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "56-maktab"
+  },
+  "57-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "57-maktab"
+  },
+  "58-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "58-maktab"
+  },
+  "59-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "59-maktab"
+  },
+  "60-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "60-maktab"
+  },
+  "61-maktab_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "61-maktab"
+  },
+  "1-idum_beshariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Beshariq tumani",
+    "school": "1-IDUM"
+  },
+  "1maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "1 maktab"
+  },
+  "2maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "2 maktab"
+  },
+  "3maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "3 maktab"
+  },
+  "4maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "4 maktab"
+  },
+  "5maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "5 maktab"
+  },
+  "6maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "6 maktab"
+  },
+  "7maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "7 maktab"
+  },
+  "8maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "8 maktab"
+  },
+  "9maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "9 maktab"
+  },
+  "10maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "10 maktab"
+  },
+  "11maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "11 maktab"
+  },
+  "12maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "12 maktab"
+  },
+  "13maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "13 maktab"
+  },
+  "14maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "14 maktab"
+  },
+  "15maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "15 maktab"
+  },
+  "16maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "16 maktab"
+  },
+  "17maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "17 maktab"
+  },
+  "18maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "18 maktab"
+  },
+  "19maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "19 maktab"
+  },
+  "20maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "20 maktab"
+  },
+  "21maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "21 maktab"
+  },
+  "22maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "22 maktab"
+  },
+  "23maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "23 maktab"
+  },
+  "24maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "24 maktab"
+  },
+  "25maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "25 maktab"
+  },
+  "26maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "26 maktab"
+  },
+  "27maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "27 maktab"
+  },
+  "28maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "28 maktab"
+  },
+  "29maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "29 maktab"
+  },
+  "30maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "30 maktab"
+  },
+  "31maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "31 maktab"
+  },
+  "32maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "32 maktab"
+  },
+  "33maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "33 maktab"
+  },
+  "34maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "34 maktab"
+  },
+  "35maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "35 maktab"
+  },
+  "36maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "36 maktab"
+  },
+  "37maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "37 maktab"
+  },
+  "38maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "38 maktab"
+  },
+  "39maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "39 maktab"
+  },
+  "40maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "40 maktab"
+  },
+  "41maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "41 maktab"
+  },
+  "42maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "42 maktab"
+  },
+  "43maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "43 maktab"
+  },
+  "44maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "44 maktab"
+  },
+  "45maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "45 maktab"
+  },
+  "46maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "46 maktab"
+  },
+  "47maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "47 maktab"
+  },
+  "48maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "48 maktab"
+  },
+  "49maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "49 maktab"
+  },
+  "50maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "50 maktab"
+  },
+  "51maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "51 maktab"
+  },
+  "52maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "52 maktab"
+  },
+  "53maktab_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "53 maktab"
+  },
+  "xtidum_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "XTIDUM"
+  },
+  "2-vidumi_buvaydat": {
+    "password": "123",
+    "role": "school",
+    "district": "Buvayda tumani",
+    "school": "2-VIDUMI"
+  },
+  "1-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "1-maktab"
+  },
+  "2-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "2-maktab"
+  },
+  "3-idum_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "3-IDUM"
+  },
+  "4-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "4-maktab"
+  },
+  "5-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "5-maktab"
+  },
+  "6-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "6-maktab"
+  },
+  "7-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "7-maktab"
+  },
+  "8-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "8-maktab"
+  },
+  "9-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "9-maktab"
+  },
+  "10-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "10-maktab"
+  },
+  "11-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "11-maktab"
+  },
+  "12-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "12-maktab"
+  },
+  "13-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "13-maktab"
+  },
+  "14-idum_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "14-IDUM"
+  },
+  "15-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "15-maktab"
+  },
+  "16-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "16-maktab"
+  },
+  "17-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "17-maktab"
+  },
+  "18-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "18-maktab"
+  },
+  "19-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "19-maktab"
+  },
+  "20-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "20-maktab"
+  },
+  "21-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "21-maktab"
+  },
+  "22-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "22-maktab"
+  },
+  "23-idum_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "23-IDUM"
+  },
+  "24-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "24-maktab"
+  },
+  "25-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "25-maktab"
+  },
+  "26-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "26-maktab"
+  },
+  "27-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "27-maktab"
+  },
+  "28-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "28-maktab"
+  },
+  "29-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "29-maktab"
+  },
+  "30-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "30-maktab"
+  },
+  "31-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "31-maktab"
+  },
+  "32-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "32-maktab"
+  },
+  "33-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "33-maktab"
+  },
+  "34-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "34-maktab"
+  },
+  "35-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "35-maktab"
+  },
+  "36-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "36-maktab"
+  },
+  "37-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "37-maktab"
+  },
+  "38-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "38-maktab"
+  },
+  "39-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "39-maktab"
+  },
+  "40-maktab_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "40-maktab"
+  },
+  "1-idum_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "1-IDUM"
+  },
+  "2-idum_dangarat": {
+    "password": "123",
+    "role": "school",
+    "district": "Dang'ara tumani",
+    "school": "2-IDUM"
+  },
+  "1-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "1-maktab"
+  },
+  "2-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "2-maktab"
+  },
+  "3-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "3-maktab"
+  },
+  "4-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "4-maktab"
+  },
+  "5-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "5-maktab"
+  },
+  "6-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "6-maktab"
+  },
+  "7-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "7-maktab"
+  },
+  "8maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "8 maktab"
+  },
+  "9-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "9-maktab"
+  },
+  "10-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "10-maktab"
+  },
+  "11-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "11-maktab"
+  },
+  "12-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "12-maktab"
+  },
+  "13-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "13-maktab"
+  },
+  "14-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "14-maktab"
+  },
+  "15-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "15-maktab"
+  },
+  "16-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "16-maktab"
+  },
+  "17-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "17-maktab"
+  },
+  "18-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "18-maktab"
+  },
+  "19-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "19-maktab"
+  },
+  "20-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "20-maktab"
+  },
+  "21-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "21-maktab"
+  },
+  "22-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "22-maktab"
+  },
+  "23-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "23-maktab"
+  },
+  "24-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "24-maktab"
+  },
+  "25-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "25-maktab"
+  },
+  "26-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "26-maktab"
+  },
+  "27-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "27-maktab"
+  },
+  "28-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "28-maktab"
+  },
+  "29-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "29-maktab"
+  },
+  "30-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "30-maktab"
+  },
+  "31-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "31-maktab"
+  },
+  "32-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "32-maktab"
+  },
+  "33-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "33-maktab"
+  },
+  "34-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "34-maktab"
+  },
+  "35-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "35-maktab"
+  },
+  "36-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "36-maktab"
+  },
+  "37-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "37-maktab"
+  },
+  "38-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "38-maktab"
+  },
+  "39-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "39-maktab"
+  },
+  "40-maktab_yozyovont": {
+    "password": "123",
+    "role": "school",
+    "district": "Yozyovon tumani",
+    "school": "40-maktab"
+  },
+  "1-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "1-maktab"
+  },
+  "2-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "2-maktab"
+  },
+  "3-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "3-maktab"
+  },
+  "4-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "4-maktab"
+  },
+  "5-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "5-maktab"
+  },
+  "6-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "6-maktab"
+  },
+  "7-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "7-maktab"
+  },
+  "8-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "8-maktab"
+  },
+  "9-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "9-maktab"
+  },
+  "10-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "10-maktab"
+  },
+  "11-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "11-maktab"
+  },
+  "12-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "12-maktab"
+  },
+  "13-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "13-maktab"
+  },
+  "14-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "14-maktab"
+  },
+  "15-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "15-maktab"
+  },
+  "16-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "16-maktab"
+  },
+  "17-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "17-maktab"
+  },
+  "18-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "18-maktab"
+  },
+  "19-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "19-maktab"
+  },
+  "20-idum_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "20-IDUM"
+  },
+  "21-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "21-maktab"
+  },
+  "22-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "22-maktab"
+  },
+  "23-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "23-maktab"
+  },
+  "24-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "24-maktab"
+  },
+  "25-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "25-maktab"
+  },
+  "26-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "26-maktab"
+  },
+  "27-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "27-maktab"
+  },
+  "28-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "28-maktab"
+  },
+  "29-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "29-maktab"
+  },
+  "30-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "30-maktab"
+  },
+  "31-idum_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "31-IDUM"
+  },
+  "32-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "32-maktab"
+  },
+  "33-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "33-maktab"
+  },
+  "34-idum_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "34-IDUM"
+  },
+  "35-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "35-maktab"
+  },
+  "36-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "36-maktab"
+  },
+  "37-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "37-maktab"
+  },
+  "38-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "38-maktab"
+  },
+  "39-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "39-maktab"
+  },
+  "40-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "40-maktab"
+  },
+  "41-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "41-maktab"
+  },
+  "42-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "42-maktab"
+  },
+  "43-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "43-maktab"
+  },
+  "44-maktab_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "44-maktab"
+  },
+  "2-idum_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "2-IDUM"
+  },
+  "3-idum_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "3-IDUM"
+  },
+  "4-idum_oltiariqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Oltiariq tumani",
+    "school": "4-IDUM"
+  },
+  "1-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "1-maktab"
+  },
+  "2-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "2-maktab"
+  },
+  "3-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "3-maktab"
+  },
+  "4-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "4-maktab"
+  },
+  "5-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "5-maktab"
+  },
+  "6-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "6-maktab"
+  },
+  "7-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "7-maktab"
+  },
+  "8-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "8-maktab"
+  },
+  "9-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "9-maktab"
+  },
+  "10-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "10-maktab"
+  },
+  "11-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "11-maktab"
+  },
+  "12-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "12-maktab"
+  },
+  "13-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "13-maktab"
+  },
+  "14-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "14-maktab"
+  },
+  "15-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "15-maktab"
+  },
+  "16-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "16-maktab"
+  },
+  "17-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "17-maktab"
+  },
+  "18-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "18-maktab"
+  },
+  "19-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "19-maktab"
+  },
+  "20-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "20-maktab"
+  },
+  "21-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "21-maktab"
+  },
+  "22-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "22-maktab"
+  },
+  "23-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "23-maktab"
+  },
+  "24-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "24-maktab"
+  },
+  "25-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "25-maktab"
+  },
+  "26-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "26-maktab"
+  },
+  "27-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "27-maktab"
+  },
+  "28-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "28-maktab"
+  },
+  "29-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "29-maktab"
+  },
+  "30-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "30-maktab"
+  },
+  "31-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "31-maktab"
+  },
+  "32-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "32-maktab"
+  },
+  "33-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "33-maktab"
+  },
+  "34-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "34-maktab"
+  },
+  "35-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "35-maktab"
+  },
+  "36-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "36-maktab"
+  },
+  "37-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "37-maktab"
+  },
+  "38-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "38-maktab"
+  },
+  "39-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "39-maktab"
+  },
+  "40-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "40-maktab"
+  },
+  "42-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "42-maktab"
+  },
+  "43-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "43-maktab"
+  },
+  "45-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "45-maktab"
+  },
+  "46-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "46-maktab"
+  },
+  "47-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "47-maktab"
+  },
+  "48-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "48-maktab"
+  },
+  "49-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "49-maktab"
+  },
+  "50-maktab_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "50-maktab"
+  },
+  "2-idumi_qoshtepat": {
+    "password": "123",
+    "role": "school",
+    "district": "Qo'shtepa tumani",
+    "school": "2-IDUMI"
+  },
+  "1-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "1 -maktab"
+  },
+  "2-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "2 -maktab"
+  },
+  "3-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "3 -maktab"
+  },
+  "4-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "4 -maktab"
+  },
+  "5-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "5 -maktab"
+  },
+  "6-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "6 -maktab"
+  },
+  "7-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "7 -maktab"
+  },
+  "8-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "8 -maktab"
+  },
+  "9-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "9 -maktab"
+  },
+  "10-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "10 -maktab"
+  },
+  "11-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "11 -maktab"
+  },
+  "12-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "12 -maktab"
+  },
+  "13-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "13 -maktab"
+  },
+  "14-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "14 -maktab"
+  },
+  "15-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "15 -maktab"
+  },
+  "16-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "16 -maktab"
+  },
+  "17-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "17 -maktab"
+  },
+  "18-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "18 -maktab"
+  },
+  "19-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "19 -maktab"
+  },
+  "20-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "20 -maktab"
+  },
+  "21-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "21 -maktab"
+  },
+  "22-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "22 -maktab"
+  },
+  "23-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "23 -maktab"
+  },
+  "24-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "24 -maktab"
+  },
+  "25-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "25 -maktab"
+  },
+  "26-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "26 -maktab"
+  },
+  "27-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "27 -maktab"
+  },
+  "28-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "28 -maktab"
+  },
+  "29-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "29 -maktab"
+  },
+  "30-maktab_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "30 -maktab"
+  },
+  "1-idum_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "1 -IDUM"
+  },
+  "2-idum_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "2 -IDUM"
+  },
+  "3-idum_soxt": {
+    "password": "123",
+    "role": "school",
+    "district": "So'x tumani",
+    "school": "3 -IDUM"
+  },
+  "1-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "1-maktab"
+  },
+  "2-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "2-maktab"
+  },
+  "3-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "3-maktab"
+  },
+  "4-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "4-maktab"
+  },
+  "5-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "5-maktab"
+  },
+  "6-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "6-maktab"
+  },
+  "7-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "7-maktab"
+  },
+  "8-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "8-maktab"
+  },
+  "9-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "9-maktab"
+  },
+  "10-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "10-maktab"
+  },
+  "11-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "11-maktab"
+  },
+  "12-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "12-maktab"
+  },
+  "13-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "13-maktab"
+  },
+  "14-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "14-maktab"
+  },
+  "15-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "15-maktab"
+  },
+  "16-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "16-maktab"
+  },
+  "17-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "17-maktab"
+  },
+  "18-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "18-maktab"
+  },
+  "19-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "19-maktab"
+  },
+  "20-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "20-maktab"
+  },
+  "21-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "21-maktab"
+  },
+  "22-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "22-maktab"
+  },
+  "23-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "23-maktab"
+  },
+  "24-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "24-maktab"
+  },
+  "25-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "25-maktab"
+  },
+  "26-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "26-maktab"
+  },
+  "27-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "27-maktab"
+  },
+  "28-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "28-maktab"
+  },
+  "29-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "29-maktab"
+  },
+  "30-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "30-maktab"
+  },
+  "31-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "31-maktab"
+  },
+  "32-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "32-maktab"
+  },
+  "33-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "33-maktab"
+  },
+  "34-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "34-maktab"
+  },
+  "35-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "35-maktab"
+  },
+  "36-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "36-maktab"
+  },
+  "37-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "37-maktab"
+  },
+  "38-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "38-maktab"
+  },
+  "39-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "39-maktab"
+  },
+  "40-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "40-maktab"
+  },
+  "41-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "41-maktab"
+  },
+  "42-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "42-maktab"
+  },
+  "43-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "43-maktab"
+  },
+  "44-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "44-maktab"
+  },
+  "45-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "45-maktab"
+  },
+  "46-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "46-maktab"
+  },
+  "47-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "47-maktab"
+  },
+  "48-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "48-maktab"
+  },
+  "49-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "49-maktab"
+  },
+  "50-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "50-maktab"
+  },
+  "51-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "51-maktab"
+  },
+  "52-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "52-maktab"
+  },
+  "53-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "53-maktab"
+  },
+  "54-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "54-maktab"
+  },
+  "55-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "55-maktab"
+  },
+  "56-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "56-maktab"
+  },
+  "57-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "57-maktab"
+  },
+  "58-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "58-maktab"
+  },
+  "59-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "59-maktab"
+  },
+  "60-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "60-maktab"
+  },
+  "61-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "61-maktab"
+  },
+  "62-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "62-maktab"
+  },
+  "63-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "63-maktab"
+  },
+  "64-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "64-maktab"
+  },
+  "65-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "65-maktab"
+  },
+  "66-maktab_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "66-maktab"
+  },
+  "1-idum_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "1-IDUM"
+  },
+  "2-idum_rishtont": {
+    "password": "123",
+    "role": "school",
+    "district": "Rishton tumani",
+    "school": "2-IDUM"
+  },
+  "1-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "1-maktab"
+  },
+  "2-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "2-maktab"
+  },
+  "3-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "3-maktab"
+  },
+  "4-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "4-maktab"
+  },
+  "5-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "5-maktab"
+  },
+  "6-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "6-maktab"
+  },
+  "7-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "7-maktab"
+  },
+  "8-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "8-maktab"
+  },
+  "9-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "9-maktab"
+  },
+  "10-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "10-maktab"
+  },
+  "11-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "11-maktab"
+  },
+  "12-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "12-maktab"
+  },
+  "13-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "13-maktab"
+  },
+  "14-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "14-maktab"
+  },
+  "15-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "15-maktab"
+  },
+  "16-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "16-maktab"
+  },
+  "17-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "17-maktab"
+  },
+  "18-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "18-maktab"
+  },
+  "19-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "19-maktab"
+  },
+  "20-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "20-maktab"
+  },
+  "21-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "21-maktab"
+  },
+  "22-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "22-maktab"
+  },
+  "23-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "23-maktab"
+  },
+  "29-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "29-maktab"
+  },
+  "25-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "25-maktab"
+  },
+  "26-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "26-maktab"
+  },
+  "27-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "27-maktab"
+  },
+  "28-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "28-maktab"
+  },
+  "30-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "30-maktab"
+  },
+  "31-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "31-maktab"
+  },
+  "32-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "32-maktab"
+  },
+  "33-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "33-maktab"
+  },
+  "34-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "34-maktab"
+  },
+  "35-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "35-maktab"
+  },
+  "36-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "36-maktab"
+  },
+  "37-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "37-maktab"
+  },
+  "38-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "38-maktab"
+  },
+  "39-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "39-maktab"
+  },
+  "40-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "40-maktab"
+  },
+  "41-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "41-maktab"
+  },
+  "42-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "42-maktab"
+  },
+  "43-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "43-maktab"
+  },
+  "44-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "44-maktab"
+  },
+  "45-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "45-maktab"
+  },
+  "47-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "47-maktab"
+  },
+  "49-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "49-maktab"
+  },
+  "50-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "50-maktab"
+  },
+  "51-maktab_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "51-maktab"
+  },
+  "2-idum_toshloqt": {
+    "password": "123",
+    "role": "school",
+    "district": "Toshloq tumani",
+    "school": "2-IDUM"
+  },
+  "1-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "1-maktab"
+  },
+  "2-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "2-maktab"
+  },
+  "3-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "3-maktab"
+  },
+  "4-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "4-maktab"
+  },
+  "5-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "5-maktab"
+  },
+  "6-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "6-maktab"
+  },
+  "7-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "7-maktab"
+  },
+  "8-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "8-maktab"
+  },
+  "9-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "9-maktab"
+  },
+  "10-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "10-maktab"
+  },
+  "11-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "11-maktab"
+  },
+  "12-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "12-maktab"
+  },
+  "13-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "13-maktab"
+  },
+  "14-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "14-maktab"
+  },
+  "15-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "15-maktab"
+  },
+  "16-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "16-maktab"
+  },
+  "17-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "17-maktab"
+  },
+  "19-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "19-maktab"
+  },
+  "20-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "20-maktab"
+  },
+  "21-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "21-maktab"
+  },
+  "22-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "22-maktab"
+  },
+  "23-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "23-maktab"
+  },
+  "24-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "24-maktab"
+  },
+  "25-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "25-maktab"
+  },
+  "26-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "26-maktab"
+  },
+  "27-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "27-maktab"
+  },
+  "28-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "28-maktab"
+  },
+  "29-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "29-maktab"
+  },
+  "30-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "30-maktab"
+  },
+  "31-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "31-maktab"
+  },
+  "32-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "32-maktab"
+  },
+  "33-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "33-maktab"
+  },
+  "34-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "34-maktab"
+  },
+  "35-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "35-maktab"
+  },
+  "36-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "36-maktab"
+  },
+  "37-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "37-maktab"
+  },
+  "38-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "38-maktab"
+  },
+  "39-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "39-maktab"
+  },
+  "40-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "40-maktab"
+  },
+  "41-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "41-maktab"
+  },
+  "42-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "42-maktab"
+  },
+  "43-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "43-maktab"
+  },
+  "44-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "44-maktab"
+  },
+  "45-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "45-maktab"
+  },
+  "46-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "46-maktab"
+  },
+  "47-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "47-maktab"
+  },
+  "48-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "48-maktab"
+  },
+  "49-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "49-maktab"
+  },
+  "50-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "50-maktab"
+  },
+  "51-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "51-maktab"
+  },
+  "52-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "52-maktab"
+  },
+  "53-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "53-maktab"
+  },
+  "54-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "54-maktab"
+  },
+  "55-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "55-maktab"
+  },
+  "56-maktab_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "56-maktab"
+  },
+  "2-idumi_uchkoprikt": {
+    "password": "123",
+    "role": "school",
+    "district": "Uchko'prik tumani",
+    "school": "2-IDUMI"
+  },
+  "1мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "1 мактаб"
+  },
+  "2мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "2 мактаб"
+  },
+  "3мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "3 мактаб"
+  },
+  "4мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "4 мактаб"
+  },
+  "5мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "5 мактаб"
+  },
+  "6мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "6 мактаб"
+  },
+  "7мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "7 мактаб"
+  },
+  "8мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "8 мактаб"
+  },
+  "9мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "9 мактаб"
+  },
+  "10мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "10 мактаб"
+  },
+  "11мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "11 мактаб"
+  },
+  "12мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "12 мактаб"
+  },
+  "13мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "13 мактаб"
+  },
+  "14мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "14 мактаб"
+  },
+  "15мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "15 мактаб"
+  },
+  "16мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "16 мактаб"
+  },
+  "17мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "17 мактаб"
+  },
+  "18мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "18 мактаб"
+  },
+  "19мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "19 мактаб"
+  },
+  "20мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "20 мактаб"
+  },
+  "21мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "21 мактаб"
+  },
+  "22мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "22 мактаб"
+  },
+  "23мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "23 мактаб"
+  },
+  "24мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "24 мактаб"
+  },
+  "25мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "25 мактаб"
+  },
+  "26мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "26 мактаб"
+  },
+  "27мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "27 мактаб"
+  },
+  "28мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "28 мактаб"
+  },
+  "29мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "29 мактаб"
+  },
+  "30мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "30 мактаб"
+  },
+  "31-идум_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "31-ИДУМ"
+  },
+  "32мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "32 мактаб"
+  },
+  "33мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "33 мактаб"
+  },
+  "34мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "34 мактаб"
+  },
+  "35мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "35 мактаб"
+  },
+  "36мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "36 мактаб"
+  },
+  "37мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "37 мактаб"
+  },
+  "38мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "38 мактаб"
+  },
+  "39мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "39 мактаб"
+  },
+  "40мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "40 мактаб"
+  },
+  "41мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "41 мактаб"
+  },
+  "42мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "42 мактаб"
+  },
+  "43мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "43 мактаб"
+  },
+  "44мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "44 мактаб"
+  },
+  "45мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "45 мактаб"
+  },
+  "46мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "46 мактаб"
+  },
+  "47мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "47 мактаб"
+  },
+  "48мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "48 мактаб"
+  },
+  "49мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "49 мактаб"
+  },
+  "50мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "50 мактаб"
+  },
+  "51мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "51 мактаб"
+  },
+  "52мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "52 мактаб"
+  },
+  "53мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "53 мактаб"
+  },
+  "54мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "54 мактаб"
+  },
+  "55мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "55 мактаб"
+  },
+  "56мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "56 мактаб"
+  },
+  "57мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "57 мактаб"
+  },
+  "58мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "58 мактаб"
+  },
+  "59мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "59 мактаб"
+  },
+  "60мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "60 мактаб"
+  },
+  "61мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "61 мактаб"
+  },
+  "62мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "62 мактаб"
+  },
+  "63мактаб_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "63 мактаб"
+  },
+  "2-идуми_fargonat": {
+    "password": "123",
+    "role": "school",
+    "district": "Farg'ona tumani",
+    "school": "2-ИДУМИ"
+  },
+  "1-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "1-maktab"
+  },
+  "2-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "2-maktab"
+  },
+  "3-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "3-maktab"
+  },
+  "4-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "4-maktab"
+  },
+  "5-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "5-maktab"
+  },
+  "6-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "6-maktab"
+  },
+  "7-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "7-maktab"
+  },
+  "8-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "8-maktab"
+  },
+  "9-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "9-maktab"
+  },
+  "10-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "10-maktab"
+  },
+  "11-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "11-maktab"
+  },
+  "12-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "12-maktab"
+  },
+  "13-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "13-maktab"
+  },
+  "14-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "14-maktab"
+  },
+  "15-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "15-maktab"
+  },
+  "16-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "16-maktab"
+  },
+  "17-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "17-maktab"
+  },
+  "18-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "18-maktab"
+  },
+  "19-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "19-maktab"
+  },
+  "20-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "20-maktab"
+  },
+  "21-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "21-maktab"
+  },
+  "22-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "22-maktab"
+  },
+  "23-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "23-maktab"
+  },
+  "24-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "24-maktab"
+  },
+  "25-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "25-maktab"
+  },
+  "26-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "26-maktab"
+  },
+  "27-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "27-maktab"
+  },
+  "28-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "28-maktab"
+  },
+  "29-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "29-maktab"
+  },
+  "30-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "30-maktab"
+  },
+  "31-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "31-maktab"
+  },
+  "32-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "32-maktab"
+  },
+  "34-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "34-maktab"
+  },
+  "35-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "35-maktab"
+  },
+  "36-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "36-maktab"
+  },
+  "37-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "37-maktab"
+  },
+  "38-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "38-maktab"
+  },
+  "39-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "39-maktab"
+  },
+  "40-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "40-maktab"
+  },
+  "41-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "41-maktab"
+  },
+  "42-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "42-maktab"
+  },
+  "45-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "45-maktab"
+  },
+  "46-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "46-maktab"
+  },
+  "47-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "47-maktab"
+  },
+  "48-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "48-maktab"
+  },
+  "49-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "49-maktab"
+  },
+  "50-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "50-maktab"
+  },
+  "51-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "51-maktab"
+  },
+  "52-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "52-maktab"
+  },
+  "53-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "53-maktab"
+  },
+  "54-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "54-maktab"
+  },
+  "55-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "55-maktab"
+  },
+  "56-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "56-maktab"
+  },
+  "57-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "57-maktab"
+  },
+  "58-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "58-maktab"
+  },
+  "59-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "59-maktab"
+  },
+  "60-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "60-maktab"
+  },
+  "61-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "61-maktab"
+  },
+  "62-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "62-maktab"
+  },
+  "63-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "63-maktab"
+  },
+  "64-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "64-maktab"
+  },
+  "66-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "66-maktab"
+  },
+  "67-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "67-maktab"
+  },
+  "68-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "68-maktab"
+  },
+  "69-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "69-maktab"
+  },
+  "70-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "70-maktab"
+  },
+  "71-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "71-maktab"
+  },
+  "72-maktab_ozbekistont": {
+    "password": "123",
+    "role": "school",
+    "district": "O'zbekiston tumani",
+    "school": "72-maktab"
+  },
+  "1maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "1 maktab"
+  },
+  "2maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "2 maktab"
+  },
+  "3maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "3 maktab"
+  },
+  "4maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "4 maktab"
+  },
+  "5maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "5 maktab"
+  },
+  "6maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "6 maktab"
+  },
+  "7maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "7 maktab"
+  },
+  "8maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "8 maktab"
+  },
+  "9maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "9 maktab"
+  },
+  "10maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "10 maktab"
+  },
+  "11maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "11 maktab"
+  },
+  "12maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "12 maktab"
+  },
+  "13maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "13 maktab"
+  },
+  "14maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "14 maktab"
+  },
+  "15maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "15 maktab"
+  },
+  "16maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "16 maktab"
+  },
+  "17maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "17 maktab"
+  },
+  "18maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "18 maktab"
+  },
+  "19maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "19 maktab"
+  },
+  "20maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "20 maktab"
+  },
+  "21maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "21 maktab"
+  },
+  "22maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "22 maktab"
+  },
+  "23maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "23 maktab"
+  },
+  "24maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "24 maktab"
+  },
+  "25maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "25 maktab"
+  },
+  "26maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "26 maktab"
+  },
+  "27maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "27 maktab"
+  },
+  "28maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "28 maktab"
+  },
+  "29maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "29 maktab"
+  },
+  "30maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "30 maktab"
+  },
+  "31maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "31 maktab"
+  },
+  "32maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "32 maktab"
+  },
+  "33maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "33 maktab"
+  },
+  "34maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "34 maktab"
+  },
+  "35maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "35 maktab"
+  },
+  "36maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "36 maktab"
+  },
+  "37maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "37 maktab"
+  },
+  "38maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "38 maktab"
+  },
+  "39maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "39 maktab"
+  },
+  "40maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "40 maktab"
+  },
+  "41maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "41 maktab"
+  },
+  "42maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "42 maktab"
+  },
+  "43maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "43 maktab"
+  },
+  "44maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "44 maktab"
+  },
+  "45maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "45 maktab"
+  },
+  "46maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "46 maktab"
+  },
+  "47maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "47 maktab"
+  },
+  "48maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "48 maktab"
+  },
+  "49maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "49 maktab"
+  },
+  "50maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "50 maktab"
+  },
+  "51maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "51 maktab"
+  },
+  "52maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "52 maktab"
+  },
+  "53maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "53 maktab"
+  },
+  "54maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "54 maktab"
+  },
+  "55maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "55 maktab"
+  },
+  "56maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "56 maktab"
+  },
+  "57maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "57 maktab"
+  },
+  "58maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "58 maktab"
+  },
+  "59maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "59 maktab"
+  },
+  "60maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "60 maktab"
+  },
+  "61maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "61 maktab"
+  },
+  "62idumi_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "62 IDUMI"
+  },
+  "64maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "64 maktab"
+  },
+  "65maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "65 maktab"
+  },
+  "66maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "66 maktab"
+  },
+  "67maktab_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "67 maktab"
+  },
+  "xtafomi_quvat": {
+    "password": "123",
+    "role": "school",
+    "district": "Quva tumani",
+    "school": "XTAFO'MI"
+  },
+  "1-idum_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "1-IDUM"
+  },
+  "2-idum_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "2-IDUM"
+  },
+  "3-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "3-maktab"
+  },
+  "4-idum_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "4-IDUM"
+  },
+  "5-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "5-maktab"
+  },
+  "6-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "6-maktab"
+  },
+  "7-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "7-maktab"
+  },
+  "8-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "8-maktab"
+  },
+  "9-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "9-maktab"
+  },
+  "10-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "10-maktab"
+  },
+  "11-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "11-maktab"
+  },
+  "12-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "12-maktab"
+  },
+  "13-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "13-maktab"
+  },
+  "14-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "14-maktab"
+  },
+  "15-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "15-maktab"
+  },
+  "16-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "16-maktab"
+  },
+  "17-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "17-maktab"
+  },
+  "18-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "18-maktab"
+  },
+  "19-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "19-maktab"
+  },
+  "20-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "20-maktab"
+  },
+  "21-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "21-maktab"
+  },
+  "22-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "22-maktab"
+  },
+  "23-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "23-maktab"
+  },
+  "24-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "24-maktab"
+  },
+  "25-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "25-maktab"
+  },
+  "26-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "26-maktab"
+  },
+  "27-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "27-maktab"
+  },
+  "28-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "28-maktab"
+  },
+  "29-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "29-maktab"
+  },
+  "30-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "30-maktab"
+  },
+  "31-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "31-maktab"
+  },
+  "32-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "32-maktab"
+  },
+  "33-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "33-maktab"
+  },
+  "34-idum_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "34-IDUM"
+  },
+  "35-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "35-maktab"
+  },
+  "36-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "36-maktab"
+  },
+  "37-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "37-maktab"
+  },
+  "38-maktab_furqatt": {
+    "password": "123",
+    "role": "school",
+    "district": "Furqat tumani",
+    "school": "38-maktab"
+  },
+  "test_m_01_mmtboshqarma": {
+    "password": "123",
+    "role": "school",
+    "district": "MMT Boshqarma",
+    "school": "Test_M_01"
+  },
+  "test_m_02_mmtboshqarma": {
+    "password": "123",
+    "role": "school",
+    "district": "MMT Boshqarma",
+    "school": "Test_M_02"
   }
 }

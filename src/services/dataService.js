@@ -13,8 +13,8 @@ async function saveAttendance(data) {
         const sababsiz_jami = (data.sababsiz_muntazam || 0) + (data.sababsiz_qidiruv || 0) + (data.sababsiz_chetel || 0) + (data.sababsiz_boyin || 0) + (data.sababsiz_ishlab || 0) + (data.sababsiz_qarshilik || 0) + (data.sababsiz_jazo || 0) + (data.sababsiz_nazoratsiz || 0) + (data.sababsiz_boshqa || 0) + (data.sababsiz_turmush || 0);
         const total_absent = sababli_jami + sababsiz_jami;
         const percent = data.total_students > 0 ? ((data.total_students - total_absent) / data.total_students * 100).toFixed(1) : 0;
-        const insert = db.prepare(`INSERT INTO attendance (date, time, district, school, classes_count, total_students, sababli_kasal, sababli_tadbirlar, sababli_oilaviy, sababli_ijtimoiy, sababli_boshqa, sababli_jami, sababsiz_muntazam, sababsiz_qidiruv, sababsiz_chetel, sababsiz_boyin, sababsiz_ishlab, sababsiz_qarshilik, sababsiz_jazo, sababsiz_nazoratsiz, sababsiz_boshqa, sababsiz_turmush, sababsiz_jami, total_absent, percent, fio, phone, inspector, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
-        const result = insert.run(dateStr, timeStr, data.district, data.school, data.classes_count, data.total_students, data.sababli_kasal || 0, data.sababli_tadbirlar || 0, data.sababli_oilaviy || 0, data.sababli_ijtimoiy || 0, data.sababli_boshqa || 0, sababli_jami, data.sababsiz_muntazam || 0, data.sababsiz_qidiruv || 0, data.sababsiz_chetel || 0, data.sababsiz_boyin || 0, data.sababsiz_ishlab || 0, data.sababsiz_qarshilik || 0, data.sababsiz_jazo || 0, data.sababsiz_nazoratsiz || 0, data.sababsiz_boshqa || 0, data.sababsiz_turmush || 0, sababsiz_jami, total_absent, percent, data.fio, data.phone, data.inspector, data.user_id);
+        const insert = db.prepare(`INSERT INTO attendance (date, time, district, school, classes_count, total_students, sababli_kasal, sababli_tadbirlar, sababli_oilaviy, sababli_ijtimoiy, sababli_boshqa, sababli_jami, sababsiz_muntazam, sababsiz_qidiruv, sababsiz_chetel, sababsiz_boyin, sababsiz_ishlab, sababsiz_qarshilik, sababsiz_jazo, sababsiz_nazoratsiz, sababsiz_boshqa, sababsiz_turmush, sababsiz_jami, total_absent, percent, fio, phone, inspector, user_id, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+        const result = insert.run(dateStr, timeStr, data.district, data.school, data.classes_count, data.total_students, data.sababli_kasal || 0, data.sababli_tadbirlar || 0, data.sababli_oilaviy || 0, data.sababli_ijtimoiy || 0, data.sababli_boshqa || 0, sababli_jami, data.sababsiz_muntazam || 0, data.sababsiz_qidiruv || 0, data.sababsiz_chetel || 0, data.sababsiz_boyin || 0, data.sababsiz_ishlab || 0, data.sababsiz_qarshilik || 0, data.sababsiz_jazo || 0, data.sababsiz_nazoratsiz || 0, data.sababsiz_boshqa || 0, data.sababsiz_turmush || 0, sababsiz_jami, total_absent, percent, data.fio, data.phone, data.inspector, data.user_id, data.source || 'bot');
         const attendanceId = result.lastInsertRowid;
         if (data.students_list && data.students_list.length > 0) {
             const insertStudent = db.prepare(`INSERT INTO absent_students (attendance_id, class, name, address, parent_name, parent_phone) VALUES (?, ?, ?, ?, ?, ?)`);
@@ -204,13 +204,25 @@ async function getViloyatSvod(date) {
     try {
         const topics = require('../config/topics').getTopics();
         const allDistricts = Object.keys(topics).filter(d => d !== "Test rejimi" && d !== "MMT Boshqarma");
+
+        const targetDate = new Date(date);
+        const yesterday = new Date(targetDate);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+
         const entries = db.prepare(`SELECT district, count(school) as entries, sum(total_students) as students, sum(sababli_jami) as sababli, sum(sababsiz_jami) as sababsiz, sum(total_absent) as total_absent, avg(percent) as avg_percent FROM attendance WHERE date = ? GROUP BY district`).all(date);
+        const yesterdayEntries = db.prepare(`SELECT district, avg(percent) as avg_percent FROM attendance WHERE date = ? GROUP BY district`).all(yesterdayStr);
 
         return allDistricts.map(dName => {
             const normD = normalizeKey(dName);
             const entry = entries.find(e => normalizeKey(e.district) === normD);
-            if (entry) return { ...entry, district: dName, avg_percent: entry.avg_percent || 0 };
-            return { district: dName, entries: 0, students: 0, sababli: 0, sababsiz: 0, total_absent: 0, avg_percent: 0 };
+            const yesterdayEntry = yesterdayEntries.find(e => normalizeKey(e.district) === normD);
+
+            const currentPercent = entry ? (entry.avg_percent || 0) : 0;
+            const yesterdayPercent = yesterdayEntry ? (yesterdayEntry.avg_percent || 0) : 0;
+
+            if (entry) return { ...entry, district: dName, avg_percent: currentPercent, yesterday_percent: yesterdayPercent };
+            return { district: dName, entries: 0, students: 0, sababli: 0, sababsiz: 0, total_absent: 0, avg_percent: 0, yesterday_percent: yesterdayPercent };
         });
     } catch (e) { console.error("Viloyat Svod Error:", e); return []; }
 }
@@ -251,6 +263,19 @@ async function getTumanSvod(district, date) {
 
 async function getTodayAbsentsDetails(date) { try { return db.prepare(`SELECT a.district, a.school, s.class, s.name, s.address, s.parent_name, s.parent_phone FROM absent_students s JOIN attendance a ON s.attendance_id = a.id WHERE a.date = ?`).all(date); } catch (e) { return []; } }
 
+async function getTrendStats(district = null) {
+    try {
+        let sql = `SELECT date, AVG(percent) as avg_percent FROM attendance `;
+        let params = [];
+        if (district) {
+            sql += ` WHERE district = ? `;
+            params.push(district);
+        }
+        sql += ` GROUP BY date ORDER BY date ASC LIMIT 30`;
+        return db.prepare(sql).all(...params);
+    } catch (e) { console.error("Trend Stats Error:", e); return []; }
+}
+
 async function getRecentActivity(limit = 20) {
     try {
         return db.prepare(`SELECT * FROM attendance ORDER BY id DESC LIMIT ?`).all(limit);
@@ -260,4 +285,4 @@ async function getRecentActivity(limit = 20) {
     }
 }
 
-module.exports = { saveAttendance, exportToExcel, exportDistrictExcel, getViloyatSvod, getTumanSvod, getTodayAbsentsDetails, getRecentActivity };
+module.exports = { saveAttendance, exportToExcel, exportDistrictExcel, getViloyatSvod, getTumanSvod, getTodayAbsentsDetails, getRecentActivity, getTrendStats };
