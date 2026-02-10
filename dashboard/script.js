@@ -609,16 +609,23 @@ async function loadSchools() {
     const dist = document.getElementById('district').value;
     const schoolSelect = document.getElementById('school');
     schoolSelect.innerHTML = '<option value="">Yuklanmoqda...</option>';
+    schoolSelect.disabled = true;
     try {
         const response = await fetch(`/api/schools?district=${encodeURIComponent(dist)}`);
         const schools = await response.json();
+        console.log('Schools loaded:', schools.length, schools);
         schoolSelect.innerHTML = '<option value="">Maktabni tanlang...</option>';
         schools.forEach(s => {
             const opt = document.createElement('option');
             opt.value = opt.textContent = s;
             schoolSelect.appendChild(opt);
         });
-    } catch (e) { schoolSelect.innerHTML = '<option value="">Xatolik</option>'; }
+        schoolSelect.disabled = false;
+    } catch (e) {
+        console.error('School load error:', e);
+        schoolSelect.innerHTML = '<option value="">Xatolik</option>';
+        schoolSelect.disabled = false;
+    }
 }
 
 function calculateTotals() {

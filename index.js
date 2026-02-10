@@ -399,6 +399,54 @@ bot.hears("📥 Tuman hisoboti (Excel)", async (ctx) => {
     }
 });
 
+// --- START COMMAND ---
+bot.start(async (ctx) => {
+    const firstName = ctx.from.first_name || 'Foydalanuvchi';
+
+    const welcomeText = `👋 <b>Assalomu alaykum, ${firstName}!</b>\n\n` +
+        `🎓 <b>Farg'ona viloyati Maktabgacha va maktab ta'limi boshqarmasi</b>\n` +
+        `📊 <b>Davomat Monitoring Tizimi</b>\n\n` +
+        `Bu bot orqali siz kunlik davomat ma'lumotlarini kiritishingiz va statistikani kuzatishingiz mumkin.\n\n` +
+        `🌐 <b>Web-sahifa orqali kirish:</b>\n` +
+        `Agar brauzerda ishla shingiz qulay bo'lsa, quyidagi tugmalardan foydalaning:`;
+
+    const keyboard = Markup.inlineKeyboard([
+        [
+            Markup.button.url('🌐 Web Dashboard', 'https://ferghanaregdavomat.onrender.com/dashboard.html'),
+            Markup.button.url('📝 Davomat kiritish', 'https://ferghanaregdavomat.onrender.com/davomat.html')
+        ],
+        [
+            Markup.button.url('🔐 Login sahifasi', 'https://ferghanaregdavomat.onrender.com/login.html')
+        ]
+    ]);
+
+    // Send logo if exists
+    if (fs.existsSync(LOGO_PATH)) {
+        await ctx.replyWithPhoto(
+            { source: LOGO_PATH },
+            {
+                caption: welcomeText,
+                parse_mode: 'HTML',
+                ...keyboard
+            }
+        );
+    } else {
+        await ctx.replyWithHTML(welcomeText, keyboard);
+    }
+
+    // Send main menu keyboard
+    const mainKeyboard = Markup.keyboard([
+        ['📊 Davomat kiritish', '📈 Statistika'],
+        ['👤 Mening Profilim', '📖 Yo\'riqnoma'],
+        ['ℹ️ Dastur haqida']
+    ]).resize();
+
+    await ctx.reply(
+        '📱 <b>Asosiy menyu:</b>\n\nQuyidagi tugmalardan birini tanlang:',
+        { parse_mode: 'HTML', ...mainKeyboard }
+    );
+});
+
 // --- INFO HANDLER ---
 bot.hears("📖 Yo'riqnoma", async (ctx) => {
     const filePath = path.join(__dirname, 'assets', 'QOLLANMA.pdf');
