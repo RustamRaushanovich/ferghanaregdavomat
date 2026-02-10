@@ -221,7 +221,7 @@ async function getViloyatSvod(date) {
             const currentPercent = entry ? (entry.avg_percent || 0) : 0;
             const yesterdayPercent = yesterdayEntry ? (yesterdayEntry.avg_percent || 0) : 0;
 
-            if (entry) return { ...entry, district: dName, avg_percent: currentPercent, yesterday_percent: yesterdayPercent };
+            if (entry) return { ...entry, avg_percent: currentPercent, yesterday_percent: yesterdayPercent, district: dName };
             return { district: dName, entries: 0, students: 0, sababli: 0, sababsiz: 0, total_absent: 0, avg_percent: 0, yesterday_percent: yesterdayPercent };
         });
     } catch (e) { console.error("Viloyat Svod Error:", e); return []; }

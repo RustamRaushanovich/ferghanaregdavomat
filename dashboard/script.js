@@ -728,6 +728,10 @@ function displayUserInfo() {
     const userContainer = document.getElementById('userProfileDisplay');
     if (!userContainer) return;
 
+    const token = localStorage.getItem('dashboard_token');
+    const role = localStorage.getItem('dashboard_role');
+    const district = localStorage.getItem('dashboard_district');
+
     // Update all login buttons to Logout if token exists
     const loginBtns = document.querySelectorAll('.login-btn, .login-mini-btn, .nav-link[onclick*="login.html"], [data-i18n="nav_login"]');
     const lang = localStorage.getItem('lang') || 'uz';
