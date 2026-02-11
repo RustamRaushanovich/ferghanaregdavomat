@@ -7,7 +7,7 @@ const broadcastScene = require('./src/scenes/broadcast');
 const { getDistrictStats, getMissingSchools } = require('./src/services/sheet');
 const admin = require('./src/services/admin');
 const db = require('./src/database/db');
-const sqlite = require('./src/database/sqlite'); // For direct SQLite access (history)
+const sqlite = require('./src/database/pg'); // Switched to PostgreSQL (Supabase)
 const topicsConfig = require('./src/config/topics');
 const TOPICS = topicsConfig.getTopics();
 const config = require('./src/config/config');
@@ -68,7 +68,7 @@ app.get('/api/admin/users', auth, (req, res) => {
 });
 
 // Admin: Reset any user password
-app.post('/api/admin/reset-password', auth, (req, res) => {
+app.post('/api/admin/reset-password', auth, async (req, res) => {
     if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Ruxsat yo\'q' });
     const { targetLogin, newPassword } = req.body;
     if (!USERS[targetLogin]) return res.status(404).json({ error: 'Foydalanuvchi topilmadi' });
@@ -77,9 +77,9 @@ app.post('/api/admin/reset-password', auth, (req, res) => {
     USERS[targetLogin].password = newPassword;
     saveUsers();
 
-    // Save History
+    // Save History to Supabase
     try {
-        sqlite.prepare('INSERT INTO password_history (username, old_password, new_password, changed_by) VALUES (?, ?, ?, ?)').run(targetLogin, oldPassword, newPassword, req.user.username);
+        await sqlite.query('INSERT INTO password_history (username, old_password, new_password, changed_by) VALUES ($1, $2, $3, $4)', [targetLogin, oldPassword, newPassword, req.user.username]);
     } catch (e) {
         console.error("History Save Error:", e);
     }
@@ -170,8 +170,8 @@ app.get('/api/stats/recent', auth, async (req, res) => {
 app.get('/api/stats/school', auth, async (req, res) => {
     if (req.user.role !== 'school') return res.status(403).json({ error: 'Ruxsat yo\'q' });
     try {
-        const history = db.prepare(`SELECT * FROM attendance WHERE district = ? AND school = ? ORDER BY date DESC LIMIT 30`).all(req.user.district, req.user.school);
-        res.json(history);
+        const result = await sqlite.query(`SELECT * FROM attendance WHERE district = $1 AND school = $2 ORDER BY date DESC LIMIT 30`, [req.user.district, req.user.school]);
+        res.json(result.rows);
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
