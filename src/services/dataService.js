@@ -206,7 +206,17 @@ async function getViloyatSvod(date) {
             const yesterdayEntry = yesterdayEntries.find(e => normalizeKey(e.district) === normD);
             const currentPercent = entry ? parseFloat(entry.avg_percent) || 0 : 0;
             const yesterdayPercent = yesterdayEntry ? parseFloat(yesterdayEntry.avg_percent) || 0 : 0;
-            if (entry) return { ...entry, entries: parseInt(entry.entries), students: parseInt(entry.students), total_absent: parseInt(entry.total_absent), avg_percent: currentPercent, yesterday_percent: yesterdayPercent, district: dName };
+            if (entry) return {
+                ...entry,
+                entries: parseInt(entry.entries) || 0,
+                students: parseInt(entry.students) || 0,
+                sababli: parseInt(entry.sababli) || 0,
+                sababsiz: parseInt(entry.sababsiz) || 0,
+                total_absent: parseInt(entry.total_absent) || 0,
+                avg_percent: currentPercent,
+                yesterday_percent: yesterdayPercent,
+                district: dName
+            };
             return { district: dName, entries: 0, students: 0, sababli: 0, sababsiz: 0, total_absent: 0, avg_percent: 0, yesterday_percent: yesterdayPercent };
         });
     } catch (e) { console.error("Viloyat Svod Error:", e); return []; }

@@ -847,10 +847,10 @@
             let totalE = 0, totalS = 0, totalSababsiz = 0, avgP = 0;
 
             data.forEach(item => {
-                totalE += item.entries;
-                totalS += item.students;
-                totalSababsiz += item.sababsiz;
-                avgP += item.avg_percent;
+                totalE += parseInt(item.entries) || 0;
+                totalS += parseInt(item.students) || 0;
+                totalSababsiz += parseInt(item.sababsiz) || 0;
+                avgP += parseFloat(item.avg_percent) || 0;
 
                 const diff = item.avg_percent - item.yesterday_percent;
                 const isLower = diff < 0;
@@ -894,8 +894,14 @@
                 let color = '#f43f5e';
                 if (item.avg_percent >= 95) color = '#10b981';
                 else if (item.avg_percent >= 90) color = '#facc15';
+
                 node.style.background = color;
-                node.innerHTML = `<span style="font-size:10px; color:#000; font-weight:bold">${item.district.substring(0, 3).toUpperCase()}</span>`;
+                node.innerHTML = `<span style="font-size:9px; color:#000; font-weight:bold; line-height:1.2; text-align:center; padding: 2px;">${item.district}</span>`;
+                node.style.display = 'flex';
+                node.style.alignItems = 'center';
+                node.style.justifyContent = 'center';
+                node.style.textAlign = 'center';
+                node.style.padding = '5px';
                 node.onclick = () => {
                     document.getElementById('tumanSelect').value = item.district;
                     showTab('tuman');
@@ -1033,7 +1039,7 @@
                     else if (p >= 90) color = '#facc15';
 
                     node.style.borderTop = `4px solid ${color}`;
-                    node.innerHTML = `<div class="name" style="font-size:9px">${pos.n}</div><div class="val">${p > 0 ? p.toFixed(1) + '%' : '-'}</div>`;
+                    node.innerHTML = `<div class="name" style="font-size:9px; font-weight:bold; color:white;">${pos.n}</div><div class="val">${p > 0 ? p.toFixed(1) + '%' : '-'}</div>`;
                     node.onclick = () => {
                         document.getElementById('tumanSelect').value = dData.district || pos.n;
                         showTab('tuman');
@@ -1100,8 +1106,8 @@
                 }
             });
 
-            const totalSababli = todayData.reduce((a, b) => a + b.sababli, 0);
-            const totalSababsiz = todayData.reduce((a, b) => a + b.sababsiz, 0);
+            const totalSababli = todayData.reduce((a, b) => a + (parseInt(b.sababli) || 0), 0);
+            const totalSababsiz = todayData.reduce((a, b) => a + (parseInt(b.sababsiz) || 0), 0);
 
             const ctx2 = document.getElementById('reasonsChart').getContext('2d');
             if (reasonsChart) reasonsChart.destroy();
