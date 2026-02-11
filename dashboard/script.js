@@ -885,73 +885,115 @@ function showTab(tabId) {
     if (tabId === 'students') loadAbsentDetails();
     if (tabId === 'recent') loadRecentActivity();
     if (tabId === 'profile') displayUserInfo();
+    if (tabId === 'admin') loadAdminPanel();
 }
+
+const DISTRICTS_LIST = ["Farg‘ona shahar", "Marg‘ilon shahar", "Quvasoy shahar", "Qo‘qon shahar", "Bag‘dod tumani", "Beshariq tumani", "Buvayda tumani", "Dang‘ara tumani", "Yozyovon tumani", "Oltiariq tumani", "Qo‘shtepa tumani", "Rishton tumani", "So‘x tumani", "Toshloq tumani", "Uchko‘prik tumani", "Farg‘ona tumani", "Furqat tumani", "O‘zbekiston tumani", "Quva tumani"];
 
 async function loadViloyatData() {
     const dateInput = document.getElementById('viloyatDate');
-    const date = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+    const date = dateInput ? (dateInput.value || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0];
     if (dateInput && !dateInput.value) dateInput.value = date;
 
     try {
         const res = await fetch(`${API_BASE}/stats/viloyat?date=${date}`, { headers: getAuthHeaders() });
         const data = await res.json();
+
+        // 1. Grid Cards (Map)
+        let grid = document.getElementById('viloyatGrid');
+        if (!grid) {
+            grid = document.createElement('div');
+            grid.id = 'viloyatGrid';
+            grid.className = 'district-grid';
+            const tableContainer = document.querySelector('#viloyatView .table-container');
+            if (tableContainer) tableContainer.parentNode.insertBefore(grid, tableContainer);
+        }
+        grid.innerHTML = '';
+
+        // 2. Table
         const tbody = document.querySelector('#viloyatTable tbody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
+        if (tbody) tbody.innerHTML = '';
 
         let t_entries = 0, t_students = 0, t_sababsiz = 0;
 
+        // Map data by district name
+        const dataMap = {};
         if (Array.isArray(data)) {
-            data.forEach(row => {
+            data.forEach(item => dataMap[item.district] = item);
+        }
+
+        DISTRICTS_LIST.forEach(dName => {
+            // Retrieve from DB data or use default 0s
+            const row = dataMap[dName] || { district: dName, percent: 0, entries: 0, students: 0, sababli: 0, sababsiz: 0, avg_percent: 0 };
+
+            // Grid Card
+            const card = document.createElement('div');
+            card.className = 'district-card';
+            // Color logic
+            let bg = 'rgba(255,255,255,0.05)';
+            const p = row.avg_percent || row.percent || 0;
+
+            if (p >= 90) bg = 'linear-gradient(135deg, #059669 0%, #10b981 100%)'; // Green
+            else if (p > 0 && p < 90) bg = 'linear-gradient(135deg, #be123c 0%, #e11d48 100%)'; // Red
+            else if (p === 0) bg = 'rgba(255,255,255,0.05)'; // Empty/Gray
+
+            card.style.background = bg;
+            card.innerHTML = `
+                <h4>${dName}</h4>
+                <div class="d-val">${parseFloat(p).toFixed(1)}%</div>
+                <div style="font-size:0.8rem; opacity:0.8">${row.entries || 0} ta maktab</div>
+             `;
+            grid.appendChild(card);
+
+            // Table Row
+            if (tbody) {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                   <td>${row.district || '-'}</td>
-                   <td><b>${row.entered_schools || 0}</b> / ${row.total_schools || 0}</td>
-                   <td>${row.students_count || 0}</td>
+                   <td>${dName}</td>
+                   <td><b>${row.entries || 0}</b></td>
+                   <td>${row.students || 0}</td>
                    <td>${row.sababli || 0}</td>
                    <td style="color:${row.sababsiz > 0 ? '#ef4444' : 'inherit'}"><b>${row.sababsiz || 0}</b></td>
                    <td>${row.yesterday_percent || 0}%</td>
-                   <td><span style="padding:4px 8px; border-radius:6px; background:${row.percent >= 95 ? '#10b981' : (row.percent >= 90 ? '#facc15' : '#f43f5e')}; color:${row.percent >= 90 ? '#000' : '#fff'}">${row.percent}%</span></td>
+                   <td><span style="padding:4px 8px; border-radius:6px; background:${p >= 90 ? '#10b981' : (p > 0 ? '#f43f5e' : '#64748b')}; color:white">${parseFloat(p).toFixed(1)}%</span></td>
                `;
                 tbody.appendChild(tr);
-                t_entries += (row.entered_schools || 0); // Corrected property
-                t_students += (row.students_count || 0);
-                t_sababsiz += (row.sababsiz || 0);
-            });
-        }
+            }
+
+            t_entries += (row.entries || 0);
+            t_students += (row.students || 0);
+            t_sababsiz += (row.sababsiz || 0);
+        });
 
         safeSetText('v_total_entries', t_entries);
         safeSetText('v_total_students', t_students);
         safeSetText('v_total_sababsiz', t_sababsiz);
 
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Viloyat Error:", e); }
 }
 
 async function loadTumanData() {
     const tumanSelect = document.getElementById('tumanSelect');
-    if (!tumanSelect.value) {
-        try {
-            const dRes = await fetch('/api/districts');
-            const districts = await dRes.json();
-            tumanSelect.innerHTML = '<option value="">Tanlang...</option>';
-            districts.forEach(d => {
-                const opt = document.createElement('option');
-                opt.value = opt.textContent = d;
-                tumanSelect.appendChild(opt);
-            });
-            const userDist = localStorage.getItem('dashboard_district');
-            if (userDist) {
-                tumanSelect.value = userDist;
-                tumanSelect.disabled = true;
-            }
-        } catch (e) { }
+    // Always populate if empty or default
+    if (tumanSelect && tumanSelect.options.length <= 1) {
+        tumanSelect.innerHTML = '<option value="">Tanlang...</option>';
+        DISTRICTS_LIST.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = opt.textContent = d;
+            tumanSelect.appendChild(opt);
+        });
+        const userDist = localStorage.getItem('dashboard_district');
+        if (userDist) {
+            tumanSelect.value = userDist;
+            tumanSelect.disabled = true;
+        }
     }
 
-    const tuman = tumanSelect.value;
+    const tuman = tumanSelect ? tumanSelect.value : '';
     if (!tuman) return;
 
     const dateInput = document.getElementById('tumanDate');
-    const date = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+    const date = dateInput ? (dateInput.value || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0];
     if (dateInput && !dateInput.value) dateInput.value = date;
 
     try {
@@ -962,37 +1004,37 @@ async function loadTumanData() {
         tbody.innerHTML = '';
 
         if (Array.isArray(data)) {
-            data.forEach(row => {
+            data.forEach((row, index) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${row.status === 'kiritdi' ? '<i class="fas fa-check-circle" style="color:#10b981"></i>' : '<i class="fas fa-times-circle" style="color:#f43f5e"></i>'}</td>
+                    <td>${index + 1}</td>
                     <td>${row.school}</td>
                     <td>${row.time || '-'}</td>
                     <td>${row.classes_count || 0}</td>
                     <td>${row.total_students || 0}</td>
-                    <td style="background:#e0f2f1; color:#000">${row.sababli?.kasal || 0}</td>
-                    <td style="background:#e0f2f1; color:#000">${row.sababli?.tadbirlar || 0}</td>
-                    <td style="background:#e0f2f1; color:#000">${row.sababli?.oilaviy || 0}</td>
-                    <td style="background:#e0f2f1; color:#000">${row.sababli?.ijtimoiy || 0}</td>
-                    <td style="background:#e0f2f1; color:#000">${row.sababli?.boshqa || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz?.muntazam || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz?.qidiruv || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz?.chetel || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz?.boyin || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz?.ishlab || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz?.qarshilik || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz?.jazo || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz?.nazoratsiz || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz?.turmush || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz?.boshqa || 0}</td>
+                    <td style="background:#e0f2f1; color:#000">${row.sababli_kasal || 0}</td>
+                    <td style="background:#e0f2f1; color:#000">${row.sababli_tadbirlar || 0}</td>
+                    <td style="background:#e0f2f1; color:#000">${row.sababli_oilaviy || 0}</td>
+                    <td style="background:#e0f2f1; color:#000">${row.sababli_ijtimoiy || 0}</td>
+                    <td style="background:#e0f2f1; color:#000">${row.sababli_boshqa || 0}</td>
+                    <td style="background:#fff3e0; color:#000">${row.sababsiz_muntazam || 0}</td>
+                    <td style="background:#fff3e0; color:#000">${row.sababsiz_qidiruv || 0}</td>
+                    <td style="background:#fff3e0; color:#000">${row.sababsiz_chetel || 0}</td>
+                    <td style="background:#fff3e0; color:#000">${row.sababsiz_boyin || 0}</td>
+                    <td style="background:#fff3e0; color:#000">${row.sababsiz_ishlab || 0}</td>
+                    <td style="background:#fff3e0; color:#000">${row.sababsiz_qarshilik || 0}</td>
+                    <td style="background:#fff3e0; color:#000">${row.sababsiz_jazo || 0}</td>
+                    <td style="background:#fff3e0; color:#000">${row.sababsiz_nazoratsiz || 0}</td>
+                    <td style="background:#fff3e0; color:#000">${row.sababsiz_turmush || 0}</td>
+                    <td style="background:#fff3e0; color:#000">${row.sababsiz_boshqa || 0}</td>
                     <td><b>${row.percent}%</b></td>
-                    <td>${row.source}</td>
+                    <td>${row.source || 'bot'}</td>
                     <td>${row.fio || '-'}</td>
                 `;
                 tbody.appendChild(tr);
             });
         }
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Tuman Data Error:", e); }
 }
 
 async function loadAbsentDetails() {
@@ -1056,4 +1098,55 @@ function exportTuman() {
     if (!tuman) return alert("Tumanni tanlang");
     window.location.href = `${API_BASE}/export/tuman?tuman=${encodeURIComponent(tuman)}&date=${date}&token=${token}`;
 }
+/* ADMIN LOGIC */
+async function loadAdminPanel() {
+    const tableBody = document.querySelector('#usersTable tbody');
+    if (!tableBody) return;
+    tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+
+    try {
+        const res = await fetch(`${API_BASE}/admin/users`, { headers: getAuthHeaders() });
+        if (res.status === 403) {
+            const view = document.getElementById('adminView');
+            if (view) view.innerHTML = '<h3 style="color:red; text-align:center; padding:50px">Ruxsat yo\'q. Faqat Superadmin uchun.</h3>';
+            return;
+        }
+        const users = await res.json();
+        tableBody.innerHTML = '';
+
+        Object.values(users).forEach(u => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><code>${u.username}</code></td>
+                <td>${u.district || '-'}</td>
+                <td style="font-family:monospace; color:#10b981">${u.password}</td>
+                <td>
+                    <button class="btn" onclick="changePass('${u.username}')" style="background:#f59e0b; color:white; padding:5px 10px; font-size:0.8rem; border:none; border-radius:4px; cursor:pointer">
+                        <i class="fas fa-key"></i> Parolni o'zgartirish
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    } catch (e) {
+        console.error(e);
+        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red">Xatolik yuz berdi.</td></tr>';
+    }
+}
+
+async function changePass(username) {
+    const newPass = prompt(`Yangi parol (${username}):`);
+    if (newPass && newPass.trim()) {
+        try {
+            await fetch(`${API_BASE}/admin/reset-password`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ targetLogin: username, newPassword: newPass })
+            });
+            alert('Parol o\'zgartirildi');
+            loadAdminPanel();
+        } catch (e) { alert('Xatolik'); }
+    }
+}
+
 /* DASHBOARD LOGIC END */
