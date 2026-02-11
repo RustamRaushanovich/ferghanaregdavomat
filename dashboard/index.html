@@ -125,19 +125,16 @@
         <div class="nav-container">
             <div class="nav-left">
                 <img src="logo.png" alt="Logo" class="nav-logo">
-                <h1 data-i18n="hero_title">Ferghanaregdavomat web</h1>
-                <p data-i18n="hero_subtitle">Farg‘ona viloyati Maktabgacha va maktab ta'limi boshqarmasi o‘quvchilar
-                    davomat tizimi</p>
-
+                <div style="display:flex; flex-direction:column; justify-content:center;">
+                    <h3 data-i18n="hero_title" style="margin:0; font-size:1.1rem; font-weight:700; line-height:1.2;">
+                        Ferghanaregdavomat</h3>
+                    <span style="font-size:0.75rem; color:var(--text-muted); letter-spacing:0.5px;">WEB TIZIMI</span>
+                </div>
             </div>
             <div class="nav-right">
                 <a href="/" class="nav-link active" data-i18n="nav_home">Asosiy sahifa</a>
-
                 <a href="/about.html" class="nav-link" data-i18n="nav_about">Biz haqimizda</a>
-                <div class="lang-switcher">
-                    <button onclick="changeLang('uz')" class="lang-btn" id="uz_btn">UZ</button>
-                    <button onclick="changeLang('ru')" class="lang-btn" id="ru_btn">RU</button>
-                </div>
+
                 <div id="userProfileDisplay"></div>
                 <button class="login-btn" onclick="location.href='login.html'"><i class="fas fa-sign-in-alt"></i> <span
                         data-i18n="nav_login">Kirish</span></button>

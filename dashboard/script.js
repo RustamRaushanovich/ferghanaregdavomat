@@ -745,46 +745,66 @@ function displayUserInfo() {
     const role = localStorage.getItem('dashboard_role');
     const district = localStorage.getItem('dashboard_district');
 
-    // Update all login buttons to Logout if token exists
+    // Helper to shorten name: "Turdiyev Rustam Raushanovich" -> "R.R.Turdiyev"
+    const shorten = (name) => {
+        if (!name) return '';
+        const p = name.replace('qirol ', '').trim().split(/\s+/);
+        if (p.length < 2) return name;
+        const fam = p[0];
+        const ism = p[1];
+        const sharif = p[2];
+        if (sharif) return `${ism[0]}.${sharif[0]}.${fam}`;
+        return `${ism[0]}.${fam}`;
+    };
+
+    // Update login buttons
     const loginBtns = document.querySelectorAll('.login-btn, .login-mini-btn, .nav-link[onclick*="login.html"], [data-i18n="nav_login"]');
     const lang = localStorage.getItem('lang') || 'uz';
+    const t_logout = translations[lang]?.nav_logout || 'Chiqish';
+    const t_login = translations[lang]?.nav_login || 'Kirish';
 
     loginBtns.forEach(btn => {
         if (token) {
-            btn.innerHTML = `<i class="fas fa-sign-out-alt"></i> ${translations[lang].nav_logout || 'Chiqish'}`;
+            btn.innerHTML = `<i class="fas fa-sign-out-alt"></i> ${t_logout}`;
             btn.setAttribute('onclick', 'logout()');
-            if (btn.classList.contains('login-btn') || btn.classList.contains('login-mini-btn')) {
-                btn.style.background = 'rgba(239, 68, 68, 0.15)';
-                btn.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+            // Style adjust for logout state
+            if (btn.classList.contains('login-btn')) {
+                btn.classList.add('logout-mode');
+                btn.style.background = 'rgba(239, 68, 68, 0.1)';
                 btn.style.color = '#f87171';
+                btn.style.border = '1px solid rgba(239, 68, 68, 0.2)';
             }
         } else {
-            btn.innerHTML = `<i class="fas fa-sign-in-alt"></i> ${translations[lang].nav_login || 'Kirish'}`;
+            btn.innerHTML = `<i class="fas fa-sign-in-alt"></i> ${t_login}`;
             btn.setAttribute('onclick', "location.href='login.html'");
+            btn.classList.remove('logout-mode');
+            btn.style.background = '';
+            btn.style.color = '';
+            btn.style.border = '';
         }
     });
 
     if (!token) {
-        userContainer.innerHTML = `
-            <div class="user-badge guest">
-                <i class="fas fa-user-circle"></i>
-                <div class="user-details">
-                    <span class="user-name">Mehmon</span>
-                    <span class="user-role">Oddiy foydalanuvchi</span>
-                </div>
-            </div>
-        `;
+        userContainer.innerHTML = ''; // Hide profile if guest
+        // Ensure Login Button is Visible
+        const mainLoginBtn = document.getElementById('loginMainBtn'); // If we added ID
+        if (mainLoginBtn) mainLoginBtn.style.display = 'flex';
         return;
     }
+
+    // Hide Main Login Button if logged in (since we have profile)
+    // But wait, the previous code converted the Login Button to Logout.
+    // User wants "R.R.Turdiyev" display.
+    // I will show Profile Badge AND Logout button? Or Profile Badge IS the menu?
+    // Let's keep Profile Badge on left of Logout button.
 
     let displayName = "Foydalanuvchi";
     let displayRole = role || "Foydalanuvchi";
 
     if (role === 'superadmin') {
-        displayName = "qirol Turdiyev Rustam Raushanovich";
+        displayName = "R.R.Turdiyev";
         displayRole = "Superadmin";
     } else if (district) {
-        // Find name from mapping
         const names = {
             "Marg‘ilon shahar": "Kodirov Abdullajon",
             "Farg‘ona shahar": "Teshaboev Boburjon",
@@ -806,20 +826,22 @@ function displayUserInfo() {
             "O‘zbekiston tumani": "Ochildieva Gulmiraxon",
             "Quva tumani": "Xolikov Jaxongir"
         };
-        displayName = names[district] || district;
+        const raw = names[district] || district;
+        displayName = shorten(raw);
     }
 
     userContainer.innerHTML = `
-        <div class="user-badge ${role}">
-            <i class="fas fa-user-shield"></i>
-            <div class="user-details">
-                <span class="user-name">${displayName}</span>
-                <span class="user-role">${displayRole}</span>
+        <div class="user-badge ${role}" style="display:flex; align-items:center; gap:10px; padding:5px 12px; background:rgba(255,255,255,0.05); border-radius:30px; border:1px solid rgba(255,255,255,0.1);">
+            <div style="width:32px; height:32px; background:linear-gradient(135deg, #6366f1, #a855f7); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">
+                ${displayName[0]}
+            </div>
+            <div class="user-details" style="display:flex; flex-direction:column;">
+                <span class="user-name" style="font-size:0.85rem; font-weight:600; color:var(--text-main);">${displayName}</span>
+                <span class="user-role" style="font-size:0.7rem; color:var(--text-muted);">${displayRole}</span>
             </div>
         </div>
     `;
 
-    // Update other UI elements with FISH
     const elements = {
         'profile_fish': displayName,
         'profile_role': displayRole,

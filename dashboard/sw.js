@@ -1,4 +1,4 @@
-const CACHE_NAME = 'davomat-v3-new'; // Force Update
+const CACHE_NAME = 'davomat-v4-final'; // Final Force Update
 const ASSETS = [
     '/',
     '/index.html',
