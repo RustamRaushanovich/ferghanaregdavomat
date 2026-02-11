@@ -1064,20 +1064,93 @@ async function loadAbsentDetails() {
     } catch (e) { console.error(e); }
 }
 
-async function loadRecentActivity() {
-    const container = document.getElementById('monitorList');
-    // Actually dashboard uses tab_recent but doesn't have monitorList DIV in HTML?
-    // Step 1059 Screenshot shows "Jonli Monitor" tab content. It looks like a table.
-    // Let's check HTML if we can find where it renders.
-    // Assuming it renders to a table or list.
-    // But wait, the screenshot shows "VAQT | HUDUD NOMI | MAKTABLAR..." etc. A table.
-    // I will assume the table exists or I should render it.
-    // If it's a table, I need to know ID.
-    // Let's skip detailed implementation for Recent as it seems working in screenshot?
-    // Wait, screenshot shows "Jonli Monitor" working!
-    // So loadRecentActivity MIGHT be there or injected.
-    // But Viloyat Svod is 0.
-    // I will focus on Viloyat Svod.
+let currentPage = 1;
+const itemsPerPage = 50;
+
+async function loadRecentActivity(page = 1) {
+    currentPage = page;
+    const offset = (page - 1) * itemsPerPage;
+    const tbody = document.querySelector('#recentTable tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px"><i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...</td></tr>';
+
+    try {
+        const res = await fetch(`${API_BASE}/stats/recent?limit=${itemsPerPage}&offset=${offset}`, { headers: getAuthHeaders() });
+        if (!res.ok) throw new Error("Network error");
+
+        const json = await res.json();
+        const data = Array.isArray(json) ? json : (json.data || []);
+        const total = json.total || (Array.isArray(json) ? json.length : 0);
+
+        tbody.innerHTML = '';
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#94a3b8"><i class="fas fa-info-circle"></i> Hozircha ma\'lumotlar mavjud emas</td></tr>';
+            renderPagination(0, 1);
+            return;
+        }
+
+        data.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="white-space:nowrap">${item.time || (item.date + ' ' + item.time) || '-'}</td>
+                <td>${item.district || '-'}</td>
+                <td>${item.school || '-'}</td>
+                <td><span style="font-weight:bold; color:${item.percent >= 90 ? '#10b981' : '#f43f5e'}">${item.percent}%</span></td>
+                <td>${item.sababsiz || (item.sababsiz_jami || 0)}</td>
+                <td><span class="badge" style="background:${item.source === 'bot' ? '#3b82f6' : '#8b5cf6'}; padding:2px 8px; border-radius:12px; font-size:0.75rem">${item.source || 'web'}</span></td>
+                <td>${item.responsible || (item.fio || '-')}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        renderPagination(total, page);
+
+    } catch (e) {
+        console.error("Monitor Error:", e);
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#ef4444; padding:20px">Ma\'lumotlarni yuklashda xatolik yuz berdi</td></tr>';
+    }
+}
+
+function renderPagination(total, page) {
+    const totalPages = Math.ceil(total / itemsPerPage);
+    let container = document.getElementById('monitorPagination');
+    if (!container) {
+        const table = document.querySelector('#recentTable');
+        if (table) {
+            container = document.createElement('div');
+            container.id = 'monitorPagination';
+            container.style.cssText = "display:flex; justify-content:center; margin-top:15px; gap:10px; align-items:center;";
+            table.parentNode.appendChild(container); // Append after table inside container
+        }
+    }
+
+    if (!container) return; // Should not happen
+
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    // Previous
+    if (page > 1) {
+        html += `<button onclick="loadRecentActivity(${page - 1})" style="padding:5px 15px; background:#e2e8f0; border:none; border-radius:6px; cursor:pointer;">&laquo; Ortga</button>`;
+    } else {
+        html += `<button disabled style="padding:5px 15px; background:#f1f5f9; color:#cbd5e1; border:none; border-radius:6px;">&laquo; Ortga</button>`;
+    }
+
+    html += `<span style="font-weight:bold; color:#475569">Sahifa ${page} / ${totalPages}</span>`;
+
+    // Next
+    if (page < totalPages) {
+        html += `<button onclick="loadRecentActivity(${page + 1})" style="padding:5px 15px; background:#3b82f6; color:white; border:none; border-radius:6px; cursor:pointer;">Oldinga &raquo;</button>`;
+    } else {
+        html += `<button disabled style="padding:5px 15px; background:#f1f5f9; color:#cbd5e1; border:none; border-radius:6px;">Oldinga &raquo;</button>`;
+    }
+
+    container.innerHTML = html;
 }
 
 function safeSetText(id, text) {
@@ -1100,37 +1173,91 @@ function exportTuman() {
 }
 /* ADMIN LOGIC */
 async function loadAdminPanel() {
-    const tableBody = document.querySelector('#usersTable tbody');
-    if (!tableBody) return;
-    tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+    const container = document.getElementById('adminView');
+    if (!container) return;
+
+    container.innerHTML = '<div style="text-align:center; padding:20px"><i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...</div>';
 
     try {
+        // 1. Users
         const res = await fetch(`${API_BASE}/admin/users`, { headers: getAuthHeaders() });
-        if (res.status === 403) {
-            const view = document.getElementById('adminView');
-            if (view) view.innerHTML = '<h3 style="color:red; text-align:center; padding:50px">Ruxsat yo\'q. Faqat Superadmin uchun.</h3>';
+        if (res.status !== 200) {
+            container.innerHTML = '<h3 style="color:red; text-align:center; padding:50px">Ruxsat yo\'q. Faqat Superadmin uchun.</h3>';
             return;
         }
-        const users = await res.json();
-        tableBody.innerHTML = '';
 
-        Object.values(users).forEach(u => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><code>${u.username}</code></td>
-                <td>${u.district || '-'}</td>
-                <td style="font-family:monospace; color:#10b981">${u.password}</td>
-                <td>
-                    <button class="btn" onclick="changePass('${u.username}')" style="background:#f59e0b; color:white; padding:5px 10px; font-size:0.8rem; border:none; border-radius:4px; cursor:pointer">
-                        <i class="fas fa-key"></i> Parolni o'zgartirish
-                    </button>
-                </td>
-            `;
-            tableBody.appendChild(tr);
+        const users = await res.json();
+
+        let html = `
+            <h2>👥 Foydalanuvchilar Boshqaruvi</h2>
+            <div class="table-wrapper">
+            <table class="fl-table">
+                <thead>
+                    <tr>
+                        <th>Login</th>
+                        <th>Parol</th>
+                        <th>Rol</th>
+                        <th>Hudud</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        const sortedUsers = Object.entries(users).sort((a, b) => {
+            if (a[1].role === 'superadmin') return -1;
+            if (b[1].role === 'superadmin') return 1;
+            return a[0].localeCompare(b[0]);
         });
+
+        sortedUsers.forEach(([login, u]) => {
+            if (u.role === 'system') return;
+            html += `
+                <tr>
+                    <td>${login}</td>
+                    <td>${u.password || '***'}</td>
+                    <td><span class="badge" style="background:${u.role === 'superadmin' ? '#e11d48' : '#0ea5e9'}">${u.role}</span></td>
+                    <td>${u.district || '-'}</td>
+                    <td>
+                        <button onclick="changePass('${login}')" style="padding:4px 8px; background:#f59e0b; color:white; border:none; border-radius:4px; cursor:pointer;">🔑 Parol</button>
+                    </td>
+                </tr>
+            `;
+        });
+        html += '</tbody></table></div>';
+
+        // 2. Archived Reports
+        try {
+            const repRes = await fetch(`${API_BASE}/admin/reports`, { headers: getAuthHeaders() });
+            const reports = await repRes.json();
+
+            if (Array.isArray(reports) && reports.length > 0) {
+                html += `<div style="margin-top:40px;">
+                    <h2>📚 Arxivlangan Hisobotlar (Excel)</h2>
+                    <div class="table-wrapper">
+                    <table class="fl-table">
+                        <thead><tr><th>Fayl Nomi</th><th>Hajmi</th><th>Sana</th><th>Yuklash</th></tr></thead>
+                        <tbody>`;
+
+                const token = localStorage.getItem('dashboard_token') || localStorage.getItem('token');
+                reports.forEach(f => {
+                    html += `<tr>
+                        <td>${f.name}</td>
+                        <td>${f.size}</td>
+                        <td>${new Date(f.date).toLocaleString()}</td>
+                        <td><a href="${API_BASE}/admin/reports/download/${f.name}?token=${token}" target="_blank" style="text-decoration:none; color:white; background:#10b981; padding:5px 10px; border-radius:4px;">📥 Yuklab olish</a></td>
+                    </tr>`;
+                });
+
+                html += `</tbody></table></div></div>`;
+            }
+        } catch (e) { console.error("Report Fetch Error", e); }
+
+        container.innerHTML = html;
+
     } catch (e) {
         console.error(e);
-        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red">Xatolik yuz berdi.</td></tr>';
+        container.innerHTML = '<div style="color:red; text-align:center">Xatolik yuz berdi!</div>';
     }
 }
 

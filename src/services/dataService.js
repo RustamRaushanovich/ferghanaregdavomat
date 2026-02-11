@@ -38,6 +38,8 @@ async function exportToExcel(date) {
         const allDistricts = ["Farg'ona shahri", "Marg'ilon shahri", "Qo'qon shahri", "Quvasoy shahri", "Beshariq tumani", "Bag'dod tumani", "Uchko'prik tumani", "Qo'shtepa tumani", "Farg'ona tumani", "O'zbekiston tumani", "Dang'ara tumani", "Rishton tumani", "So'x tumani", "Toshloq tumani", "Oltiariq tumani", "Furqat tumani", "Buvayda tumani", "Quva tumani", "Yozyovon tumani"];
 
         const workbook = new ExcelJS.Workbook();
+
+        // --- SHEET 1: VILOYAT SVOD ---
         const sheet1 = workbook.addWorksheet('Viloyat Svod');
 
         sheet1.mergeCells('A1:X1'); sheet1.getCell('A1').value = `Farg'ona viloyati maktablari kunlik davomati (Sana: ${targetDate})`;
@@ -102,17 +104,29 @@ async function exportToExcel(date) {
 
         sheet1.getColumn(1).width = 5; sheet1.getColumn(2).width = 25; for (let c = 3; c <= 24; c++) sheet1.getColumn(c).width = 11;
 
-        const sheet2 = workbook.addWorksheet('Sababsizlar');
-        sheet2.addRow(["SANA:", targetDate]);
-        sheet2.addRow(["Vaqt", "№", "Tuman", "Maktab", "Sinf", "O'quvchi FISH", "Manzil", "Ota-ona FISH", "Tel", "Inspektor"]);
-        sheet2.getRow(2).eachCell(cell => { setStyle(cell, { bold: true, fill: 'FF2E7D32' }); cell.font.color = { argb: 'FFFFFFFF' }; });
+        // --- SHEET 2: SABABSIZ KELMAGANLAR ---
+        const sheet2 = workbook.addWorksheet("Sababsiz O'quvchilar");
+        sheet2.columns = [
+            { header: '№', key: 'id', width: 5 },
+            { header: 'Tuman', key: 'district', width: 25 },
+            { header: 'Maktab', key: 'school', width: 20 },
+            { header: 'Sinf', key: 'class', width: 10 },
+            { header: 'F.I.SH', key: 'name', width: 35 },
+            { header: 'Manzil', key: 'address', width: 40 },
+            { header: 'Ota-onasi', key: 'parent', width: 25 },
+            { header: 'Tel', key: 'phone', width: 15 },
+            { header: 'Inspektor', key: 'inspector', width: 25 }
+        ];
+        sheet2.getRow(1).font = { bold: true };
+        sheet2.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEEEEEE' } };
 
-        const absents = db.prepare(`SELECT a.time, a.district, a.school, s.class, s.name, s.address, s.parent_name, s.parent_phone, a.inspector FROM absent_students s JOIN attendance a ON s.attendance_id = a.id WHERE a.date = ?`).all(targetDate);
-        absents.forEach((s, i) => {
-            const r = sheet2.addRow([s.time, i + 1, s.district, s.school, s.class, s.name, s.address, s.parent_name, s.parent_phone, s.inspector]);
-            r.eachCell(c => setStyle(c));
+        const absents = db.prepare(`SELECT a.district, a.school, s.class, s.name, s.address, s.parent_name, s.parent_phone, a.inspector FROM absent_students s JOIN attendance a ON s.attendance_id = a.id WHERE a.date = ?`).all(targetDate);
+        absents.forEach((r, i) => {
+            sheet2.addRow({
+                id: i + 1, district: r.district, school: r.school, class: r.class,
+                name: r.name, address: r.address, parent: r.parent_name, phone: r.parent_phone, inspector: r.inspector
+            });
         });
-        sheet2.columns.forEach(col => col.width = 18);
 
         const assetsDir = path.resolve(__dirname, '../../assets');
         if (!fs.existsSync(assetsDir)) fs.mkdirSync(assetsDir, { recursive: true });
@@ -276,12 +290,14 @@ async function getTrendStats(district = null) {
     } catch (e) { console.error("Trend Stats Error:", e); return []; }
 }
 
-async function getRecentActivity(limit = 20) {
+async function getRecentActivity(limit = 20, offset = 0) {
     try {
-        return db.prepare(`SELECT * FROM attendance ORDER BY id DESC LIMIT ?`).all(limit);
+        const rows = db.prepare(`SELECT * FROM attendance ORDER BY id DESC LIMIT ? OFFSET ?`).all(limit, offset);
+        const total = db.prepare('SELECT count(*) as count FROM attendance').get().count;
+        return { rows, total };
     } catch (e) {
         console.error("Recent Activity Error:", e);
-        return [];
+        return { rows: [], total: 0 };
     }
 }
 

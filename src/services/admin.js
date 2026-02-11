@@ -68,7 +68,37 @@ function handleProList(ctx) {
     }
 }
 
+function handleDashboardLogins(ctx) {
+    const uid = Number(ctx.from.id);
+    const superAdmins = SUPER_ADMIN_IDS.map(id => Number(id));
+
+    if (superAdmins.includes(uid)) {
+        const { USERS } = require('../utils/auth');
+        let header = "🖥 <b>DASHBOARD LOGINS (WEB):</b>\n\n";
+
+        // Filter out system users if any
+        const list = Object.entries(USERS).filter(([k, v]) => v.role !== 'system').map(([login, u]) => {
+            return { login, pass: u.password, dist: u.district || (u.role === 'superadmin' ? "👑 ADMIN" : "Boshqarma") };
+        });
+
+        let text = "";
+        list.forEach((u, i) => {
+            text += `${i + 1}. <b>${u.dist}</b>\n👤 L: <code>${u.login}</code>\n🔑 P: <code>${u.pass}</code>\n\n`;
+        });
+
+        if (text.length > 3800) {
+            const chunks = text.match(/[\s\S]{1,3800}/g) || [];
+            chunks.forEach((chunk, i) => {
+                ctx.replyWithHTML(i === 0 ? header + chunk : chunk);
+            });
+        } else {
+            ctx.replyWithHTML(header + text);
+        }
+    }
+}
+
 module.exports = {
     showAdminPanel,
-    handleProList
+    handleProList,
+    handleDashboardLogins
 };

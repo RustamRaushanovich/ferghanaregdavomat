@@ -66,6 +66,18 @@ function initDb() {
         )
     `).run();
 
+    // Password History Table
+    db.prepare(`
+        CREATE TABLE IF NOT EXISTS password_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            old_password TEXT,
+            new_password TEXT,
+            changed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            changed_by TEXT
+        )
+    `).run();
+
     console.log("SQLite Database initialized at:", dbPath);
 }
 

@@ -7,6 +7,7 @@ const broadcastScene = require('./src/scenes/broadcast');
 const { getDistrictStats, getMissingSchools } = require('./src/services/sheet');
 const admin = require('./src/services/admin');
 const db = require('./src/database/db');
+const sqlite = require('./src/database/sqlite'); // For direct SQLite access (history)
 const topicsConfig = require('./src/config/topics');
 const TOPICS = topicsConfig.getTopics();
 const config = require('./src/config/config');
@@ -72,8 +73,17 @@ app.post('/api/admin/reset-password', auth, (req, res) => {
     const { targetLogin, newPassword } = req.body;
     if (!USERS[targetLogin]) return res.status(404).json({ error: 'Foydalanuvchi topilmadi' });
 
+    const oldPassword = USERS[targetLogin].password;
     USERS[targetLogin].password = newPassword;
     saveUsers();
+
+    // Save History
+    try {
+        sqlite.prepare('INSERT INTO password_history (username, old_password, new_password, changed_by) VALUES (?, ?, ?, ?)').run(targetLogin, oldPassword, newPassword, req.user.username);
+    } catch (e) {
+        console.error("History Save Error:", e);
+    }
+
     res.json({ success: true });
 });
 app.use(express.static('dashboard'));
@@ -140,12 +150,21 @@ app.get('/api/stats/absentees', auth, async (req, res) => {
 });
 
 app.get('/api/stats/recent', auth, async (req, res) => {
-    let data = await getRecentActivity(100);
+    const limit = parseInt(req.query.limit) || 50;
+    const offset = parseInt(req.query.offset) || 0;
+
+    // getRecentActivity now returns { rows, total }
+    const result = await getRecentActivity(limit, offset);
+    let data = result.rows || [];
+    let total = result.total || 0;
+
     if (req.user.role === 'district') {
         const userDistNorm = normalizeKey(req.user.district);
         data = data.filter(d => normalizeKey(d.district) === userDistNorm);
+        // Total count is approximate for district users in this simple implementation
     }
-    res.json(data.slice(0, 30));
+
+    res.json({ data, total });
 });
 
 app.get('/api/stats/school', auth, async (req, res) => {
@@ -210,6 +229,40 @@ app.get('/api/schools', async (req, res) => {
     if (!district) return res.status(400).json({ error: 'District required' });
     const schools = await getSchools(district);
     res.json(schools || []);
+});
+
+// Admin: List Archived Reports
+app.get('/api/admin/reports', auth, (req, res) => {
+    if (req.user.role !== 'superadmin') return res.status(403).json({ error: "Ruxsat yo'q" });
+    const assetsDir = path.join(__dirname, 'assets');
+    if (!fs.existsSync(assetsDir)) return res.json([]);
+
+    try {
+        const files = fs.readdirSync(assetsDir)
+            .filter(f => f.endsWith('.xlsx') && f.startsWith('HISOBOT_'))
+            .map(f => {
+                const stat = fs.statSync(path.join(assetsDir, f));
+                return { name: f, size: (stat.size / 1024).toFixed(1) + ' KB', date: stat.mtime };
+            })
+            .sort((a, b) => b.date - a.date);
+        res.json(files);
+    } catch (e) {
+        res.json([]);
+    }
+});
+
+// Admin: Download specific report
+app.get('/api/admin/reports/download/:filename', auth, (req, res) => {
+    if (req.user.role !== 'superadmin') return res.status(403).send("Ruxsat yo'q");
+    const filename = req.params.filename;
+    const assetsDir = path.join(__dirname, 'assets');
+    const filePath = path.join(assetsDir, filename);
+
+    // Security check to prevent directory traversal
+    if (!filePath.startsWith(assetsDir) || !fs.existsSync(filePath)) {
+        return res.status(404).send("Fayl topilmadi");
+    }
+    res.download(filePath);
 });
 
 app.post('/api/contact', async (req, res) => {
@@ -956,6 +1009,9 @@ bot.hears("🏆 Reyting", async (ctx) => {
         await ctx.reply("❌ Reyting tuzishda xatolik.");
     }
 });
+
+// --- ADMIN HANDLERS ---
+bot.hears("🖥 Dashboard Logins", admin.handleDashboardLogins);
 
 // --- MAIN FLOW ---
 bot.hears("Davomat kiritish", (ctx) => {
