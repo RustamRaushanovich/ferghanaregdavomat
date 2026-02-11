@@ -9,7 +9,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
-            background: #0f172a;
+            background-color: #0f172a;
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
             font-family: 'Outfit', sans-serif;
             display: flex;
             justify-content: center;
@@ -17,6 +21,7 @@
             height: 100vh;
             margin: 0;
             color: white;
+            overflow: hidden;
         }
 
         .login-card {
@@ -25,19 +30,10 @@
             padding: 40px;
             border-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 100%;
+            width: 90%;
             max-width: 400px;
-            text-align: center;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .logo {
-            width: 80px;
-            margin-bottom: 20px;
-        }
-
-        h2 {
-            margin-bottom: 30px;
+            z-index: 10;
         }
 
         .input-group {
@@ -55,12 +51,14 @@
         input {
             width: 100%;
             padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(15, 23, 42, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             color: white;
             outline: none;
             transition: 0.3s;
+            box-sizing: border-box;
+            /* Important for padding */
         }
 
         input:focus {
@@ -78,7 +76,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: 0.3s;
-            margin-top: 10px;
+            margin-top: 20px;
         }
 
         .login-btn:hover {
@@ -86,131 +84,131 @@
             transform: translateY(-2px);
         }
 
-        .error {
-            color: #f43f5e;
-            margin-top: 15px;
-            font-size: 0.9rem;
-            display: none;
+        .login-btn:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 4px;
+            font-size: 12px;
+        }
+
+        .lang-btn.active {
+            background: #6366f1;
+            border-color: #6366f1;
         }
     </style>
 </head>
 
-<script src="script.js?v=2"></script>
-<div class="login-card">
-    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <div class="nav-controls" style="display:flex; align-items:center; gap:15px;">
-            <div id="userProfileDisplay"></div>
-            <button onclick="toggleTheme()" class="theme-toggle-btn icon-btn" title="Mavzu"><i
-                    class="fas fa-moon"></i></button>
-            <div class="lang-switcher">
+<body>
+    <div class="login-card">
+        <div style="display:flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+            <img src="assets/logo.png" alt="Logo" class="logo" style="width: 80px; margin: 0;">
+        </div>
+        <h2 data-i18n="nav_login" style="text-align: center; margin-bottom: 30px;">Kirish</h2>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label>Login</label>
+                <input type="text" id="username" data-i18n="ph_login" placeholder="Foydalanuvchi nomi" required>
+            </div>
+            <div class="input-group">
+                <label>Parol</label>
+                <input type="password" id="password" data-i18n="ph_password" placeholder="Parol" required>
+            </div>
+            <button type="submit" class="login-btn" data-i18n="nav_login"><i class="fas fa-sign-in-alt"></i>
+                Kirish</button>
+        </form>
+
+        <div class="error" id="errorMsg"
+            style="color: #f43f5e; margin-top: 15px; font-size: 0.9rem; display: none; text-align: center;">
+            Login yoki parol xato!</div>
+
+        <div
+            style="margin-top: 30px; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+            <div class="lang-switcher" style="display: flex; justify-content: center; margin-bottom: 10px;">
                 <button onclick="changeLang('uz')" class="lang-btn" id="uz_btn">UZ</button>
                 <button onclick="changeLang('ru')" class="lang-btn" id="ru_btn">RU</button>
             </div>
+            <p style="font-size: 12px; color: #64748b; margin: 0;">&copy; 2026 Ferghanaregdavomat</p>
         </div>
-        <a href="/" style="color:#94a3b8; text-decoration:none; font-size:12px;"><i class="fas fa-home"></i> Bosh
-            sahifa</a>
     </div>
-    <h2 data-i18n="nav_login">Kirish</h2>
-    <form id="loginForm">
-        <div class="input-group">
-            <label>Login</label>
-            <input type="text" id="username" data-i18n="ph_login" placeholder="Foydalanuvchi nomi" required>
-        </div>
-        <div class="input-group">
-            <label>Parol</label>
-            <input type="password" id="password" data-i18n="ph_password" placeholder="Parol" required>
-        </div>
-        <button type="submit" class="login-btn" data-i18n="nav_login">Kirish</button>
-    </form>
-    <div class="error" id="errorMsg" style="color: #f43f5e; margin-top: 15px; font-size: 0.9rem; display: none;">
-        Login yoki parol xato!</div>
-</div>
-<script>
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const errorMsg = document.getElementById('errorMsg');
-        errorMsg.style.display = 'none';
 
-        try {
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
+    <script src="script.js?v=3"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
 
-            if (res.ok) {
-                const data = await res.json();
-                localStorage.setItem('dashboard_token', data.token);
-                localStorage.setItem('dashboard_role', data.role);
-                localStorage.setItem('dashboard_district', data.district);
-                localStorage.setItem('dashboard_school', data.school);
-                window.location.href = 'dashboard.html';
-            } else {
+            errorMsg.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kirilmoqda...';
+
+            try {
+                console.log('Attempting login with:', username);
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    localStorage.setItem('dashboard_token', data.token);
+                    localStorage.setItem('dashboard_role', data.role);
+                    localStorage.setItem('dashboard_district', data.district);
+                    localStorage.setItem('dashboard_school', data.school);
+                    window.location.href = 'dashboard.html';
+                } else {
+                    const errorData = await res.json().catch(() => ({}));
+                    console.error('Login failed:', res.status, errorData);
+                    errorMsg.textContent = errorData.error || 'Login yoki parol xato!';
+                    errorMsg.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Kirish';
+                }
+            } catch (e) {
+                console.error('Login error:', e);
+                errorMsg.textContent = "Tarmoq xatoligi! Qaytadan urinib ko'ring.";
                 errorMsg.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Kirish';
             }
-        } catch (e) {
-            alert("Xatolik yuz berdi");
+        });
+
+        function changeLang(lang) {
+            localStorage.setItem('lang', lang);
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(lang + '_btn').classList.add('active');
+
+            const t = {
+                uz: { title: "Kirish", login: "Login", pass: "Parol", btn: "Kirish", ph1: "Foydalanuvchi nomi", ph2: "Parol" },
+                ru: { title: "Вход", login: "Логин", pass: "Пароль", btn: "Войти", ph1: "Имя пользователя", ph2: "Пароль" }
+            };
+            const c = t[lang];
+            document.querySelector('h2').textContent = c.title;
+            const labels = document.querySelectorAll('label');
+            labels[0].textContent = c.login;
+            labels[1].textContent = c.pass;
+            document.getElementById('username').placeholder = c.ph1;
+            document.getElementById('password').placeholder = c.ph2;
+            document.querySelector('.login-btn').innerHTML = '<i class="fas fa-sign-in-alt"></i> ' + c.btn;
         }
-    });
-</script>
 
-<section class="app-download-section">
-    <div class="app-download-content">
-        <h2 data-i18n="app_download_title">Mobil ilovani yuklab oling</h2>
-        <p data-i18n="app_download_subtitle">Davomat tizimidan yanada qulay foydalanish uchun rasmiy mobil ilovani
-            o'rnatib oling.</p>
-        <div class="app-store-btns">
-            <a href="#" class="store-btn install-trigger" onclick="installApp()">
-                <i class="fab fa-google-play"></i>
-                <div>
-                    <small>Get it on</small>
-                    <strong data-i18n="btn_google_play">Google Play</strong>
-                </div>
-            </a>
-            <a href="#" class="store-btn install-trigger" onclick="installApp()">
-                <i class="fab fa-apple"></i>
-                <div>
-                    <small>Download on the</small>
-                    <strong data-i18n="btn_app_store">App Store</strong>
-                </div>
-            </a>
-        </div>
-    </div>
-</section>
-
-<footer>
-    <div class="footer-content">
-        <div class="footer-section">
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-                <img src="logo.png" style="width: 40px; height: auto;">
-                <h4 style="margin:0;">Ferghanaregdavomat</h4>
-            </div>
-            <p data-i18n="footer_desc">Farg'ona viloyati Maktabgacha va maktab ta'limi boshqarmasi tizimidagi
-                o‘quvchilar davomati bo‘yicha maxsus portal.</p>
-        </div>
-        <div class="footer-section">
-            <h4 data-i18n="footer_contact">Bog'lanish</h4>
-            <p><i class="fas fa-map-marker-alt"></i> Farg‘ona v., Dodxox ko‘chasi 2 uy</p>
-            <p><i class="fas fa-phone"></i> +998 (88) 595-23-23</p>
-            <p><i class="fas fa-envelope"></i> imronbekr@gmail.com</p>
-        </div>
-        <div class="footer-section">
-            <h4 data-i18n="footer_links">Tezkor havolalar</h4>
-            <ul style="padding:0; list-style:none;">
-                <li><a href="/" data-i18n="nav_home">Bosh sahifa</a></li>
-                <li><a href="/davomat.html" data-i18n="nav_form">Davomat kiritish</a></li>
-                <li><a href="/dashboard.html" data-i18n="nav_dashboard">Dashboard</a></li>
-                <li><a href="/about.html" data-i18n="nav_about">Biz haqimizda</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>&copy; 2026 Ferghanaregdavomat. All rights reserved.</p>
-    </div>
-</footer>
-<script src="script.js?v=2"></script>
+        const savedLang = localStorage.getItem('lang') || 'uz';
+        changeLang(savedLang);
+    </script>
 </body>
 
 </html>

@@ -446,10 +446,16 @@ function startLiveClock() {
         const now = new Date();
         const el = document.getElementById('liveClock');
         if (el) {
-            // Options for date: "10-Fevral, Dushanba"
-            const options = { day: 'numeric', month: 'long', weekday: 'long' };
-            const dateStr = now.toLocaleDateString('uz-UZ', options);
-            const timeStr = now.toLocaleTimeString('uz-UZ');
+            const months = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"];
+            const days = ["Yakshanba", "Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba"];
+
+            const dayName = days[now.getDay()];
+            const day = now.getDate();
+            const monthName = months[now.getMonth()];
+
+            const dateStr = `${day}-${monthName}, ${dayName}`;
+            const timeStr = now.toLocaleTimeString('en-GB'); // 24-hour format
+
             el.innerHTML = `<span style="font-size:0.85em; color:#cbd5e1; margin-right:5px">${dateStr} |</span> ${timeStr}`;
         }
     }, 1000);

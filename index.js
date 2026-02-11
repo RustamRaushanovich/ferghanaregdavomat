@@ -231,6 +231,7 @@ app.post('/api/contact', async (req, res) => {
 
 app.post('/api/submit', async (req, res) => {
     const d = req.body;
+    console.log(`[WEB-SUBMIT] Received: ${d.district} - ${d.school} (Total Absent: ${d.total_absent})`);
 
     // Flatten data for saveData/SQLite
     const flatData = {
@@ -346,7 +347,7 @@ bot.start(async (ctx) => {
 
 bot.command("admin", (ctx) => admin.showAdminPanel(ctx));
 bot.hears("⚙️ Admin Panel", (ctx) => admin.showAdminPanel(ctx));
-bot.command("dashboard", (ctx) => ctx.replyWithHTML("🌐 <b>Veb-shakl orqali kiritish:</b>\n\nAgarda sizga brauzer orqali kiritish qulay bo'lsa, quyidagi havoladan foydalaning:\n\n👉 <a href='http://localhost:3000'>Davomat Veb-Formasi</a>"));
+bot.command("dashboard", (ctx) => ctx.replyWithHTML("🌐 <b>Veb-shakl orqali kiritish:</b>\n\nAgarda sizga brauzer orqali kiritish qulay bo'lsa, quyidagi havoladan foydalaning:\n\n👉 <a href='https://ferghanaregdavomat.onrender.com'>Davomat Veb-Formasi</a>"));
 
 // --- ADMIN HANDLERS ---
 bot.hears("👥 Pro Ro'yxat", (ctx) => admin.handleProList(ctx));
@@ -365,7 +366,7 @@ bot.hears("⬅️ Orqaga", (ctx) => {
 bot.hears("📝 Rejalar", (ctx) => ctx.reply("📌 <b>Rejalar:</b>\n1. Web App/Mobile App integratsiyasi.\n2. Baza optimizatsiyasi.\n3. Respublika bo'ylab kengaytirish.", { parse_mode: 'HTML' }));
 
 bot.hears("📊 Svod va Hisobotlar", (ctx) => {
-    ctx.replyWithHTML("🌐 <b>ONLINE DASHBOARD (SVOD)</b>\n\nBarcha ma'lumotlarni real vaqt rejimida ko'rish va nazorat qilish uchun quyidagi havolaga o'ting:\n\n👉 <a href='http://localhost:3000/dashboard.html'>YORDAMCHI DASHBOARD</a>");
+    ctx.replyWithHTML("🌐 <b>ONLINE DASHBOARD (SVOD)</b>\n\nBarcha ma'lumotlarni real vaqt rejimida ko'rish va nazorat qilish uchun quyidagi havolaga o'ting:\n\n👉 <a href='https://ferghanaregdavomat.onrender.com/dashboard.html'>YORDAMCHI DASHBOARD</a>");
 });
 
 bot.hears("📥 Excel Yuklab olish", async (ctx) => {
@@ -976,78 +977,101 @@ bot.on('text', (ctx) => {
 // --- SCHEDULER (Hourly & Auto-Report) ---
 let lastRunSlot = ""; // Format: "YYYY-MM-DD HH:mm"
 let dailyReportSent = false;
+let lastHourProcessed = -1;
 
 function startHourlyCheck() {
-    console.log("Scheduler started (2 hour interval, 08:00-16:00, Farg'ona Time)...");
+    console.log("Scheduler started (Checking warnings every min)...");
     setInterval(async () => {
-        const now = getFargonaTime();
-        const h = now.getHours();
-        const m = now.getMinutes();
-        const dayStr = now.toISOString().split('T')[0];
-        const currentSlot = `${dayStr} ${h}:00`;
+        try {
+            const now = getFargonaTime();
+            const h = now.getHours();
+            const m = now.getMinutes();
+            const dayStr = now.toISOString().split('T')[0];
 
-        // 1. 2-hour check (08:00, 10:00, 12:00, 14:00, 16:00)
-        const isTime = (h >= 8 && h <= 16);
-        if (isTime && m === 0 && h % 2 === 0 && lastRunSlot !== currentSlot) {
-            lastRunSlot = currentSlot;
-            console.log(`[SCHEDULER] Running for slot: ${currentSlot}`);
-            try {
-                const r = await getMissingSchools();
-                if (r && r.missing) {
-                    const mData = r.missing;
-                    const deadline = 16;
+            // Unique slot for this specific check time (e.g. "2024-05-20 10:30")
+            const currentSlot = `${dayStr} ${h}:${m}`;
 
-                    for (const dRaw in mData) {
-                        if (mData[dRaw].length) {
-                            const tid = getTopicId(dRaw);
-                            if (tid) {
-                                let txt = "";
-                                if (h < deadline) {
-                                    // Calculate time left
-                                    let hLeft = deadline - h - (m === 30 ? 1 : 0);
-                                    let mLeft = (m === 30) ? 30 : 0;
-                                    let timeStr = "";
-                                    if (hLeft > 0) timeStr += `${hLeft} soat`;
-                                    if (mLeft > 0) timeStr += (hLeft > 0 ? " " : "") + `${mLeft} daqiqa`;
-                                    if (!timeStr) timeStr = "oz"; // Should not happen with m=0/30 logic
+            // 1. Warning & Deadline Checks (08:00 - 16:00)
+            const isTime = (h >= 8 && h <= 16);
 
-                                    txt = `⏳ <b>DIQQAT! 16:00 gacha ${timeStr} vaqt qoldi!</b>\n\n🚨 <b>${dRaw}</b> bo'yicha quyidagi maktablar hali davomat kiritmagan:\n\n` +
-                                        mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}`).join('\n') + `\n\n❗️ <b>Iltimos, vaqtida ulguring!</b>`;
-                                } else if (h === deadline && m === 0) {
-                                    txt = `🚫 <b>AFSUSKI! Ish vaqti tugadi (16:00).</b>\n\n😔 <b>${dRaw}</b> bo'yicha quyidagi maktablar bugun davomat kiritishmadi:\n\n` +
-                                        mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}`).join('\n') + `\n\n❗️ <b>Mas'ullarga nisbatan chora ko'riladi!</b>`;
-                                }
+            // Only run if:
+            // - It's work hours
+            // - It's exactly 00 or 30 minutes
+            // - We haven't run for this specific time slot yet
+            if (isTime && (m === 0 || m === 30) && lastRunSlot !== currentSlot) {
+                lastRunSlot = currentSlot; // Lock immediately
 
-                                if (txt) {
-                                    console.log(`[ALERTS] Sending warning to ${dRaw} (Topic: ${tid})`);
-                                    await bot.telegram.sendMessage(config.REPORT_GROUP_ID, txt, { parse_mode: 'HTML', message_thread_id: tid }).catch((err) => {
-                                        console.error(`[ALERTS] Error sending to ${dRaw}:`, err.message);
-                                    });
+                const deadline = 16;
+                // Only send warnings at specific times or deadline
+                if ((h % 2 === 0 || (h === deadline && m === 30)) && h <= deadline) {
+                    console.log(`[SCHEDULER] Checking attendance at ${currentSlot}...`);
+
+                    const mData = await getMissingSchools();
+                    if (mData) {
+                        for (const dRaw in mData) {
+                            if (mData[dRaw].length > 0) {
+                                const tid = getTopicId(dRaw);
+                                if (tid) {
+                                    let txt = "";
+
+                                    // Deadline Warning Logic
+                                    if (h < deadline) {
+                                        // Calculate time left to 16:00
+                                        let totalMinLeft = (deadline * 60) - (h * 60 + m);
+                                        let hLeft = Math.floor(totalMinLeft / 60);
+                                        let mLeft = totalMinLeft % 60;
+
+                                        let timeStr = "";
+                                        if (hLeft > 0) timeStr += `${hLeft} soat`;
+                                        if (mLeft > 0) timeStr += (hLeft > 0 ? " " : "") + `${mLeft} daqiqa`;
+                                        if (!timeStr) timeStr = "oz";
+
+                                        txt = `⏳ <b>DIQQAT! 16:00 gacha ${timeStr} vaqt qoldi!</b>\n\n🚨 <b>${dRaw}</b> bo'yicha quyidagi maktablar hali davomat kiritmagan:\n\n` +
+                                            mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s}`).join('\n') +
+                                            `\n\n❗️ <b>Iltimos, vaqtida ulguring!</b>`;
+                                    }
+                                    // Final Deadline Reached (16:00)
+                                    else if (h === deadline && m === 0) {
+                                        txt = `🚫 <b>AFSUSKI! Ish vaqti tugadi (16:00).</b>\n\n😔 <b>${dRaw}</b> bo'yicha quyidagi maktablar bugun davomat kiritishmadi:\n\n` +
+                                            mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s}`).join('\n') +
+                                            `\n\n❗️ <b>Mas'ullarga nisbatan chora ko'riladi!</b>`;
+                                    }
+
+                                    if (txt) {
+                                        console.log(`[ALERTS] Sending warning to ${dRaw} (Topic: ${tid})`);
+                                        try {
+                                            await bot.telegram.sendMessage(config.REPORT_GROUP_ID, txt, {
+                                                parse_mode: 'HTML',
+                                                message_thread_id: tid
+                                            });
+                                        } catch (err) {
+                                            console.error(`[ALERTS] Error sending to ${dRaw}:`, err.message);
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            } catch (e) {
-                console.error("Scheduler check error:", e);
             }
+
+            // 2. Auto-Report at 16:05 (Daily Excel)
+            if (h === 16 && m === 5 && !dailyReportSent) {
+                console.log("Sending Auto 16:05 Report...");
+                dailyReportSent = true;
+                try {
+                    await sendExcelReport(null, config.REPORT_GROUP_ID);
+                } catch (e) { console.error("Auto Report Failed", e); }
+            }
+
+            // Reset daily report flag at midnight
+            if (h === 0 && dailyReportSent) dailyReportSent = false;
+
+        } catch (e) {
+            console.error("Scheduler check error:", e);
         }
-
-        // 2. Auto-Report at 16:05 (Daily Excel)
-        if (h === 16 && m === 5 && !dailyReportSent) {
-            console.log("Sending Auto 16:05 Report...");
-            dailyReportSent = true;
-            try {
-                await sendExcelReport(null, config.REPORT_GROUP_ID);
-            } catch (e) { console.error("Auto Report Failed", e); }
-        }
-
-        // Reset daily report flag at midnight
-        if (h === 0) dailyReportSent = false;
-
-    }, 30000); // Check every 30 seconds
+    }, 45000); // Check every 45 seconds to avoid double trigger on 30s interval
 }
-
 
 
 

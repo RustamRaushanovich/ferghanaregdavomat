@@ -1025,3 +1025,71 @@ body.dark-mode .stat-card {
     font-size: 14px;
     text-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
 }
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 900px) {
+    .top-widgets-bar {
+        display: none;
+    }
+
+    .navbar {
+        height: 60px;
+        top: 0;
+        padding: 0 1rem;
+        background: rgba(15, 23, 42, 0.95);
+    }
+
+    .nav-container {
+        padding: 0;
+    }
+
+    body {
+        padding-top: 80px;
+    }
+
+    .nav-right,
+    .nav-branding p {
+        display: none;
+    }
+
+    .nav-left {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    /* Keep Login/User but hide links */
+    .nav-right:has(.login-btn) {
+        display: flex;
+        /* Try to show if login button is needed? No, simpler to hide on small screens */
+    }
+
+    .hero-btns {
+        display: none !important;
+    }
+
+    .hero-title {
+        font-size: 1.8rem;
+    }
+
+    .input-row,
+    .input-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        width: 95%;
+        padding: 1rem;
+    }
+
+    .steps {
+        overflow-x: auto;
+        /* Scrollable steps */
+        padding-bottom: 5px;
+    }
+
+    /* Footer Stack */
+    .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+}
