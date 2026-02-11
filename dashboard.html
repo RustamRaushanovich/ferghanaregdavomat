@@ -891,6 +891,10 @@
                 const node = document.createElement('div');
                 node.className = 'map-node';
                 node.title = `${item.district}: ${item.avg_percent.toFixed(1)}%`;
+                let color = '#f43f5e';
+                if (item.avg_percent >= 95) color = '#10b981';
+                else if (item.avg_percent >= 90) color = '#facc15';
+
                 node.style.background = color;
                 node.innerHTML = `<span style="font-size:9px; color:#000; font-weight:bold; line-height:1.2; text-align:center; padding: 2px;">${item.district}</span>`;
                 node.style.display = 'flex';
