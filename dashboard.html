@@ -472,8 +472,7 @@
                 </div>
                 <button class="export-btn" onclick="exportViloyatExcel()">
                     <i class="fas fa-file-excel"></i> Excelga saqlash
-                    <button class="btn btn-secondary" onclick="exportViloyat()" data-i18n="btn_excel"><i
-                            class="fas fa-file-excel"></i> Excelga saqlash</button>
+                </button>
             </div>
 
             <div class="stat-card" style="margin-bottom: 20px;">
@@ -844,13 +843,13 @@
             const tbody = document.querySelector('#viloyatTable tbody');
             tbody.innerHTML = '';
 
-            let totalE = 0, totalS = 0, totalSababsiz = 0, avgP = 0;
+            let totalE = 0, totalS = 0, totalSababsiz = 0, totalAbsentSum = 0;
 
             data.forEach(item => {
                 totalE += parseInt(item.entries) || 0;
                 totalS += parseInt(item.students) || 0;
                 totalSababsiz += parseInt(item.sababsiz) || 0;
-                avgP += parseFloat(item.avg_percent) || 0;
+                totalAbsentSum += parseInt(item.total_absent) || 0;
 
                 const diff = item.avg_percent - item.yesterday_percent;
                 const isLower = diff < 0;
@@ -878,7 +877,9 @@
             document.getElementById('v_total_entries').textContent = totalE;
             document.getElementById('v_total_students').textContent = totalS;
             document.getElementById('v_total_sababsiz').textContent = totalSababsiz;
-            document.getElementById('v_avg_percent').textContent = data.length > 0 ? (avgP / data.length).toFixed(1) + '%' : '0%';
+
+            const viloyatAvg = totalS > 0 ? (((totalS - totalAbsentSum) / totalS) * 100).toFixed(1) : '0';
+            document.getElementById('v_avg_percent').textContent = viloyatAvg + '%';
 
             renderHeatmap(data);
         }
@@ -1353,7 +1354,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 Ferghanaregdavomat. All rights reserved.</p>
+            <p>&copy; 2026 Ferghanaregdavomat. All rights reserved. <span style="opacity:0.5">v2.1-FIXED</span></p>
         </div>
     </footer>
     <script src="script.js?v=99"></script>
