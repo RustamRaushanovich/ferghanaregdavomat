@@ -16,25 +16,34 @@ const sanitizeLogin = (name) => {
 const USERS = {};
 
 function loadUsers() {
-    if (fs.existsSync(DB_PATH)) {
-        const data = JSON.parse(fs.readFileSync(DB_PATH));
-        Object.assign(USERS, data);
-    } else {
-        // Seed initial data
-        USERS["qirol"] = { password: "2323", role: "superadmin", district: null };
-        Object.keys(TOPICS).forEach(d => {
-            if (d === "Test rejimi" || d === "MMT Boshqarma") return;
-            const login = sanitizeLogin(d);
-            USERS[login] = { password: "123", role: "district", district: d };
-        });
-        saveUsers();
-    }
+    // MAJBURIY TOZALASH VA FAQAT KERAKLI USERNARNI QO'SHISH
+    const seedUsers = {
+        "qirol": { password: "2323", role: "superadmin", district: null },
+        "abror4400": { password: "1234", role: "superadmin", district: null },
+        "viloyat": { password: "1234", role: "superadmin", district: null },
+        "VMMTB": { password: "1234", role: "superadmin", district: null }
+    };
+
+    // 19 ta tuman/shahar loginlarini qo'shish
+    Object.keys(TOPICS).forEach(d => {
+        if (d === "Test rejimi" || d === "MMT Boshqarma") return;
+        const login = sanitizeLogin(d);
+        seedUsers[login] = { password: "123", role: "district", district: d };
+    });
+
+    // USERS obyektini tozalab, yangi ro'yxatni yuklaymiz
+    for (const key in USERS) delete USERS[key];
+    Object.assign(USERS, seedUsers);
+
+    // JSON faylga saqlash (Maktablarni o'chirib yuboradi)
+    saveUsers();
 }
 
 function saveUsers() {
     fs.writeFileSync(DB_PATH, JSON.stringify(USERS, null, 2));
 }
 
+// Dastur ishga tushganda ro'yxatni yangilash
 loadUsers();
 
 const tokens = new Map();
@@ -48,5 +57,6 @@ module.exports = {
     tokens,
     generateToken,
     sanitizeLogin,
-    saveUsers // Export to allow saving after pw changes
+    saveUsers,
+    loadUsers
 };

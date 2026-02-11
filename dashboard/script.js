@@ -551,9 +551,19 @@ async function fetchWeather() {
     const el = document.getElementById('weatherWidget');
     if (!el) return;
     try {
-        const temp = Math.floor(Math.random() * (15 - 5) + 5);
-        el.innerHTML = `<i class="fas fa-cloud-sun"></i> <span>Farg'ona: ${temp}°C</span>`;
-    } catch (e) { }
+        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=40.3833&longitude=71.7833&current_weather=true');
+        const data = await res.json();
+        const temp = Math.round(data.current_weather.temperature);
+        const code = data.current_weather.weathercode;
+        let icon = 'fa-sun';
+        if (code >= 1 && code <= 3) icon = 'fa-cloud-sun';
+        else if (code >= 45) icon = 'fa-smog';
+        else if (code >= 51) icon = 'fa-cloud-rain';
+
+        el.innerHTML = `<i class="fas ${icon}"></i> <span>Farg'ona: ${temp > 0 ? '+' : ''}${temp}°C</span>`;
+    } catch (e) {
+        el.innerHTML = `<i class="fas fa-sun"></i> <span>Farg'ona: +12°C</span>`;
+    }
 }
 
 async function checkProUser() {
