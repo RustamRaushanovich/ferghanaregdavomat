@@ -1093,3 +1093,13 @@ body.dark-mode .stat-card {
         text-align: center;
     }
 }
+
+/* NUCLEAR OPTION TO HIDE GHOST BUTTONS */
+.hero-btns {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    pointer-events: none !important;
+}
