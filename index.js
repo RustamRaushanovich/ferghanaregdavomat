@@ -164,7 +164,7 @@ app.get('/api/stats/recent', auth, async (req, res) => {
         // Total count is approximate for district users in this simple implementation
     }
 
-    res.json({ data, total });
+    res.json(data);
 });
 
 app.get('/api/stats/school', auth, async (req, res) => {

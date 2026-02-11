@@ -122,7 +122,7 @@ const attendanceWizard = new Scenes.WizardScene(
                 school: s.school
             };
             await ctx.reply("🏫 <b>Jami sinflar sonini kiriting:</b>\n<i>(1-11 sinflar, 1-2 smena jami)</i>", { parse_mode: "HTML", ...navButtons() });
-            return ctx.wizard.selectStep(6);
+            return ctx.wizard.selectStep(7);
 
         } else if (text === "🔄 Yangi ma'lumot kiritish") {
             ctx.wizard.selectStep(2);

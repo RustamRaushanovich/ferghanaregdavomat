@@ -771,9 +771,13 @@
             document.getElementById('tab_admin').style.display = 'flex';
         }
 
-        document.getElementById('viloyatDate').valueAsDate = new Date();
-        document.getElementById('tumanDate').valueAsDate = new Date();
-        document.getElementById('absentDate').valueAsDate = new Date();
+        // Set default dates to Farg'ona time
+        const fargonaNow = new Date(new Date().getTime() + (5 * 60 + new Date().getTimezoneOffset()) * 60000);
+        const dateStr = fargonaNow.toISOString().split('T')[0];
+
+        document.getElementById('viloyatDate').value = dateStr;
+        document.getElementById('tumanDate').value = dateStr;
+        document.getElementById('absentDate').value = dateStr;
 
         function showTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -950,14 +954,22 @@
             tbody.innerHTML = '';
             data.forEach(item => {
                 const sourceIcon = item.source === 'web' ? '<i class="fas fa-globe" style="color:#3b82f6" title="Web Sahifa"></i> web' : '<i class="fab fa-telegram" style="color:#0088cc" title="Telegram Bot"></i> bot';
+
+                // Format date for display: DD.MM.YYYY
+                const d = item.date.split('-');
+                const displayDate = d.length === 3 ? `${d[2]}.${d[1]}.${d[0]}` : item.date;
+
                 const row = `<tr>
-                    <td>${item.time} (${item.date})</td>
+                    <td style="font-weight: 500;">
+                        <span style="color: #818cf8;">${item.time}</span> 
+                        <span style="color: #94a3b8; font-size: 0.8em; margin-left: 5px;">${displayDate}</span>
+                    </td>
                     <td>${item.district}</td>
                     <td>${item.school}</td>
-                    <td><b>${(item.percent || 0).toFixed(1)}%</b></td>
-                    <td><span style="color:${item.sababsiz_jami > 0 ? 'red' : 'green'}">${item.sababsiz_jami}</span></td>
+                    <td style="text-align:center"><span class="status-badge ${item.percent >= 95 ? 'status-high' : 'status-low'}" style="font-size:11px">${(item.percent || 0).toFixed(1)}%</span></td>
+                    <td style="text-align:center"><span style="color:${item.sababsiz_jami > 0 ? '#f43f5e' : '#10b981'}; font-weight:bold">${item.sababsiz_jami}</span></td>
                     <td style="text-align:center">${sourceIcon}</td>
-                    <td>${item.fio}</td>
+                    <td style="font-size: 11px;">${item.fio}</td>
                 </tr>`;
                 tbody.innerHTML += row;
             });
