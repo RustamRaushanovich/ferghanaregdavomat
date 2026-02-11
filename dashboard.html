@@ -1106,8 +1106,8 @@
                 }
             });
 
-            const totalSababli = todayData.reduce((a, b) => a + b.sababli, 0);
-            const totalSababsiz = todayData.reduce((a, b) => a + b.sababsiz, 0);
+            const totalSababli = todayData.reduce((a, b) => a + (parseInt(b.sababli) || 0), 0);
+            const totalSababsiz = todayData.reduce((a, b) => a + (parseInt(b.sababsiz) || 0), 0);
 
             const ctx2 = document.getElementById('reasonsChart').getContext('2d');
             if (reasonsChart) reasonsChart.destroy();
