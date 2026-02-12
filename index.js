@@ -15,6 +15,17 @@ const { getTopicId, normalizeKey } = require('./src/utils/topics');
 const { getFargonaTime } = require('./src/utils/fargona');
 const axios = require('axios');
 const express = require('express');
+const multer = require('multer');
+const { generateBildirgi } = require('./src/utils/pdfGenerator');
+
+const uploadDir = path.join(__dirname, 'assets', 'uploads');
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
+const upload = multer({
+    dest: uploadDir,
+    limits: { fileSize: 10 * 1024 * 1024 }
+});
+
 const app = express();
 app.use(express.json());
 
@@ -277,10 +288,9 @@ app.get('/api/stats/recent', auth, async (req, res) => {
     if (req.user.role === 'district') {
         const userDistNorm = normalizeKey(req.user.district);
         data = data.filter(d => normalizeKey(d.district) === userDistNorm);
-        // Total count is approximate for district users in this simple implementation
     }
 
-    res.json(data);
+    res.json({ rows: data, total });
 });
 
 app.get('/api/stats/school', auth, async (req, res) => {
@@ -369,15 +379,24 @@ app.get('/api/admin/reports', auth, (req, res) => {
 
 // Admin: Download specific report
 app.get('/api/admin/reports/download/:filename', auth, (req, res) => {
-    if (req.user.role !== 'superadmin') return res.status(403).send("Ruxsat yo'q");
+    if (req.user.role !== 'superadmin' && req.user.role !== 'district' && req.user.role !== 'school') return res.status(403).send("Ruxsat yo'q");
+
     const filename = req.params.filename;
     const assetsDir = path.join(__dirname, 'assets');
-    const filePath = path.join(assetsDir, filename);
+    const uploadsDir = path.join(assetsDir, 'uploads');
 
-    // Security check to prevent directory traversal
+    let filePath = path.join(uploadsDir, filename);
+
+    // Check uploads first, then assets root
+    if (!fs.existsSync(filePath)) {
+        filePath = path.join(assetsDir, filename);
+    }
+
+    // Security check
     if (!filePath.startsWith(assetsDir) || !fs.existsSync(filePath)) {
         return res.status(404).send("Fayl topilmadi");
     }
+
     res.download(filePath);
 });
 
@@ -415,38 +434,71 @@ app.get('/api/stats/parents', auth, (req, res) => {
     } catch (e) { res.status(500).json([]); }
 });
 
-app.post('/api/submit', async (req, res) => {
+app.post('/api/submit', upload.single('bildirgi'), async (req, res) => {
     const d = req.body;
-    console.log(`[WEB-SUBMIT] Received: ${d.district} - ${d.school} (Total Absent: ${d.total_absent})`);
+
+    // Parse absent_students (FormData sends string)
+    let students_list = [];
+    try {
+        students_list = typeof d.absent_students === 'string' ? JSON.parse(d.absent_students) : (d.absent_students || []);
+    } catch (e) { students_list = []; }
+
+    console.log(`[WEB-SUBMIT] Received: ${d.district} - ${d.school}`);
 
     // Flatten data for saveData/SQLite
     const flatData = {
         ...d,
-        sababli_kasal: parseInt(d.sababli?.kasal) || 0,
-        sababli_tadbirlar: parseInt(d.sababli?.tadbirlar) || 0,
-        sababli_oilaviy: parseInt(d.sababli?.oilaviy) || 0,
-        sababli_ijtimoiy: parseInt(d.sababli?.ijtimoiy) || 0,
-        sababli_boshqa: parseInt(d.sababli?.boshqa) || 0,
-        sababli_total: parseInt(d.sababli?.total) || 0,
-        sababsiz_muntazam: parseInt(d.sababsiz?.muntazam) || 0,
-        sababsiz_qidiruv: parseInt(d.sababsiz?.qidiruv) || 0,
-        sababsiz_chetel: parseInt(d.sababsiz?.chetel) || 0,
-        sababsiz_boyin: parseInt(d.sababsiz?.boyin) || 0,
-        sababsiz_ishlab: parseInt(d.sababsiz?.ishlab) || 0,
-        sababsiz_qarshilik: parseInt(d.sababsiz?.qarshilik) || 0,
-        sababsiz_jazo: parseInt(d.sababsiz?.jazo) || 0,
-        sababsiz_nazoratsiz: parseInt(d.sababsiz?.nazoratsiz) || 0,
-        sababsiz_boshqa: parseInt(d.sababsiz?.boshqa) || 0,
-        sababsiz_turmush: parseInt(d.sababsiz?.turmush) || 0,
-        sababsiz_total: parseInt(d.sababsiz?.total) || 0,
-        students_list: d.absent_students || [],
-        inspector: d.inspektor || '',
+        sababli_kasal: parseInt(d.sababli_kasal || d.sababli?.kasal) || 0,
+        sababli_tadbirlar: parseInt(d.sababli_tadbirlar || d.sababli?.tadbirlar) || 0,
+        sababli_oilaviy: parseInt(d.sababli_oilaviy || d.sababli?.oilaviy) || 0,
+        sababli_ijtimoiy: parseInt(d.sababli_ijtimoiy || d.sababli?.ijtimoiy) || 0,
+        sababli_boshqa: parseInt(d.sababli_boshqa || d.sababli?.boshqa) || 0,
+        sababli_total: parseInt(d.sababli_total || d.sababli?.total) || 0,
+        sababsiz_muntazam: parseInt(d.sababsiz_muntazam || d.sababsiz?.muntazam) || 0,
+        sababsiz_qidiruv: parseInt(d.sababsiz_qidiruv || d.sababsiz?.qidiruv) || 0,
+        sababsiz_chetel: parseInt(d.sababsiz_chetel || d.sababsiz?.chetel) || 0,
+        sababsiz_boyin: parseInt(d.sababsiz_boyin || d.sababsiz?.boyin) || 0,
+        sababsiz_ishlab: parseInt(d.sababsiz_ishlab || d.sababsiz?.ishlab) || 0,
+        sababsiz_qarshilik: parseInt(d.sababsiz_qarshilik || d.sababsiz?.qarshilik) || 0,
+        sababsiz_jazo: parseInt(d.sababsiz_jazo || d.sababsiz?.jazo) || 0,
+        sababsiz_nazoratsiz: parseInt(d.sababsiz_nazoratsiz || d.sababsiz?.nazoratsiz) || 0,
+        sababsiz_boshqa: parseInt(d.sababsiz_boshqa || d.sababsiz?.boshqa) || 0,
+        sababsiz_turmush: parseInt(d.sababsiz_turmush || d.sababsiz?.turmush) || 0,
+        sababsiz_total: parseInt(d.sababsiz_total || d.sababsiz?.total) || 0,
+        students_list: students_list,
+        inspector: d.inspektor_fio || d.inspektor || '',
         source: 'web'
     };
+
+    // Bildirgi Logic
+    if (flatData.sababsiz_total > 0) {
+        if (req.file) {
+            flatData.bildirgi = req.file.path;
+        } else {
+            const isProUser = db.checkProByPhone(d.phone);
+            if (isProUser) {
+                try {
+                    console.log("Generating Auto Bildirgi for PRO user...");
+                    const pdfPath = await generateBildirgi({
+                        district: d.district,
+                        school: d.school,
+                        fio: d.fio,
+                        total_students: d.total_students,
+                        sababsiz_total: flatData.sababsiz_total,
+                        students_list: students_list
+                    });
+                    flatData.bildirgi = pdfPath;
+                } catch (e) {
+                    console.error("Auto Bildirgi Error:", e);
+                }
+            }
+        }
+    }
 
     const success = await saveData(flatData);
 
     if (success) {
+        // SMS & TG Notification Logic (Same as before)
         // SMS SERVICE INTEGRATION (PRO ONLY)
         const isProUser = db.checkProByPhone(d.phone);
         if (isProUser && flatData.students_list.length > 0) {
@@ -471,6 +523,10 @@ app.post('/api/submit', async (req, res) => {
         try {
             if (tid) {
                 await bot.telegram.sendMessage(reportGroupId, report, { parse_mode: 'HTML', message_thread_id: tid });
+                // Send Bildirgi to group if exists
+                if (flatData.bildirgi && fs.existsSync(flatData.bildirgi)) {
+                    await bot.telegram.sendDocument(reportGroupId, { source: flatData.bildirgi, filename: path.basename(flatData.bildirgi) }, { caption: `#Bildirgi ${d.school}`, message_thread_id: tid });
+                }
             } else {
                 await bot.telegram.sendMessage(reportGroupId, report, { parse_mode: 'HTML' });
             }
@@ -480,7 +536,7 @@ app.post('/api/submit', async (req, res) => {
 
         res.json({ result: 'success' });
     } else {
-        res.status(500).json({ result: 'error' });
+        res.status(500).json({ result: 'error', error: 'Database save failed' });
     }
 });
 

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const pg = require('./pg');
 
 const SETTINGS_FILE = path.join(__dirname, 'settings.json');
 const USERS_DB_FILE = path.join(__dirname, 'users_db.json');
@@ -13,34 +14,60 @@ let promocodes = {};
 let schools_db = {};
 let coords_db = {};
 
-function loadAll() {
+async function loadAll() {
     try { if (fs.existsSync(SETTINGS_FILE)) settings = { ...settings, ...JSON.parse(fs.readFileSync(SETTINGS_FILE)) }; } catch (e) { }
     try { if (fs.existsSync(USERS_DB_FILE)) users_db = JSON.parse(fs.readFileSync(USERS_DB_FILE)); } catch (e) { }
     try { if (fs.existsSync(PROMO_FILE)) promocodes = JSON.parse(fs.readFileSync(PROMO_FILE)); } catch (e) { }
     try { if (fs.existsSync(SCHOOLS_FILE)) schools_db = JSON.parse(fs.readFileSync(SCHOOLS_FILE)); } catch (e) { }
     try { if (fs.existsSync(COORDS_FILE)) coords_db = JSON.parse(fs.readFileSync(COORDS_FILE)); } catch (e) { }
+
+    // Backup from PostgreSQL
+    try {
+        const res = await pg.query('SELECT id, data FROM tg_users');
+        res.rows.forEach(row => {
+            users_db[row.id] = { ...users_db[row.id], ...row.data };
+        });
+        const sRes = await pg.query('SELECT value FROM settings WHERE key = $1', ['global']);
+        if (sRes.rows.length > 0) settings = { ...settings, ...sRes.rows[0].value };
+        console.log(`📡 Synced ${res.rows.length} users from Supabase.`);
+    } catch (e) {
+        console.warn("📡 Supabase Sync Warning (Postgres might be empty):", e.message);
+    }
 }
 
-function saveSettings() { try { fs.writeFileSync(SETTINGS_FILE, JSON.stringify(settings)); } catch (e) { } }
+async function saveSettings() {
+    try {
+        fs.writeFileSync(SETTINGS_FILE, JSON.stringify(settings));
+        await pg.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['global', settings]);
+    } catch (e) { }
+}
+
 function savePromos() { try { fs.writeFileSync(PROMO_FILE, JSON.stringify(promocodes)); } catch (e) { } }
 function saveCoords() { try { fs.writeFileSync(COORDS_FILE, JSON.stringify(coords_db)); } catch (e) { } }
 
-function saveUser(ctx, data) {
+async function saveUser(ctx, data) {
     if (!ctx.from) return;
     const uid = ctx.from.id;
     users_db[uid] = { ...users_db[uid], ...data, name: ctx.from.first_name, username: ctx.from.username };
-    try { fs.writeFileSync(USERS_DB_FILE, JSON.stringify(users_db, null, 2)); } catch (e) { }
+    try {
+        fs.writeFileSync(USERS_DB_FILE, JSON.stringify(users_db, null, 2));
+        await pg.query('INSERT INTO tg_users (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = $2, last_active = NOW()', [String(uid), users_db[uid]]);
+    } catch (e) { }
 }
-function updateUserDb(uid, data) {
-    if (!users_db[uid]) return;
+
+async function updateUserDb(uid, data) {
+    if (!users_db[uid]) users_db[uid] = {};
     users_db[uid] = { ...users_db[uid], ...data };
-    try { fs.writeFileSync(USERS_DB_FILE, JSON.stringify(users_db, null, 2)); } catch (e) { }
+    try {
+        fs.writeFileSync(USERS_DB_FILE, JSON.stringify(users_db, null, 2));
+        await pg.query('INSERT INTO tg_users (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = $2, last_active = NOW()', [String(uid), users_db[uid]]);
+    } catch (e) { }
 }
+
 function updateUserProMonths(uid, months = 1) {
     if (!users_db[uid]) users_db[uid] = {};
 
     let now = new Date();
-    // Use current expiration if still valid, otherwise use now
     let baseDate = (users_db[uid].is_pro && new Date(users_db[uid].pro_expire_date) > now)
         ? new Date(users_db[uid].pro_expire_date)
         : now;
@@ -52,9 +79,13 @@ function updateUserProMonths(uid, months = 1) {
     users_db[uid].pro_expire_date = expireDate.toISOString().split('T')[0];
     users_db[uid].pro_purchase_date = now.toISOString().split('T')[0];
 
-    try { fs.writeFileSync(USERS_DB_FILE, JSON.stringify(users_db, null, 2)); } catch (e) { }
+    try {
+        fs.writeFileSync(USERS_DB_FILE, JSON.stringify(users_db, null, 2));
+        pg.query('INSERT INTO tg_users (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = $2, last_active = NOW()', [String(uid), users_db[uid]]);
+    } catch (e) { }
     return users_db[uid];
 }
+
 const { SUPER_ADMIN_IDS, SPECIALIST_IDS } = require('../config/config');
 
 function checkPro(uid) {
@@ -91,5 +122,6 @@ module.exports = {
     checkPro,
     checkProByPhone,
     saveCoords,
+    loadAll, // Export for manual sync
     saveSchools: () => { try { fs.writeFileSync(SCHOOLS_FILE, JSON.stringify(schools_db)); } catch (e) { } }
 };

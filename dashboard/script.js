@@ -690,26 +690,75 @@ function generateStudentInputs(count) {
     const lang = localStorage.getItem('lang') || 'uz';
     const t = translations[lang];
     container.innerHTML = '';
+
+    // Students inputs
     for (let i = 1; i <= count; i++) {
         container.insertAdjacentHTML('beforeend', `
             <div class="stat-card" style="margin-bottom:1rem">
                 <h4>${i}-o'quvchi</h4>
-                <input type="text" class="st-class" placeholder="${t.col_class}" required>
-                <input type="text" class="st-fio" placeholder="${t.col_fio}" required>
-                <input type="text" class="st-address" placeholder="${t.col_address}" required>
-                <input type="text" class="st-parent-fio" placeholder="${t.col_parent}" required>
-                <input type="tel" class="st-parent-phone" placeholder="${t.col_phone_t}" required>
+                <div class="input-grid">
+                    <input type="text" class="st-class" placeholder="${t.col_class}" required>
+                    <input type="text" class="st-fio" placeholder="${t.col_fio}" required>
+                    <input type="text" class="st-address" placeholder="${t.col_address}" required>
+                    <input type="text" class="st-parent-fio" placeholder="${t.col_parent}" required>
+                    <input type="tel" class="st-parent-phone" placeholder="${t.col_phone_t}" required>
+                </div>
             </div>
         `);
     }
+
+    // Inspector
     container.insertAdjacentHTML('beforeend', `<div class="input-group"><label>${t.label_psixolog} F.I.SH</label><input type="text" id="inspektor_fio" required></div>`);
+
+    // Bildirgi Upload Logic
+    if (count > 0) {
+        if (isPro) {
+            container.insertAdjacentHTML('beforeend', `
+                <div class="stat-card success-card" style="margin-top:15px; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3);">
+                    <h4 style="color:#10b981"><i class="fas fa-magic"></i> PRO Foydalanuvchi</h4>
+                    <p style="font-size:0.9rem; color:#d1d5db">Sizda PRO obuna mavjud. Bildirgi avtomatik tarzda shakllantiriladi va bot orqali yuboriladi.</p>
+                </div>
+            `);
+        } else {
+            container.insertAdjacentHTML('beforeend', `
+                <div class="input-group" style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px">
+                    <label style="color:#f87171; font-weight:bold"><i class="fas fa-file-upload"></i> Bildirgi Yuklash (Majburiy)</label>
+                    <input type="file" id="bildirgiFile" accept="image/*,application/pdf" required style="padding:10px;">
+                    <small style="color:#94a3b8; display:block; margin-top:5px">Sababsiz dars qoldirganlar uchun bildirgi rasmini yoki PDF faylini yuklang.</small>
+                </div>
+            `);
+        }
+    }
 }
 
 const form = document.getElementById('attendanceForm');
 if (form) form.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('district', document.getElementById('district').value);
+    formData.append('school', document.getElementById('school').value);
+    formData.append('fio', document.getElementById('fio').value);
+    formData.append('phone', document.getElementById('phone').value);
+    formData.append('classes_count', document.getElementById('classes_count').value);
+    formData.append('total_students', document.getElementById('total_students').value);
+    formData.append('sababli_total', document.getElementById('sababli_total').value);
+    formData.append('sababsiz_total', document.getElementById('sababsiz_total').value);
+    formData.append('inspektor_fio', document.getElementById('inspektor_fio').value);
+
+    // Detailed breakdown
+    ['sababli_kasal', 'sababli_tadbirlar', 'sababli_oilaviy', 'sababli_ijtimoiy', 'sababli_boshqa',
+        'sababsiz_muntazam', 'sababsiz_qidiruv', 'sababsiz_chetel', 'sababsiz_boyin', 'sababsiz_ishlab',
+        'sababsiz_qarshilik', 'sababsiz_jazo', 'sababsiz_nazoratsiz', 'sababsiz_turmush', 'sababsiz_boshqa'
+    ].forEach(id => {
+        const val = document.getElementById(id)?.value || 0;
+        formData.append(id, val);
+    });
+
+    // Students
     const students = [];
-    document.querySelectorAll('.st-class').forEach((c, i) => {
+    const classes = document.querySelectorAll('.st-class');
+    classes.forEach((c, i) => {
         students.push({
             class: c.value,
             name: document.querySelectorAll('.st-fio')[i].value,
@@ -718,29 +767,39 @@ if (form) form.addEventListener('submit', async (e) => {
             parent_phone: document.querySelectorAll('.st-parent-phone')[i].value
         });
     });
+    formData.append('absent_students', JSON.stringify(students));
 
-    const formData = {
-        district: document.getElementById('district').value,
-        school: document.getElementById('school').value,
-        fio: document.getElementById('fio').value,
-        phone: document.getElementById('phone').value,
-        classes_count: document.getElementById('classes_count').value,
-        total_students: document.getElementById('total_students').value,
-        sababli: { total: document.getElementById('sababli_total').value },
-        sababsiz: { total: document.getElementById('sababsiz_total').value },
-        absent_students: students,
-        inspektor_fio: document.getElementById('inspektor_fio').value
-    };
+    // File
+    const fileInput = document.getElementById('bildirgiFile');
+    if (fileInput && fileInput.files[0]) {
+        formData.append('bildirgi', fileInput.files[0]);
+    }
 
     try {
+        const btn = form.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yuborilmoqda...';
+        btn.disabled = true;
+
         const res = await fetch('/api/submit', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
+            body: formData
         });
-        if (res.ok) document.getElementById('successOverlay').classList.remove('hidden');
-        else alert('Xatolik!');
-    } catch (e) { alert('Tarmoq xatoligi!'); }
+
+        if (res.ok) {
+            document.getElementById('successOverlay').classList.remove('hidden');
+        } else {
+            const err = await res.json();
+            alert('Xatolik: ' + (err.error || 'Server xatosi'));
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    } catch (e) {
+        alert('Tarmoq xatoligi!');
+        console.error(e);
+        const btn = form.querySelector('button[type="submit"]');
+        if (btn) btn.disabled = false;
+    }
 });
 
 if ('serviceWorker' in navigator) {
@@ -1252,50 +1311,48 @@ async function loadRecentActivity(page = 1) {
     if (!tbody) return;
 
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px"><i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...</td></tr>';
-
     try {
-        const res = await fetch(`${API_BASE}/stats/recent?limit=${itemsPerPage}&offset=${offset}`, { headers: getAuthHeaders() });
-        if (!res.ok) throw new Error("Network error");
+        recentPage = page;
+        const offset = (page - 1) * recentLimit;
+        const data = await apiFetch(`/api/stats/recent?limit=${recentLimit}&offset=${offset}`);
 
-        const json = await res.json();
-        const data = Array.isArray(json) ? json : (json.data || []);
-        const total = json.total || (Array.isArray(json) ? json.length : 0);
+        const rows = data.rows || (Array.isArray(data) ? data : []);
+        const total = data.total || rows.length;
 
+        const tbody = document.querySelector('#recentTable tbody');
         tbody.innerHTML = '';
 
-        if (!data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#94a3b8"><i class="fas fa-info-circle"></i> Hozircha ma\'lumotlar mavjud emas</td></tr>';
-            renderPagination(0, 1);
-            return;
-        }
+        rows.forEach(item => {
+            const sourceIcon = item.source === 'web' ? '<i class="fas fa-globe" style="color:#3b82f6" title="Web Sahifa"></i> web' : '<i class="fab fa-telegram" style="color:#0088cc" title="Telegram Bot"></i> bot';
+            const d = item.date.split('-');
+            const displayDate = d.length === 3 ? `${d[2]}.${d[1]}.${d[0]}` : item.date;
 
-        data.forEach(item => {
-            const tr = document.createElement('tr');
-            // Show both Date and Time
-            const fullTime = `📅 ${item.date || ''} <br> 🕒 ${item.time || ''}`;
-            tr.innerHTML = `
-                <td style="white-space:nowrap; font-size: 0.85rem;">${fullTime}</td>
-                <td>${item.district || '-'}</td>
-                <td>${item.school || '-'}</td>
-                <td><span style="font-weight:bold; color:${item.percent >= 90 ? '#10b981' : '#f43f5e'}">${item.percent}%</span></td>
-                <td>${item.sababsiz || (item.sababsiz_jami || 0)}</td>
-                <td><span class="badge" style="background:${item.source === 'bot' ? '#3b82f6' : '#8b5cf6'}; padding:2px 8px; border-radius:12px; font-size:0.75rem">${item.source || 'web'}</span></td>
-                <td>${item.responsible || (item.fio || '-')}</td>
-            `;
-            tbody.appendChild(tr);
+            const row = `<tr>
+                <td style="font-weight: 500;">
+                    <span style="color: #818cf8;">${item.time}</span> 
+                    <span style="color: #94a3b8; font-size: 0.8em; margin-left: 5px;">${displayDate}</span>
+                </td>
+                <td>${item.district}</td>
+                <td>${item.school}</td>
+                <td style="text-align:center"><span class="status-badge ${item.percent >= 95 ? 'status-high' : 'status-low'}" style="font-size:11px">${(item.percent || 0).toFixed(1)}%</span></td>
+                <td style="text-align:center"><span style="color:${item.sababsiz_jami > 0 ? '#f43f5e' : '#10b981'}; font-weight:bold">${item.sababsiz_jami}</span></td>
+                <td style="text-align:center">${sourceIcon}</td>
+                <td style="font-size: 11px;">
+                    ${item.fio}
+                    ${item.bildirgi ? `<br><a href="/api/admin/reports/download/${item.bildirgi.split(/[\\/]/).pop()}" target="_blank" style="color:#10b981; font-size:9px"><i class="fas fa-file-pdf"></i> Bildirgi</a>` : ''}
+                </td>
+            </tr>`;
+            tbody.innerHTML += row;
         });
 
         renderPagination(total, page);
-
     } catch (e) {
-        console.error("Monitor Error:", e);
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#ef4444; padding:20px">Ma\'lumotlarni yuklashda xatolik yuz berdi</td></tr>';
+        document.querySelector('#recentTable tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#ef4444">Ma'lumotlarni yuklashda xatolik: ${e.message}</td></tr>`;
     }
 }
 
-function renderPagination(total, page) {
-    const totalPages = Math.ceil(total / itemsPerPage);
-    let container = document.getElementById('monitorPagination');
+function renderPagination(total, currentPage) {
+    let container = document.getElementById('recentPagination');
     if (!container) {
         const table = document.querySelector('#recentTable');
         if (table) {

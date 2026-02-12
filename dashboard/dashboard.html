@@ -543,13 +543,37 @@
                 <table id="viloyatTable">
                     <thead>
                         <tr>
-                            <th data-i18n="col_district">Hudud nomi</th>
-                            <th data-i18n="col_schools">Maktablar</th>
-                            <th data-i18n="col_student">O'quvchi</th>
-                            <th data-i18n="col_sababli">Sababli</th>
-                            <th data-i18n="col_sababsiz">Sababsiz</th>
-                            <th data-i18n="col_yesterday">Kecha (%)</th>
-                            <th data-i18n="col_today">Bugun (%)</th>
+                            <th rowspan="2">Hudud nomi</th>
+                            <th rowspan="2">Maktablar</th>
+                            <th rowspan="2">Sinflar</th>
+                            <th rowspan="2">O'quvchilar</th>
+                            <th colspan="5"
+                                style="text-align:center; background: rgba(20, 184, 166, 0.15); color: #14b8a6; border-bottom: 2px solid #14b8a6;">
+                                Sababli</th>
+                            <th colspan="10"
+                                style="text-align:center; background: rgba(245, 158, 11, 0.15); color: #f59e0b; border-bottom: 2px solid #f59e0b;">
+                                Sababsiz</th>
+                            <th rowspan="2">Jami kelmagan</th>
+                            <th rowspan="2">Kecha %</th>
+                            <th rowspan="2">Bugun %</th>
+                            <th rowspan="2">Mas'ul</th>
+                        </tr>
+                        <tr style="font-size: 10px;">
+                            <th title="Kasalligi" style="color: #14b8a6;">Kas.</th>
+                            <th title="Tadbirlar" style="color: #14b8a6;">Tad.</th>
+                            <th title="Oilaviy" style="color: #14b8a6;">Oil.</th>
+                            <th title="Ijtimoiy" style="color: #14b8a6;">Ijt.</th>
+                            <th title="Boshqa" style="color: #14b8a6;">Bos.</th>
+                            <th title="Muntazam" style="color: #f59e0b;">Mun.</th>
+                            <th title="Qidiruv" style="color: #f59e0b;">Qid.</th>
+                            <th title="Chet el" style="color: #f59e0b;">Ch.el</th>
+                            <th title="Bo‘yin tovlagan" style="color: #f59e0b;">Bo‘y.</th>
+                            <th title="Ishlab yurgan" style="color: #f59e0b;">Ish</th>
+                            <th title="Qarshilik" style="color: #f59e0b;">Qar.</th>
+                            <th title="Jazo/Tergov" style="color: #f59e0b;">Jaz.</th>
+                            <th title="Nazoratsiz" style="color: #f59e0b;">Naz.</th>
+                            <th title="Turmushga chiqqan" style="color: #f59e0b;">Tur.</th>
+                            <th title="Boshqa sababsiz" style="color: #f59e0b;">Bos.</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -884,11 +908,24 @@
         }
 
         async function apiFetch(url) {
-            const res = await fetch(url, {
-                headers: { 'Authorization': token }
-            });
-            if (res.status === 401) logout();
-            return res.json();
+            try {
+                const res = await fetch(url, {
+                    headers: { 'Authorization': token }
+                });
+                if (res.status === 401) {
+                    alert("Seans muddati tugadi. Iltimos, qayta kiring.");
+                    logout();
+                    return;
+                }
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({ error: 'Noma\'lum xato' }));
+                    throw new Error(errData.error || `Server xatosi: ${res.status}`);
+                }
+                return await res.json();
+            } catch (e) {
+                console.error("API Fetch Error:", e);
+                throw e;
+            }
         }
 
         // Adjust for Roles
@@ -906,6 +943,13 @@
             loadSchoolData();
         } else if (userRole === 'superadmin') {
             document.getElementById('tab_admin').style.display = 'flex';
+            document.getElementById('tab_parents').style.display = 'flex';
+            document.getElementById('tab_ranking').style.display = 'flex';
+        }
+
+        if (userRole === 'district' || userRole === 'superadmin') {
+            document.getElementById('tab_parents').style.display = 'flex';
+            document.getElementById('tab_ranking').style.display = 'flex';
         }
 
         // Set default dates to Farg'ona time
@@ -963,54 +1007,47 @@
             if (select) {
                 select.value = districtName;
                 showTab('tuman');
+                setTimeout(loadTumanData, 100);
             }
         }
 
         async function loadViloyatData() {
-            const date = document.getElementById('viloyatDate').value;
-            const data = await apiFetch(`/api/stats/viloyat?date=${date}`);
-            const tbody = document.querySelector('#viloyatTable tbody');
-            tbody.innerHTML = '';
+            try {
+                const date = document.getElementById('viloyatDate').value;
+                const trendData = await apiFetch(`/api/stats/trend?days=30`).catch(() => []);
+                const data = await apiFetch(`/api/stats/viloyat?date=${date}`);
+                const tbody = document.querySelector('#viloyatTable tbody');
+                tbody.innerHTML = '';
+                if (!Array.isArray(data)) throw new Error("Ma'lumot topilmadi");
 
-            let totalE = 0, totalS = 0, totalSababsiz = 0, totalAbsentSum = 0;
+                let totalE = 0, totalS = 0, totalSababsiz = 0, totalAbsentSum = 0;
 
-            data.forEach(item => {
-                totalE += parseInt(item.entries) || 0;
-                totalS += parseInt(item.students) || 0;
-                totalSababsiz += parseInt(item.sababsiz) || 0;
-                totalAbsentSum += parseInt(item.total_absent) || 0;
+                data.forEach(item => {
+                    totalE += parseInt(item.entries) || 0;
+                    totalS += parseInt(item.students) || 0;
+                    totalSababsiz += parseInt(item.sababsiz) || 0;
+                    totalAbsentSum += parseInt(item.total_absent) || 0;
 
-                const diff = item.avg_percent - item.yesterday_percent;
-                const isLower = diff < 0;
-                const districtSafe = item.district.replace(/'/g, "\\'");
+                    const row = `<tr>
+                        <td class="clickable-dist" onclick="openDistrictStats('${item.district.replace(/'/g, "\\'")}')"><i class="fas fa-search-location"></i> ${item.district}</td>
+                        <td>${item.entries}</td>
+                        <td>${item.students}</td>
+                        <td>${item.sababli}</td>
+                        <td><b style="color:#ef4444">${item.sababsiz}</b></td>
+                        <td style="font-weight:bold">${item.total_absent}</td>
+                        <td><span class="status-badge ${item.avg_percent >= 95 ? 'status-high' : 'status-low'}">${(item.avg_percent || 0).toFixed(1)}%</span></td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
 
-                const row = `<tr>
-                    <td style="cursor:pointer; color:#fff !important; font-weight:700; background:rgba(255,255,255,0.05); border-radius:8px" onclick="openDistrictStats('${districtSafe}')">
-                        <i class="fas fa-chart-bar" style="margin-right:8px; color:#818cf8"></i> ${item.district}
-                    </td>
-                    <td>${item.entries}</td>
-                    <td>${item.students}</td>
-                    <td>${item.sababli}</td>
-                    <td><span style="color:red">${item.sababsiz}</span></td>
-                    <td style="color:#818cf8; font-weight:600">${item.yesterday_percent > 0 ? item.yesterday_percent.toFixed(1) + '%' : '-'}</td>
-                    <td>
-                        <span class="status-badge ${item.avg_percent >= 95 ? 'status-high' : 'status-low'}" style="${isLower ? 'background: #f43f5e; color: white;' : ''}">
-                            ${item.avg_percent.toFixed(1)}%
-                            ${item.yesterday_percent > 0 ? (isLower ? '<i class="fas fa-caret-down"></i>' : '<i class="fas fa-caret-up"></i>') : ''}
-                        </span>
-                    </td>
-                </tr>`;
-                tbody.innerHTML += row;
-            });
-
-            document.getElementById('v_total_entries').textContent = totalE;
-            document.getElementById('v_total_students').textContent = totalS;
-            document.getElementById('v_total_sababsiz').textContent = totalSababsiz;
-
-            const viloyatAvg = totalS > 0 ? (((totalS - totalAbsentSum) / totalS) * 100).toFixed(1) : '0';
-            document.getElementById('v_avg_percent').textContent = viloyatAvg + '%';
-
-            renderHeatmap(data);
+                document.getElementById('total_entries').textContent = totalE;
+                document.getElementById('total_avg').textContent = (totalS > 0 ? ((totalS - totalAbsentSum) / totalS * 100).toFixed(1) : 0) + '%';
+                document.getElementById('total_absents').textContent = totalSababsiz;
+                document.getElementById('total_students_v').textContent = totalS;
+                renderHeatmap(data);
+            } catch (e) {
+                document.querySelector('#viloyatTable tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#ef4444">Xatolik: ${e.message}</td></tr>`;
+            }
         }
 
         function renderHeatmap(data) {
@@ -1026,12 +1063,7 @@
                 else if (item.avg_percent >= 90) color = '#facc15';
 
                 node.style.background = color;
-                node.innerHTML = `<span style="font-size:9px; color:#000; font-weight:bold; line-height:1.2; text-align:center; padding: 2px;">${item.district}</span>`;
-                node.style.display = 'flex';
-                node.style.alignItems = 'center';
-                node.style.justifyContent = 'center';
-                node.style.textAlign = 'center';
-                node.style.padding = '5px';
+                node.innerHTML = `<span style="font-size:9px; color:#000; font-weight:bold; text-align:center;">${item.district}</span>`;
                 node.onclick = () => {
                     document.getElementById('tumanSelect').value = item.district;
                     showTab('tuman');
@@ -1042,102 +1074,115 @@
         }
 
         async function loadTumanData() {
-            const tuman = document.getElementById('tumanSelect').value;
-            const date = document.getElementById('tumanDate').value;
-            if (!tuman) return;
+            try {
+                const tuman = document.getElementById('tumanSelect').value;
+                const date = document.getElementById('tumanDate').value;
+                if (!tuman) return;
 
-            const data = await apiFetch(`/api/stats/tuman?tuman=${encodeURIComponent(tuman)}&date=${date}`);
-            const tbody = document.querySelector('#tumanTable tbody');
-            tbody.innerHTML = '';
-            data.forEach(item => {
-                const isSent = item.fio !== 'Kiritilmagan';
-                const row = `<tr style="${!isSent ? 'background: rgba(239, 68, 68, 0.05)' : ''}">
-                    <td style="text-align:center">
-                        ${isSent ? '<i class="fas fa-check-circle" style="color:#10b981; font-size:1.2rem"></i>' : '<i class="fas fa-times-circle" style="color:#ef4444; font-size:1.2rem"></i>'}
-                    </td>
-                    <td><b>${item.school}</b></td>
-                    <td>${item.time}</td>
-                    <td>${item.classes_count}</td>
-                    <td>${item.total_students}</td>
-                    <td style="color:#64748b">${item.sababli_kasal || 0}</td>
-                    <td style="color:#64748b">${item.sababli_tadbirlar || 0}</td>
-                    <td style="color:#64748b">${item.sababli_oilaviy || 0}</td>
-                    <td style="color:#64748b">${item.sababli_ijtimoiy || 0}</td>
-                    <td style="color:#64748b">${item.sababli_boshqa || 0}</td>
-                    <td style="color:red">${item.sababsiz_muntazam || 0}</td>
-                    <td style="color:red">${item.sababsiz_qidiruv || 0}</td>
-                    <td style="color:red">${item.sababsiz_chetel || 0}</td>
-                    <td style="color:red">${item.sababsiz_boyin || 0}</td>
-                    <td style="color:red">${item.sababsiz_ishlab || 0}</td>
-                    <td style="color:red">${item.sababsiz_qarshilik || 0}</td>
-                    <td style="color:red">${item.sababsiz_jazo || 0}</td>
-                    <td style="color:red">${item.sababsiz_nazoratsiz || 0}</td>
-                    <td style="color:red">${item.sababsiz_turmush || 0}</td>
-                    <td style="color:red">${item.sababsiz_boshqa || 0}</td>
-                    <td><span class="status-badge ${item.percent >= 95 ? 'status-high' : 'status-low'}" style="font-size:10px">${(item.percent || 0).toFixed(1)}%</span></td>
-                    <td style="text-align:center">
-                        ${isSent ? (item.source === 'web' ? '<i class="fas fa-globe" title="Web"></i>' : '<i class="fab fa-telegram" title="Bot"></i>') : '-'}
-                    </td>
-                    <td style="font-size:11px">${item.fio}</td>
-                </tr>`;
-                tbody.innerHTML += row;
-            });
+                const data = await apiFetch(`/api/stats/tuman?tuman=${encodeURIComponent(tuman)}&date=${date}`);
+                const tbody = document.querySelector('#tumanTable tbody');
+                tbody.innerHTML = '';
+
+                data.forEach(item => {
+                    const isSent = item.fio !== 'Kiritilmagan';
+                    // Use text colors that pop on dark background, remove background fills
+                    // Sababli: Cyan/Teal (#2dd4bf), Sababsiz: Orange/Yellow (#fbbf24)
+                    const row = `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td style="text-align:center">
+                            ${isSent ? '<i class="fas fa-check-circle" style="color:#10b981; font-size:1.1rem"></i>' : '<i class="fas fa-times-circle" style="color:#ef4444; font-size:1.1rem"></i>'}
+                        </td>
+                        <td style="font-weight:500; color:#e2e8f0">${item.school}</td>
+                        <td style="color:#94a3b8; font-size:0.9em">${item.time}</td>
+                        <td style="color:#e2e8f0">${item.classes_count}</td>
+                        <td style="color:#e2e8f0">${item.total_students}</td>
+                        
+                        <!-- Sababli (Cyan tint text) -->
+                        <td style="color:#2dd4bf; font-weight:500">${item.sababli_kasal || 0}</td>
+                        <td style="color:#2dd4bf">${item.sababli_tadbirlar || 0}</td>
+                        <td style="color:#2dd4bf">${item.sababli_oilaviy || 0}</td>
+                        <td style="color:#2dd4bf">${item.sababli_ijtimoiy || 0}</td>
+                        <td style="color:#2dd4bf">${item.sababli_boshqa || 0}</td>
+                        
+                        <!-- Sababsiz (Orange/Red tint text) -->
+                        <td style="color:#fbbf24; font-weight:bold">${item.sababsiz_muntazam || 0}</td>
+                        <td style="color:#f87171">${item.sababsiz_qidiruv || 0}</td>
+                        <td style="color:#f87171">${item.sababsiz_chetel || 0}</td>
+                        <td style="color:#f87171">${item.sababsiz_boyin || 0}</td>
+                        <td style="color:#f87171">${item.sababsiz_ishlab || 0}</td>
+                        <td style="color:#f87171">${item.sababsiz_qarshilik || 0}</td>
+                        <td style="color:#f87171">${item.sababsiz_jazo || 0}</td>
+                        <td style="color:#f87171">${item.sababsiz_nazoratsiz || 0}</td>
+                        <td style="color:#f87171">${item.sababsiz_turmush || 0}</td>
+                        <td style="color:#f87171">${item.sababsiz_boshqa || 0}</td>
+                        
+                        <td><span class="status-badge ${item.percent >= 95 ? 'status-high' : 'status-low'}" style="font-size:10px">${(item.percent || 0).toFixed(1)}%</span></td>
+                        <td style="text-align:center">
+                            ${isSent ? (item.source === 'web' ? '<i class="fas fa-globe" style="color:#3b82f6" title="Web"></i>' : '<i class="fab fa-telegram" style="color:#0088cc" title="Bot"></i>') : '-'}
+                        </td>
+                        <td style="font-size:11px; color:#cbd5e1; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${item.fio}">${item.fio}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } catch (e) {
+                document.querySelector('#tumanTable tbody').innerHTML = `<tr><td colspan="23" style="text-align:center; padding:30px; color:#ef4444">Xatolik: ${e.message}</td></tr>`;
+            }
         }
 
         async function loadRecentActivity() {
-            const data = await apiFetch('/api/stats/recent');
-            const tbody = document.querySelector('#recentTable tbody');
-            tbody.innerHTML = '';
-            data.forEach(item => {
-                const sourceIcon = item.source === 'web' ? '<i class="fas fa-globe" style="color:#3b82f6" title="Web Sahifa"></i> web' : '<i class="fab fa-telegram" style="color:#0088cc" title="Telegram Bot"></i> bot';
+            try {
+                const data = await apiFetch('/api/stats/recent');
+                const tbody = document.querySelector('#recentTable tbody');
+                tbody.innerHTML = '';
 
-                // Format date for display: DD.MM.YYYY
-                const d = item.date.split('-');
-                const displayDate = d.length === 3 ? `${d[2]}.${d[1]}.${d[0]}` : item.date;
+                data.forEach(item => {
+                    const sourceIcon = item.source === 'web' ? '<i class="fas fa-globe" style="color:#3b82f6" title="Web Sahifa"></i> web' : '<i class="fab fa-telegram" style="color:#0088cc" title="Telegram Bot"></i> bot';
+                    const d = item.date.split('-');
+                    const displayDate = d.length === 3 ? `${d[2]}.${d[1]}.${d[0]}` : item.date;
 
-                const row = `<tr>
-                    <td style="font-weight: 500;">
-                        <span style="color: #818cf8;">${item.time}</span> 
-                        <span style="color: #94a3b8; font-size: 0.8em; margin-left: 5px;">${displayDate}</span>
-                    </td>
-                    <td>${item.district}</td>
-                    <td>${item.school}</td>
-                    <td style="text-align:center"><span class="status-badge ${item.percent >= 95 ? 'status-high' : 'status-low'}" style="font-size:11px">${(item.percent || 0).toFixed(1)}%</span></td>
-                    <td style="text-align:center"><span style="color:${item.sababsiz_jami > 0 ? '#f43f5e' : '#10b981'}; font-weight:bold">${item.sababsiz_jami}</span></td>
-                    <td style="text-align:center">${sourceIcon}</td>
-                    <td style="font-size: 11px;">${item.fio}</td>
-                </tr>`;
-                tbody.innerHTML += row;
-            });
+                    const row = `<tr>
+                        <td style="font-weight: 500;">
+                            <span style="color: #818cf8;">${item.time}</span> 
+                            <span style="color: #94a3b8; font-size: 0.8em; margin-left: 5px;">${displayDate}</span>
+                        </td>
+                        <td>${item.district}</td>
+                        <td>${item.school}</td>
+                        <td style="text-align:center"><span class="status-badge ${item.percent >= 95 ? 'status-high' : 'status-low'}" style="font-size:11px">${(item.percent || 0).toFixed(1)}%</span></td>
+                        <td style="text-align:center"><span style="color:${item.sababsiz_jami > 0 ? '#f43f5e' : '#10b981'}; font-weight:bold">${item.sababsiz_jami}</span></td>
+                        <td style="text-align:center">${sourceIcon}</td>
+                        <td style="font-size: 11px;">${item.fio}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } catch (e) {
+                document.querySelector('#recentTable tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#ef4444">Ma'lumotlarni yuklashda xatolik: ${e.message}</td></tr>`;
+            }
         }
 
         async function loadAbsentDetails() {
-            const date = document.getElementById('absentDate').value;
-            const data = await apiFetch(`/api/stats/absentees?date=${date}`);
-            const tbody = document.querySelector('#absentTable tbody');
-            tbody.innerHTML = '';
+            try {
+                const date = document.getElementById('absentDate').value;
+                const data = await apiFetch(`/api/stats/absentees?date=${date}`);
+                const tbody = document.querySelector('#absentTable tbody');
+                tbody.innerHTML = '';
 
-            // Add columns to the table header if not present
-            const thead = document.querySelector('#absentTable thead tr');
-            if (thead && !thead.innerHTML.includes('Sana')) {
-                thead.innerHTML = `<th>Sana</th>${thead.innerHTML}<th>Holat</th>`;
+                data.forEach(item => {
+                    const statusColor = item.streak >= 3 ? '#ef4444' : '#facc15';
+                    const row = `<tr>
+                        <td style="font-size: 0.8em; color: #94a3b8;">${item.date}</td>
+                        <td>${item.district}</td>
+                        <td>${item.school}</td>
+                        <td>${item.class}</td>
+                        <td><b>${item.name}</b></td>
+                        <td>${item.address}</td>
+                        <td>${item.parent_name}</td>
+                        <td>${item.parent_phone}</td>
+                        <td><span class="status-badge" style="background:${statusColor}; color:#000; font-size:10px">${item.status} (${item.streak} kun)</span></td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } catch (e) {
+                document.querySelector('#absentTable tbody').innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px; color:#ef4444">Xatolik: ${e.message}</td></tr>`;
             }
-
-            data.forEach(item => {
-                const statusColor = item.streak >= 3 ? '#ef4444' : '#facc15';
-                const row = `<tr>
-                    <td style="font-size: 0.8em; color: #94a3b8;">${item.date}</td>
-                    <td>${item.district}</td>
-                    <td>${item.school}</td>
-                    <td>${item.class}</td>
-                    <td><b>${item.name}</b></td>
-                    <td>${item.address}</td>
-                    <td>${item.parent_name}</td>
-                    <td>${item.parent_phone}</td>
-                    <td><span class="status-badge" style="background:${statusColor}; color:#000; font-size:10px">${item.status} (${item.streak} kun)</span></td>
-                </tr>`;
-                tbody.innerHTML += row;
-            });
         }
 
         let districtChart, reasonsChart, trendChart;
@@ -1148,8 +1193,8 @@
             const yesterday = yesterdayDate.toISOString().split('T')[0];
 
             let [todayData, yesterdayData] = await Promise.all([
-                apiFetch(`/api/stats/viloyat?date=${today}`),
-                apiFetch(`/api/stats/viloyat?date=${yesterday}`)
+                apiFetch(`/api/stats/viloyat?date=${today}`).catch(() => []),
+                apiFetch(`/api/stats/viloyat?date=${yesterday}`).catch(() => [])
             ]);
 
             if (!Array.isArray(todayData)) todayData = [];
@@ -1181,8 +1226,8 @@
                     if (p >= 95) color = '#10b981';
                     else if (p >= 90) color = '#facc15';
 
-                    node.style.borderTop = `4px solid ${color}`;
-                    node.innerHTML = `<div class="name" style="font-size:9px; font-weight:bold; color:white;">${pos.n}</div><div class="val">${p > 0 ? p.toFixed(1) + '%' : '-'}</div>`;
+                    node.style.borderTop = `4px solid ${color} `;
+                    node.innerHTML = `<div class="name" style = "font-size:9px; font-weight:bold; color:white;" > ${pos.n}</div > <div class="val">${p > 0 ? p.toFixed(1) + '%' : '-'}</div>`;
                     node.onclick = () => {
                         document.getElementById('tumanSelect').value = dData.district || pos.n;
                         showTab('tuman');
@@ -1200,20 +1245,20 @@
             const diff = todayAvg - yesterdayAvg;
 
             const comparisonHtml = `
-                <div style="font-size: 0.9rem; margin-top: 5px; color: ${diff >= 0 ? '#10b981' : '#f43f5e'}">
+                <div style = "font-size: 0.9rem; margin-top: 5px; color: ${diff >= 0 ? '#10b981' : '#f43f5e'}" >
                     <i class="fas fa-caret-${diff >= 0 ? 'up' : 'down'}"></i> 
                     ${Math.abs(diff).toFixed(1)}% <sup>kechagiga nisbatan</sup>
-                </div>
-            `;
+                </div >
+                `;
 
             const analysisSummary = document.getElementById('analysisSummary');
             if (analysisSummary) {
                 analysisSummary.innerHTML = `
-                    <div class="stat-card">
+                <div class="stat-card" >
                         <h4>Viloyat o'rtacha davomati</h4>
                         <div class="value">${todayAvg.toFixed(1)}%</div>
                         ${comparisonHtml}
-                    </div>
+                    </div >
                 `;
             }
 
@@ -1224,17 +1269,17 @@
                 const bottom3 = sorted.filter(d => d.entries > 0).slice(-3).reverse();
 
                 document.getElementById('topDistricts').innerHTML = top3.map(d => `
-                    <div class="l-item top">
+                <div class="l-item top" >
                         <span><b>${d.district}</b></span>
                         <span class="status-badge status-high">${d.avg_percent.toFixed(1)}%</span>
-                    </div>
+                    </div >
                 `).join('');
 
                 document.getElementById('bottomDistricts').innerHTML = bottom3.map(d => `
-                    <div class="l-item bottom">
+                <div class="l-item bottom" >
                         <span><b>${d.district}</b></span>
                         <span class="status-badge status-low">${d.avg_percent.toFixed(1)}%</span>
-                    </div>
+                    </div >
                 `).join('');
 
                 // AI Insights text

@@ -40,8 +40,10 @@ async function initDb() {
                 phone TEXT,
                 inspector TEXT,
                 user_id BIGINT,
-                source TEXT
+                source TEXT,
+                bildirgi TEXT
             );
+            ALTER TABLE attendance ADD COLUMN IF NOT EXISTS bildirgi TEXT;
             CREATE TABLE IF NOT EXISTS absent_students (
                 id SERIAL PRIMARY KEY,
                 attendance_id INTEGER REFERENCES attendance(id),
@@ -56,7 +58,7 @@ async function initDb() {
                 user_id TEXT,
                 action TEXT,
                 details TEXT,
-                timestamp TIMESTAMP
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             CREATE TABLE IF NOT EXISTS password_history (
                 id SERIAL PRIMARY KEY,
@@ -65,6 +67,19 @@ async function initDb() {
                 new_password TEXT,
                 changed_by TEXT,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE TABLE IF NOT EXISTS tg_users (
+                id TEXT PRIMARY KEY,
+                data JSONB,
+                last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE TABLE IF NOT EXISTS settings (
+                key TEXT PRIMARY KEY,
+                value JSONB
+            );
+            CREATE TABLE IF NOT EXISTS dashboard_users (
+                login TEXT PRIMARY KEY,
+                data JSONB
             );
         `);
         console.log("🐘 PostgreSQL tables initialized.");

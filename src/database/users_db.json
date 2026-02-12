@@ -282,5 +282,95 @@
     "fio": "Фозилов Ахмаджон Аюпович",
     "phone": "998905335508",
     "name": "Ахмаджон"
+  },
+  "parent_8446782548": {
+    "role": "parent",
+    "phone": "998916673227",
+    "fio": "Madaminova Marhabo",
+    "lang": "uz_lat",
+    "chat_id": 8446782548,
+    "subscriptions": [
+      {
+        "name": "Murotjonov Zoyirshoh",
+        "district": "Yozyovon tumani",
+        "school": "30-maktab"
+      },
+      {
+        "name": "Murodjonov Shoxjahon",
+        "district": "Yozyovon tumani",
+        "school": "30-maktab"
+      }
+    ]
+  },
+  "parent_7908792960": {
+    "role": "parent",
+    "phone": "998917481659",
+    "fio": "Абдувохидова Сарвиноз",
+    "lang": "uz_cyr",
+    "chat_id": 7908792960,
+    "subscriptions": [
+      {
+        "name": "Абдувохидова Сарвиноз",
+        "district": "Qo‘qon shahri",
+        "school": "35-maktab"
+      },
+      {
+        "name": "Абдувохидова Дилнура",
+        "district": "Qo‘qon shahri",
+        "school": "35-maktab"
+      }
+    ]
+  },
+  "parent_7318313016": {
+    "role": "parent",
+    "phone": "998906344614",
+    "fio": "Ĝulomova Gulmira",
+    "lang": "uz_lat",
+    "chat_id": 7318313016,
+    "subscriptions": [
+      {
+        "name": "Subhonov Umidjon",
+        "district": "Yozyovon tumani",
+        "school": "28-maktab"
+      }
+    ]
+  },
+  "parent_8052766925": {
+    "role": "parent",
+    "phone": "998901515405",
+    "fio": "Shokirova Gulirano",
+    "lang": "uz_lat",
+    "chat_id": 8052766925,
+    "subscriptions": [
+      {
+        "name": "Hamidova Nurzodaxon",
+        "district": "Qo‘qon shahri",
+        "school": "19-maktab"
+      },
+      {
+        "name": "Hamidov Maqsudjon",
+        "district": "Qo‘qon shahri",
+        "school": "19-maktab"
+      }
+    ]
+  },
+  "parent_6487162380": {
+    "role": "parent",
+    "phone": "998911241145",
+    "fio": "Хакимова Дилфуза",
+    "lang": "uz_lat",
+    "chat_id": 6487162380,
+    "subscriptions": [
+      {
+        "name": "Эргашев Даврон",
+        "district": "Yozyovon tumani",
+        "school": "3-maktab"
+      },
+      {
+        "name": "Эргашев Даврон",
+        "district": "Yozyovon tumani",
+        "school": "2-maktab"
+      }
+    ]
   }
 }

@@ -12,6 +12,32 @@ const path = require('path');
 const parentBot = new Telegraf(process.env.PARENT_BOT_TOKEN || process.env.BOT_TOKEN);
 const PARENT_LOGO = path.join(__dirname, 'assets', 'parents_logo.png');
 
+const moment = require('moment');
+require('moment/locale/uz-latn');
+require('moment/locale/ru');
+
+// Helper to get formatted date string
+function getDateString(lang) {
+    const m = moment();
+    if (lang === 'uz_cyr') {
+        const months = ["январ", "феврал", "март", "апрел", "май", "июн", "июл", "август", "сентябр", "октябр", "ноябр", "декабр"];
+        const days = ["Якшанба", "Душанба", "Сешанба", "Чоршанба", "Пайшанба", "Жума", "Шанба"];
+        return `📅 Бугун: ${days[m.day()]}, ${m.date()}-${months[m.month()]} ${m.year()}-йил`;
+    } else if (lang === 'ru') {
+        m.locale('ru');
+        return `📅 Сегодня: ${m.format('dddd, D MMMM YYYY')} года`;
+    } else {
+        m.locale('uz-latn');
+        return `📅 Bugun: ${m.format('dddd, D-MMMM YYYY')}-yil`;
+    }
+}
+
+function getWishes(lang) {
+    if (lang === 'uz_cyr') return "✨ Кунингиз хайрли ва баракали ўтсин!";
+    if (lang === 'ru') return "✨ Желаем вам доброго и продуктивного дня!";
+    return "✨ Kuningiz xayrli va barakali o'tsin!";
+}
+
 // Translations
 const STRINGS = {
     uz_lat: {
@@ -21,7 +47,7 @@ const STRINGS = {
         ask_phone: "Ro'yxatdan o'tish uchun telefon raqamingizni yuboring:",
         btn_phone: "📱 Raqamni yuborish",
         ask_fio: "👤 Ism-familiyangizni kiriting:",
-        ask_child_count: "👨‍👩‍👧‍👦 Farg‘ona viloyati umumta'lim maktablarida o‘qiydigan nechta farzandigiz bor?",
+        ask_child_count: "👨‍👩‍👧‍👦 Farg‘ona viloyati umumta'lim maktablarida o‘qiydigan nechta farzandigiz bor?\n<i>(Raqam yozib yuboring, masalan: 1, 2, 3...)</i>",
         ask_child_name: "👶 <b>{n}-farzandingizning</b> ism-familiyasini kiriting:",
         ask_district: "📍 <b>{n}-farzandingiz ({name})</b> o'qiydigan hududni tanlang:",
         ask_school: "🏫 <b>{n}-farzandingiz ({name})</b> o'qiydigan maktabni tanlang:",
@@ -43,7 +69,7 @@ const STRINGS = {
         ask_phone: "Рўйхатдан ўтиш учун телефон рақамингизни юборинг:",
         btn_phone: "📱 Рақамни юбориш",
         ask_fio: "👤 Исм-фамилиянгизни киритинг:",
-        ask_child_count: "👨‍👩‍👧‍👦 Фарғона вилояти умумтаълим мактабларида ўқийдиган нечта фарзандигиз бор?",
+        ask_child_count: "👨‍👩‍👧‍👦 Фарғона вилояти умумтаълим мактабларида ўқийдиган нечта фарзандигиз бор?\n<i>(Рақам ёзиб юборинг, масалан: 1, 2, 3...)</i>",
         ask_child_name: "👶 <b>{n}-фарзандингизнинг</b> исм-фамилиясини киритинг:",
         ask_district: "📍 <b>{n}-фарзандингиз ({name})</b> ўқийдиган ҳудудни танланг:",
         ask_school: "🏫 <b>{n}-фарзандингиз ({name})</b> ўқийдиган мактабни танланг:",
@@ -61,11 +87,11 @@ const STRINGS = {
     ru: {
         welcome: "🛡 <b>Добро пожаловать в систему \"Родительский контроль посещаемости\"!</b>\n\n" +
             "🛑 <b>ВНИМАНИЕ:</b> Данная система работает только для <b>государственных общеобразовательных школ</b> Ферганской области.\n\n" +
-            "⚠️ Информация об учащихся частных школ и школ системы ПИМА (Агентство президентских, творческих и специализированных школ) в данный бот не вносится.",
-        ask_phone: "Для регистрации отправьте ваш номер телефона:",
+            "⚠️ Ученики частных школ и школ системы <b>ПИМА (Агентство президентских, творческих и специализированных школ)</b> НЕ внесены в данную базу.",
+        ask_phone: "Для регистрации отправьте ваш номер телефона, нажав кнопку ниже:",
         btn_phone: "📱 Отправить номер",
         ask_fio: "👤 Введите ваше Имя и Фамилию:",
-        ask_child_count: "👨‍👩‍👧‍👦 Сколько ваших детей учатся в школах Ферганской области?",
+        ask_child_count: "👨‍👩‍👧‍👦 Сколько ваших детей учатся в общеобразовательных школах Ферганской области?\n<i>(Отправьте число, например: 1, 2, 3...)</i>",
         ask_child_name: "👶 Введите имя и фамилию вашего <b>{n}-го ребенка</b>:",
         ask_district: "📍 Выберите район, где учится ваш <b>{n}-й ребенок ({name})</b>:",
         ask_school: "🏫 Выберите школу вашего <b>{n}-го ребенка ({name})</b>:",
@@ -92,8 +118,10 @@ const registrationWizard = new Scenes.WizardScene(
     'parent_reg_wizard',
     // 1. Language Selection
     async (ctx) => {
-        await ctx.reply("Tilni tanlang / Выберите язык:", Markup.keyboard([
-            ["🇺🇿 O'zbekcha", "🇺🇿 Ўзбекча", "🇷🇺 Русский"]
+        // Always start with language choice, no text needed, just buttons
+        await ctx.reply("👇", Markup.keyboard([
+            ["🇺🇿 O'zbekcha", "🇺🇿 Ўзбекча"],
+            ["🇷🇺 Русский"]
         ]).resize());
         return ctx.wizard.next();
     },
@@ -101,16 +129,36 @@ const registrationWizard = new Scenes.WizardScene(
     async (ctx) => {
         const text = ctx.message.text;
         const langMap = { "🇺🇿 O'zbekcha": "uz_lat", "🇺🇿 Ўзбекча": "uz_cyr", "🇷🇺 Русский": "ru" };
-        ctx.wizard.state.lang = langMap[text] || "uz_lat";
+        const selectedLang = langMap[text] || "uz_lat";
 
-        const s = STRINGS[ctx.wizard.state.lang];
-        await ctx.replyWithHTML(s.welcome);
-        await ctx.reply(s.ask_phone, Markup.keyboard([[Markup.button.contactRequest(s.btn_phone)]]).resize());
+        ctx.wizard.state.lang = selectedLang;
+        const s = STRINGS[selectedLang];
+
+        // Show Logo + Welcome + Date/Wishes
+        const dateStr = getDateString(selectedLang);
+        const wishes = getWishes(selectedLang);
+        const fullMsg = `${s.welcome}\n\n${dateStr}\n${wishes}\n\n${s.ask_phone}`;
+
+        // Save lang to DB immediately if possible, or just carry in state
+        // We'll use the consistent uz_lat for internal data later
+
+        if (fs.existsSync(PARENT_LOGO)) {
+            await ctx.replyWithPhoto({ source: PARENT_LOGO }, {
+                caption: fullMsg,
+                parse_mode: 'HTML',
+                ...Markup.keyboard([[Markup.button.contactRequest(s.btn_phone)]]).resize()
+            });
+        } else {
+            await ctx.replyWithHTML(fullMsg, Markup.keyboard([[Markup.button.contactRequest(s.btn_phone)]]).resize());
+        }
         return ctx.wizard.next();
     },
     // 3. FIO
     async (ctx) => {
-        if (!ctx.message.contact) return ctx.reply("Error: Contact required.");
+        if (!ctx.message.contact) {
+            const s = STRINGS[ctx.wizard.state.lang];
+            return ctx.reply(s.ask_phone, Markup.keyboard([[Markup.button.contactRequest(s.btn_phone)]]).resize());
+        }
         ctx.wizard.state.phone = ctx.message.contact.phone_number.replace(/\D/g, '');
         const s = STRINGS[ctx.wizard.state.lang];
         await ctx.reply(s.ask_fio, Markup.removeKeyboard());
@@ -120,17 +168,21 @@ const registrationWizard = new Scenes.WizardScene(
     async (ctx) => {
         ctx.wizard.state.fio = ctx.message.text;
         const s = STRINGS[ctx.wizard.state.lang];
-        await ctx.reply(s.ask_child_count, Markup.keyboard([['1', '2', '3', '4', '5+']]).resize());
+        // Manual input for count, removing buttons to encourage typing specific number if >5
+        await ctx.replyWithHTML(s.ask_child_count, Markup.removeKeyboard());
         ctx.wizard.state.subs = [];
         ctx.wizard.state.current_child = 1;
         return ctx.wizard.next();
     },
     // 5. Subscription Loop: Ask Child Name
     async (ctx) => {
-        const count = ctx.message.text;
-        ctx.wizard.state.total_children = parseInt(count) || 1;
-        const s = STRINGS[ctx.wizard.state.lang];
+        const count = ctx.message.text.replace(/\D/g, '');
+        if (!count || parseInt(count) < 1) {
+            return ctx.reply("Iltimos, raqam kiriting / Пожалуйста, введите число (1, 2, ...)");
+        }
+        ctx.wizard.state.total_children = parseInt(count);
 
+        const s = STRINGS[ctx.wizard.state.lang];
         await ctx.replyWithHTML(s.ask_child_name.replace('{n}', ctx.wizard.state.current_child));
         return ctx.wizard.next();
     },
@@ -141,18 +193,17 @@ const registrationWizard = new Scenes.WizardScene(
         const s = STRINGS[ctx.wizard.state.lang];
 
         if (ctx.wizard.state.collecting_names_only) {
-            // Use same district/school as previous child
             const last = ctx.wizard.state.subs[ctx.wizard.state.subs.length - 1];
             ctx.wizard.state.subs.push({
                 name: name,
-                district: last.district,
+                district: last.district, // Stored in uz_lat format internally
                 school: last.school
             });
 
             if (ctx.wizard.state.current_child < ctx.wizard.state.total_children) {
                 ctx.wizard.state.current_child++;
                 await ctx.replyWithHTML(s.ask_child_name.replace('{n}', ctx.wizard.state.current_child));
-                return; // Stay in this step (6) to get next name
+                return;
             } else {
                 return finalize(ctx);
             }
@@ -168,10 +219,11 @@ const registrationWizard = new Scenes.WizardScene(
     // 7. Subscription Loop: School Selection
     async (ctx) => {
         const dist = ctx.message.text;
+        // Validate against districts list (which is in uz_lat)
         const validDist = districts.find(d => normalizeKey(d) === normalizeKey(dist));
-        if (!validDist) return ctx.reply("Select from buttons.");
+        if (!validDist) return ctx.reply("Tugmalardan tanlang / Выберите из кнопок");
 
-        ctx.wizard.state.temp_dist = validDist;
+        ctx.wizard.state.temp_dist = validDist; // Keep data uniform (uz_lat)
         const s = STRINGS[ctx.wizard.state.lang];
         await ctx.reply("⌛️...");
 
@@ -186,6 +238,7 @@ const registrationWizard = new Scenes.WizardScene(
     async (ctx) => {
         const school = ctx.message.text;
         const s = STRINGS[ctx.wizard.state.lang];
+        // Basic check if school exists in list (optional but good)
 
         ctx.wizard.state.subs.push({
             name: ctx.wizard.state.temp_name,
@@ -209,13 +262,13 @@ const registrationWizard = new Scenes.WizardScene(
             ctx.wizard.state.current_child++;
             await ctx.replyWithHTML(s.ask_child_name.replace('{n}', ctx.wizard.state.current_child), Markup.removeKeyboard());
             ctx.wizard.state.collecting_names_only = true;
-            ctx.wizard.selectStep(5); // Return to Step 6 handler (wait for name)
+            ctx.wizard.selectStep(5);
             return;
         } else {
             ctx.wizard.state.collecting_names_only = false;
             ctx.wizard.state.current_child++;
             await ctx.replyWithHTML(s.ask_child_name.replace('{n}', ctx.wizard.state.current_child), Markup.removeKeyboard());
-            ctx.wizard.selectStep(5); // Return to Step 6 handler (wait for name)
+            ctx.wizard.selectStep(5);
             return;
         }
     }
@@ -230,7 +283,7 @@ async function finalize(ctx) {
         role: 'parent',
         phone: state.phone,
         fio: state.fio,
-        lang: state.lang,
+        lang: state.lang, // View preference
         chat_id: chat_id,
         subscriptions: []
     };
@@ -245,32 +298,46 @@ async function finalize(ctx) {
 
 const stage = new Scenes.Stage([registrationWizard]);
 parentBot.use(session());
+parentBot.use(stage.middleware());
+
 parentBot.start(async (ctx) => {
     try { await ctx.scene.leave(); } catch (e) { }
 
+    // Always start with language selection for new users OR returning users resetting
+    // Check if user exists to maybe greet them by name, but requested flow mandates lang selection first
     const user = db.users_db[`parent_${ctx.chat.id}`];
+
+    // If user exists, we can skip straight to menu OR force re-select? 
+    // User requested "Start -> Lang Select -> Logo/Greeting". 
+    // So even if they exist, /start should probably show the menu or lang select? 
+    // Usually /start on existing user shows Main Menu. Let's keep that but enable "Change Language" button.
+
     if (user && user.subscriptions && user.subscriptions.length > 0) {
-        const s = STRINGS[user.lang || "uz_lat"];
-        const mainKeyboard = Markup.keyboard([[s.btn_add], [s.btn_my_schools, s.btn_profile]]).resize();
+        const lang = user.lang || "uz_lat";
+        const s = STRINGS[lang] || STRINGS["uz_lat"];
+
+        const dateStr = getDateString(lang);
+        const wishes = getWishes(lang);
+        const caption = `${s.main_menu}\n\n${dateStr}\n${wishes}`;
+
+        const mainKeyboard = Markup.keyboard([[s.btn_add], [s.btn_my_schools, s.btn_profile], [s.btn_lang]]).resize();
 
         if (fs.existsSync(PARENT_LOGO)) {
-            return ctx.replyWithPhoto({ source: PARENT_LOGO }, { caption: s.main_menu, ...mainKeyboard });
+            return ctx.replyWithPhoto({ source: PARENT_LOGO }, { caption: caption, ...mainKeyboard });
         }
-        return ctx.reply(s.main_menu, mainKeyboard);
+        return ctx.reply(caption, mainKeyboard);
     }
 
-    // For new users, show language selection first, but maybe with a photo greeting
     await ctx.reply("Tilni tanlang / Выберите язык:", Markup.keyboard([
-        ["🇺🇿 O'zbekcha", "🇺🇿 Ўзбекча", "🇷🇺 Русский"]
+        ["🇺🇿 O'zbekcha", "🇺🇿 Ўзбекча"],
+        ["🇷🇺 Русский"]
     ]).resize());
-    ctx.scene.enter('parent_reg_wizard');
+    return ctx.scene.enter('parent_reg_wizard');
 });
-
-parentBot.use(stage.middleware());
 
 parentBot.hears(/Yangi farzand|Добавить|Янги/, (ctx) => ctx.scene.enter('parent_reg_wizard'));
 
-if (process.env.PARENT_BOT_TOKEN && process.env.PARENT_BOT_TOKEN !== process.env.BOT_TOKEN) {
+if (process.env.PARENT_BOT_TOKEN) {
     parentBot.launch({
         polling: { timeout: 60 }
     }).then(() => {
@@ -279,9 +346,8 @@ if (process.env.PARENT_BOT_TOKEN && process.env.PARENT_BOT_TOKEN !== process.env
         console.error("❌ Parent Bot Startup Error:", e.message);
     });
 } else {
-    console.warn("⚠️ Parent Bot skipped: PARENT_BOT_TOKEN is missing or same as BOT_TOKEN. Please set separate tokens in Render env variables.");
+    console.warn("⚠️ Parent Bot skipped: PARENT_BOT_TOKEN missing.");
 }
-
 parentBot.catch((err, ctx) => {
     console.error(`Parent Bot Error: ${err}`);
 });

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const pg = require('../database/pg');
 const topicsConfig = require('../config/topics');
 const TOPICS = topicsConfig.getTopics();
 
@@ -15,8 +16,8 @@ const sanitizeLogin = (name) => {
 
 const USERS = {};
 
-function loadUsers() {
-    // MAJBURIY TOZALASH VA FAQAT KERAKLI USERNARNI QO'SHISH
+async function loadUsers() {
+    // 1. Seed defaults
     const seedUsers = {
         "qirol": { password: "2323", role: "superadmin", district: null },
         "abror4400": { password: "1234", role: "superadmin", district: null },
@@ -24,26 +25,41 @@ function loadUsers() {
         "VMMTB": { password: "1234", role: "superadmin", district: null }
     };
 
-    // 19 ta tuman/shahar loginlarini qo'shish
     Object.keys(TOPICS).forEach(d => {
         if (d === "Test rejimi" || d === "MMT Boshqarma") return;
         const login = sanitizeLogin(d);
         seedUsers[login] = { password: "123", role: "district", district: d };
     });
 
-    // USERS obyektini tozalab, yangi ro'yxatni yuklaymiz
+    // 2. Clear current
     for (const key in USERS) delete USERS[key];
     Object.assign(USERS, seedUsers);
 
-    // JSON faylga saqlash (Maktablarni o'chirib yuboradi)
-    saveUsers();
+    // 3. Try to load from Supabase for overrides (like password changes)
+    try {
+        const res = await pg.query('SELECT login, data FROM dashboard_users');
+        res.rows.forEach(row => {
+            USERS[row.login] = { ...USERS[row.login], ...row.data };
+        });
+        console.log(`🔑 Loaded ${res.rows.length} dashboard users overrides from Supabase.`);
+    } catch (e) {
+        console.warn("🔑 Dashboard users table might not exist yet, using seeds.");
+    }
 }
 
-function saveUsers() {
+async function saveUsers() {
     fs.writeFileSync(DB_PATH, JSON.stringify(USERS, null, 2));
+    // Persist to Supabase
+    try {
+        for (const [login, data] of Object.entries(USERS)) {
+            await pg.query('INSERT INTO dashboard_users (login, data) VALUES ($1, $2) ON CONFLICT (login) DO UPDATE SET data = $2', [login, data]);
+        }
+    } catch (e) {
+        console.error("🔑 Save Users to Supabase Error:", e.message);
+    }
 }
 
-// Dastur ishga tushganda ro'yxatni yangilash
+// Global start
 loadUsers();
 
 const tokens = new Map();

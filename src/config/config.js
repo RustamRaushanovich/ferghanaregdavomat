@@ -32,6 +32,27 @@ module.exports = {
         104416763: "Farg‘ona tumani",
         7862384262: "Uchko‘prik tumani"
     },
+    DISTRICT_HEADS: {
+        "Farg‘ona shahri": { name: "A.Azizov", phone: "+998 90 123 45 67" },
+        "Marg‘ilon shahri": { name: "M.Karimov", phone: "+998 91 222 33 44" },
+        "Qo‘qon shahri": { name: "O.Soliev", phone: "+998 93 456 78 90" },
+        "Quvasoy shahri": { name: "B.Aliev", phone: "+998 94 111 22 33" },
+        "Beshariq tumani": { name: "S.Usmonov", phone: "+998 90 555 66 77" },
+        "Bag‘dod tumani": { name: "J.Xolmatov", phone: "+998 91 777 88 99" },
+        "Uchko‘prik tumani": { name: "R.Rahimov", phone: "+998 93 999 00 11" },
+        "Qo‘shtepa tumani": { name: "D.Ergashev", phone: "+998 94 444 55 66" },
+        "Farg‘ona tumani": { name: "G‘.Murodov", phone: "+998 90 222 11 00" },
+        "O‘zbekiston tumani": { name: "U.Sultonov", phone: "+998 91 333 44 55" },
+        "Dang‘ara tumani": { name: "Z.Islomov", phone: "+998 93 666 77 88" },
+        "Rishton tumani": { name: "E.Mo'minov", phone: "+998 94 888 99 00" },
+        "So‘x tumani": { name: "Q.Sodiqov", phone: "+998 90 000 11 22" },
+        "Toshloq tumani": { name: "X.Jo'rayev", phone: "+998 91 111 22 33" },
+        "Oltiariq tumani": { name: "P.Toshkentov", phone: "+998 93 222 33 44" },
+        "Furqat tumani": { name: "L.G'ofurov", phone: "+998 94 333 44 55" },
+        "Buvayda tumani": { name: "K.Nurmatov", phone: "+998 90 444 55 66" },
+        "Quva tumani": { name: "M.Abdullaev", phone: "+998 91 555 66 77" },
+        "Yozyovon tumani": { name: "F.Xasanov", phone: "+998 93 777 88 99" }
+    },
     get ALL_ADMINS() {
         return [...this.SUPER_ADMIN_IDS, ...this.SPECIALIST_IDS, ...this.RESTRICTED_IDS];
     }

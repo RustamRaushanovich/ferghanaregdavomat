@@ -9,6 +9,10 @@ const { analyzeAttendancePhoto } = require('../services/ai');
 const { generateBildirishnoma } = require('../services/pdf');
 const { notifyParents } = require('../services/notifications');
 const { formatAttendanceReport } = require('../utils/reports');
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+const { generateBildirgi } = require('../utils/pdfGenerator');
 
 const TOPICS = topicsConfig.getTopics();
 const REPORT_GROUP_ID = process.env.REPORT_GROUP_ID || '-1003662758005';
@@ -405,13 +409,34 @@ const attendanceWizard = new Scenes.WizardScene(
     async (ctx) => {
         if (checkNav(ctx)) return;
 
-        // Agar rasm/pdf yuborsa file_id ni olamiz, text bo'lsa textni
-        if (ctx.message.document) {
-            ctx.wizard.state.data.report_file_id = ctx.message.document.file_id;
-            ctx.wizard.state.data.report_type = 'document';
-        } else if (ctx.message.photo) {
-            ctx.wizard.state.data.report_file_id = ctx.message.photo[ctx.message.photo.length - 1].file_id;
-            ctx.wizard.state.data.report_type = 'photo';
+        // Agar rasm/pdf yuborsa yuklab olamiz
+        if (ctx.message.document || ctx.message.photo) {
+            const fileId = ctx.message.document ? ctx.message.document.file_id : ctx.message.photo[ctx.message.photo.length - 1].file_id;
+            try {
+                const fileLink = await ctx.telegram.getFileLink(fileId);
+                const ext = path.extname(fileLink.href) || '.jpg';
+                const d = ctx.wizard.state.data;
+                const fileName = `BILDIRGI_TG_${d.district}_${d.school}_${Date.now()}${ext}`.replace(/[^a-zA-Z0-9_.]/g, '_');
+                const uploadDir = path.join(__dirname, '../../assets/uploads');
+                const filePath = path.join(uploadDir, fileName);
+
+                if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
+                const response = await axios({ url: fileLink.href, method: 'GET', responseType: 'stream' });
+                const writer = fs.createWriteStream(filePath);
+                response.data.pipe(writer);
+
+                await new Promise((resolve, reject) => {
+                    writer.on('finish', resolve);
+                    writer.on('error', reject);
+                });
+
+                ctx.wizard.state.data.bildirgi = filePath;
+                ctx.wizard.state.data.report_type = 'file';
+            } catch (e) {
+                console.error("File download error:", e);
+                await ctx.reply("⚠️ Faylni yuklashda xatolik bo'ldi, lekin davom etaveramiz.");
+            }
         } else {
             ctx.wizard.state.data.report_text = ctx.message.text;
             ctx.wizard.state.data.report_type = 'text';
@@ -436,6 +461,18 @@ const attendanceWizard = new Scenes.WizardScene(
             const d = ctx.wizard.state.data;
             d.user_id = uid;
             d.source = 'bot';
+
+            // Auto-generate PDF for PRO
+            if (d.report_type === 'auto_generated') {
+                try {
+                    const pdfPath = await generateBildirgi(d);
+                    d.bildirgi = pdfPath;
+                    await ctx.replyWithDocument({ source: pdfPath, filename: path.basename(pdfPath) }, { caption: "✅ PRO: Avtomatik shakllantirilgan bildirgi." });
+                } catch (e) {
+                    console.error("Auto PDF Error:", e);
+                }
+            }
+
             const success = await saveData(d);
 
             if (success) {

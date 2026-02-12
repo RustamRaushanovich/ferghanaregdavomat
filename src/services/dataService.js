@@ -7,37 +7,54 @@ const { normalizeKey } = require('../utils/topics');
 
 async function saveAttendance(data) {
     try {
-        const now = getFargonaTime();
-        const dateStr = now.toISOString().split('T')[0];
-        const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-        const sababli_jami = (data.sababli_kasal || 0) + (data.sababli_tadbirlar || 0) + (data.sababli_oilaviy || 0) + (data.sababli_ijtimoiy || 0) + (data.sababli_boshqa || 0);
-        const sababsiz_jami = (data.sababsiz_muntazam || 0) + (data.sababsiz_qidiruv || 0) + (data.sababsiz_chetel || 0) + (data.sababsiz_boyin || 0) + (data.sababsiz_ishlab || 0) + (data.sababsiz_qarshilik || 0) + (data.sababsiz_jazo || 0) + (data.sababsiz_nazoratsiz || 0) + (data.sababsiz_boshqa || 0) + (data.sababsiz_turmush || 0);
-        const total_absent = sababli_jami + sababsiz_jami;
-        const percent = data.total_students > 0 ? ((data.total_students - total_absent) / data.total_students * 100).toFixed(1) : 0;
+        const query = `
+            INSERT INTO attendance (
+                date, time, district, school, classes_count, total_students,
+                sababli_kasal, sababli_tadbirlar, sababli_oilaviy, sababli_ijtimoiy, sababli_boshqa, sababli_jami,
+                sababsiz_muntazam, sababsiz_qidiruv, sababsiz_chetel, sababsiz_boyin, sababsiz_ishlab,
+                sababsiz_qarshilik, sababsiz_jazo, sababsiz_nazoratsiz, sababsiz_boshqa, sababsiz_turmush, sababsiz_jami,
+                total_absent, percent, fio, phone, inspector, user_id, source, bildirgi
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6,
+                $7, $8, $9, $10, $11, $12,
+                $13, $14, $15, $16, $17,
+                $18, $19, $20, $21, $22, $23,
+                $24, $25, $26, $27, $28, $29, $30, $31
+            ) RETURNING id;
+        `;
+        const time = getFargonaTime().toTimeString().split(' ')[0].substring(0, 5);
+        const date = getFargonaTime().toISOString().split('T')[0];
 
-        const q = `INSERT INTO attendance (date, time, district, school, classes_count, total_students, sababli_kasal, sababli_tadbirlar, sababli_oilaviy, sababli_ijtimoiy, sababli_boshqa, sababli_jami, sababsiz_muntazam, sababsiz_qidiruv, sababsiz_chetel, sababsiz_boyin, sababsiz_ishlab, sababsiz_qarshilik, sababsiz_jazo, sababsiz_nazoratsiz, sababsiz_boshqa, sababsiz_turmush, sababsiz_jami, total_absent, percent, fio, phone, inspector, user_id, source) 
-                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30) RETURNING id`;
-
-        const params = [
-            dateStr, timeStr, data.district, data.school, data.classes_count, data.total_students,
-            data.sababli_kasal || 0, data.sababli_tadbirlar || 0, data.sababli_oilaviy || 0, data.sababli_ijtimoiy || 0, data.sababli_boshqa || 0,
-            sababli_jami,
-            data.sababsiz_muntazam || 0, data.sababsiz_qidiruv || 0, data.sababsiz_chetel || 0, data.sababsiz_boyin || 0, data.sababsiz_ishlab || 0, data.sababsiz_qarshilik || 0, data.sababsiz_jazo || 0, data.sababsiz_nazoratsiz || 0, data.sababsiz_boshqa || 0, data.sababsiz_turmush || 0,
-            sababsiz_jami,
-            total_absent, percent, data.fio, data.phone, data.inspector, data.user_id, data.source || 'bot'
+        const values = [
+            date, time, data.district, data.school, data.classes_count, data.total_students,
+            data.sababli_kasal, data.sababli_tadbirlar, data.sababli_oilaviy, data.sababli_ijtimoiy, data.sababli_boshqa, data.sababli_total,
+            data.sababsiz_muntazam, data.sababsiz_qidiruv, data.sababsiz_chetel, data.sababsiz_boyin, data.sababsiz_ishlab,
+            data.sababsiz_qarshilik, data.sababsiz_jazo, data.sababsiz_nazoratsiz, data.sababsiz_boshqa, data.sababsiz_turmush, data.sababsiz_total,
+            (data.sababli_total + data.sababsiz_total),
+            ((data.total_students - (data.sababli_total + data.sababsiz_total)) / data.total_students * 100).toFixed(1),
+            data.fio, data.phone, data.inspector, data.user_id || 0, data.source || 'bot', data.bildirgi || null
         ];
 
-        const result = await db.query(q, params);
-        const attendanceId = result.rows[0].id;
+        const res = await db.query(query, values);
+        const attId = res.rows[0].id;
 
+        // Save absent students details
         if (data.students_list && data.students_list.length > 0) {
             for (const s of data.students_list) {
-                await db.query(`INSERT INTO absent_students (attendance_id, class, name, address, parent_name, parent_phone) VALUES ($1, $2, $3, $4, $5, $6)`,
-                    [attendanceId, s.class, s.name, s.address, s.parent_name, s.parent_phone]);
+                // Check if JSON parse needed (from web FormData)
+                const student = typeof s === 'string' ? JSON.parse(s) : s;
+                await db.query(`
+                    INSERT INTO absent_students (attendance_id, class, name, address, parent_name, parent_phone)
+                    VALUES ($1, $2, $3, $4, $5, $6)
+                `, [attId, student.class, student.name, student.address, student.parent_name, student.parent_phone]);
             }
         }
+
         return true;
-    } catch (e) { console.error("Supabase Save Error:", e); return false; }
+    } catch (e) {
+        console.error("Save Attendance DB Error:", e);
+        return false;
+    }
 }
 
 const setStyle = (cell, options = {}) => {
@@ -260,6 +277,7 @@ async function exportDistrictExcel(district, date) {
 async function getViloyatSvod(date) {
     try {
         const topics = require('../config/topics').getTopics();
+        const { DISTRICT_HEADS } = require('../config/config');
         const allDistricts = Object.keys(topics).filter(d => d !== "Test rejimi" && d !== "MMT Boshqarma");
         const targetDate = date;
         const yesterday = new Date(targetDate); yesterday.setDate(yesterday.getDate() - 1);
@@ -272,7 +290,16 @@ async function getViloyatSvod(date) {
                 WHERE date = $1
                 ORDER BY district, school, id DESC
             )
-            SELECT district, count(school) as entries, sum(total_students) as students, sum(sababli_jami) as sababli, sum(sababsiz_jami) as sababsiz, sum(total_absent) as total_absent, avg(percent) as avg_percent 
+            SELECT district, 
+                   count(school) as entries, 
+                   sum(classes_count) as classes,
+                   sum(total_students) as students, 
+                   sum(sababli_kasal) as sk, sum(sababli_tadbirlar) as st, sum(sababli_oilaviy) as so, sum(sababli_ijtimoiy) as si, sum(sababli_boshqa) as sb,
+                   sum(sababli_jami) as sababli, 
+                   sum(sababsiz_muntazam) as sm, sum(sababsiz_qidiruv) as sq, sum(sababsiz_chetel) as sc, sum(sababsiz_boyin) as sbt, sum(sababsiz_ishlab) as si_ish, sum(sababsiz_qarshilik) as sqar, sum(sababsiz_jazo) as sjaz, sum(sababsiz_nazoratsiz) as snaz, sum(sababsiz_turmush) as stur, sum(sababsiz_boshqa) as ssb,
+                   sum(sababsiz_jami) as sababsiz, 
+                   sum(total_absent) as total_absent, 
+                   avg(percent) as avg_percent 
             FROM latest_attendance 
             GROUP BY district`, [targetDate]);
         const entries = entriesRes.rows;
@@ -295,18 +322,29 @@ async function getViloyatSvod(date) {
             const yesterdayEntry = yesterdayEntries.find(e => normalizeKey(e.district) === normD);
             const currentPercent = entry ? parseFloat(entry.avg_percent) || 0 : 0;
             const yesterdayPercent = yesterdayEntry ? parseFloat(yesterdayEntry.avg_percent) || 0 : 0;
+            const head = DISTRICT_HEADS[dName] || { name: "-", phone: "-" };
+
             if (entry) return {
                 ...entry,
                 entries: parseInt(entry.entries) || 0,
+                classes: parseInt(entry.classes) || 0,
                 students: parseInt(entry.students) || 0,
                 sababli: parseInt(entry.sababli) || 0,
                 sababsiz: parseInt(entry.sababsiz) || 0,
                 total_absent: parseInt(entry.total_absent) || 0,
                 avg_percent: currentPercent,
                 yesterday_percent: yesterdayPercent,
-                district: dName
+                district: dName,
+                head_name: head.name,
+                head_phone: head.phone
             };
-            return { district: dName, entries: 0, students: 0, sababli: 0, sababsiz: 0, total_absent: 0, avg_percent: 0, yesterday_percent: yesterdayPercent };
+            return {
+                district: dName, entries: 0, classes: 0, students: 0,
+                sk: 0, st: 0, so: 0, si: 0, sb: 0, sababli: 0,
+                sm: 0, sq: 0, sc: 0, sbt: 0, si_ish: 0, sqar: 0, sjaz: 0, snaz: 0, stur: 0, ssb: 0, sababsiz: 0,
+                total_absent: 0, avg_percent: 0, yesterday_percent: yesterdayPercent,
+                head_name: head.name, head_phone: head.phone
+            };
         });
     } catch (e) { console.error("Viloyat Svod Error:", e); return []; }
 }
