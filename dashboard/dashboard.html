@@ -916,42 +916,33 @@
         document.getElementById('tumanDate').value = dateStr;
         document.getElementById('absentDate').value = dateStr;
 
-        function showTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        function showTab(id) {
             document.querySelectorAll('.report-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
 
-            if (tab === 'viloyat') {
-                document.getElementById('tab_viloyat').classList.add('active');
-                document.getElementById('viloyatView').classList.add('active');
-                loadViloyatData();
-            } else if (tab === 'tuman') {
-                document.getElementById('tab_tuman').classList.add('active');
-                document.getElementById('tumanView').classList.add('active');
-                loadTumanData();
-            } else if (tab === 'students') {
-                document.getElementById('tab_students').classList.add('active');
-                document.getElementById('studentsView').classList.add('active');
-                loadAbsentDetails();
-            } else if (tab === 'recent') {
-                document.getElementById('tab_recent').classList.add('active');
-                document.getElementById('recentView').classList.add('active');
-                loadRecentActivity();
-            } else if (tab === 'analysis') {
-                document.getElementById('tab_analysis').classList.add('active');
-                document.getElementById('analysisView').classList.add('active');
-                loadAnalysisData();
-            } else if (tab === 'school') {
-                document.getElementById('tab_school').classList.add('active');
-                document.getElementById('schoolView').classList.add('active');
-                loadSchoolData();
-            } else if (tab === 'profile') {
-                document.getElementById('tab_profile').classList.add('active');
-                document.getElementById('profileView').classList.add('active');
-            } else if (tab === 'admin') {
-                document.getElementById('tab_admin').classList.add('active');
-                document.getElementById('adminView').classList.add('active');
-                loadUsers();
+            const targetView = document.getElementById(id + 'View');
+            if (targetView) targetView.classList.add('active');
+
+            const targetBtn = document.getElementById('tab_' + id);
+            if (targetBtn) targetBtn.classList.add('active');
+
+            // Load data based on tab
+            switch (id) {
+                case 'viloyat': loadViloyatData(); break;
+                case 'tuman': loadTumanData(); break;
+                case 'students': loadAbsentDetails(); break;
+                case 'recent': loadRecentActivity(); break;
+                case 'analysis': loadAnalysisData(); break;
+                case 'school': loadSchoolData(); break;
+                case 'parents': loadParentFilters(); loadParentList(); break;
+                case 'admin': loadUsers(); break;
+                case 'ranking': if (window.loadRankingData) loadRankingData(); break;
             }
+        }
+
+        function loadRankingData() {
+            const container = document.getElementById('rankingContent');
+            if (container) container.innerHTML = '<div style="padding:20px; text-align:center; color:#94a3b8">Reyting ma\'lumotlari haftalik hisobotlar asosida yakshanba kuni yangilanadi.</div>';
         }
 
         async function loadDistricts() {
@@ -1479,6 +1470,50 @@
                     tr[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
                 }
             }
+        }
+
+        async function loadParentFilters() {
+            const data = await apiFetch('/api/stats/parents');
+            const dSelect = document.getElementById('parentDistrictFilter');
+            const sSelect = document.getElementById('parentSchoolFilter');
+            const districts = [...new Set(data.map(p => p.district))].sort();
+            const schools = [...new Set(data.map(p => p.school))].sort();
+
+            dSelect.innerHTML = '<option value="">Barcha hududlar</option>';
+            districts.forEach(d => dSelect.innerHTML += `<option value="${d}">${d}</option>`);
+
+            sSelect.innerHTML = '<option value="">Barcha maktablar</option>';
+            schools.forEach(s => sSelect.innerHTML += `<option value="${s}">${s}</option>`);
+        }
+
+        async function loadParentList() {
+            const dFilter = document.getElementById('parentDistrictFilter').value;
+            const sFilter = document.getElementById('parentSchoolFilter').value;
+            let data = await apiFetch('/api/stats/parents');
+
+            // Update Stats
+            document.getElementById('parent_total_count').textContent = data.length;
+            const distStats = {};
+            data.forEach(p => { if (p.district !== '-') distStats[p.district] = (distStats[p.district] || 0) + 1; });
+            const topD = Object.entries(distStats).sort((a, b) => b[1] - a[1])[0];
+            document.getElementById('parent_top_district').textContent = topD ? topD[0] : '-';
+
+            if (dFilter) data = data.filter(p => p.district === dFilter);
+            if (sFilter) data = data.filter(p => p.school === sFilter);
+
+            const tbody = document.querySelector('#parentsTable tbody');
+            tbody.innerHTML = '';
+            data.forEach(p => {
+                const maskedPhone = p.phone.length > 7 ? p.phone.substring(0, 6) + '***' + p.phone.substring(p.phone.length - 2) : p.phone;
+                tbody.innerHTML += `<tr>
+                    <td><b>${p.fio}</b></td>
+                    <td>${p.child_name}</td>
+                    <td style="color:#818cf8">${maskedPhone}</td>
+                    <td>${p.district}</td>
+                    <td>${p.school}</td>
+                    <td style="font-size:11px; color:#94a3b8">${p.joined_at}</td>
+                </tr>`;
+            });
         }
 
         loadDistricts();

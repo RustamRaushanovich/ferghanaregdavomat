@@ -398,6 +398,23 @@ app.post('/api/contact', async (req, res) => {
     }
 });
 
+app.get('/api/stats/parents', auth, (req, res) => {
+    try {
+        const parents = Object.entries(db.users_db)
+            .filter(([key]) => key.startsWith('parent_'))
+            .map(([key, u]) => ({
+                id: key.replace('parent_', ''),
+                fio: u.fio || 'Noma\'lum',
+                child_name: (u.subscriptions && u.subscriptions[0]?.name) || '-',
+                phone: u.phone || '-',
+                district: u.district || '-',
+                school: u.school || '-',
+                joined_at: u.joined_at || '-'
+            }));
+        res.json(parents);
+    } catch (e) { res.status(500).json([]); }
+});
+
 app.post('/api/submit', async (req, res) => {
     const d = req.body;
     console.log(`[WEB-SUBMIT] Received: ${d.district} - ${d.school} (Total Absent: ${d.total_absent})`);

@@ -148,6 +148,7 @@ async function exportToExcel(date) {
 
         sheet1.getColumn(1).width = 5; sheet1.getColumn(2).width = 25; for (let c = 3; c <= 24; c++) sheet1.getColumn(c).width = 11;
 
+        const sheet2 = workbook.addWorksheet("Sababsiz O'quvchilar");
         sheet2.columns = [
             { header: '№', key: 'id', width: 5 },
             { header: 'Sana', key: 'date', width: 12 },
