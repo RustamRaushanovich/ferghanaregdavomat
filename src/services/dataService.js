@@ -7,6 +7,12 @@ const { normalizeKey } = require('../utils/topics');
 
 async function saveAttendance(data) {
     try {
+        const time = getFargonaTime().toTimeString().split(' ')[0].substring(0, 5);
+        const date = getFargonaTime().toISOString().split('T')[0];
+
+        // 1. Delete previous entry for this school on this date (Overwrite logic)
+        await db.query(`DELETE FROM attendance WHERE district = $1 AND school = $2 AND date = $3`, [data.district, data.school, date]);
+
         const query = `
             INSERT INTO attendance (
                 date, time, district, school, classes_count, total_students,
@@ -22,16 +28,14 @@ async function saveAttendance(data) {
                 $24, $25, $26, $27, $28, $29, $30, $31
             ) RETURNING id;
         `;
-        const time = getFargonaTime().toTimeString().split(' ')[0].substring(0, 5);
-        const date = getFargonaTime().toISOString().split('T')[0];
 
         const values = [
             date, time, data.district, data.school, data.classes_count, data.total_students,
             data.sababli_kasal, data.sababli_tadbirlar, data.sababli_oilaviy, data.sababli_ijtimoiy, data.sababli_boshqa, data.sababli_total,
             data.sababsiz_muntazam, data.sababsiz_qidiruv, data.sababsiz_chetel, data.sababsiz_boyin, data.sababsiz_ishlab,
             data.sababsiz_qarshilik, data.sababsiz_jazo, data.sababsiz_nazoratsiz, data.sababsiz_boshqa, data.sababsiz_turmush, data.sababsiz_total,
-            (data.sababli_total + data.sababsiz_total),
-            ((data.total_students - (data.sababli_total + data.sababsiz_total)) / data.total_students * 100).toFixed(1),
+            (parseInt(data.sababli_total) + parseInt(data.sababsiz_total)),
+            ((data.total_students - (parseInt(data.sababli_total) + parseInt(data.sababsiz_total))) / data.total_students * 100).toFixed(1),
             data.fio, data.phone, data.inspector, data.user_id || 0, data.source || 'bot', data.bildirgi || null
         ];
 

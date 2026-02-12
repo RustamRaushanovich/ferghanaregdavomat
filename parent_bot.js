@@ -152,13 +152,13 @@ const registrationWizard = new Scenes.WizardScene(
                 parse_mode: 'HTML',
                 ...Markup.keyboard([
                     [Markup.button.contactRequest(s.btn_phone)],
-                    [s.btn_back]
+                    [s.btn_back, "🏠 Asosiy menyu"]
                 ]).resize()
             });
         } else {
             await ctx.replyWithHTML(fullMsg, Markup.keyboard([
                 [Markup.button.contactRequest(s.btn_phone)],
-                [s.btn_back]
+                [s.btn_back, "🏠 Asosiy menyu"]
             ]).resize());
         }
         return ctx.wizard.next();
@@ -168,6 +168,14 @@ const registrationWizard = new Scenes.WizardScene(
         const text = ctx.message.text;
         const s = STRINGS[ctx.wizard.state.lang];
 
+        if (text === "🏠 Asosiy menyu" || text === "🏠 Главное меню") {
+            await ctx.scene.leave();
+            // Return to main menu logic (simplified)
+            return ctx.reply("🏠 Asosiy menyu / Главное меню", Markup.keyboard([
+                [s.btn_add], [s.btn_my_schools, s.btn_profile], [s.btn_lang]
+            ]).resize());
+        }
+
         if (text === s.btn_back || text === "⬅️ Ortga" || text === "⬅️ Ортга" || text === "⬅️ Назад") {
             await ctx.reply("Tilni tanlang / Выберите язык:", Markup.keyboard([
                 ["🇺🇿 O'zbekcha", "🇺🇿 Ўзбекча"],
@@ -176,68 +184,93 @@ const registrationWizard = new Scenes.WizardScene(
             return ctx.wizard.back();
         }
 
-        if (!ctx.message.contact) {
+        if (!ctx.message.contact && text !== "🏠 Asosiy menyu") {
             return ctx.reply(s.ask_phone, Markup.keyboard([
                 [Markup.button.contactRequest(s.btn_phone)],
-                [s.btn_back]
+                [s.btn_back, "🏠 Asosiy menyu"]
             ]).resize());
         }
         ctx.wizard.state.phone = ctx.message.contact.phone_number.replace(/\D/g, '');
         // const s = STRINGS[ctx.wizard.state.lang];
-        await ctx.reply(s.ask_fio, Markup.removeKeyboard());
+        await ctx.reply(s.ask_fio, Markup.keyboard([
+            [s.btn_back, "🏠 Asosiy menyu"]
+        ]).resize());
         return ctx.wizard.next();
     },
     // 4. Child Count
     async (ctx) => {
-        ctx.wizard.state.fio = ctx.message.text;
+        const text = ctx.message.text;
         const s = STRINGS[ctx.wizard.state.lang];
-        // Manual input for count, removing buttons to encourage typing specific number if >5
-        await ctx.replyWithHTML(s.ask_child_count, Markup.removeKeyboard());
+
+        if (text === "🏠 Asosiy menyu" || text === "🏠 Главное меню") {
+            await ctx.scene.leave();
+            return ctx.reply("🏠 Asosiy menyu / Главное меню", Markup.keyboard([
+                [s.btn_add], [s.btn_my_schools, s.btn_profile], [s.btn_lang]
+            ]).resize());
+        }
+
+        if (text === s.btn_back || text === "⬅️ Ortga" || text === "⬅️ Ортга" || text === "⬅️ Назад") {
+            return ctx.wizard.back();
+        }
+
+        ctx.wizard.state.fio = text;
+        // Manual input for count
+        await ctx.replyWithHTML(s.ask_child_count, Markup.keyboard([
+            [s.btn_back, "🏠 Asosiy menyu"]
+        ]).resize());
+
         ctx.wizard.state.subs = [];
         ctx.wizard.state.current_child = 1;
         return ctx.wizard.next();
     },
-    // 5. Subscription Loop: Ask Child Name
+    // 5. Subscription Loop: District Selection (Formerly Step 6)
     async (ctx) => {
-        const count = ctx.message.text.replace(/\D/g, '');
-        if (!count || parseInt(count) < 1) {
-            return ctx.reply("Iltimos, raqam kiriting / Пожалуйста, введите число (1, 2, ...)");
-        }
-        ctx.wizard.state.total_children = parseInt(count);
+        const dist = ctx.message.text;
 
+        // Validation logic
+        const validDist = districts.find(d => normalizeKey(d) === normalizeKey(dist));
+        if (!validDist) {
+            const districtButtons = [];
+            for (let i = 0; i < districts.length; i += 2) districtButtons.push(districts.slice(i, i + 2));
+            return ctx.reply("Iltimos, quyidagi tugmalardan hududni tanlang / Пожалуйста, выберите район:", Markup.keyboard(districtButtons).resize());
+        }
+
+        ctx.wizard.state.temp_dist = validDist;
         const s = STRINGS[ctx.wizard.state.lang];
-        await ctx.replyWithHTML(s.ask_child_name.replace('{n}', ctx.wizard.state.current_child));
+        await ctx.reply("⌛️ Maktablar yuklanmoqda...");
+
+        const schools = await getSchools(validDist);
+        const btns = [];
+        for (let i = 0; i < schools.length; i += 2) btns.push(schools.slice(i, i + 2));
+
+        await ctx.replyWithHTML(s.ask_school.replace('{n}', ctx.wizard.state.current_child).replace('({name})', ''), Markup.keyboard(btns).resize());
         return ctx.wizard.next();
     },
-    // 6. Subscription Loop: District Selection
+    // 6. Subscription Loop: School Selection (Formerly Step 7)
     async (ctx) => {
-        const name = ctx.message.text.trim();
-        ctx.wizard.state.temp_name = name;
+        const school = ctx.message.text;
         const s = STRINGS[ctx.wizard.state.lang];
 
-        if (ctx.wizard.state.collecting_names_only) {
-            const last = ctx.wizard.state.subs[ctx.wizard.state.subs.length - 1];
-            ctx.wizard.state.subs.push({
-                name: name,
-                district: last.district, // Stored in uz_lat format internally
-                school: last.school
-            });
+        ctx.wizard.state.subs.push({
+            name: "O'quvchi", // Placeholder or empty since we don't ask name
+            district: ctx.wizard.state.temp_dist,
+            school: school
+        });
 
-            if (ctx.wizard.state.current_child < ctx.wizard.state.total_children) {
-                ctx.wizard.state.current_child++;
-                await ctx.replyWithHTML(s.ask_child_name.replace('{n}', ctx.wizard.state.current_child));
-                return;
-            } else {
-                return finalize(ctx);
-            }
+        if (ctx.wizard.state.current_child < ctx.wizard.state.total_children) {
+            // Ask for next child's district directly
+            ctx.wizard.state.current_child++;
+            const districtButtons = [];
+            for (let i = 0; i < districts.length; i += 2) districtButtons.push(districts.slice(i, i + 2));
+
+            await ctx.replyWithHTML(s.ask_district.replace('{n}', ctx.wizard.state.current_child).replace('({name})', ''), Markup.keyboard(districtButtons).resize());
+            // Go back to Step 5 (District Handler)
+            // Step 5 is index 4 (0,1,2,3,4)
+            ctx.wizard.selectStep(4);
+            return;
+        } else {
+            return finalize(ctx);
         }
-
-        const districtButtons = [];
-        for (let i = 0; i < districts.length; i += 2) districtButtons.push(districts.slice(i, i + 2));
-
-        await ctx.replyWithHTML(s.ask_district.replace('{n}', ctx.wizard.state.current_child).replace('{name}', ctx.wizard.state.temp_name),
-            Markup.keyboard(districtButtons).resize());
-        return ctx.wizard.next();
     },
     // 7. Subscription Loop: School Selection
     async (ctx) => {
@@ -371,7 +404,7 @@ parentBot.hears(['📋 Mening maktablarim', '📋 Менинг мактабла�
     let msg = `<b>${s.btn_my_schools}:</b>\n\n`;
 
     user.subscriptions.forEach((sub, i) => {
-        msg += `${i + 1}. <b>${sub.name}</b>\n   📍 ${sub.district}, ${sub.school}\n\n`;
+        msg += `${i + 1}. <b>O'quvchi ${i + 1}</b>\n   📍 ${sub.district}, ${sub.school}\n\n`;
     });
 
     ctx.replyWithHTML(msg);
