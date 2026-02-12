@@ -894,9 +894,151 @@ function showTab(tabId) {
     if (tabId === 'tuman') loadTumanData();
     if (tabId === 'students') loadAbsentDetails();
     if (tabId === 'recent') loadRecentActivity();
+    if (tabId === 'parents') { loadParentStats(); loadParentList(); }
+    if (tabId === 'ranking') showLeaderboard();
     if (tabId === 'profile') displayUserInfo();
     if (tabId === 'admin') loadAdminPanel();
 }
+
+async function showLeaderboard() {
+    const container = document.getElementById('rankingContent');
+    if (!container) return;
+
+    container.innerHTML = '<div style="text-align:center; padding:50px;"><i class="fas fa-spinner fa-spin fa-3x"></i><br>Reyting hisoblanmoqda...</div>';
+
+    try {
+        const res = await fetch('/api/premium/leaderboard', { headers: getAuthHeaders() });
+        const data = await res.json();
+
+        let html = `
+            <div class="leaderboard-grid">
+                <style>
+                    .leaderboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+                    .leaderboard-card { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 25px; border: 1px solid rgba(255,255,255,0.1); }
+                    .ranking-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                    .ranking-table th { text-align: left; opacity: 0.6; font-size: 0.8rem; padding: 10px; }
+                    .ranking-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+                    .top-rank { background: rgba(99, 102, 241, 0.1); }
+                    .badge-percent { background: #6366f1; color: white; padding: 4px 8px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; }
+                    .winner-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 10px; }
+                    .winner-info { display: flex; flex-direction: column; }
+                    .dist-name { font-size: 0.75rem; opacity: 0.6; }
+                    .winner-percent { color: #10b981; font-weight: bold; }
+                    @media (max-width: 900px) { .leaderboard-grid { grid-template-columns: 1fr; } }
+                </style>
+                <div class="leaderboard-card">
+                    <h3>🏆 Viloyat bo'yicha TOP-10 maktablar</h3>
+                    <p class="subtitle">Oxirgi 7 kunlik o'rtacha davomat ko'rsatkichi asosida</p>
+                    <table class="ranking-table">
+                        <thead>
+                            <tr><th>№</th><th>Maktab</th><th>Hudud</th><th>O'rtacha %</th></tr>
+                        </thead>
+                        <tbody>
+                            ${data.viloyat.map((s, i) => `
+                                <tr class="${i < 3 ? 'top-rank' : ''}">
+                                    <td>${i + 1}</td>
+                                    <td><b>${s.school}</b></td>
+                                    <td>${s.district}</td>
+                                    <td><span class="badge-percent">${parseFloat(s.avg_p).toFixed(1)}%</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="leaderboard-card">
+                    <h3>📈 Hududiy yetakchilar</h3>
+                    <p class="subtitle">Har bir tumandan 1-o'rindagi maktablar</p>
+                    <div class="district-winners" style="max-height: 600px; overflow-y: auto;">
+                        ${data.districts.map(d => `
+                            <div class="winner-item">
+                                <div class="winner-info">
+                                    <span class="dist-name">${d.district}</span>
+                                    <span class="school-name"><b>${d.school}</b></span>
+                                </div>
+                                <span class="winner-percent">${parseFloat(d.avg_p).toFixed(1)}%</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        container.innerHTML = html;
+    } catch (e) {
+        container.innerHTML = '<div class="error-msg">❌ Reytingni yuklashda xatolik yuz berdi.</div>';
+    }
+}
+
+async function loadParentStats() {
+    try {
+        const res = await fetch('/premium/parent-stats', { headers: getAuthHeaders() });
+        const stats = await res.json();
+
+        let total = 0;
+        let topDist = '-';
+        let max = 0;
+
+        Object.entries(stats).forEach(([dist, d]) => {
+            total += d.total;
+            if (d.total > max) {
+                max = d.total;
+                topDist = dist;
+            }
+        });
+
+        safeSetText('parent_total_count', total);
+        safeSetText('parent_top_district', topDist);
+
+        // Populate parent filter if empty
+        const filter = document.getElementById('parentDistrictFilter');
+        if (filter && filter.options.length <= 1) {
+            Object.keys(stats).sort().forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = opt.textContent = d;
+                filter.appendChild(opt);
+            });
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function loadParentList() {
+    const dist = document.getElementById('parentDistrictFilter').value;
+    const school = document.getElementById('parentSchoolFilter').value;
+    const tbody = document.querySelector('#parentsTable tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center"><i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...</td></tr>';
+
+    try {
+        const res = await fetch(`/premium/parents?district=${encodeURIComponent(dist)}&school=${encodeURIComponent(school)}`, { headers: getAuthHeaders() });
+        const data = await res.json();
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Ma\'lumot topilmadi</td></tr>';
+            return;
+        }
+
+        data.forEach(p => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><b>${p.parent_fio || '-'}</b></td>
+                <td>${p.child_name || '-'}</td>
+                <td><a href="tel:${p.phone}">${p.phone}</a></td>
+                <td>${p.district || '-'}</td>
+                <td>${p.school || '-'}</td>
+                <td>${p.registered_at ? new Date(p.registered_at).toLocaleString('uz-UZ') : '-'}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch (e) { console.error(e); }
+}
+
+function safeSetText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+}
+
 
 const DISTRICTS_LIST = ["Farg‘ona shahar", "Marg‘ilon shahar", "Quvasoy shahar", "Qo‘qon shahar", "Bag‘dod tumani", "Beshariq tumani", "Buvayda tumani", "Dang‘ara tumani", "Yozyovon tumani", "Oltiariq tumani", "Qo‘shtepa tumani", "Rishton tumani", "So‘x tumani", "Toshloq tumani", "Uchko‘prik tumani", "Farg‘ona tumani", "Furqat tumani", "O‘zbekiston tumani", "Quva tumani"];
 
@@ -957,6 +1099,14 @@ async function loadViloyatData() {
 
             // Table Row
             if (tbody) {
+                const p = parseFloat(row.avg_percent) || 0;
+                let colorClass = '#64748b'; // Gray (No data)
+                if (row.entries > 0) {
+                    if (p >= 95) colorClass = '#10b981'; // Green
+                    else if (p >= 85) colorClass = '#f59e0b'; // Yellow
+                    else colorClass = '#ef4444'; // Red
+                }
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                    <td>${dName}</td>
@@ -965,8 +1115,8 @@ async function loadViloyatData() {
                    <td>${row.sababli || 0}</td>
                    <td style="color:${row.sababsiz > 0 ? '#ef4444' : 'inherit'}"><b>${row.sababsiz || 0}</b></td>
                    <td>${row.yesterday_percent || 0}%</td>
-                   <td><span style="padding:4px 8px; border-radius:6px; background:${p >= 90 ? '#10b981' : (p > 0 ? '#f43f5e' : '#64748b')}; color:white">${parseFloat(p).toFixed(1)}%</span></td>
-               `;
+                   <td><span style="padding:4px 12px; border-radius:10px; background:${colorClass}; color:white; font-weight:bold; box-shadow: 0 4px 10px ${colorClass}44">${p.toFixed(1)}%</span></td>
+                `;
                 tbody.appendChild(tr);
             }
 
@@ -1015,29 +1165,47 @@ async function loadTumanData() {
 
         if (Array.isArray(data)) {
             data.forEach((row, index) => {
+                const p = parseFloat(row.percent) || 0;
+                let colorClass = '#64748b'; // No data
+                if (row.total_students > 0) {
+                    if (p >= 95) colorClass = '#10b981';
+                    else if (p >= 85) colorClass = '#f59e0b';
+                    else colorClass = '#ef4444';
+                }
+
                 const tr = document.createElement('tr');
+
+                // Helper to style cells based on value
+                const getCellStyle = (val, color, isBold = false) => {
+                    const num = parseInt(val) || 0;
+                    const opacity = num > 0 ? 1 : 0.2;
+                    const bg = color === 'green' ? 'rgba(16,185,129,0.02)' : 'rgba(239,68,68,0.02)';
+                    const hex = color === 'green' ? '#10b981' : '#ef4444';
+                    return `style="background:${bg}; color:${hex}; opacity:${opacity}; font-weight:${num > 0 || isBold ? '600' : 'normal'}; text-align:center;"`;
+                };
+
                 tr.innerHTML = `
                     <td>${index + 1}</td>
                     <td>${row.school}</td>
-                    <td>${row.time || '-'}</td>
+                    <td style="font-size:0.8rem">${row.time || '-'}</td>
                     <td>${row.classes_count || 0}</td>
                     <td>${row.total_students || 0}</td>
-                    <td style="background:#e0f2f1; color:#000">${row.sababli_kasal || 0}</td>
-                    <td style="background:#e0f2f1; color:#000">${row.sababli_tadbirlar || 0}</td>
-                    <td style="background:#e0f2f1; color:#000">${row.sababli_oilaviy || 0}</td>
-                    <td style="background:#e0f2f1; color:#000">${row.sababli_ijtimoiy || 0}</td>
-                    <td style="background:#e0f2f1; color:#000">${row.sababli_boshqa || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz_muntazam || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz_qidiruv || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz_chetel || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz_boyin || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz_ishlab || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz_qarshilik || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz_jazo || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz_nazoratsiz || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz_turmush || 0}</td>
-                    <td style="background:#fff3e0; color:#000">${row.sababsiz_boshqa || 0}</td>
-                    <td><b>${row.percent}%</b></td>
+                    <td ${getCellStyle(row.sababli_kasal, 'green', true)}>${row.sababli_kasal || 0}</td>
+                    <td ${getCellStyle(row.sababli_tadbirlar, 'green')}>${row.sababli_tadbirlar || 0}</td>
+                    <td ${getCellStyle(row.sababli_oilaviy, 'green')}>${row.sababli_oilaviy || 0}</td>
+                    <td ${getCellStyle(row.sababli_ijtimoiy, 'green')}>${row.sababli_ijtimoiy || 0}</td>
+                    <td ${getCellStyle(row.sababli_boshqa, 'green')}>${row.sababli_boshqa || 0}</td>
+                    <td ${getCellStyle(row.sababsiz_muntazam, 'red', true)}>${row.sababsiz_muntazam || 0}</td>
+                    <td ${getCellStyle(row.sababsiz_qidiruv, 'red')}>${row.sababsiz_qidiruv || 0}</td>
+                    <td ${getCellStyle(row.sababsiz_chetel, 'red')}>${row.sababsiz_chetel || 0}</td>
+                    <td ${getCellStyle(row.sababsiz_boyin, 'red')}>${row.sababsiz_boyin || 0}</td>
+                    <td ${getCellStyle(row.sababsiz_ishlab, 'red')}>${row.sababsiz_ishlab || 0}</td>
+                    <td ${getCellStyle(row.sababsiz_qarshilik, 'red')}>${row.sababsiz_qarshilik || 0}</td>
+                    <td ${getCellStyle(row.sababsiz_jazo, 'red')}>${row.sababsiz_jazo || 0}</td>
+                    <td ${getCellStyle(row.sababsiz_nazoratsiz, 'red')}>${row.sababsiz_nazoratsiz || 0}</td>
+                    <td ${getCellStyle(row.sababsiz_turmush, 'red')}>${row.sababsiz_turmush || 0}</td>
+                    <td ${getCellStyle(row.sababsiz_boshqa, 'red')}>${row.sababsiz_boshqa || 0}</td>
+                    <td><span style="padding:4px 8px; border-radius:8px; background:${colorClass}; color:white; font-weight:bold">${p}%</span></td>
                     <td>${row.source || 'bot'}</td>
                     <td>${row.fio || '-'}</td>
                 `;
@@ -1103,8 +1271,10 @@ async function loadRecentActivity(page = 1) {
 
         data.forEach(item => {
             const tr = document.createElement('tr');
+            // Show both Date and Time
+            const fullTime = `📅 ${item.date || ''} <br> 🕒 ${item.time || ''}`;
             tr.innerHTML = `
-                <td style="white-space:nowrap">${item.time || (item.date + ' ' + item.time) || '-'}</td>
+                <td style="white-space:nowrap; font-size: 0.85rem;">${fullTime}</td>
                 <td>${item.district || '-'}</td>
                 <td>${item.school || '-'}</td>
                 <td><span style="font-weight:bold; color:${item.percent >= 90 ? '#10b981' : '#f43f5e'}">${item.percent}%</span></td>

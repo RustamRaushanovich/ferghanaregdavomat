@@ -18,6 +18,8 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
+const { formatAttendanceReport } = require('./src/utils/reports');
+
 const { USERS, tokens, generateToken, saveUsers } = require('./src/utils/auth');
 
 // Auth Middleware
@@ -39,7 +41,9 @@ app.post('/api/login', (req, res) => {
             token,
             role: user.role,
             district: user.district,
-            school: user.school || null
+            school: user.school || null,
+            fio: user.fio || '',
+            phone: user.phone || ''
         });
     } else {
         res.status(401).json({ error: 'Login yoki parol xato' });
@@ -86,6 +90,54 @@ app.post('/api/admin/reset-password', auth, async (req, res) => {
 
     res.json({ success: true });
 });
+// --- SECURITY SHIELD ---
+const requestCount = new Map();
+const SECURITY_ALERT_THRESHOLD = 50; // Max 50 requests per minute per IP
+
+const securityShield = (req, res, next) => {
+    // 1. Basic Security Headers (Manual Helmet)
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Content-Security-Policy', "default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://kit.fontawesome.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://kit.fontawesome.com;");
+
+    // 2. Rate Limiting (Anti-DDoS / Anti-Brute)
+    const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const now = Date.now();
+    const windowStart = now - 60000; // 1 minute window
+
+    let logs = requestCount.get(ip) || [];
+    logs = logs.filter(t => t > windowStart);
+    logs.push(now);
+    requestCount.set(ip, logs);
+
+    if (logs.length > SECURITY_ALERT_THRESHOLD) {
+        if (logs.length === SECURITY_ALERT_THRESHOLD + 1) {
+            alertSuperAdmin(`🚨 <b>SECURITY ALERT!</b>\nSuspicious activity detected from IP: <code>${ip}</code>\nURL: <code>${req.url}</code>\nUser: <code>${req.user ? req.user.username : 'Guest'}</code>`);
+        }
+        return res.status(429).json({ error: 'Too many requests. Please try again later.' });
+    }
+
+    // 3. Prevent SQL-like patterns in queries (Basic injection filter)
+    const sqlPatterns = /select|insert|update|delete|drop|union|--|;/i;
+    if (sqlPatterns.test(req.url) || sqlPatterns.test(JSON.stringify(req.body))) {
+        alertSuperAdmin(`⚠️ <b>INJECTION ATTEMPT!</b>\nSuspicious payload from IP: ${ip}\nUser: ${req.user ? req.user.username : 'Guest'}`);
+        return res.status(403).json({ error: 'Malicious activity detected.' });
+    }
+
+    next();
+};
+
+async function alertSuperAdmin(msg) {
+    const superAdminIds = [65002404, 786314811];
+    for (const sid of superAdminIds) {
+        try {
+            await bot.telegram.sendMessage(sid, msg, { parse_mode: 'HTML' });
+        } catch (e) { }
+    }
+}
+
+app.use(securityShield);
 app.use(express.static('dashboard'));
 
 const { getSchools, saveData } = require('./src/services/sheet');
@@ -96,9 +148,18 @@ const bot = new Telegraf(process.env.BOT_TOKEN, {
 const PORT = process.env.PORT || 3000;
 const LOGO_PATH = path.join(__dirname, 'assets', 'logo.png');
 
+// --- PREMIUM FEATURES ---
+const premiumRoutes = require('./premium_features/backend/premium_routes');
+app.use('/premium', express.static('premium_features/web'));
+app.use('/api/premium', auth, premiumRoutes);
+
 const stage = new Scenes.Stage([attendanceWizard, broadcastScene]);
 bot.use(session());
 bot.use(stage.middleware());
+
+// --- AUTOMATED REPORTS (SCHEDULER) ---
+const { initCrons } = require('./src/services/scheduler');
+initCrons();
 
 bot.use((ctx, next) => {
     console.log(`[UPDATE] Type: ${ctx.updateType}, From: ${ctx.from ? ctx.from.id : 'N/A'}`);
@@ -314,37 +375,32 @@ app.post('/api/submit', async (req, res) => {
     const success = await saveData(flatData);
 
     if (success) {
+        // SMS SERVICE INTEGRATION (PRO ONLY)
+        const isProUser = db.checkProByPhone(d.phone);
+        if (isProUser && flatData.students_list.length > 0) {
+            const SmsService = require('./src/services/sms');
+            flatData.students_list.forEach(student => {
+                if (student.parent_phone) {
+                    const msg = `Assalomu alaykum hurmatli ota-ona sizning farzandingiz ${d.district}, ${d.school}ning ${student.class} o‘quvchisi ${student.name} bugun maktabga kelmaganligini ma'lum qilamiz.\n\nMa'lumot uchun farzandingizni ta'limiga e'tiborsizligingiz O‘zbekiston Respublikasining Ma'muriy javobgarlik to‘g‘risidagi kodeksning 47-moddasi asosida jarimaga tortilishingizga sabab bo‘lishini ogohlantiriamiz.`;
+                    SmsService.sendSms(student.parent_phone, msg).then(res => {
+                        console.log(`[SMS-SENT] To: ${student.parent_phone}, Result:`, res);
+                    }).catch(e => console.error("[SMS-ERROR]", e.message));
+                }
+            });
+        }
+
         // TELEGRAM NOTIFICATION
-        const jamiKelmagan = flatData.sababli_total + flatData.sababsiz_total;
-        const percent = d.total_students > 0 ? (((d.total_students - jamiKelmagan) / d.total_students) * 100).toFixed(1) : 0;
-
-        const maskPhone = (p) => {
-            const c = p.replace(/\D/g, '');
-            if (c.length < 9) return p;
-            return `998*****${c.slice(-4)}`;
-        };
-
-        let report = `🌐 <b>WEB SAHIFA ORQALI KIRITILDI</b>\n\n` +
-            `📍 <b>${d.district}, ${d.school}</b>\n` +
-            `📊 Davomat ko'rsatkichi: <b>${percent} %</b>\n` +
-            `🎒 Jami sinflar soni: ${d.classes_count}\n` +
-            `👥 Jami o'quvchilar: ${d.total_students}\n` +
-            `✅ Sababli kelmaganlar: <b>${flatData.sababli_total}</b>\n` +
-            `🚫 Sababsiz kelmaganlar: <b>${flatData.sababsiz_total}</b>\n` +
-            `📉 Jami kelmaganlar: <b>${jamiKelmagan}</b>\n` +
-            `☎️ Tel: ${maskPhone(d.phone)}\n` +
-            `👤 Mas'ul: ${d.fio}\n\n` +
-            `🔗 <a href="https://t.me/ferghanaregdavomat_bot">ferghanaregdavomat_bot</a>\n` +
-            `🌐 <a href="https://ferghanaregdavomat.uz">ferghanaregdavomat web</a>`;
+        const isProForReport = db.checkProByPhone(d.phone);
+        const report = formatAttendanceReport(flatData, isProForReport, 'web');
 
         const tid = getTopicId(d.district);
-        const groupId = "-1003662758005"; // User provided groupId
+        const reportGroupId = "-1003662758005"; // Shared report group
 
         try {
             if (tid) {
-                await bot.telegram.sendMessage(groupId, report, { parse_mode: 'HTML', message_thread_id: tid });
+                await bot.telegram.sendMessage(reportGroupId, report, { parse_mode: 'HTML', message_thread_id: tid });
             } else {
-                await bot.telegram.sendMessage(groupId, report, { parse_mode: 'HTML' });
+                await bot.telegram.sendMessage(reportGroupId, report, { parse_mode: 'HTML' });
             }
         } catch (err) {
             console.error("TG Send Error:", err.message);
@@ -353,6 +409,45 @@ app.post('/api/submit', async (req, res) => {
         res.json({ result: 'success' });
     } else {
         res.status(500).json({ result: 'error' });
+    }
+});
+
+/**
+ * SuperAdmin Command: Activate PRO (e.g. activate 1234567 1)
+ * months: 1, 2, or 3
+ */
+bot.hears(/^activate (\d+)\s*(\d+)?$/, async (ctx) => {
+    if (!config.SUPER_ADMIN_IDS.map(Number).includes(Number(ctx.from.id)) && ctx.from.id !== 65002404) return;
+
+    const uid = ctx.match[1];
+    const months = parseInt(ctx.match[2]) || 1;
+
+    const u = db.updateUserProMonths(uid, months);
+
+    await ctx.reply(`✅ Foydalanuvchi ${uid} (${u.fio || 'Noma\'lum'}) uchun PRO maqomi ${months} oyga faollashtirildi.\n📅 Amal qilish muddati: ${u.pro_expire_date}`);
+
+    // Group Announcement (Marketing)
+    const reportGroupId = "-1003662758005";
+    const adv = `🌟 <b>YANGI PRO HARIDI!</b>\n\n🏢 Maktab: <b>${u.school || 'Noma\'lum'}</b>\n📍 Hudud: <b>${u.district || 'Noma\'lum'}</b>\n👤 Mas'ul: <b>${u.fio || 'Noma\'lum'}</b>\n\nUshbu maktab rasman <b>PRO ✨</b> maqomini oldi va barcha eksklyuziv imkoniyatlarga ega bo'ldi! 🎉\n\n<i>Obuna muddati: ${u.pro_expire_date} gacha.</i>`;
+
+    const tid = getTopicId(u.district);
+    try {
+        if (tid) {
+            await bot.telegram.sendMessage(reportGroupId, adv, { parse_mode: 'HTML', message_thread_id: tid });
+        } else {
+            await bot.telegram.sendMessage(reportGroupId, adv, { parse_mode: 'HTML' });
+        }
+    } catch (e) { console.error("ADV Send Error:", e.message); }
+});
+
+bot.hears(/^revoke (\d+)$/, async (ctx) => {
+    if (!config.SUPER_ADMIN_IDS.map(Number).includes(Number(ctx.from.id)) && ctx.from.id !== 65002404) return;
+    const uid = ctx.match[1];
+    if (db.users_db[uid]) {
+        db.users_db[uid].is_pro = false;
+        db.users_db[uid].pro_expire_date = "2000-01-01";
+        db.updateUserDb(uid, { is_pro: false });
+        await ctx.reply(`❌ Foydalanuvchi ${uid} dan PRO maqomi olib tashlandi.`);
     }
 });
 
@@ -375,11 +470,19 @@ bot.start(async (ctx) => {
     // Tugmalarni tayyorlash
     let buttons = [["Davomat kiritish"]];
 
-    // Admin bo'lsa, Admin Panel tugmasini qo'shish
     const uid = Number(ctx.from.id);
+    const isPro = db.checkPro(uid);
+
+    // Admin bo'lsa, Admin Panel tugmasini qo'shish
     if (config.ALL_ADMINS.map(Number).includes(uid)) {
         buttons.push(["⚙️ Admin Panel"]);
     }
+
+    // PRO Analitika button for PRO users (School level)
+    if (isPro) {
+        buttons.push(["📊 PRO Analitika"]);
+    }
+
     buttons.push(["👤 Mening Profilim", "📊 Mening Statistikam"]);
     buttons.push(["ℹ️ Dastur haqida", "📖 Yo'riqnoma"]);
 
@@ -574,10 +677,75 @@ bot.hears("📖 Yo'riqnoma", async (ctx) => {
     }
 });
 
-// --- PRO STATS HANDLER ---
+// --- PRO ANALYTICS HANDLERS ---
+bot.hears("📊 PRO Analitika", async (ctx) => {
+    if (!db.checkPro(ctx.from.id)) return ctx.reply("⛔️ Bu funksiya faqat PRO foydalanuvchilar uchun.");
+    ctx.reply("📊 <b>PRO Analitika Paneli:</b>\n\nQuyidagi tahliliy ma'lumotlardan birini tanlang:", {
+        parse_mode: 'HTML',
+        ...Markup.keyboard([
+            ["🔴 Qizil ro'yxat (Haftalik)", "📈 Oylik dinamika"],
+            ["🤖 AI Bashorat holatlari", "⬅️ Orqaga"]
+        ]).resize()
+    });
+});
+
+const ProAnalytics = require('./src/services/proAnalytics');
+
+bot.hears("🔴 Qizil ro'yxat (Haftalik)", async (ctx) => {
+    const uid = ctx.from.id;
+    if (!db.checkPro(uid)) return;
+    const user = db.users_db[uid];
+    if (!user || !user.district || !user.school) return ctx.reply("⚠️ Profilingiz to'liq emas.");
+
+    const list = await ProAnalytics.getWeeklyRedList(user.district, user.school);
+    if (list.length === 0) return ctx.reply("✅ Oxirgi hafta ichida muntazam dars qoldiruvchi o'quvchilar aniqlanmadi.");
+
+    let msg = `🔴 <b>${user.school} - Qizil ro'yxati (Haftalik):</b>\n\n`;
+    msg += `<i>Ushbu o'quvchilar oxirgi 7 kunda 2 va undan ortiq marta sababsiz dars qoldirishgan:</i>\n\n`;
+    list.forEach((s, i) => {
+        msg += `${i + 1}. <b>${s.name}</b> (${s.class})\n👣 Tashriflar: ${s.absent_count} marta\n📞 Tel: ${s.parent_phone || 'Noma\'lum'}\n\n`;
+    });
+    ctx.replyWithHTML(msg);
+});
+
+bot.hears("📈 Oylik dinamika", async (ctx) => {
+    if (!db.checkPro(ctx.from.id)) return;
+    const user = db.users_db[ctx.from.id];
+    const report = await ProAnalytics.getMonthlyDynamics(user.district, user.school);
+    ctx.replyWithHTML(report);
+});
+
+bot.hears("🤖 AI Bashorat holatlari", async (ctx) => {
+    if (!db.checkPro(ctx.from.id)) return;
+    const user = db.users_db[ctx.from.id];
+    const insights = await ProAnalytics.getAIPatterns(user.district, user.school);
+    ctx.replyWithHTML(`🤖 <b>AI Tahlil natijalari (${user.school}):</b>\n\n` + (insights || "Ma'lumotlar yetarli emas."));
+});
+
+// --- PROFILE HANDLER ---
+bot.hears("👤 Mening Profilim", async (ctx) => {
+    const uid = ctx.from.id;
+    const user = db.users_db[uid];
+
+    if (!user || (!user.district && !user.school)) {
+        return ctx.replyWithHTML("👤 <b>Siz hali ro'yxatdan o'tmagansiz.</b>\n\nDavomat kiritishni boshlang, tizim sizni avtomatik eslab qoladi.");
+    }
+
+    let msg = `👤 <b>Sizning profilingiz:</b>\n\n` +
+        `👨‍💼 <b>F.I.SH:</b> ${user.fio || 'Kiritilmagan'}\n` +
+        `📞 <b>Tel:</b> ${user.phone || 'Kiritilmagan'}\n` +
+        `📍 <b>Hudud:</b> ${user.district || 'Tanlanmagan'}\n` +
+        `🏫 <b>Maktab:</b> ${user.school || 'Tanlanmagan'}\n\n` +
+        `✨ <i>Ma'lumotlarni o'zgartirish uchun "Davomat kiritish" tugmasini bosing va "Yangi ma'lumot kiritish"ni tanlang.</i>`;
+
+    ctx.replyWithHTML(msg);
+});
+
+// --- GOOGLE SHEETS STATS ---
 bot.hears("📊 Mening Statistikam", async (ctx) => {
     const uid = ctx.from.id;
     if (!db.checkPro(uid)) return ctx.reply("⛔️ Bu funksiya faqat PRO foydalanuvchilar uchun.");
+
 
     // Foydalanuvchi ma'lumotlarini olish
     const user = db.users_db[uid];

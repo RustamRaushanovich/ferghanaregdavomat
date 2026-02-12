@@ -36,13 +36,24 @@ function updateUserDb(uid, data) {
     users_db[uid] = { ...users_db[uid], ...data };
     try { fs.writeFileSync(USERS_DB_FILE, JSON.stringify(users_db, null, 2)); } catch (e) { }
 }
-function updateUserPro(uid, days) {
+function updateUserProMonths(uid, months = 1) {
     if (!users_db[uid]) users_db[uid] = {};
-    let baseDate = (users_db[uid].is_pro && new Date(users_db[uid].pro_expire_date) > new Date()) ? new Date(users_db[uid].pro_expire_date) : new Date();
-    const expire = new Date(baseDate.setDate(baseDate.getDate() + days));
+
+    let now = new Date();
+    // Use current expiration if still valid, otherwise use now
+    let baseDate = (users_db[uid].is_pro && new Date(users_db[uid].pro_expire_date) > now)
+        ? new Date(users_db[uid].pro_expire_date)
+        : now;
+
+    let expireDate = new Date(baseDate);
+    expireDate.setMonth(expireDate.getMonth() + months);
+
     users_db[uid].is_pro = true;
-    users_db[uid].pro_expire_date = expire.toISOString().split('T')[0];
+    users_db[uid].pro_expire_date = expireDate.toISOString().split('T')[0];
+    users_db[uid].pro_purchase_date = now.toISOString().split('T')[0];
+
     try { fs.writeFileSync(USERS_DB_FILE, JSON.stringify(users_db, null, 2)); } catch (e) { }
+    return users_db[uid];
 }
 const { SUPER_ADMIN_IDS, SPECIALIST_IDS } = require('../config/config');
 
@@ -52,6 +63,15 @@ function checkPro(uid) {
 
     const u = users_db[uid];
     return u && u.is_pro && new Date(u.pro_expire_date) > new Date();
+}
+
+function checkProByPhone(phone) {
+    if (!phone) return false;
+    const cleanPhone = phone.replace(/\D/g, '');
+    return Object.values(users_db).some(u =>
+        u.phone && u.phone.replace(/\D/g, '') === cleanPhone &&
+        new Date(u.pro_expire_date) > new Date()
+    );
 }
 
 // Initial load
@@ -67,8 +87,9 @@ module.exports = {
     savePromos,
     saveUser,
     updateUserDb,
-    updateUserPro,
+    updateUserProMonths,
     checkPro,
+    checkProByPhone,
     saveCoords,
     saveSchools: () => { try { fs.writeFileSync(SCHOOLS_FILE, JSON.stringify(schools_db)); } catch (e) { } }
 };
