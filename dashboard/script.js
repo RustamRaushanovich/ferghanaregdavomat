@@ -1091,13 +1091,12 @@ async function loadParentList() {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><b>${p.fio || '-'}</b></td>
-                <td>${p.child_name || '-'}</td>
                 <td style="color:#818cf8">${maskedPhone}</td>
                 <td>${p.district || '-'}</td>
                 <td>${p.school || '-'}</td>
                 <td style="font-size:11px; color:#94a3b8">${p.joined_at || '-'}</td>
             `;
-            tbody.appendChild(tr);
+            tbody.innerHTML += `<tr>${tr.innerHTML}</tr>`;
         });
     } catch (e) {
         console.error(e);
@@ -1325,6 +1324,149 @@ async function loadAbsentDetails() {
 let currentPage = 1;
 const itemsPerPage = 50;
 
+
+async function loadAnalysisData() {
+    try {
+        // 1. Date Logic (Fargona)
+        const fargonaNow = new Date(new Date().getTime() + (5 * 60 + new Date().getTimezoneOffset()) * 60000);
+        const today = fargonaNow.toISOString().split('T')[0];
+        const yesterdayDate = new Date(fargonaNow);
+        yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+        const yesterday = yesterdayDate.toISOString().split('T')[0];
+
+        // 2. Fetch Data
+        let [todayData, yesterdayData] = await Promise.all([
+            apiFetch(`/api/stats/viloyat?date=${today}`).catch(() => []),
+            apiFetch(`/api/stats/viloyat?date=${yesterday}`).catch(() => [])
+        ]);
+
+        if (!Array.isArray(todayData)) todayData = [];
+        if (!Array.isArray(yesterdayData)) yesterdayData = [];
+
+        // 3. Render Analysis Summary
+        const calcAvg = (arr) => arr.length > 0 ? arr.reduce((a, b) => a + (parseFloat(b.avg_percent) || 0), 0) / arr.length : 0;
+        const todayAvg = calcAvg(todayData);
+        const yesterdayAvg = calcAvg(yesterdayData);
+        const diff = todayAvg - yesterdayAvg;
+
+        const summaryDiv = document.getElementById('analysisSummary');
+        if (summaryDiv) {
+            summaryDiv.innerHTML = `
+                <div class="stat-card">
+                    <h4>Viloyat O'rtacha (Bugun)</h4>
+                    <div class="value">${todayAvg.toFixed(1)}%</div>
+                    <div style="font-size:0.9rem; color:${diff >= 0 ? '#10b981' : '#ef4444'}">
+                        <i class="fas fa-caret-${diff >= 0 ? 'up' : 'down'}"></i> ${Math.abs(diff).toFixed(1)}% (Kecha: ${yesterdayAvg.toFixed(1)}%)
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h4>Jami O'quvchilar</h4>
+                    <div class="value">${todayData.reduce((a, b) => a + (parseInt(b.students) || 0), 0)}</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Sababsiz Kelmaganlar</h4>
+                    <div class="value" style="color:#ef4444">${todayData.reduce((a, b) => a + (parseInt(b.sababsiz) || 0), 0)}</div>
+                </div>
+            `;
+        }
+
+        // 4. Update AI Text
+        const aiText = document.getElementById('aiText');
+        if (aiText) {
+            if (todayData.length === 0) {
+                aiText.innerHTML = "Bugungi ma'lumotlar hali kiritilmagan. <br>Iltimos, hududlardan hisobotlarni kuting.";
+            } else {
+                const worst = [...todayData].sort((a, b) => a.avg_percent - b.avg_percent)[0];
+                const best = [...todayData].sort((a, b) => b.avg_percent - a.avg_percent)[0];
+                aiText.innerHTML = `Bugungi holat bo'yicha eng yaxshi ko'rsatkich: <b>${best.district}</b> (${best.avg_percent.toFixed(1)}%). <br> Eng past ko'rsatkich: <b>${worst.district}</b> (${worst.avg_percent.toFixed(1)}%). Nazoratni kuchaytirish tavsiya etiladi.`;
+            }
+        }
+
+        // 5. Update Leaderboards
+        if (todayData.length > 0) {
+            const sorted = [...todayData].sort((a, b) => b.avg_percent - a.avg_percent);
+            const topDiv = document.getElementById('topDistricts');
+            const bottomDiv = document.getElementById('bottomDistricts');
+            if (topDiv) topDiv.innerHTML = sorted.slice(0, 3).map(d => `<div style="display:flex; justify-content:space-between; margin-bottom:5px; padding:5px; background:rgba(255,255,255,0.05); border-radius:5px;"><span>${d.district}</span><span style="color:#10b981; font-weight:bold">${d.avg_percent.toFixed(1)}%</span></div>`).join('');
+            if (bottomDiv) bottomDiv.innerHTML = sorted.slice(-3).reverse().map(d => `<div style="display:flex; justify-content:space-between; margin-bottom:5px; padding:5px; background:rgba(255,255,255,0.05); border-radius:5px;"><span>${d.district}</span><span style="color:#ef4444; font-weight:bold">${d.avg_percent.toFixed(1)}%</span></div>`).join('');
+        }
+
+        // 6. Render Charts (District Comparison)
+        const ctx1 = document.getElementById('districtChart');
+        if (ctx1) {
+            if (window.districtChartObj) window.districtChartObj.destroy();
+            window.districtChartObj = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: todayData.map(d => d.district),
+                    datasets: [
+                        { label: 'Bugun', data: todayData.map(d => d.avg_percent), backgroundColor: '#6366f1' },
+                        { label: 'Kecha', data: yesterdayData.map(d => d.avg_percent), backgroundColor: '#94a3b8' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, ticks: { color: '#fff' } },
+                        x: { ticks: { color: '#fff' } }
+                    },
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            });
+        }
+
+        // 7. Reasons Chart
+        const ctx2 = document.getElementById('reasonsChart');
+        if (ctx2) {
+            if (window.reasonsChartObj) window.reasonsChartObj.destroy();
+            const totalSababli = todayData.reduce((a, b) => a + (parseInt(b.sababli) || 0), 0);
+            const totalSababsiz = todayData.reduce((a, b) => a + (parseInt(b.sababsiz) || 0), 0);
+            const dForChart = (totalSababli === 0 && totalSababsiz === 0) ? [0, 0] : [totalSababli, totalSababsiz];
+            window.reasonsChartObj = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Sababli', 'Sababsiz'],
+                    datasets: [{ data: dForChart, backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            });
+        }
+
+        // 8. Trends Chart (30 days)
+        const trendData = await apiFetch('/api/stats/trends').catch(() => []);
+        const ctx3 = document.getElementById('trendChart');
+        if (ctx3 && trendData.length > 0) {
+            if (window.trendChartObj) window.trendChartObj.destroy();
+            window.trendChartObj = new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    labels: trendData.map(d => d.date),
+                    datasets: [{
+                        label: 'Viloyat O\'rtacha %',
+                        data: trendData.map(d => d.avg_percent),
+                        borderColor: '#8b5cf6',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { min: 60, max: 100, ticks: { color: '#fff' } },
+                        x: { ticks: { color: '#fff' } }
+                    },
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            });
+        }
+
+    } catch (e) { console.error("Analysis Load Error:", e); }
+}
+
 async function loadRecentActivity(page = 1) {
     currentPage = page;
     const offset = (page - 1) * itemsPerPage;
@@ -1349,10 +1491,8 @@ async function loadRecentActivity(page = 1) {
             const displayDate = d.length === 3 ? `${d[2]}.${d[1]}.${d[0]}` : item.date;
 
             const row = `<tr>
-                <td style="font-weight: 500;">
-                    <span style="color: #818cf8;">${item.time}</span> 
-                    <span style="color: #94a3b8; font-size: 0.8em; margin-left: 5px;">${displayDate}</span>
-                </td>
+                <td style="color: #94a3b8; font-size: 0.9em;">${displayDate}</td>
+                <td style="font-weight: 500; color: #818cf8;">${item.time}</td>
                 <td>${item.district}</td>
                 <td>${item.school}</td>
                 <td style="text-align:center"><span class="status-badge ${item.percent >= 95 ? 'status-high' : 'status-low'}" style="font-size:11px">${(item.percent || 0).toFixed(1)}%</span></td>

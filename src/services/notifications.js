@@ -5,9 +5,9 @@ require('dotenv').config();
 const parentBot = new Telegraf(process.env.PARENT_BOT_TOKEN || process.env.BOT_TOKEN);
 
 /**
- * Notifies parents about their child's absence.
+ * Notifies all parents subscribed to a school about the absentee list.
  * @param {Object} reportData - The attendance report data.
- * @param {Array} studentsList - List of absent students (objects with name, class, etc.)
+ * @param {Array} studentsList - List of absent students.
  */
 async function notifyParents(reportData, studentsList) {
     if (!studentsList || studentsList.length === 0) return;
@@ -16,79 +16,45 @@ async function notifyParents(reportData, studentsList) {
     const school = reportData.school;
     const allUsers = db.users_db;
 
-    console.log(`📡 [Notification] Checking parents for ${district}, ${school}...`);
+    console.log(`📡 [Notification] Broadcasting alerts for ${district}, ${school}...`);
 
-    for (const uid in allUsers) {
-        const user = allUsers[uid];
+    const parentsToNotify = Object.values(allUsers).filter(user =>
+        user.role === 'parent' &&
+        user.subscriptions &&
+        user.subscriptions.some(s => s.district === district && s.school === school)
+    );
 
-        // Only process parents
-        if (user.role !== 'parent' || !user.subscriptions) continue;
+    if (parentsToNotify.length === 0) return;
 
-        // Find relevant subscriptions for this school
-        const relevantSubs = user.subscriptions.filter(s =>
-            s.district === district && s.school === school
-        );
+    const date = new Date().toLocaleDateString('uz-UZ');
 
-        if (relevantSubs.length === 0) continue;
+    for (const parent of parentsToNotify) {
+        let listText = studentsList.map((s, i) => `${i + 1}. <b>${s.name}</b> (${s.class}-sinf)`).join('\n');
 
-        for (const sub of relevantSubs) {
-            // Check if this specific child is in the absent list
-            // We use a loose match for names (e.g., includes or split-match)
-            const absentChild = studentsList.find(student =>
-                isSameName(student.name, sub.name)
-            );
+        const msgs = {
+            uz_lat: `🔔 <b>DIQQAT: Maktabda dars qoldirganlar ro'yxati!</b>\n\n` +
+                `🏫 Maktab: <b>${school}</b>\n` +
+                `📅 Sana: ${date}\n\n` +
+                `📖 <b>Bugun darsga kelmagan o'quvchilar:</b>\n${listText}\n\n` +
+                `⚠️ Farzandingiz ushbu ro'yxatda bo'lsa, iltimos maktab bilan bog'laning.`,
+            uz_cyr: `🔔 <b>ДИҚҚАТ: Мактабда дарс қолдирганлар рўйхати!</b>\n\n` +
+                `🏫 Мактаб: <b>${school}</b>\n` +
+                `📅 Сана: ${date}\n\n` +
+                `📖 <b>Бугун дарсга келмаган ўқувчилар:</b>\n${listText}\n\n` +
+                `⚠️ Фарзандингиз ушбу рўйхатда бўлса, илтимос мактаб билан боғланинг.`,
+            ru: `🔔 <b>ВНИМАНИЕ: Список отсутствующих в школе!</b>\n\n` +
+                `🏫 Школа: <b>${school}</b>\n` +
+                `📅 Дата: ${date}\n\n` +
+                `📖 <b>Ученики, не пришедшие сегодня:</b>\n${listText}\n\n` +
+                `⚠️ Если ваш ребенок есть в этом списке, пожалуйста, свяжитесь со школой.`
+        };
 
-            if (absentChild) {
-                await sendNotification(user.chat_id, user.lang || 'uz_lat', {
-                    childName: sub.name,
-                    class: absentChild.class,
-                    school: school,
-                    district: district,
-                    date: new Date().toLocaleDateString('uz-UZ')
-                });
-            }
+        const text = msgs[parent.lang || 'uz_lat'] || msgs.uz_lat;
+        try {
+            await parentBot.telegram.sendMessage(parent.chat_id, text, { parse_mode: 'HTML' });
+        } catch (e) {
+            console.error(`❌ [Notification] Failed to send to parent ${parent.chat_id}:`, e.message);
         }
-    }
-}
-
-function isSameName(name1, name2) {
-    if (!name1 || !name2) return false;
-    const n1 = name1.toLowerCase().trim();
-    const n2 = name2.toLowerCase().trim();
-    return n1.includes(n2) || n2.includes(n1);
-}
-
-async function sendNotification(chatId, lang, data) {
-    const msgs = {
-        uz_lat: `🔔 <b>DIQQAT: Farzandingiz darsda qatnashmadi!</b>\n\n` +
-            `👶 O'quvchi: <b>${data.childName}</b>\n` +
-            `📚 Sinf: ${data.class}\n` +
-            `🏫 Maktab: ${data.school}\n` +
-            `📍 Hudud: ${data.district}\n` +
-            `📅 Sana: ${data.date}\n\n` +
-            `⚠️ Farzandingiz bugun dars qoldirdi. Iltimos, maktab bilan bog'laning.`,
-        uz_cyr: `🔔 <b>ДИҚҚАТ: Фарзандингиз дарсда қатнашмади!</b>\n\n` +
-            `👶 Ўқувчи: <b>${data.childName}</b>\n` +
-            `📚 Синф: ${data.class}\n` +
-            `🏫 Мактаб: ${data.school}\n` +
-            `📍 Ҳудуд: ${data.district}\n` +
-            `📅 Сана: ${data.date}\n\n` +
-            `⚠️ Фарзандингиз бугун дарс қолдирди. Илтимос, мактаб билан боғланинг.`,
-        ru: `🔔 <b>ВНИМАНИЕ: Ваш ребенок пропустил занятия!</b>\n\n` +
-            `👶 Ученик: <b>${data.childName}</b>\n` +
-            `📚 Класс: ${data.class}\n` +
-            `🏫 Школа: ${data.school}\n` +
-            `📍 Район: ${data.district}\n` +
-            `📅 Дата: ${data.date}\n\n` +
-            `⚠️ Ваш ребенок сегодня пропустил школу. Пожалуйста, свяжитесь со школой.`
-    };
-
-    const text = msgs[lang] || msgs.uz_lat;
-    try {
-        await parentBot.telegram.sendMessage(chatId, text, { parse_mode: 'HTML' });
-        console.log(`✅ [Notification] Sent to parent ${chatId} for ${data.childName}`);
-    } catch (e) {
-        console.error(`❌ [Notification] Failed to send to ${chatId}:`, e.message);
     }
 }
 
