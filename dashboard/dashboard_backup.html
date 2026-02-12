@@ -485,17 +485,10 @@
                 data-i18n="tab_school">
                 <i class="fas fa-school"></i> Mening Maktabim
             </button>
-            <button class="tab-btn" onclick="showTab('parents')" id="tab_parents">
-                <i class="fas fa-family"></i> Ota-onalar
-            </button>
-            <button class="tab-btn" onclick="showTab('ranking')" id="tab_ranking">
-                <i class="fas fa-trophy"></i> Maktablar reytingi
-            </button>
             <button class="tab-btn" onclick="showTab('admin')" id="tab_admin" style="display:none"
                 data-i18n="tab_admin">
                 <i class="fas fa-users-cog"></i> Admin Panel
             </button>
-
         </div>
 
         <!-- 1. VILOYAT SVODI -->
@@ -581,43 +574,30 @@
                             <th rowspan="2">Vaqt</th>
                             <th rowspan="2">Sinflar</th>
                             <th rowspan="2">O'quvchilar</th>
-                            <th colspan="5"
-                                style="text-align:center; background: rgba(20, 184, 166, 0.15); backdrop-filter: blur(10px); color: #14b8a6; border-bottom: 2px solid #14b8a6;">
-                                Sababli kelmaganlar</th>
-                            <th colspan="10"
-                                style="text-align:center; background: rgba(245, 158, 11, 0.15); backdrop-filter: blur(10px); color: #f59e0b; border-bottom: 2px solid #f59e0b;">
-                                Sababsiz kelmaganlar</th>
+                            <th colspan="5" style="text-align:center; background:#e0f2f1">Sababli kelmaganlar</th>
+                            <th colspan="10" style="text-align:center; background:#fff3e0">Sababsiz kelmaganlar</th>
                             <th rowspan="2">Davomat %</th>
                             <th rowspan="2">Manba</th>
                             <th rowspan="2">Mas'ul</th>
                         </tr>
                         <tr style="font-size: 10px;">
                             <!-- Sababli -->
-                            <th title="Kasalligi" style="background: rgba(20, 184, 166, 0.05); color: #14b8a6;">Kas.
-                            </th>
-                            <th title="Tadbirlar" style="background: rgba(20, 184, 166, 0.05); color: #14b8a6;">Tad.
-                            </th>
-                            <th title="Oilaviy" style="background: rgba(20, 184, 166, 0.05); color: #14b8a6;">Oil.</th>
-                            <th title="Ijtimoiy" style="background: rgba(20, 184, 166, 0.05); color: #14b8a6;">Ijt.</th>
-                            <th title="Boshqa" style="background: rgba(20, 184, 166, 0.05); color: #14b8a6;">Bos.</th>
+                            <th title="Kasalligi">Kas.</th>
+                            <th title="Tadbirlar">Tad.</th>
+                            <th title="Oilaviy">Oil.</th>
+                            <th title="Ijtimoiy">Ijt.</th>
+                            <th title="Boshqa">Bos.</th>
                             <!-- Sababsiz -->
-                            <th title="Muntazam" style="background: rgba(245, 158, 11, 0.05); color: #f59e0b;">Mun.</th>
-                            <th title="Qidiruv" style="background: rgba(245, 158, 11, 0.05); color: #f59e0b;">Qid.</th>
-                            <th title="Chet el" style="background: rgba(245, 158, 11, 0.05); color: #f59e0b;">Ch.el</th>
-                            <th title="Bo‘yin tovlagan" style="background: rgba(245, 158, 11, 0.05); color: #f59e0b;">
-                                Bo‘y.</th>
-                            <th title="Ishlab yurgan" style="background: rgba(245, 158, 11, 0.05); color: #f59e0b;">Ish
-                            </th>
-                            <th title="Qarshilik" style="background: rgba(245, 158, 11, 0.05); color: #f59e0b;">Qar.
-                            </th>
-                            <th title="Jazo/Tergov" style="background: rgba(245, 158, 11, 0.05); color: #f59e0b;">Jaz.
-                            </th>
-                            <th title="Nazoratsiz" style="background: rgba(245, 158, 11, 0.05); color: #f59e0b;">Naz.
-                            </th>
-                            <th title="Turmushga chiqqan" style="background: rgba(245, 158, 11, 0.05); color: #f59e0b;">
-                                Tur.</th>
-                            <th title="Boshqa sababsiz" style="background: rgba(245, 158, 11, 0.05); color: #f59e0b;">
-                                Bos.</th>
+                            <th title="Muntazam">Mun.</th>
+                            <th title="Qidiruv">Qid.</th>
+                            <th title="Chet el">Ch.el</th>
+                            <th title="Bo‘yin tovlagan">Bo‘y.</th>
+                            <th title="Ishlab yurgan">Ish</th>
+                            <th title="Qarshilik">Qar.</th>
+                            <th title="Jazo/Tergov">Jaz.</th>
+                            <th title="Nazoratsiz">Naz.</th>
+                            <th title="Turmushga chiqqan">Tur.</th>
+                            <th title="Boshqa sababsiz">Bos.</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -779,80 +759,7 @@
         </div>
     </div>
 
-    <!-- 7. OTA-ONALAR NAZORATI HISOBOTI -->
-    <div id="parentsView" class="report-view">
-        <div
-            style="display: flex; align-items: center; gap: 25px; margin-bottom: 30px; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
-            <img src="/assets/parents_logo.png" alt="Ota-onalar"
-                style="width: 120px; height: 120px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1);">
-            <div>
-                <h2 style="margin:0; font-size: 1.8rem; color: #fff;">Ota-onalar Nazorati</h2>
-                <p style="margin: 5px 0 0; color: #94a3b8;">Avtomatlashtirilgan ota-onalarni xabardor qilish tizimi
-                    statistikasi va boshqaruvi</p>
-            </div>
-        </div>
-        <h3 style="margin-bottom:20px"><i class="fas fa-users"></i> Ota-onalar qamrovi va statistikasi</h3>
-        <div class="summary-stats">
-            <div class="stat-card">
-                <h4>Jami ulangan ota-onalar</h4>
-                <div class="value" id="parent_total_count">0</div>
-            </div>
-            <div class="stat-card">
-                <h4>Eng faol hudud</h4>
-                <div class="value" id="parent_top_district" style="font-size:1.5rem">...</div>
-            </div>
-        </div>
-
-        <div class="controls">
-            <div class="filter-group">
-                <label>Hudud bo'yicha saralash</label>
-                <select id="parentDistrictFilter" onchange="loadParentList()">
-                    <option value="">Barcha hududlar</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Maktab bo'yicha saralash</label>
-                <select id="parentSchoolFilter" onchange="loadParentList()">
-                    <option value="">Barcha maktablar</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="ai-insight"
-            style="margin-top:20px; background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.2);">
-            <i class="fas fa-user-lock" style="color: #10b981;"></i>
-            <div class="ai-text" style="color: #a7f3d0;">
-                <b>Xavfsizlik eslatmasi:</b> O'zbekiston Respublikasining "Shaxsga doir ma'lumotlar to'g'risida"gi
-                qonuniga muvofiq, ota-onalarning telefon raqamlari maskalangan holda ko'rsatiladi. To'liq ma'lumotlar
-                faqat vakolatli adminlar uchun ochiq va barcha kirishlar audit jurnali (log)da qayd etiladi.
-            </div>
-        </div>
-
-        <div class="table-container">
-
-            <table id="parentsTable">
-                <thead>
-                    <tr>
-                        <th>Ota-ona (F.I.SH)</th>
-                        <th>O'quvchi (bola)</th>
-                        <th>Telefon</th>
-                        <th>Hudud</th>
-                        <th>Maktab</th>
-                        <th>Ulanish vaqti</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="rankingView" class="report-view">
-        <h3 style="margin-bottom:20px"><i class="fas fa-trophy"></i> Namunali maktablar reytingi</h3>
-        <div id="rankingContent"></div>
-    </div>
-
     <!-- 6. ADMIN (User Management) -->
-
     <div id="adminView" class="report-view">
         <h3 style="margin-bottom:20px"><i class="fas fa-users-cog"></i> Foydalanuvchilar boshqaruvi</h3>
         <div class="controls" style="margin-bottom:20px">
@@ -1125,17 +1032,8 @@
             const data = await apiFetch(`/api/stats/absentees?date=${date}`);
             const tbody = document.querySelector('#absentTable tbody');
             tbody.innerHTML = '';
-
-            // Add columns to the table header if not present
-            const thead = document.querySelector('#absentTable thead tr');
-            if (thead && !thead.innerHTML.includes('Sana')) {
-                thead.innerHTML = `<th>Sana</th>${thead.innerHTML}<th>Holat</th>`;
-            }
-
             data.forEach(item => {
-                const statusColor = item.streak >= 3 ? '#ef4444' : '#facc15';
                 const row = `<tr>
-                    <td style="font-size: 0.8em; color: #94a3b8;">${item.date}</td>
                     <td>${item.district}</td>
                     <td>${item.school}</td>
                     <td>${item.class}</td>
@@ -1143,7 +1041,6 @@
                     <td>${item.address}</td>
                     <td>${item.parent_name}</td>
                     <td>${item.parent_phone}</td>
-                    <td><span class="status-badge" style="background:${statusColor}; color:#000; font-size:10px">${item.status} (${item.streak} kun)</span></td>
                 </tr>`;
                 tbody.innerHTML += row;
             });
@@ -1536,12 +1433,11 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 Ferghanaregdavomat. All rights reserved. <span style="opacity:0.5">v2.2-FIXED</span></p>
+            <p>&copy; 2026 Ferghanaregdavomat. All rights reserved. <span style="opacity:0.5">v2.1-FIXED</span></p>
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js?v=100"></script>
-    <script src="/premium/premium.js"></script>
 </body>
 
 </html>

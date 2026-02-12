@@ -169,6 +169,8 @@
                     localStorage.setItem('dashboard_role', data.role);
                     localStorage.setItem('dashboard_district', data.district);
                     localStorage.setItem('dashboard_school', data.school);
+                    localStorage.setItem('dashboard_fio', data.fio);
+                    localStorage.setItem('dashboard_phone', data.phone);
                     window.location.href = 'dashboard.html';
                 } else {
                     const errorData = await res.json().catch(() => ({}));

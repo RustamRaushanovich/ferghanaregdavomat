@@ -178,6 +178,11 @@ const attendanceWizard = new Scenes.WizardScene(
             return;
         }
 
+        if (ctx.message.text && ctx.message.text.startsWith('/')) {
+            try { await ctx.scene.leave(); } catch (e) { }
+            return next();
+        }
+
         if (ctx.message.contact) {
             ctx.wizard.state.data.phone = ctx.message.contact.phone_number;
         } else {
@@ -344,8 +349,14 @@ const attendanceWizard = new Scenes.WizardScene(
     // 28. LOOP
     async (ctx) => {
         if (checkNav(ctx)) return;
-        const d = ctx.wizard.state.data;
-        ctx.wizard.state.current.parent_phone = ctx.message.text;
+        const phone = ctx.message.text ? ctx.message.text.trim() : "";
+        const cleanPhone = phone.replace(/[^0-9]/g, '');
+
+        if (cleanPhone.length < 7 || cleanPhone.length > 15) {
+            return ctx.reply("❌ <b>Xato!</b> Telefon raqamini to'g'ri formatda kiriting (Masalan: +998901234567). Faqat raqamlardan iborat bo'lishi shart.", { parse_mode: "HTML" });
+        }
+
+        ctx.wizard.state.current.parent_phone = phone;
         d.students_list.push(ctx.wizard.state.current);
 
         if (d.students_list.length < d.sababsiz_jami) {
@@ -360,7 +371,11 @@ const attendanceWizard = new Scenes.WizardScene(
     // 29. INSPEKTOR
     async (ctx) => {
         if (checkNav(ctx)) return;
-        ctx.wizard.state.data.inspector = ctx.message.text;
+        const inspector = ctx.message.text ? ctx.message.text.trim() : "";
+        if (inspector.length < 3) {
+            return ctx.reply("❌ <b>Xato!</b> Inspektor-psixologning F.I.SH. kiritish majburiy. Iltimos, to'liq yozing:", { parse_mode: "HTML" });
+        }
+        ctx.wizard.state.data.inspector = inspector;
 
         const uid = ctx.from.id;
         const isPro = ctx.wizard.state.forced_role === 'pro' || db.checkPro(uid);

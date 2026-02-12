@@ -81,7 +81,37 @@ async function exportToExcel(date) {
             }
         }
 
-        const entriesRes = await db.query(`SELECT district, count(school) as entries, sum(classes_count) as classes, sum(total_students) as students, sum(sababli_kasal) as sk, sum(sababli_tadbirlar) as st, sum(sababli_oilaviy) as so, sum(sababli_ijtimoiy) as si, sum(sababli_boshqa) as sb, sum(sababsiz_muntazam) as sm, sum(sababsiz_qidiruv) as sq, sum(sababsiz_chetel) as sc, sum(sababsiz_boyin) as sboy, sum(sababsiz_ishlab) as si_ish, sum(sababsiz_qarshilik) as sqar, sum(sababsiz_jazo) as sj, sum(sababsiz_nazoratsiz) as sn, sum(sababsiz_boshqa) as sb_ss, sum(sababsiz_turmush) as stur, sum(sababsiz_jami) as ss_jami, sum(total_absent) as t_absent FROM attendance WHERE date = $1 GROUP BY district`, [targetDate]);
+        const entriesRes = await db.query(`
+            WITH latest_attendance AS (
+                SELECT DISTINCT ON (district, school) *
+                FROM attendance
+                WHERE date = $1
+                ORDER BY district, school, id DESC
+            )
+            SELECT 
+                district, 
+                count(school) as entries, 
+                sum(classes_count) as classes, 
+                sum(total_students) as students, 
+                sum(sababli_kasal) as sk, 
+                sum(sababli_tadbirlar) as st, 
+                sum(sababli_oilaviy) as so, 
+                sum(sababli_ijtimoiy) as si, 
+                sum(sababli_boshqa) as sb, 
+                sum(sababsiz_muntazam) as sm, 
+                sum(sababsiz_qidiruv) as sq, 
+                sum(sababsiz_chetel) as sc, 
+                sum(sababsiz_boyin) as sboy, 
+                sum(sababsiz_ishlab) as si_ish, 
+                sum(sababsiz_qarshilik) as sqar, 
+                sum(sababsiz_jazo) as sj, 
+                sum(sababsiz_nazoratsiz) as sn, 
+                sum(sababsiz_boshqa) as sb_ss, 
+                sum(sababsiz_turmush) as stur, 
+                sum(sababsiz_jami) as ss_jami, 
+                sum(total_absent) as t_absent 
+            FROM latest_attendance 
+            GROUP BY district`, [targetDate]);
         const entries = entriesRes.rows;
 
         let v_schools = 0, v_entries = 0, v_classes = 0, v_students = 0, v_tabsent = 0;
@@ -118,18 +148,53 @@ async function exportToExcel(date) {
 
         sheet1.getColumn(1).width = 5; sheet1.getColumn(2).width = 25; for (let c = 3; c <= 24; c++) sheet1.getColumn(c).width = 11;
 
-        const sheet2 = workbook.addWorksheet("Sababsiz O'quvchilar");
         sheet2.columns = [
-            { header: '№', key: 'id', width: 5 }, { header: 'Tuman', key: 'district', width: 25 }, { header: 'Maktab', key: 'school', width: 20 },
-            { header: 'Sinf', key: 'class', width: 10 }, { header: 'F.I.SH', key: 'name', width: 35 }, { header: 'Manzil', key: 'address', width: 40 },
-            { header: 'Ota-onasi', key: 'parent', width: 25 }, { header: 'Tel', key: 'phone', width: 15 }, { header: 'Inspektor', key: 'inspector', width: 25 }
+            { header: '№', key: 'id', width: 5 },
+            { header: 'Sana', key: 'date', width: 12 },
+            { header: 'Tuman', key: 'district', width: 25 },
+            { header: 'Maktab', key: 'school', width: 20 },
+            { header: 'Sinf', key: 'class', width: 10 },
+            { header: 'F.I.SH', key: 'name', width: 35 },
+            { header: 'Manzil', key: 'address', width: 40 },
+            { header: 'Ota-onasi', key: 'parent', width: 25 },
+            { header: 'Tel', key: 'phone', width: 15 },
+            { header: 'Inspektor', key: 'inspector', width: 25 },
+            { header: 'Holat', key: 'status', width: 15 }
         ];
         sheet2.getRow(1).font = { bold: true }; sheet2.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEEEEEE' } };
 
-        const absentsRes = await db.query(`SELECT a.district, a.school, s.class, s.name, s.address, s.parent_name, s.parent_phone, a.inspector FROM absent_students s JOIN attendance a ON s.attendance_id = a.id WHERE a.date = $1`, [targetDate]);
-        absentsRes.rows.forEach((r, i) => {
-            sheet2.addRow({ id: i + 1, district: r.district, school: r.school, class: r.class, name: r.name, address: r.address, parent: r.parent_name, phone: r.parent_phone, inspector: r.inspector });
-        });
+        const absentsRes = await db.query(`
+            SELECT a.date, a.district, a.school, s.class, s.name, s.address, s.parent_name, s.parent_phone, a.inspector 
+            FROM absent_students s 
+            JOIN attendance a ON s.attendance_id = a.id 
+            WHERE a.date = $1`, [targetDate]);
+
+        for (let i = 0; i < absentsRes.rows.length; i++) {
+            const r = absentsRes.rows[i];
+            // Calculate consecutive days
+            const streakRes = await db.query(`
+                SELECT count(DISTINCT a.date) as streak
+                FROM absent_students s
+                JOIN attendance a ON s.attendance_id = a.id
+                WHERE s.name = $1 AND a.school = $2 AND a.district = $3 AND a.date <= $4
+            `, [r.name, r.school, r.district, targetDate]);
+            const streak = parseInt(streakRes.rows[0].streak) || 1;
+            const status = streak >= 3 ? "🔴 Muntazam" : "🟡 Odatiy";
+
+            sheet2.addRow({
+                id: i + 1,
+                date: r.date,
+                district: r.district,
+                school: r.school,
+                class: r.class,
+                name: r.name,
+                address: r.address,
+                parent: r.parent_name,
+                phone: r.parent_phone,
+                inspector: r.inspector,
+                status: status
+            });
+        }
 
         const assetsDir = path.resolve(__dirname, '../../assets');
         if (!fs.existsSync(assetsDir)) fs.mkdirSync(assetsDir, { recursive: true });
@@ -161,7 +226,11 @@ async function exportDistrictExcel(district, date) {
 
         for (let r = 2; r <= 3; r++) { sheet1.getRow(r).height = 40; for (let c = 1; c <= 22; c++) setStyle(sheet1.getCell(r, c), { bold: true, fill: c >= 12 ? 'FFF8CBAD' : 'FFC6E0B4', size: 9 }); }
 
-        const entriesRes = await db.query(`SELECT * FROM attendance WHERE date = $1`, [targetDate]);
+        const entriesRes = await db.query(`
+            SELECT DISTINCT ON (district, school) *
+            FROM attendance
+            WHERE date = $1
+            ORDER BY district, school, id DESC`, [targetDate]);
         const tumanEntries = entriesRes.rows.filter(e => normalizeKey(e.district) === normD);
 
         let v_cl = 0, v_st = 0, v_tab = 0;
@@ -195,9 +264,28 @@ async function getViloyatSvod(date) {
         const yesterday = new Date(targetDate); yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-        const entriesRes = await db.query(`SELECT district, count(school) as entries, sum(total_students) as students, sum(sababli_jami) as sababli, sum(sababsiz_jami) as sababsiz, sum(total_absent) as total_absent, avg(percent) as avg_percent FROM attendance WHERE date = $1 GROUP BY district`, [targetDate]);
+        const entriesRes = await db.query(`
+            WITH latest_attendance AS (
+                SELECT DISTINCT ON (district, school) *
+                FROM attendance
+                WHERE date = $1
+                ORDER BY district, school, id DESC
+            )
+            SELECT district, count(school) as entries, sum(total_students) as students, sum(sababli_jami) as sababli, sum(sababsiz_jami) as sababsiz, sum(total_absent) as total_absent, avg(percent) as avg_percent 
+            FROM latest_attendance 
+            GROUP BY district`, [targetDate]);
         const entries = entriesRes.rows;
-        const yesterdayEntriesRes = await db.query(`SELECT district, avg(percent) as avg_percent FROM attendance WHERE date = $1 GROUP BY district`, [yesterdayStr]);
+
+        const yesterdayEntriesRes = await db.query(`
+            WITH yesterday_latest AS (
+                SELECT DISTINCT ON (district, school) percent, district
+                FROM attendance
+                WHERE date = $1
+                ORDER BY district, school, id DESC
+            )
+            SELECT district, avg(percent) as avg_percent 
+            FROM yesterday_latest 
+            GROUP BY district`, [yesterdayStr]);
         const yesterdayEntries = yesterdayEntriesRes.rows;
 
         return allDistricts.map(dName => {
@@ -229,7 +317,11 @@ async function getTumanSvod(district, date) {
         const dbKey = Object.keys(schoolsDb).find(k => normalizeKey(k) === normDist);
         const districtSchools = schoolsDb[dbKey || district] || [];
 
-        const entriesRes = await db.query(`SELECT * FROM attendance WHERE date = $1`, [date]);
+        const entriesRes = await db.query(`
+            SELECT DISTINCT ON (district, school) *
+            FROM attendance
+            WHERE date = $1
+            ORDER BY district, school, id DESC`, [date]);
         const tumanEntries = entriesRes.rows.filter(e => normalizeKey(e.district) === normDist);
 
         return districtSchools.map(sName => {
@@ -242,8 +334,28 @@ async function getTumanSvod(district, date) {
 
 async function getTodayAbsentsDetails(date) {
     try {
-        const res = await db.query(`SELECT a.district, a.school, s.class, s.name, s.address, s.parent_name, s.parent_phone FROM absent_students s JOIN attendance a ON s.attendance_id = a.id WHERE a.date = $1`, [date]);
-        return res.rows;
+        const res = await db.query(`
+            SELECT a.date, a.district, a.school, s.class, s.name, s.address, s.parent_name, s.parent_phone, a.inspector 
+            FROM absent_students s 
+            JOIN attendance a ON s.attendance_id = a.id 
+            WHERE a.date = $1`, [date]);
+
+        const finalRows = [];
+        for (const r of res.rows) {
+            const streakRes = await db.query(`
+                SELECT count(DISTINCT a.date) as streak
+                FROM absent_students s
+                JOIN attendance a ON s.attendance_id = a.id
+                WHERE s.name = $1 AND a.school = $2 AND a.district = $3 AND a.date <= $4
+            `, [r.name, r.school, r.district, date]);
+            const streak = parseInt(streakRes.rows[0].streak) || 1;
+            finalRows.push({
+                ...r,
+                streak: streak,
+                status: streak >= 3 ? "Muntazam" : "Odatiy"
+            });
+        }
+        return finalRows;
     } catch (e) { return []; }
 }
 

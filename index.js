@@ -18,6 +18,13 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
+// Load Parent Bot
+try {
+    require('./parent_bot');
+} catch (e) {
+    console.error("Parent Bot Load Error:", e.message);
+}
+
 const { formatAttendanceReport } = require('./src/utils/reports');
 
 const { USERS, tokens, generateToken, saveUsers } = require('./src/utils/auth');
@@ -155,6 +162,54 @@ app.use('/api/premium', auth, premiumRoutes);
 
 const stage = new Scenes.Stage([attendanceWizard, broadcastScene]);
 bot.use(session());
+
+// --- GLOBAL COMMANDS (Work even inside scenes) ---
+bot.start(async (ctx) => {
+    console.log(`[START] User: ${ctx.from.id}`);
+
+    // Leave any active scene to reset
+    try { await ctx.scene.leave(); } catch (e) { }
+
+    const { date, day } = getTodayInfo();
+    const caption = `🌸 <b>Assalomu alaykum!</b>\nFarg'ona viloyati maktabgacha va maktab ta'limi boshqarmasi tizimidagi <b>@Ferghanaregdavomat_bot</b> ga xush kelibsiz.\n\n📅 <b>Bugungi sana:</b> ${date} (${day})\n\nBiz bilan hamkor bo'lganingiz uchun yana bir bor tabriklaymiz!\nKuningiz xayrli va mazmunli o'tsin! ✨`;
+
+    // Tugmalarni tayyorlash
+    let buttons = [["📊 Davomat kiritish"]];
+
+    const uid = Number(ctx.from.id);
+    const isPro = db.checkPro(uid);
+
+    // Admin bo'lsa, Admin Panel tugmasini qo'shish
+    if (config.ALL_ADMINS.map(Number).includes(uid)) {
+        buttons.push(["⚙️ Admin Panel"]);
+    }
+
+    // PRO Analitika button for PRO users (School level)
+    if (isPro) {
+        buttons.push(["📊 PRO Analitika"]);
+    }
+
+    buttons.push(["👤 Mening Profilim", "📊 Mening Statistikam"]);
+    buttons.push(["ℹ️ Dastur haqida", "📖 Yo'riqnoma"]);
+
+    try {
+        if (fs.existsSync(LOGO_PATH)) {
+            await ctx.replyWithPhoto({ source: LOGO_PATH }, {
+                caption: caption,
+                parse_mode: 'HTML',
+                ...Markup.keyboard(buttons).resize()
+            });
+        } else {
+            await ctx.reply(caption, { parse_mode: 'HTML', ...Markup.keyboard(buttons).resize() });
+        }
+    } catch (e) {
+        await ctx.reply(caption, Markup.keyboard(buttons).resize());
+    }
+});
+
+bot.command("admin", (ctx) => admin.showAdminPanel(ctx));
+bot.command("dashboard", (ctx) => ctx.replyWithHTML("🌐 <b>ONLINE DASHBOARD (SVOD)</b>\n\n👉 <a href='https://ferghanaregdavomat.onrender.com/dashboard.html'>YORDAMCHI DASHBOARD</a>"));
+
 bot.use(stage.middleware());
 
 // --- AUTOMATED REPORTS (SCHEDULER) ---
@@ -461,49 +516,7 @@ function getTodayInfo() {
     return { date, day: days[now.getDay()] };
 }
 
-// --- COMMANDS ---
-bot.start(async (ctx) => {
-    console.log(`[START] User: ${ctx.from.id}`);
-    const { date, day } = getTodayInfo();
-    const caption = `🌸 <b>Assalomu alaykum!</b>\nFarg'ona viloyati maktabgacha va maktab ta'limi boshqarmasi tizimidagi <b>@Ferghanaregdavomat_bot</b> ga xush kelibsiz.\n\n📅 <b>Bugungi sana:</b> ${date} (${day})\n\nBiz bilan hamkor bo'lganingiz uchun yana bir bor tabriklaymiz!\nKuningiz xayrli va mazmunli o'tsin! ✨`;
 
-    // Tugmalarni tayyorlash
-    let buttons = [["Davomat kiritish"]];
-
-    const uid = Number(ctx.from.id);
-    const isPro = db.checkPro(uid);
-
-    // Admin bo'lsa, Admin Panel tugmasini qo'shish
-    if (config.ALL_ADMINS.map(Number).includes(uid)) {
-        buttons.push(["⚙️ Admin Panel"]);
-    }
-
-    // PRO Analitika button for PRO users (School level)
-    if (isPro) {
-        buttons.push(["📊 PRO Analitika"]);
-    }
-
-    buttons.push(["👤 Mening Profilim", "📊 Mening Statistikam"]);
-    buttons.push(["ℹ️ Dastur haqida", "📖 Yo'riqnoma"]);
-
-    try {
-        if (fs.existsSync(LOGO_PATH)) {
-            await ctx.replyWithPhoto({ source: LOGO_PATH }, {
-                caption: caption,
-                parse_mode: 'HTML',
-                ...Markup.keyboard(buttons).resize()
-            });
-        } else {
-            await ctx.reply(caption, { parse_mode: 'HTML', ...Markup.keyboard(buttons).resize() });
-        }
-    } catch (e) {
-        await ctx.reply(caption, Markup.keyboard(buttons).resize());
-    }
-});
-
-bot.command("admin", (ctx) => admin.showAdminPanel(ctx));
-bot.hears("⚙️ Admin Panel", (ctx) => admin.showAdminPanel(ctx));
-bot.command("dashboard", (ctx) => ctx.replyWithHTML("🌐 <b>Veb-shakl orqali kiritish:</b>\n\nAgarda sizga brauzer orqali kiritish qulay bo'lsa, quyidagi havoladan foydalaning:\n\n👉 <a href='https://ferghanaregdavomat.onrender.com'>Davomat Veb-Formasi</a>"));
 
 // --- ADMIN HANDLERS ---
 bot.hears("👥 Pro Ro'yxat", (ctx) => admin.handleProList(ctx));
@@ -557,52 +570,7 @@ bot.hears("📥 Tuman hisoboti (Excel)", async (ctx) => {
 });
 
 // --- START COMMAND ---
-bot.start(async (ctx) => {
-    const firstName = ctx.from.first_name || 'Foydalanuvchi';
-
-    const welcomeText = `👋 <b>Assalomu alaykum, ${firstName}!</b>\n\n` +
-        `🎓 <b>Farg'ona viloyati Maktabgacha va maktab ta'limi boshqarmasi</b>\n` +
-        `📊 <b>Davomat Monitoring Tizimi</b>\n\n` +
-        `Bu bot orqali siz kunlik davomat ma'lumotlarini kiritishingiz va statistikani kuzatishingiz mumkin.\n\n` +
-        `🌐 <b>Web-sahifa orqali kirish:</b>\n` +
-        `Agar brauzerda ishla shingiz qulay bo'lsa, quyidagi tugmalardan foydalaning:`;
-
-    const keyboard = Markup.inlineKeyboard([
-        [
-            Markup.button.url('🌐 Web Dashboard', 'https://ferghanaregdavomat.onrender.com/dashboard.html'),
-            Markup.button.url('📝 Davomat kiritish', 'https://ferghanaregdavomat.onrender.com/davomat.html')
-        ],
-        [
-            Markup.button.url('🔐 Login sahifasi', 'https://ferghanaregdavomat.onrender.com/login.html')
-        ]
-    ]);
-
-    // Send logo if exists
-    if (fs.existsSync(LOGO_PATH)) {
-        await ctx.replyWithPhoto(
-            { source: LOGO_PATH },
-            {
-                caption: welcomeText,
-                parse_mode: 'HTML',
-                ...keyboard
-            }
-        );
-    } else {
-        await ctx.replyWithHTML(welcomeText, keyboard);
-    }
-
-    // Send main menu keyboard
-    const mainKeyboard = Markup.keyboard([
-        ['📊 Davomat kiritish', '📈 Statistika'],
-        ['👤 Mening Profilim', '📖 Yo\'riqnoma'],
-        ['ℹ️ Dastur haqida']
-    ]).resize();
-
-    await ctx.reply(
-        '📱 <b>Asosiy menyu:</b>\n\nQuyidagi tugmalardan birini tanlang:',
-        { parse_mode: 'HTML', ...mainKeyboard }
-    );
-});
+bot.hears("⚙️ Admin Panel", (ctx) => admin.showAdminPanel(ctx));
 
 // --- INFO HANDLER ---
 bot.hears("📖 Yo'riqnoma", async (ctx) => {
@@ -1182,7 +1150,7 @@ bot.hears("🏆 Reyting", async (ctx) => {
 bot.hears("🖥 Dashboard Logins", admin.handleDashboardLogins);
 
 // --- MAIN FLOW ---
-bot.hears("Davomat kiritish", (ctx) => {
+bot.hears(/^(📊 )?Davomat kiritish$/, (ctx) => {
     if (db.settings.vacation_mode && !config.ALL_ADMINS.includes(ctx.from.id)) {
         return ctx.reply("🔴 Hozir ta'til rejimi yoqilgan. Ma'lumot qabul qilinmaydi.");
     }

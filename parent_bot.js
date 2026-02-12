@@ -5,9 +5,12 @@ require('dotenv').config();
 const { getSchools } = require('./src/services/sheet');
 const topicsConfig = require('./src/config/topics');
 const { normalizeKey } = require('./src/utils/topics');
+const fs = require('fs');
+const path = require('path');
 
 // Parent Bot Instance
 const parentBot = new Telegraf(process.env.PARENT_BOT_TOKEN || process.env.BOT_TOKEN);
+const PARENT_LOGO = path.join(__dirname, 'assets', 'parents_logo.png');
 
 // Translations
 const STRINGS = {
@@ -242,19 +245,45 @@ async function finalize(ctx) {
 
 const stage = new Scenes.Stage([registrationWizard]);
 parentBot.use(session());
-parentBot.use(stage.middleware());
-
 parentBot.start(async (ctx) => {
+    try { await ctx.scene.leave(); } catch (e) { }
+
     const user = db.users_db[`parent_${ctx.chat.id}`];
     if (user && user.subscriptions && user.subscriptions.length > 0) {
         const s = STRINGS[user.lang || "uz_lat"];
-        return ctx.reply(s.main_menu, Markup.keyboard([[s.btn_add], [s.btn_my_schools, s.btn_profile]]).resize());
+        const mainKeyboard = Markup.keyboard([[s.btn_add], [s.btn_my_schools, s.btn_profile]]).resize();
+
+        if (fs.existsSync(PARENT_LOGO)) {
+            return ctx.replyWithPhoto({ source: PARENT_LOGO }, { caption: s.main_menu, ...mainKeyboard });
+        }
+        return ctx.reply(s.main_menu, mainKeyboard);
     }
+
+    // For new users, show language selection first, but maybe with a photo greeting
+    await ctx.reply("Tilni tanlang / Выберите язык:", Markup.keyboard([
+        ["🇺🇿 O'zbekcha", "🇺🇿 Ўзбекча", "🇷🇺 Русский"]
+    ]).resize());
     ctx.scene.enter('parent_reg_wizard');
 });
 
+parentBot.use(stage.middleware());
+
 parentBot.hears(/Yangi farzand|Добавить|Янги/, (ctx) => ctx.scene.enter('parent_reg_wizard'));
 
-parentBot.launch().then(() => console.log("Professional Parent Bot started..."));
+if (process.env.PARENT_BOT_TOKEN && process.env.PARENT_BOT_TOKEN !== process.env.BOT_TOKEN) {
+    parentBot.launch({
+        polling: { timeout: 60 }
+    }).then(() => {
+        console.log("✅ Professional Parent Bot started!");
+    }).catch(e => {
+        console.error("❌ Parent Bot Startup Error:", e.message);
+    });
+} else {
+    console.warn("⚠️ Parent Bot skipped: PARENT_BOT_TOKEN is missing or same as BOT_TOKEN. Please set separate tokens in Render env variables.");
+}
+
+parentBot.catch((err, ctx) => {
+    console.error(`Parent Bot Error: ${err}`);
+});
 
 module.exports = parentBot;
