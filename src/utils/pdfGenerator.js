@@ -45,7 +45,17 @@ function generateBildirgi(data) {
             doc.moveDown(2);
 
             // 3. Title
-            doc.fontSize(14).text("Bildirishnoma", { align: 'center', bold: true });
+            const fontPathBold = 'C:\\Windows\\Fonts\\arialbd.ttf';
+            if (fs.existsSync(fontPathBold)) {
+                doc.font(fontPathBold).fontSize(14).text("Bildirishnoma", { align: 'center' });
+            } else {
+                doc.fontSize(14).text("Bildirishnoma", { align: 'center' }); // Fallback if no bold font
+            }
+            // Switch back to regular font
+            if (fs.existsSync(fontPath)) {
+                doc.font(fontPath);
+            }
+
             doc.moveDown(1.5);
 
             // 4. Body text
@@ -57,7 +67,7 @@ function generateBildirgi(data) {
             const school = data.school || "________";
 
             doc.fontSize(12).text(
-                `      ${year} yilning «${day}» ${month} kuni, soat 10.00 ga (15.00 ga) qadar ${district} tumanidagi ${school}-sonli umumiy o'rta ta'lim maktabi hisobidagi quyidagi o'quvchilar sababsiz (muntazam) darsga kelmaganliklari bois, ularni ta'limga qaytarish so'raladi:`,
+                `      ${year} yilning «${day}» ${month} kuni, soat 10.00 ga (15.00 ga) qadar ${district} tumanidagi ${school} hisobidagi quyidagi o'quvchilar sababsiz (muntazam) darsga kelmaganliklari bois, ularni ta'limga qaytarish so'raladi:`,
                 { align: 'justify', lineGap: 4 }
             );
 
@@ -67,7 +77,7 @@ function generateBildirgi(data) {
             const students = data.students_list || [];
             students.forEach((s, index) => {
                 doc.moveDown(0.5);
-                const studentText = `      ${index + 1}. ${s.class || '___'}-sinf o'quvchisi ${s.name || '__________________________'}, yashash manzili: ${s.address || '________________________________'}, ota-onasining telefon raqami: ${s.parent_phone || '________________'};`;
+                const studentText = `      ${index + 1}. ${s.class || '___'}-sinf o'quvchisi ${s.name || '__________________________'}, yashash manzili: ${s.address || '________________________________'}, ota-onasining F.I.Sh: ${s.parent_name || '________________________'}, telefon raqami: ${s.parent_phone || '________________'};`;
                 doc.text(studentText, { align: 'justify', lineGap: 3 });
             });
 

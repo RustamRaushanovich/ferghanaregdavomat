@@ -19,16 +19,20 @@ require('moment/locale/ru');
 // Helper to get formatted date string
 function getDateString(lang) {
     const m = moment();
+    const daysUz = ["Yakshanba", "Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba"];
+    const daysRu = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
+    const monthsUz = ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avgust", "sentyabr", "oktyabr", "noyabr", "dekabr"];
+    const monthsUzCyr = ["январ", "феврал", "март", "апрел", "май", "июн", "июл", "август", "сентябр", "октябр", "ноябр", "декабр"];
+
     if (lang === 'uz_cyr') {
-        const months = ["январ", "феврал", "март", "апрел", "май", "июн", "июл", "август", "сентябр", "октябр", "ноябр", "декабр"];
         const days = ["Якшанба", "Душанба", "Сешанба", "Чоршанба", "Пайшанба", "Жума", "Шанба"];
-        return `📅 Бугун: ${days[m.day()]}, ${m.date()}-${months[m.month()]} ${m.year()}-йил`;
+        return `📅 Бугун: ${days[m.day()]}, ${m.date()}-${monthsUzCyr[m.month()]} ${m.year()}-йил`;
     } else if (lang === 'ru') {
         m.locale('ru');
-        return `📅 Сегодня: ${m.format('dddd, D MMMM YYYY')} года`;
+        // Example: Четверг, 12 февраля 2026 года
+        return `📅 Сегодня: ${daysRu[m.day()]}, ${m.date()} ${m.format('MMMM')} ${m.year()} года`;
     } else {
-        m.locale('uz-latn');
-        return `📅 Bugun: ${m.format('dddd, D-MMMM YYYY')}-yil`;
+        return `📅 Bugun: ${daysUz[m.day()]}, ${m.date()}-${monthsUz[m.month()]} ${m.year()}-yil`;
     }
 }
 
@@ -146,21 +150,40 @@ const registrationWizard = new Scenes.WizardScene(
             await ctx.replyWithPhoto({ source: PARENT_LOGO }, {
                 caption: fullMsg,
                 parse_mode: 'HTML',
-                ...Markup.keyboard([[Markup.button.contactRequest(s.btn_phone)]]).resize()
+                ...Markup.keyboard([
+                    [Markup.button.contactRequest(s.btn_phone)],
+                    [s.btn_back]
+                ]).resize()
             });
         } else {
-            await ctx.replyWithHTML(fullMsg, Markup.keyboard([[Markup.button.contactRequest(s.btn_phone)]]).resize());
+            await ctx.replyWithHTML(fullMsg, Markup.keyboard([
+                [Markup.button.contactRequest(s.btn_phone)],
+                [s.btn_back]
+            ]).resize());
         }
         return ctx.wizard.next();
     },
     // 3. FIO
     async (ctx) => {
+        const text = ctx.message.text;
+        const s = STRINGS[ctx.wizard.state.lang];
+
+        if (text === s.btn_back || text === "⬅️ Ortga" || text === "⬅️ Ортга" || text === "⬅️ Назад") {
+            await ctx.reply("Tilni tanlang / Выберите язык:", Markup.keyboard([
+                ["🇺🇿 O'zbekcha", "🇺🇿 Ўзбекча"],
+                ["🇷🇺 Русский"]
+            ]).resize());
+            return ctx.wizard.back();
+        }
+
         if (!ctx.message.contact) {
-            const s = STRINGS[ctx.wizard.state.lang];
-            return ctx.reply(s.ask_phone, Markup.keyboard([[Markup.button.contactRequest(s.btn_phone)]]).resize());
+            return ctx.reply(s.ask_phone, Markup.keyboard([
+                [Markup.button.contactRequest(s.btn_phone)],
+                [s.btn_back]
+            ]).resize());
         }
         ctx.wizard.state.phone = ctx.message.contact.phone_number.replace(/\D/g, '');
-        const s = STRINGS[ctx.wizard.state.lang];
+        // const s = STRINGS[ctx.wizard.state.lang];
         await ctx.reply(s.ask_fio, Markup.removeKeyboard());
         return ctx.wizard.next();
     },
@@ -333,6 +356,68 @@ parentBot.start(async (ctx) => {
         ["🇷🇺 Русский"]
     ]).resize());
     return ctx.scene.enter('parent_reg_wizard');
+});
+
+// --- Button Handlers ---
+
+// 1. My Schools
+parentBot.hears(['📋 Mening maktablarim', '📋 Менинг мактабларим', '📋 Мои школы'], async (ctx) => {
+    const user = db.users_db[`parent_${ctx.chat.id}`];
+    if (!user || !user.subscriptions || user.subscriptions.length === 0) {
+        return ctx.reply("Siz hali hech qanday maktabga ulanmagansiz. / Вы еще не подписаны ни на одну школу.");
+    }
+
+    const s = STRINGS[user.lang || "uz_lat"];
+    let msg = `<b>${s.btn_my_schools}:</b>\n\n`;
+
+    user.subscriptions.forEach((sub, i) => {
+        msg += `${i + 1}. <b>${sub.name}</b>\n   📍 ${sub.district}, ${sub.school}\n\n`;
+    });
+
+    ctx.replyWithHTML(msg);
+});
+
+// 2. Profile
+parentBot.hears(['👤 Profilim', '👤 Профилим', '👤 Профиль'], async (ctx) => {
+    const user = db.users_db[`parent_${ctx.chat.id}`];
+    if (!user) return ctx.reply("Profil topilmadi.");
+
+    const s = STRINGS[user.lang || "uz_lat"];
+    const msg = `<b>${s.btn_profile}</b>\n\n` +
+        `👤 <b>F.I.SH:</b> ${user.fio}\n` +
+        `📞 <b>Telefon:</b> +${user.phone}\n` +
+        `🌐 <b>Til:</b> ${user.lang}\n` +
+        `👶 <b>Farzandlar soni:</b> ${user.subscriptions ? user.subscriptions.length : 0} ta`;
+
+    ctx.replyWithHTML(msg);
+});
+
+// 3. Add Child (Already handled by regex below, but ensuring explicit match)
+parentBot.hears(['➕ Yangi farzand qo\'shish', '➕ Янги фарзанд қўшиш', '➕ Добавить ребенка'], (ctx) => ctx.scene.enter('parent_reg_wizard'));
+
+// 4. Change Language
+parentBot.hears(['🌐 Tilni o\'zgartirish', '🌐 Тилни ўзгартириш', '🌐 Сменить язык'], async (ctx) => {
+    await ctx.reply("Tilni tanlang / Выберите язык:", Markup.keyboard([
+        ["🇺🇿 O'zbekcha", "🇺🇿 Ўзбекча"],
+        ["🇷🇺 Русский"]
+    ]).resize());
+    ctx.scene.enter('parent_reg_wizard'); // Re-enter wizard but looking for lang input? 
+    // Actually wizard step 1 expects just button press. 
+    // But wizard starts with step 1 (index 0). 
+    // Step 1 handler replies with "Tilni tanlang..." and waits for next.
+    // So if we just enter scene, it runs step 1 logic (replying).
+    // But Step 1 handler is configured to REPLY first. 
+    // Let's modify wizard to accept text in step 1 if it matches lang?
+    // Current wizard step 1 just replies and returns next.
+    // Step 2 handles the text.
+    // So just entering scene is fine, it will ask again.
+});
+
+// Handle Language Selection Text directly if outside wizard (edge case)
+parentBot.hears(["🇺🇿 O'zbekcha", "🇺🇿 Ўзбекча", "🇷🇺 Русский"], async (ctx) => {
+    // If caught here, it means user clicked lang button but wasn't in wizard.
+    // Send them to wizard step 2 logic manually or just start wizard.
+    ctx.scene.enter('parent_reg_wizard');
 });
 
 parentBot.hears(/Yangi farzand|Добавить|Янги/, (ctx) => ctx.scene.enter('parent_reg_wizard'));
