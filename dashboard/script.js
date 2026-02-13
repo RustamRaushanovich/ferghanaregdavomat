@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     startCountdown();
     fetchWeather();
     injectTestModeBanner();
+    initHolidayGreeting();
+    updateProMiniBtn();
+
 
     // Admin Mode Indicator
     if (localStorage.getItem('dashboard_token')) {
@@ -567,7 +570,8 @@ async function fetchWeather() {
 }
 
 async function checkProUser() {
-    const phone = document.getElementById('phone').value.replace(/\D/g, '');
+    const phoneInput = document.getElementById('phone');
+    const phone = phoneInput ? phoneInput.value.replace(/\D/g, '') : '';
     if (!phone) return;
     try {
         const res = await fetch(`/api/check-pro?phone=${phone}`);
@@ -575,8 +579,16 @@ async function checkProUser() {
         isPro = data.is_pro;
         const badge = document.getElementById('premiumBadge');
         if (badge && isPro) badge.classList.remove('hidden');
+
+        // Update Global PRO state if needed
+        if (isPro) {
+            localStorage.setItem('d_is_pro', 'true');
+            localStorage.setItem('d_pro_expire', data.pro_expire_date);
+            localStorage.setItem('d_pro_purchase', data.pro_purchase_date);
+        }
     } catch (e) { }
 }
+
 
 function nextStep(step) {
     if (!validateStep(currentStep)) return;
@@ -803,8 +815,45 @@ if (form) form.addEventListener('submit', async (e) => {
 });
 
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js');
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+        console.log('SW Registered');
+        subscribeToPush(reg);
+    });
 }
+
+async function subscribeToPush(registration) {
+    try {
+        const sub = await registration.pushManager.getSubscription();
+        if (sub) return; // Already subscribed
+
+        const publicVapidKey = 'BD1ZLasi98wuNKAGl9VBehMVJxAd7_6iB2fJxuK8cWp7NMVljHkDM_cZuqkHo5kpRD1tkHIA6zfihbawpKfvin8';
+        const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+        });
+
+        await fetch('/api/push/subscribe', {
+            method: 'POST',
+            body: JSON.stringify(subscription),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        console.log('Push Subscribed');
+    } catch (e) {
+        console.warn('Push registration failed:', e);
+    }
+}
+
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
 
 function displayUserInfo() {
     const userContainer = document.getElementById('userProfileDisplay');
@@ -921,7 +970,101 @@ function displayUserInfo() {
         const el = document.getElementById(id);
         if (el) el.textContent = val;
     });
+
+    // Hide PRO card if already Superadmin or Pro logic
+    const proCard = document.getElementById('proSubCard');
+    const proDetails = document.getElementById('proDetails');
+    const isProStored = localStorage.getItem('d_is_pro') === 'true';
+    const isActuallyPro = role === 'superadmin' || isPro || isProStored;
+
+    if (isActuallyPro) {
+        if (proCard) proCard.style.display = 'none';
+        if (proDetails && role !== 'superadmin') {
+            proDetails.style.display = 'block';
+            const expire = localStorage.getItem('d_pro_expire');
+            const purchase = localStorage.getItem('d_pro_purchase');
+            document.getElementById('proPurchaseDate').textContent = purchase || '-';
+            document.getElementById('proExpireDate').textContent = expire || '-';
+
+            // Calculate days left
+            if (expire) {
+                const diff = new Date(expire) - new Date();
+                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                document.getElementById('proDaysLeft').textContent = days > 0 ? `${days} kun qoldi` : "Muddati tugagan";
+                if (days <= 0) document.getElementById('proDaysLeft').style.background = '#ef4444';
+            }
+        }
+    } else {
+        if (proCard) proCard.style.display = 'block';
+        if (proDetails) proDetails.style.display = 'none';
+    }
+
+    updateProMiniBtn(isActuallyPro);
 }
+
+const UZ_HOLIDAYS = {
+    "01-01": { uz: "Yangi yil bayrami bilan tabriklaymiz! 🎉", ru: "C Новым годом! 🎉" },
+    "14-01": { uz: "Vatan himoyachilari kuni muborak bo'lsin! 🛡️", ru: "С Днем защитников Родины! 🛡️" },
+    "08-03": { uz: "Xalqaro xotin-qizlar kuni muborak bo'lsin! 🌷", ru: "С Международным женским днем! 🌷" },
+    "21-03": { uz: "Navro'z ayyomingiz muborak bo'lsin! 🌱", ru: "С праздником Навруз! 🌱" },
+    "09-05": { uz: "Xotira va qadrlash kuni. 🕯️", ru: "День памяти и почестей. 🕯️" },
+    "01-06": { uz: "Bolalarni himoya qilish kuni! 🎈", ru: "День защиты детей! 🎈" },
+    "01-09": { uz: "Mustaqillik kuni muborak bo'lsin! 🇺🇿", ru: "С Днем независимости! 🇺🇿" },
+    "01-10": { uz: "O'qituvchi va murabbiylar kuni muborak bo'lsin! 📚", ru: "С Днем учителей и наставников! 📚" },
+    "21-10": { uz: "O'zbek tili bayrami kuni muborak bo'lsin! 🗣️", ru: "С Днем узбекского языка! 🗣️" },
+    "18-11": { uz: "Davlat bayrog'i qabul qilingan kun! 🇺🇿", ru: "День принятия Государственного флага! 🇺🇿" },
+    "08-12": { uz: "Konstitutsiya kuni muborak bo'lsin! 📜", ru: "С Днем Конституции! 📜" }
+};
+
+function initHolidayGreeting() {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const key = `${day}-${month}`;
+
+    if (UZ_HOLIDAYS[key]) {
+        const lang = localStorage.getItem('lang') || 'uz';
+        const msg = UZ_HOLIDAYS[key][lang] || UZ_HOLIDAYS[key].uz;
+        const container = document.getElementById('holidayGreeting');
+        const textEl = document.getElementById('holidayText');
+        if (container && textEl) {
+            textEl.textContent = msg;
+            container.style.display = 'flex';
+        }
+    }
+}
+
+function updateProMiniBtn(isActuallyPro = null) {
+    if (isActuallyPro === null) {
+        const role = localStorage.getItem('dashboard_role');
+        const isProStored = localStorage.getItem('d_is_pro') === 'true';
+        isActuallyPro = role === 'superadmin' || isProStored;
+    }
+
+    const btn = document.getElementById('proMiniBtn');
+    if (btn) {
+        btn.style.display = isActuallyPro ? 'none' : 'flex';
+    }
+}
+
+
+function subscribePro() {
+    const s = {
+        uz: "PRO versiyaga o'tish uchun tizim administratori bilan bog'laning:\n\n📞 +998 90 588 47 00\n📧 support@davomat.uz",
+        ru: "Для перехода на PRO версию свяжитесь с системным администратором:\n\n📞 +998 90 588 47 00\n📧 support@davomat.uz"
+    };
+    const lang = localStorage.getItem('lang') || 'uz';
+    alert(s[lang] || s.uz);
+}
+
+function downloadArchiveReport() {
+    const date = document.getElementById('archiveReportDate').value;
+    if (!date) return alert("Iltimos, sanani tanlang!");
+    const token = localStorage.getItem('dashboard_token');
+    window.location.href = `/api/export/archive?date=${date}&token=${token}`;
+}
+
+
 
 function logout() {
     localStorage.removeItem('dashboard_token');
@@ -954,9 +1097,13 @@ function showTab(tabId) {
     if (tabId === 'students') loadAbsentDetails();
     if (tabId === 'recent') loadRecentActivity();
     if (tabId === 'parents') { loadParentStats(); loadParentList(); }
+    if (tabId === 'analysis') loadAnalysisData();
     if (tabId === 'ranking') showLeaderboard();
     if (tabId === 'profile') displayUserInfo();
-    if (tabId === 'admin') loadAdminPanel();
+    if (tabId === 'admin') loadAdminData();
+    if (tabId === 'reports' && !document.getElementById('archiveReportDate').value) {
+        document.getElementById('archiveReportDate').value = new Date().toISOString().split('T')[0];
+    }
 }
 
 async function showLeaderboard() {
@@ -1086,11 +1233,20 @@ async function loadParentList() {
             return;
         }
 
+        const role = localStorage.getItem('dashboard_role');
+        const isSuper = role === 'superadmin';
+
         data.forEach(p => {
-            const maskedPhone = p.phone.length > 7 ? p.phone.substring(0, 6) + '***' + p.phone.substring(p.phone.length - 2) : p.phone;
+            const phoneStr = (p.phone || '').toString();
+            const maskedPhone = isSuper ? phoneStr :
+                (phoneStr.length > 7 ? phoneStr.substring(0, 6) + '***' + phoneStr.substring(phoneStr.length - 2) : '***');
+
+            const fio = p.fio || '-';
+            const maskedFio = isSuper ? fio : fio.split(' ').map((n, i) => i === 0 ? n : '***').join(' ');
+
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><b>${p.fio || '-'}</b></td>
+                <td><b>${maskedFio}</b></td>
                 <td style="color:#818cf8">${maskedPhone}</td>
                 <td>${p.district || '-'}</td>
                 <td>${p.school || '-'}</td>
@@ -1148,51 +1304,61 @@ async function loadViloyatData() {
         }
 
         DISTRICTS_LIST.forEach(dName => {
-            // Retrieve from DB data or use default 0s
-            const row = dataMap[dName] || { district: dName, percent: 0, entries: 0, students: 0, sababli: 0, sababsiz: 0, avg_percent: 0 };
+            const row = dataMap[dName] || { district: dName, percent: 0, entries: 0, students: 0, classes: 0, sk: 0, st: 0, so: 0, si: 0, sb: 0, sababli: 0, sm: 0, sq: 0, sc: 0, sbt: 0, si_ish: 0, sqar: 0, sjaz: 0, snaz: 0, stur: 0, ssb: 0, sababsiz: 0, total_absent: 0, avg_percent: 0 };
 
             // Grid Card
             const card = document.createElement('div');
             card.className = 'district-card';
-            // Color logic
-            let bg = 'rgba(255,255,255,0.05)';
-            const p = row.avg_percent || row.percent || 0;
+            const p = row.avg_percent || 0;
 
-            if (p >= 90) bg = 'linear-gradient(135deg, #059669 0%, #10b981 100%)'; // Green
-            else if (p > 0 && p < 90) bg = 'linear-gradient(135deg, #be123c 0%, #e11d48 100%)'; // Red
-            else if (p === 0) bg = 'rgba(255,255,255,0.05)'; // Empty/Gray
+            if (p >= 90) bg = 'linear-gradient(135deg, #059669 0%, #10b981 100%)';
+            else if (p > 0 && p < 90) bg = 'linear-gradient(135deg, #be123c 0%, #e11d48 100%)';
+            else bg = 'rgba(255,255,255,0.05)';
 
             card.style.background = bg;
             card.innerHTML = `
                 <h4>${dName}</h4>
                 <div class="d-val">${parseFloat(p).toFixed(1)}%</div>
                 <div style="font-size:0.8rem; opacity:0.8">${row.entries || 0} ta maktab</div>
-             `;
+            `;
             grid.appendChild(card);
 
-            // Table Row
             if (tbody) {
-                const p = parseFloat(row.avg_percent) || 0;
-                let colorClass = '#64748b'; // Gray (No data)
+                let colorClass = '#64748b';
                 if (row.entries > 0) {
-                    if (p >= 95) colorClass = '#10b981'; // Green
-                    else if (p >= 85) colorClass = '#f59e0b'; // Yellow
-                    else colorClass = '#ef4444'; // Red
+                    if (p >= 95) colorClass = '#10b981';
+                    else if (p >= 85) colorClass = '#f59e0b';
+                    else colorClass = '#ef4444';
                 }
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                   <td>${dName}</td>
-                   <td><b>${row.entries || 0}</b></td>
-                   <td>${row.students || 0}</td>
-                   <td>${row.sababli || 0}</td>
-                   <td style="color:${row.sababsiz > 0 ? '#ef4444' : 'inherit'}"><b>${row.sababsiz || 0}</b></td>
-                   <td>${row.yesterday_percent || 0}%</td>
-                   <td><span style="padding:4px 12px; border-radius:10px; background:${colorClass}; color:white; font-weight:bold; box-shadow: 0 4px 10px ${colorClass}44">${p.toFixed(1)}%</span></td>
+                    <td>${dName}</td>
+                    <td style="text-align:center"><b>${row.entries || 0}</b></td>
+                    <td style="text-align:center">${row.classes || 0}</td>
+                    <td style="text-align:center">${row.students || 0}</td>
+                    <td style="text-align:center; color:#14b8a6">${row.sk || 0}</td>
+                    <td style="text-align:center; color:#14b8a6">${row.st || 0}</td>
+                    <td style="text-align:center; color:#14b8a6">${row.so || 0}</td>
+                    <td style="text-align:center; color:#14b8a6">${row.si || 0}</td>
+                    <td style="text-align:center; color:#14b8a6">${row.sb || 0}</td>
+                    <td style="text-align:center; color:#f59e0b">${row.sm || 0}</td>
+                    <td style="text-align:center; color:#f59e0b">${row.sq || 0}</td>
+                    <td style="text-align:center; color:#f59e0b">${row.sc || 0}</td>
+                    <td style="text-align:center; color:#f59e0b">${row.sbt || 0}</td>
+                    <td style="text-align:center; color:#f59e0b">${row.si_ish || 0}</td>
+                    <td style="text-align:center; color:#f59e0b">${row.sqar || 0}</td>
+                    <td style="text-align:center; color:#f59e0b">${row.sjaz || 0}</td>
+                    <td style="text-align:center; color:#f59e0b">${row.snaz || 0}</td>
+                    <td style="text-align:center; color:#f59e0b">${row.stur || 0}</td>
+                    <td style="text-align:center; color:#f59e0b">${row.ssb || 0}</td>
+                    <td style="text-align:center; font-weight:bold; color:#ef4444">${row.total_absent || 0}</td>
+                    <td style="text-align:center; opacity:0.6">${(parseFloat(row.yesterday_percent) || 0).toFixed(1)}%</td>
+                    <td style="text-align:center"><span style="padding:4px 10px; border-radius:10px; background:${colorClass}; color:white; font-weight:bold">${p.toFixed(1)}%</span></td>
+                    <td style="font-size:10px; opacity:0.6">${row.head_name || '-'}</td>
                 `;
                 tbody.appendChild(tr);
             }
-
             t_entries += (row.entries || 0);
             t_students += (row.students || 0);
             t_sababsiz += (row.sababsiz || 0);
@@ -1252,9 +1418,8 @@ async function loadTumanData() {
                 const getCellStyle = (val, color, isBold = false) => {
                     const num = parseInt(val) || 0;
                     const opacity = num > 0 ? 1 : 0.2;
-                    const bg = color === 'green' ? 'rgba(16,185,129,0.05)' : 'rgba(239,68,68,0.05)';
-                    const hex = color === 'green' ? '#10b981' : '#ef4444';
-                    return `style="background:${bg}; color:${hex}; opacity:${opacity}; font-weight:${num > 0 || isBold ? '600' : 'normal'}; text-align:center;"`;
+                    const hex = color === 'green' ? '#14b8a6' : '#f43f5e';
+                    return `style="color:${hex}; opacity:${opacity}; font-weight:${num > 0 || isBold ? '600' : 'normal'}; text-align:center;"`;
                 };
 
                 tr.innerHTML = `
@@ -1305,15 +1470,25 @@ async function loadAbsentDetails() {
         const tbody = document.querySelector('#absentTable tbody');
         if (!tbody) return;
         tbody.innerHTML = '';
+        const role = localStorage.getItem('dashboard_role');
+        const isSuper = role === 'superadmin';
+
         if (Array.isArray(data)) {
             data.forEach(row => {
+                const phoneStr = (row.parent_phone || '').toString();
+                const maskedPhone = isSuper ? phoneStr :
+                    (phoneStr.length > 7 ? phoneStr.substring(0, 6) + '***' + phoneStr.substring(phoneStr.length - 2) : '***');
+
+                const name = row.name || '-';
+                const maskedName = isSuper ? name : name.split(' ').map((n, i) => i === 0 ? n : '***').join(' ');
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${row.class}</td>
-                    <td><b>${row.name}</b></td>
-                    <td>${row.address}</td>
-                    <td>${row.parent_name}</td>
-                    <td><a href="tel:${row.parent_phone}">${row.parent_phone}</a></td>
+                    <td><b>${maskedName}</b></td>
+                    <td>${isSuper ? (row.address || '-') : '***'}</td>
+                    <td>${isSuper ? (row.parent_name || '-') : '***'}</td>
+                    <td>${isSuper ? `<a href="tel:${row.parent_phone}">${row.parent_phone}</a>` : `<span style="color:#818cf8">${maskedPhone}</span>`}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -1321,8 +1496,8 @@ async function loadAbsentDetails() {
     } catch (e) { console.error(e); }
 }
 
-let currentPage = 1;
-const itemsPerPage = 50;
+let monitorPage = 1;
+const monitorLimit = 20;
 
 
 async function loadAnalysisData() {
@@ -1468,88 +1643,92 @@ async function loadAnalysisData() {
 }
 
 async function loadRecentActivity(page = 1) {
-    currentPage = page;
-    const offset = (page - 1) * itemsPerPage;
+    monitorPage = page;
+    const offset = (page - 1) * monitorLimit;
     const tbody = document.querySelector('#recentTable tbody');
     if (!tbody) return;
 
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px"><i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px"><i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...</td></tr>';
     try {
-        recentPage = page;
-        const offset = (page - 1) * recentLimit;
-        const data = await apiFetch(`/api/stats/recent?limit=${recentLimit}&offset=${offset}`);
+        const data = await apiFetch(`/api/stats/recent?limit=${monitorLimit}&offset=${offset}`);
+        const rows = data.rows || [];
+        const total = data.total || 0;
 
-        const rows = data.rows || (Array.isArray(data) ? data : []);
-        const total = data.total || rows.length;
-
-        const tbody = document.querySelector('#recentTable tbody');
         tbody.innerHTML = '';
+        if (rows.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px">Ma\'lumotlar mavjud emas</td></tr>';
+            return;
+        }
 
         rows.forEach(item => {
             const sourceIcon = item.source === 'web' ? '<i class="fas fa-globe" style="color:#3b82f6" title="Web Sahifa"></i> web' : '<i class="fab fa-telegram" style="color:#0088cc" title="Telegram Bot"></i> bot';
             const d = item.date.split('-');
             const displayDate = d.length === 3 ? `${d[2]}.${d[1]}.${d[0]}` : item.date;
 
-            const row = `<tr>
+            const tr = `<tr>
                 <td style="color: #94a3b8; font-size: 0.9em;">${displayDate}</td>
                 <td style="font-weight: 500; color: #818cf8;">${item.time}</td>
                 <td>${item.district}</td>
-                <td>${item.school}</td>
-                <td style="text-align:center"><span class="status-badge ${item.percent >= 95 ? 'status-high' : 'status-low'}" style="font-size:11px">${(item.percent || 0).toFixed(1)}%</span></td>
-                <td style="text-align:center"><span style="color:${item.sababsiz_jami > 0 ? '#f43f5e' : '#10b981'}; font-weight:bold">${item.sababsiz_jami}</span></td>
+                <td><b>${item.school}</b></td>
+                <td style="text-align:center"><span class="status-badge ${item.percent >= 95 ? 'status-high' : 'status-low'}">${(item.percent || 0).toFixed(1)}%</span></td>
+                <td style="text-align:center; font-weight:bold; color:${item.sababsiz_jami > 0 ? '#f43f5e' : '#10b981'}">${item.sababsiz_jami || 0}</td>
                 <td style="text-align:center">${sourceIcon}</td>
                 <td style="font-size: 11px;">
                     ${item.fio}
-                    ${item.bildirgi ? `<br><a href="/api/admin/reports/download/${item.bildirgi.split(/[\\/]/).pop()}" target="_blank" style="color:#10b981; font-size:9px"><i class="fas fa-file-pdf"></i> Bildirgi</a>` : ''}
+                    ${item.bildirgi ? `<br><a href="/api/admin/reports/download/${item.bildirgi.split(/[\\/]/).pop()}" target="_blank" style="color:#10b981; font-size:10px; text-decoration:none;"><i class="fas fa-file-pdf"></i> Bildirgi</a>` : ''}
                 </td>
             </tr>`;
-            tbody.innerHTML += row;
+            tbody.innerHTML += tr;
         });
 
-        renderPagination(total, page);
+        renderMonitorPagination(total, page);
     } catch (e) {
-        document.querySelector('#recentTable tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#ef4444">Ma'lumotlarni yuklashda xatolik: ${e.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:#ef4444">Xatolik: ${e.message}</td></tr>`;
     }
 }
 
-function renderPagination(total, currentPage) {
-    let container = document.getElementById('recentPagination');
+function renderMonitorPagination(total, page) {
+    let container = document.getElementById('monitorPagination');
     if (!container) {
         const table = document.querySelector('#recentTable');
         if (table) {
             container = document.createElement('div');
             container.id = 'monitorPagination';
-            container.style.cssText = "display:flex; justify-content:center; margin-top:15px; gap:10px; align-items:center;";
-            table.parentNode.appendChild(container); // Append after table inside container
+            container.style.cssText = "display:flex; justify-content:center; margin-top:20px; gap:12px; align-items:center; padding:10px;";
+            table.parentNode.appendChild(container);
         }
     }
+    if (!container) return;
 
-    if (!container) return; // Should not happen
-
+    const totalPages = Math.ceil(total / monitorLimit);
     if (totalPages <= 1) {
-        container.innerHTML = '';
+        container.innerHTML = `<span style="opacity:0.6; font-size:0.9rem;">Jami: ${total} ta ma'lumot</span>`;
         return;
     }
 
     let html = '';
     // Previous
-    if (page > 1) {
-        html += `<button onclick="loadRecentActivity(${page - 1})" style="padding:5px 15px; background:#e2e8f0; border:none; border-radius:6px; cursor:pointer;">&laquo; Ortga</button>`;
-    } else {
-        html += `<button disabled style="padding:5px 15px; background:#f1f5f9; color:#cbd5e1; border:none; border-radius:6px;">&laquo; Ortga</button>`;
-    }
+    html += `<button onclick="loadRecentActivity(${page - 1})" ${page === 1 ? 'disabled' : ''} class="tab-btn" style="padding:6px 15px; font-size:0.8rem;">
+        <i class="fas fa-chevron-left"></i> Ortga
+    </button>`;
 
-    html += `<span style="font-weight:bold; color:#475569">Sahifa ${page} / ${totalPages}</span>`;
+    html += `<span style="font-weight:bold; color:var(--accent); background:rgba(99,102,241,0.1); padding:6px 15px; border-radius:10px;">Sahifa ${page} / ${totalPages}</span>`;
 
     // Next
-    if (page < totalPages) {
-        html += `<button onclick="loadRecentActivity(${page + 1})" style="padding:5px 15px; background:#3b82f6; color:white; border:none; border-radius:6px; cursor:pointer;">Oldinga &raquo;</button>`;
-    } else {
-        html += `<button disabled style="padding:5px 15px; background:#f1f5f9; color:#cbd5e1; border:none; border-radius:6px;">Oldinga &raquo;</button>`;
-    }
+    html += `<button onclick="loadRecentActivity(${page + 1})" ${page >= totalPages ? 'disabled' : ''} class="tab-btn" style="padding:6px 15px; font-size:0.8rem;">
+        Oldinga <i class="fas fa-chevron-right"></i>
+    </button>`;
 
     container.innerHTML = html;
 }
+
+// Auto-refresh Monitor
+setInterval(() => {
+    const recentView = document.getElementById('recentView');
+    if (recentView && recentView.classList.contains('active')) {
+        if (monitorPage === 1) loadRecentActivity(1); // Auto refresh only if on page 1
+    }
+}, 60000);
 
 function safeSetText(id, text) {
     const el = document.getElementById(id);

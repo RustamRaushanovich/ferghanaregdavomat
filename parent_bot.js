@@ -47,15 +47,16 @@ const STRINGS = {
     uz_lat: {
         welcome: "🛡 <b>\"Davomat Ota-onalar Nazorati\" tizimiga xush kelibsiz!</b>\n\n" +
             "🛑 <b>DIQQAT:</b> Ushbu tizim faqat Farg'ona viloyatidagi <b>davlat umumta'lim maktablari</b> uchun amal qiladi.\n\n" +
-            "⚠️ Xususiy maktablar hamda PIMA (Prezident, ijod va ixtisoslashtirilgan maktablar agentligi) tizimidagi maktab o'quvchilari haqida ma'lumotlar ushbu botga kiritilmaydi.",
+            "⚠️ Xususiy maktablar hamda PIMA (Prezident, ijod va ixtisoslashtirilgan maktablar agentligi) tizimidagi maktab o'quvchilari haqida ma'lumotlar ushbu botga kiritilmaydi.\n\n" +
+            "<i>Ushbu bot orqali farzandlaringiz darsga kelmaganida darhol xabar olasiz.</i>",
         ask_phone: "Ro'yxatdan o'tish uchun telefon raqamingizni yuboring:",
         btn_phone: "📱 Raqamni yuborish",
         ask_fio: "👤 Ism-familiyangizni kiriting:",
-        ask_child_count: "👨‍👩‍👧‍👦 Farg‘ona viloyati umumta'lim maktablarida o‘qiydigan nechta farzandigiz bor?\n<i>(Raqam yozib yuboring, masalan: 1, 2, 3...)</i>",
+        ask_child_count: "👨‍👩‍👧‍👦 Farg‘ona viloyati davlat umumta'lim maktablarida o‘qiydigan nechta farzandigiz bor?\n\n(Eslatma: Xususiy va PIMA tizimidagi maktablar kiritilmaydi)\n<i>(Raqam yozib yuboring, masalan: 1, 2, 3...)</i>",
         ask_district: "📍 <b>{n}-o'quvchi</b> o'qiydigan hududni tanlang:",
-        ask_school: "🏫 <b>{n}-o'quvchi</b> o'qiydigan maktabni tanlang:",
+        ask_school: "🏫 <b>{n}-o'quvchi</b> o'qiydigan davlat maktabini tanlang:",
         btn_back: "⬅️ Ortga",
-        success: "✅ <b>Muvaffaqiyatli!</b>\n\nSiz jami {count} ta o'quvchi ulanishiga ega bo'ldingiz. O'quvchilar dars qoldirsa, sizga xabar keladi.",
+        success: "✅ <b>Muvaffaqiyatli!</b>\n\nSiz jami {count} ta o'quvchi ulanishiga ega bo'ldingiz. Farzandingiz dars qoldirsa, sizga xabar keladi.",
         main_menu: "Asosiy menyu:",
         btn_add: "➕ Yangi farzand qo'shish",
         btn_my_schools: "📋 Mening maktablarim",
@@ -65,15 +66,16 @@ const STRINGS = {
     uz_cyr: {
         welcome: "🛡 <b>\"Давомат Ота-оналар Назорати\" тизимига хуш келибсиз!</b>\n\n" +
             "🛑 <b>ДИҚҚАТ:</b> Ушбу тизим фақат Фарғона вилоятидаги <b>давлат умумтаълим мактаблари</b> учун амал қилади.\n\n" +
-            "⚠️ Хусусий мактаблар ҳамда ПИМА (Президент, ижод ва ихтисослаштирилган мактаблар агентлиги) тизимидаги мактаб ўқувчилари ҳақида маълумотлар ушбу ботга киритилмайди.",
+            "⚠️ Хусусий мактаблар ҳамда ПИМА (Президент, ижод ва ихтисослаштирилган мактаблар агентлиги) тизимидаги мактаб ўқувчилари ҳақида маълумотлар ушбу ботга киритилмайди.\n\n" +
+            "<i>Ушбу бот орқали фарзандларингиз дарсга келмаганида дарҳол хабар оласиз.</i>",
         ask_phone: "Рўйхатдан ўтиш учун телефон рақамингизни юборинг:",
-        btn_phone: "📱 Рақамни юбориш",
+        btn_phone: "📱 Рақамни юборириш",
         ask_fio: "👤 Исм-фамилиянгизни киритинг:",
-        ask_child_count: "👨‍👩‍👧‍👦 Фарғона вилояти умумтаълим мактабларида ўқийдиган нечта фарзандигиз бор?\n<i>(Рақам ёзиб юборинг, масалан: 1, 2, 3...)</i>",
+        ask_child_count: "👨‍👩‍👧‍👦 Фарғона вилояти давлат умумтаълим мактабларида ўқийдиган нечта фарзандигиз бор?\n\n(Эслатма: Хусусий ва ПИМА тизимидаги мактаблар киритилмайди)\n<i>(Рақам ёзиб юборинг, масалан: 1, 2, 3...)</i>",
         ask_district: "📍 <b>{n}-ўқувчи</b> ўқийдиган ҳудудни танланг:",
-        ask_school: "🏫 <b>{n}-ўқувчи</b> ўқийдиган мактабни танланг:",
+        ask_school: "🏫 <b>{n}-ўқувчи</b> ўқийдиган давлат мактабини танланг:",
         btn_back: "⬅️ Ортга",
-        success: "✅ <b>Муваффақиятли!</b>\n\nСиз жами {count} та ўқувчи уланишига эга бўлдингиз. Ўқувчилар дарс қолдирса, сизга хабар келади.",
+        success: "✅ <b>Муваффақиятли!</b>\n\nСиз жами {count} та ўқувчи уланишига эга бўлдингиз. Фарзандингиз дарс қолдирса, сизга хабар келади.",
         main_menu: "Асосий меню:",
         btn_add: "➕ Янги фарзанд қўшиш",
         btn_my_schools: "📋 Менинг мактабларим",
@@ -83,13 +85,14 @@ const STRINGS = {
     ru: {
         welcome: "🛡 <b>Добро пожаловать в систему \"Родительский контроль посещаемости\"!</b>\n\n" +
             "🛑 <b>ВНИМАНИЕ:</b> Данная система работает только для <b>государственных общеобразовательных школ</b> Ферганской области.\n\n" +
-            "⚠️ Ученики частных школ и школ системы <b>ПИМА (Агентство президентских, творческих и специализированных школ)</b> НЕ внесены в данную базу.",
+            "⚠️ Ученики частных школ и школ системы <b>ПИМА (Агентство президентских, творческих и специализированных школ)</b> НЕ внесены в данную базу.\n\n" +
+            "<i>Через этот бот вы будете получать мгновенные уведомления, если ваш ребенок пропустит занятия.</i>",
         ask_phone: "Для регистрации отправьте ваш номер телефона, нажав кнопку ниже:",
         btn_phone: "📱 Отправить номер",
         ask_fio: "👤 Введите ваше Имя и Фамилию:",
-        ask_child_count: "👨‍👩‍👧‍👦 Сколько ваших детей учатся в общеобразовательных школах Ферганской области?\n<i>(Отправьте число, например: 1, 2, 3...)</i>",
+        ask_child_count: "👨‍👩‍👧‍👦 Сколько ваших детей учатся в государственных общеобразовательных школах Ферганской области?\n\n(Примечание: Частные школы и школы ПИМА не учитываются)\n<i>(Отправьте число, например: 1, 2, 3...)</i>",
         ask_district: "📍 Выберите район для <b>{n}-го ученика</b>:",
-        ask_school: "🏫 Выберите школу для <b>{n}-го ученика</b>:",
+        ask_school: "🏫 Выберите государственную школу для <b>{n}-го ученика</b>:",
         btn_back: "Назад",
         success: "✅ <b>Успешно!</b>\n\nУ вас теперь есть доступ к данным {count} учеников. Вы получите уведомление, если они пропустят урок.",
         main_menu: "Главное меню:",
@@ -355,35 +358,9 @@ parentBot.on('text', async (ctx) => {
     }
 });
 
-// If user exists, we can skip straight to menu OR force re-select? 
-// User requested "Start -> Lang Select -> Logo/Greeting". 
-// So even if they exist, /start should probably show the menu or lang select? 
-// Usually /start on existing user shows Main Menu. Let's keep that but enable "Change Language" button.
-
-if (user && user.subscriptions && user.subscriptions.length > 0) {
-    const lang = user.lang || "uz_lat";
-    const s = STRINGS[lang] || STRINGS["uz_lat"];
-
-    const dateStr = getDateString(lang);
-    const wishes = getWishes(lang);
-    const caption = `${s.main_menu}\n\n${dateStr}\n${wishes}`;
-
-    const mainKeyboard = Markup.keyboard([[s.btn_add], [s.btn_my_schools, s.btn_profile], [s.btn_lang]]).resize();
-
-    if (fs.existsSync(PARENT_LOGO)) {
-        return ctx.replyWithPhoto({ source: PARENT_LOGO }, { caption: caption, ...mainKeyboard });
-    }
-    return ctx.reply(caption, mainKeyboard);
-}
-
-await ctx.reply("Tilni tanlang / Выберите язык:", Markup.keyboard([
-    ["🇺🇿 O'zbekcha", "🇺🇿 Ўзбекча"],
-    ["🇷🇺 Русский"]
-]).resize());
-return ctx.scene.enter('parent_reg_wizard');
-});
 
 // --- Button Handlers ---
+
 
 // 1. My Schools
 parentBot.hears(['📋 Mening maktablarim', '📋 Менинг мактабларим', '📋 Мои школы'], async (ctx) => {

@@ -405,9 +405,12 @@ const attendanceWizard = new Scenes.WizardScene(
         return ctx.wizard.next();
     },
 
-    // 30. RECEIVE REPORT FILE/TEXT & CONFIRMATION
+    // 30. RECEIVE REPORT FILE/TEXT
     async (ctx) => {
         if (checkNav(ctx)) return;
+
+        const d = ctx.wizard.state.data;
+        const isAbsentWithoutReason = d.sababsiz_jami > 0;
 
         // Agar rasm/pdf yuborsa yuklab olamiz
         if (ctx.message.document || ctx.message.photo) {
@@ -415,7 +418,6 @@ const attendanceWizard = new Scenes.WizardScene(
             try {
                 const fileLink = await ctx.telegram.getFileLink(fileId);
                 const ext = path.extname(fileLink.href) || '.jpg';
-                const d = ctx.wizard.state.data;
                 const fileName = `BILDIRGI_TG_${d.district}_${d.school}_${Date.now()}${ext}`.replace(/[^a-zA-Z0-9_.]/g, '_');
                 const uploadDir = path.join(__dirname, '../../assets/uploads');
                 const filePath = path.join(uploadDir, fileName);
@@ -431,20 +433,21 @@ const attendanceWizard = new Scenes.WizardScene(
                     writer.on('error', reject);
                 });
 
-                ctx.wizard.state.data.bildirgi = filePath;
-                ctx.wizard.state.data.report_type = 'file';
+                d.bildirgi = filePath;
+                d.report_type = 'file';
             } catch (e) {
                 console.error("File download error:", e);
-                await ctx.reply("⚠️ Faylni yuklashda xatolik bo'ldi, lekin davom etaveramiz.");
+                return ctx.reply("❌ Faylni yuklashda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.");
             }
-        } else {
-            ctx.wizard.state.data.report_text = ctx.message.text;
-            ctx.wizard.state.data.report_type = 'text';
+        } else if (ctx.message.text && ctx.message.text.length > 10) {
+            d.report_text = ctx.message.text;
+            d.report_type = 'text';
+        } else if (isAbsentWithoutReason) {
+            return ctx.reply("⚠️ Sababsiz kelmagan o'quvchilar borligi sababli, Bildirgi yuborish MAJBURIY. Iltimos, rasm yoki tushuntirish matnini yuboring:");
         }
 
-        const d = ctx.wizard.state.data;
         await ctx.replyWithHTML(
-            `📌 <b>TASDIQLASH:</b>\n\n🏢 <b>${d.district}, ${d.school}</b>\n👤 <b>${d.fio}</b>\n\n🎒 Sinflar: ${d.classes_count}\n👥 Jami o'quvchilar: ${d.total_students}\n✅ Sababli kelmaganlar: ${d.sababli_jami}\n🚫 Sababsiz kelmaganlar: ${d.sababsiz_jami}\n📉 Jami kelmaganlar: ${d.total_absent}\n\nMa'lumotlar to'g'rimi?`,
+            `📌 <b>TASDIQLASH:</b>\n\n🏢 <b>${d.district}, ${d.school}</b>\n👤 <b>${d.fio}</b>\n\n🎒 Sinflar: ${d.classes_count}\n👥 Jami o'quvchilar: ${d.total_students}\n✅ Sababli kelmaganlar: ${d.sababli_jami}\n🚫 Sababsiz: ${d.sababsiz_jami}\n📉 Jami kelmaganlar: ${d.total_absent}\n\nMa'lumotlar to'g'rimi?`,
             Markup.keyboard([["HA", "YO'Q"], ["⬅️ Ortga"]]).resize()
         );
         return ctx.wizard.next();

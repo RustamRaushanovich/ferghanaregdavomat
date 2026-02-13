@@ -17,6 +17,15 @@ const axios = require('axios');
 const express = require('express');
 const multer = require('multer');
 const { generateBildirgi } = require('./src/utils/pdfGenerator');
+const webpush = require('web-push');
+
+// Web Push Config
+webpush.setVapidDetails(
+    'mailto:imronbekr@gmail.com',
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+);
+
 
 const uploadDir = path.join(__dirname, 'assets', 'uploads');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
@@ -346,9 +355,52 @@ app.get('/api/check-pro', (req, res) => {
     const { phone } = req.query;
     if (!phone) return res.json({ is_pro: false });
     const cleanPhone = phone.replace(/\D/g, '');
-    const is_pro = Object.values(db.users_db).some(u => u.phone && u.phone.replace(/\D/g, '') === cleanPhone && new Date(u.pro_expire_date) > new Date());
-    res.json({ is_pro });
+    const user = Object.values(db.users_db).find(u =>
+        u.phone && u.phone.replace(/\D/g, '') === cleanPhone &&
+        new Date(u.pro_expire_date) > new Date()
+    );
+    if (user) {
+        res.json({
+            is_pro: true,
+            pro_expire_date: user.pro_expire_date,
+            pro_purchase_date: user.pro_purchase_date || '-'
+        });
+    } else {
+        res.json({ is_pro: false });
+    }
 });
+
+app.get('/api/export/archive', async (req, res) => {
+    const { date, token } = req.query;
+    if (!token) return res.status(401).send("Unauthorized");
+    try {
+        const { exportToExcel } = require('./src/services/dataService');
+        const filePath = await exportToExcel(date);
+        if (filePath && fs.existsSync(filePath)) {
+            res.download(filePath);
+        } else {
+            res.status(404).send("Hisobot topilmadi");
+        }
+    } catch (e) {
+        res.status(500).send(e.message);
+    }
+});
+
+app.post('/api/push/subscribe', async (req, res) => {
+    const subscription = req.body;
+    try {
+        const db_pg = require('./src/database/pg');
+        await db_pg.query(
+            'INSERT INTO push_subscriptions (subscription, created_at) VALUES ($1, NOW()) ON CONFLICT (subscription) DO NOTHING',
+            [JSON.stringify(subscription)]
+        );
+        res.status(201).json({});
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+
 
 app.get('/api/schools', async (req, res) => {
     const { district } = req.query;
@@ -472,26 +524,28 @@ app.post('/api/submit', upload.single('bildirgi'), async (req, res) => {
 
     // Bildirgi Logic
     if (flatData.sababsiz_total > 0) {
+        const isProUser = db.checkProByPhone(d.phone);
         if (req.file) {
             flatData.bildirgi = req.file.path;
-        } else {
-            const isProUser = db.checkProByPhone(d.phone);
-            if (isProUser) {
-                try {
-                    console.log("Generating Auto Bildirgi for PRO user...");
-                    const pdfPath = await generateBildirgi({
-                        district: d.district,
-                        school: d.school,
-                        fio: d.fio,
-                        total_students: d.total_students,
-                        sababsiz_total: flatData.sababsiz_total,
-                        students_list: students_list
-                    });
-                    flatData.bildirgi = pdfPath;
-                } catch (e) {
-                    console.error("Auto Bildirgi Error:", e);
-                }
+        } else if (isProUser) {
+            try {
+                console.log("Generating Auto Bildirgi for PRO user...");
+                const pdfPath = await generateBildirgi({
+                    district: d.district,
+                    school: d.school,
+                    fio: d.fio,
+                    total_students: d.total_students,
+                    sababsiz_total: flatData.sababsiz_total,
+                    students_list: students_list
+                });
+                flatData.bildirgi = pdfPath;
+            } catch (e) {
+                console.error("Auto Bildirgi Error:", e);
+                // Even for PRO, if auto-gen fails, we might need a fallback, but for now let's just log
             }
+        } else {
+            // REJECT: Sababsiz bor, lekin bildirgi yuklanmagan
+            return res.status(400).json({ error: "Sababsiz kelmaganlar uchun Bildirgi yuklash tanlangan tartib bo'yicha majburiy! Iltimos, fayl yuklang." });
         }
     }
 

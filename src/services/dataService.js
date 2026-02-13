@@ -11,6 +11,8 @@ async function saveAttendance(data) {
         const date = getFargonaTime().toISOString().split('T')[0];
 
         // 1. Delete previous entry for this school on this date (Overwrite logic)
+        // Clean up associated children records first to avoid orphans/FK issues
+        await db.query(`DELETE FROM absent_students WHERE attendance_id IN (SELECT id FROM attendance WHERE district = $1 AND school = $2 AND date = $3)`, [data.district, data.school, date]);
         await db.query(`DELETE FROM attendance WHERE district = $1 AND school = $2 AND date = $3`, [data.district, data.school, date]);
 
         const query = `
@@ -336,8 +338,8 @@ async function getViloyatSvod(date) {
                 sababli: parseInt(entry.sababli) || 0,
                 sababsiz: parseInt(entry.sababsiz) || 0,
                 total_absent: parseInt(entry.total_absent) || 0,
-                avg_percent: currentPercent,
-                yesterday_percent: yesterdayPercent,
+                avg_percent: parseFloat(currentPercent.toFixed(1)),
+                yesterday_percent: parseFloat(yesterdayPercent.toFixed(1)),
                 district: dName,
                 head_name: head.name,
                 head_phone: head.phone
@@ -346,7 +348,7 @@ async function getViloyatSvod(date) {
                 district: dName, entries: 0, classes: 0, students: 0,
                 sk: 0, st: 0, so: 0, si: 0, sb: 0, sababli: 0,
                 sm: 0, sq: 0, sc: 0, sbt: 0, si_ish: 0, sqar: 0, sjaz: 0, snaz: 0, stur: 0, ssb: 0, sababsiz: 0,
-                total_absent: 0, avg_percent: 0, yesterday_percent: yesterdayPercent,
+                total_absent: 0, avg_percent: 0, yesterday_percent: parseFloat(yesterdayPercent.toFixed(1)),
                 head_name: head.name, head_phone: head.phone
             };
         });

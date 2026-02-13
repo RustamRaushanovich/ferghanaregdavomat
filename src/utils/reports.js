@@ -32,9 +32,7 @@ function formatAttendanceReport(d, isPro, source) {
         `🚫 Sababsiz kelmaganlar: ${sababsiz}\n` +
         `📉 Jami kelmaganlar: ${totalAbsent}\n` +
         `☎️ Tel: ${maskedPhone}\n` +
-        `👤 Mas'ul: ${d.fio}\n\n` +
-        `🔗 <a href="https://t.me/ferghanaregdavomat_bot">ferghanaregdavomat_bot</a>\n` +
-        `🌐 <a href="https://ferghanaregdavomat.uz">ferghanaregdavomat web</a>`;
+        `👤 Mas'ul: ${d.fio}`;
 }
 
 module.exports = { formatAttendanceReport };

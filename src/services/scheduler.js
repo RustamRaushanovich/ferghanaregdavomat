@@ -54,11 +54,49 @@ async function sendDailySummary() {
                 message_thread_id: mainTopicId
             });
             console.log("✅ [CRON] Daily summary sent successfully.");
+
+            // 3. Web Push Notification
+            await sendPushNotifications("Bugungi kun uchun yakuniy viloyat hisoboti tayyor! Uni dashboardda ko'rishingiz mumkin.");
         }
     } catch (e) {
         console.error("❌ [CRON] Daily summary error:", e);
     }
 }
+
+async function sendPushNotifications(message) {
+    const webpush = require('web-push');
+    const db_pg = require('../database/pg');
+
+    webpush.setVapidDetails(
+        'mailto:imronbekr@gmail.com',
+        process.env.VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+    );
+
+    try {
+        const res = await db_pg.query('SELECT subscription FROM push_subscriptions');
+        const subscriptions = res.rows.map(r => JSON.parse(r.subscription));
+
+        const payload = JSON.stringify({
+            title: 'Ferghana Davomat',
+            body: message,
+            icon: '/logo.png'
+        });
+
+        const promises = subscriptions.map(sub =>
+            webpush.sendNotification(sub, payload).catch(e => {
+                if (e.statusCode === 410) {
+                    db_pg.query('DELETE FROM push_subscriptions WHERE subscription = $1', [JSON.stringify(sub)]);
+                }
+            })
+        );
+        await Promise.all(promises);
+        console.log(`✅ [Push] Sent to ${promises.length} devices.`);
+    } catch (e) {
+        console.error("❌ [Push] Error:", e);
+    }
+}
+
 
 /**
  * Sunday Best Schools Report at 09:00
@@ -166,6 +204,61 @@ async function sendFlashReport() {
     }
 }
 
+/**
+ * Warn non-reporting schools every 2 hours
+ */
+async function sendPendingReportsWarning() {
+    console.log("🕒 [CRON] Starting non-reporting schools warning...");
+    const now = getFargonaTime();
+    const dateStr = now.toISOString().split('T')[0];
+    const hour = now.getHours();
+
+    try {
+        const db_pg = require('../database/pg');
+        const { schools_db } = require('../database/db');
+        const topics = topicsConfig.getTopics();
+        const districts = Object.keys(topics).filter(d => d !== "Test rejimi" && d !== "MMT Boshqarma");
+
+        for (const distName of districts) {
+            const topicId = getTopicId(distName);
+            if (!topicId) continue;
+
+            const reportedRes = await db_pg.query(`SELECT school FROM attendance WHERE district = $1 AND date = $2`, [distName, dateStr]);
+            const reportedSchools = reportedRes.rows.map(r => r.school);
+
+            const allSchoolsInDist = schools_db[distName] || [];
+            const missingSchools = allSchoolsInDist.filter(s => !reportedSchools.includes(s));
+
+            if (missingSchools.length > 0) {
+                let msg = `⚠️ <b>DIQQAT: HISOBOT TOPSHIRMAGAN MAKTABLAR</b>\n`;
+                msg += `📍 Hudud: <b>${distName}</b>\n`;
+                msg += `⏰ Vaqt: <b>${hour}:00</b>\n`;
+                msg += `📅 Sana: <b>${dateStr}</b>\n\n`;
+                msg += `🛑 <b>Topshirmadi: ${missingSchools.length} ta maktab</b>\n`;
+
+                // Show first 30 schools to avoid message length limits
+                const list = missingSchools.slice(0, 30);
+                list.forEach(s => {
+                    msg += `• ${s}\n`;
+                });
+
+                if (missingSchools.length > 30) msg += `...va yana ${missingSchools.length - 30} ta maktab.\n`;
+
+                msg += `\n❗ <i>Iltimos, hisobotlarni zudlik bilan kiritishingizni so'raymiz!</i>`;
+
+                await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
+                    parse_mode: 'HTML',
+                    message_thread_id: topicId
+                });
+            }
+        }
+        console.log("✅ [CRON] Non-reporting warnings sent.");
+    } catch (e) {
+        console.error("❌ [CRON] Pending reports warning error:", e);
+    }
+}
+
+
 // Initialize Cron Jobs
 function initCrons() {
     // 1. Daily Summary at 16:30 (Monday-Saturday)
@@ -181,6 +274,11 @@ function initCrons() {
     // 3. Weekly Best Schools (Sunday at 09:00)
     cron.schedule('0 9 * * 0', () => {
         sendWeeklyBestSchools();
+    }, { timezone: "Asia/Tashkent" });
+
+    // 4. Pending Reports Warning (Every 2 hours from 10:00 to 14:00, Monday-Saturday)
+    cron.schedule('0 10,12,14 * * 1-6', () => {
+        sendPendingReportsWarning();
     }, { timezone: "Asia/Tashkent" });
 
     console.log("🚀 [Scheduler] Automated reports initialized.");
