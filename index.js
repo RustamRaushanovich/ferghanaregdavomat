@@ -20,11 +20,19 @@ const { generateBildirgi } = require('./src/utils/pdfGenerator');
 const webpush = require('web-push');
 
 // Web Push Config
-webpush.setVapidDetails(
-    'mailto:imronbekr@gmail.com',
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY
-);
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    try {
+        webpush.setVapidDetails(
+            'mailto:imronbekr@gmail.com',
+            process.env.VAPID_PUBLIC_KEY,
+            process.env.VAPID_PRIVATE_KEY
+        );
+    } catch (e) {
+        console.error("VAPID Config Error:", e.message);
+    }
+} else {
+    console.warn("VAPID Keys missing. Push notifications disabled.");
+}
 
 
 const uploadDir = path.join(__dirname, 'assets', 'uploads');
