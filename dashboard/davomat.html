@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Davomat Form - Farg'ona VMMTB</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="top-widgets-bar">
+        <div class="widget-item weather" id="weatherWidget">
+            <i class="fas fa-cloud-sun"></i> <span>Farg'ona: ...°C</span>
+        </div>
+        <div class="widget-item clock">
+            <i class="fas fa-clock"></i> <span id="liveClock">00:00:00</span>
+        </div>
+        <div class="widget-item countdown">
+            <i class="fas fa-hourglass-half"></i> <span id="submissionTimer">00:00:00</span>
+        </div>
+
+        <div class="widget-item greeting" id="holidayGreeting">
+            <i class="fas fa-bullhorn"></i> <span id="holidayText"></span>
+        </div>
+
+        <button class="pro-mini-btn" id="proMiniBtn" onclick="location.href='dashboard.html#profile'">
+            <i class="fas fa-crown"></i> PRO ✨
+        </button>
+
+
+        <div class="nav-controls" style="margin-left:auto; display:flex; align-items:center; gap:15px;">
+            <div id="userProfileDisplay"></div>
+            <button onclick="toggleTheme()" class="theme-toggle-btn icon-btn" title="Mavzu"><i
+                    class="fas fa-moon"></i></button>
+            <div class="lang-switcher">
+                <button onclick="changeLang('uz')" class="lang-btn" id="uz_btn">UZ</button>
+                <button onclick="changeLang('ru')" class="lang-btn" id="ru_btn">RU</button>
+            </div>
+        </div>
+
+        <div class="source-links">
+            <a href="https://ferghanaregdavomat.uz" class="source-link"><i class="fas fa-globe"></i> web</a>
+            <a href="https://t.me/ferghanaregdavomat_bot" class="source-link"><i class="fab fa-telegram"></i> bot</a>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <img src="logo.png" alt="Logo" class="nav-logo">
+                <div class="nav-branding">
+                    <h3>Farg‘ona viloyati Maktabgacha va maktab ta'limi boshqarmasi</h3>
+                    <p>o‘quvchilar davomat tizimi</p>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="/" class="nav-link" data-i18n="nav_home">Asosiy sahifa</a>
+                <a href="/davomat.html" class="nav-link active" data-i18n="nav_form">Davomat kiritish</a>
+                <a href="/dashboard.html" class="nav-link" data-i18n="nav_dashboard">Dashboard</a>
+                <a href="/about.html" class="nav-link" data-i18n="nav_about">Biz haqimizda</a>
+                <button class="login-btn" onclick="location.href='login.html'"><i class="fas fa-sign-in-alt"></i> <span
+                        data-i18n="nav_login">Kirish</span></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="logo.png" alt="Logo"
+                    style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 20px;">
+                <div class="logo-text">
+                    <h1 data-i18n="hero_title">Ferghanaregdavomat web</h1>
+                    <span data-i18n="hero_subtitle">Farg‘ona viloyati MMTB TTTIMva MTTTE sho‘basi</span>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+                <div class="steps">
+                    <div class="step active" data-step="1">1</div>
+                    <div class="step" data-step="2">2</div>
+                    <div class="step" data-step="3">3</div>
+                    <div class="step" data-step="4">4</div>
+                    <div class="step" data-step="5">5</div>
+                    <div class="step" data-step="6">6</div>
+                </div>
+            </div>
+        </header>
+
+        <form id="attendanceForm">
+            <!-- Step 1: User Info -->
+            <div class="form-step active" id="step1">
+                <h2><i class="fas fa-user-circle"></i> <span data-i18n="step1_title">Shaxsiy ma'lumotlar</span></h2>
+                <div class="input-group">
+                    <label data-i18n="label_fio">F.I.SH (MMIBDO')</label>
+                    <input type="text" id="fio" placeholder="Masalan: Turdiyev Rustam" required>
+                </div>
+                <div class="input-group">
+                    <label data-i18n="label_phone">Telefon raqam</label>
+                    <input type="tel" id="phone" placeholder="+998" required onchange="checkProUser()">
+                </div>
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-next">Keyingi <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 2: Location -->
+            <div class="form-step" id="step2">
+                <h2><i class="fas fa-map-marked-alt"></i> <span data-i18n="step2_title">Hudud va Maktab</span></h2>
+                <div class="input-group">
+                    <label data-i18n="label_district">Tuman / Shahar</label>
+                    <select id="district" onchange="loadSchools()" required>
+                        <option value="" data-i18n="label_boshqa">Tanlang...</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label data-i18n="label_school">Maktab / Muassasa</label>
+                    <select id="school" required disabled>
+                        <option value="">Avval tumanni tanlang...</option>
+                    </select>
+                </div>
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-prev">Ortga</button>
+                    <button type="button" class="btn btn-next">Keyingi</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Counts -->
+            <div class="form-step" id="step3">
+                <h2><i class="fas fa-calculator"></i> <span data-i18n="step3_title">Jami ko'rsatkichlar</span></h2>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label data-i18n="label_classes">Sinf soni</label>
+                        <input type="number" id="classes_count" required>
+                    </div>
+                    <div class="input-group">
+                        <label data-i18n="label_students">O'quvchi soni</label>
+                        <input type="number" id="total_students" required>
+                    </div>
+                </div>
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-prev">Ortga</button>
+                    <button type="button" class="btn btn-next">Keyingi</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Sababli -->
+            <div class="form-step" id="step4">
+                <h2><i class="fas fa-user-check"></i> <span data-i18n="step4_title">Sababli kelmaganlar</span></h2>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label><i class="fas fa-thermometer-half"></i> <span
+                                data-i18n="label_kasal">Kasal</span></label>
+                        <input type="number" class="sababli" id="sababli_kasal" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-trophy"></i> <span data-i18n="label_tadbir">Tadbir va
+                                tanlovlarda</span></label>
+                        <input type="number" class="sababli" id="sababli_tadbirlar" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-home"></i> <span data-i18n="label_oilaviy">Oilaviy tadbir</span></label>
+                        <input type="number" class="sababli" id="sababli_oilaviy" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-handshake-angle"></i> <span data-i18n="label_ijtimoiy">Ijtimoiy ahvoli
+                                og'ir</span></label>
+                        <input type="number" class="sababli" id="sababli_ijtimoiy" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-info-circle"></i> <span data-i18n="label_boshqa">Boshqa</span></label>
+                        <input type="number" class="sababli" id="sababli_boshqa" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-calculator"></i> <span data-i18n="label_total_s">JAMI
+                                SABABLI</span></label>
+                        <input type="number" id="sababli_total" value="0" disabled>
+                    </div>
+                </div>
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-prev">Ortga</button>
+                    <button type="button" class="btn btn-next">Keyingi</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Sababsiz -->
+            <div class="form-step" id="step5">
+                <h2><i class="fas fa-user-times"></i> <span data-i18n="step5_title">Sababsiz kelmaganlar</span></h2>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label><i class="fas fa-clock"></i> <span data-i18n="label_muntazam">Surunkali</span></label>
+                        <input type="number" class="sababsiz" id="sababsiz_muntazam" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-search"></i> <span data-i18n="label_qidiruv">Qidiruvda</span></label>
+                        <input type="number" class="sababsiz" id="sababsiz_qidiruv" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-plane-departure"></i> <span data-i18n="label_chetel">Chet
+                                elda</span></label>
+                        <input type="number" class="sababsiz" id="sababsiz_chetel" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-briefcase"></i> <span
+                                data-i18n="label_ishlab">Ishlayotgan</span></label>
+                        <input type="number" class="sababsiz" id="sababsiz_ishlab" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-question-circle"></i> <span
+                                data-i18n="label_boshqa">Boshqa</span></label>
+                        <input type="number" class="sababsiz" id="sababsiz_boshqa" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-calculator"></i> <span data-i18n="label_total_ss">JAMI
+                                SABABSIZ</span></label>
+                        <input type="number" id="sababsiz_total" value="0" disabled>
+                    </div>
+                </div>
+
+                <!-- BILDISHNOMA YUKLASH (Non-PRO) -->
+                <div id="bildirgiUploadGroup" class="input-group"
+                    style="margin-top:20px; padding:15px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.1)">
+                    <label style="color:#fbbf24"><i class="fas fa-file-upload"></i> <span
+                            data-i18n="label_upload_bildirgi">3-Ilova (Bildirishnoma) yuklash</span></label>
+                    <p style="font-size:0.8rem; color:#94a3b8; margin-bottom:10px;">Sababsiz kelmagan o'quvchilar uchun
+                        pdf/rasm shakldagi bildirishnomani yuklang.</p>
+                    <input type="file" id="bildirgiFile" accept=".pdf,image/*"
+                        style="background:transparent; border:1px dashed rgba(255,255,255,0.2); padding:10px; cursor:pointer; width:100%">
+                    <p id="proAutoMsg" class="hidden" style="color:#10b981; font-size:0.85rem; margin-top:8px;">
+                        <i class="fas fa-crown"></i> 👑 <b>PRO:</b> Sizga bildirishnoma avtomatik tarzda tayyorlab
+                        beriladi. Fayl yuklash ixtiyoriy.
+                    </p>
+                </div>
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-prev">Ortga</button>
+                    <button type="button" class="btn" onclick="processAfterStep5()"
+                        style="background: var(--primary); color: white;">Keyingi <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 6: Summary -->
+            <div class="form-step" id="step6">
+                <div id="studentDetailsHeader" class="hidden">
+                    <h2><i class="fas fa-list"></i> O'quvchilar ro'yxati</h2>
+                    <p id="absentInfoMsg" style="margin-bottom: 20px; font-size: 0.9rem; color: #fbbf24;"></p>
+                </div>
+                <div id="studentInputsContainer"></div>
+
+                <div class="summary-card" id="finalSummary">
+                    <h2><i class="fas fa-check-double"></i> <span data-i18n="step6_title">Tasdiqlash</span></h2>
+                    <div class="summary-item"><span>Kelmaganlar:</span> <b id="sum_absent">0</b></div>
+                    <div class="summary-item"><span>Davomat:</span> <b id="sum_percent">0%</b></div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-prev">Ortga</button>
+                    <button type="submit" class="btn btn-next" style="background: #10b981;">Yuborish</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="successOverlay" class="overlay hidden">
+        <div class="success-card">
+            <i class="fas fa-check-circle success-icon"
+                style="color: #10b981; font-size: 5rem; margin-bottom: 2rem;"></i>
+            <h2 id="successTitle" style="color: #fff; margin-bottom: 1rem;" data-i18n="success_title">Rahmat!</h2>
+            <div id="successMsg" style="line-height: 1.6; color: #cbd5e1; font-size: 1.1rem; margin-bottom: 2rem;"
+                data-i18n="success_msg">Ma'lumotlar muvaffaqiyatli qabul qilindi.
+            </div>
+
+            <!-- PRO: Download Bildirgi -->
+            <div id="proDownloadSection" class="hidden"
+                style="margin-bottom: 25px; background: rgba(99, 102, 241, 0.1); padding: 15px; border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.2);">
+                <p style="color: #facc15; font-size: 0.95rem; margin-bottom: 12px; font-weight: 600;">
+                    <i class="fas fa-crown"></i> 👑 PRO: Bildirishnomangiz tayyor!
+                </p>
+                <button type="button" id="downloadBildirgiBtn" class="btn"
+                    style="background: #6366f1; width: 100%; justify-content: center; margin-bottom: 5px;">
+                    <i class="fas fa-file-pdf"></i> Bildirgini yuklab olish
+                </button>
+            </div>
+            <button type="button" class="btn btn-next" onclick="location.reload()" style="margin: 0 auto;"
+                data-i18n="hero_title">Yana
+                kiritish</button>
+        </div>
+    </div>
+
+    <section class="app-download-section">
+        <div class="app-download-content">
+            <h2 data-i18n="app_download_title">Mobil ilovani yuklab oling</h2>
+            <p data-i18n="app_download_subtitle">Davomat tizimidan yanada qulay foydalanish uchun rasmiy mobil ilovani
+                o'rnatib oling.</p>
+            <div class="app-store-btns">
+                <a href="#" class="store-btn install-trigger" onclick="installApp()">
+                    <i class="fab fa-google-play"></i>
+                    <div class="btn-text">
+                        <small>Get it on</small>
+                        <strong data-i18n="btn_google_play">Google Play</strong>
+                    </div>
+                </a>
+                <a href="#" class="store-btn install-trigger" onclick="installApp()">
+                    <i class="fab fa-apple"></i>
+                    <div class="btn-text">
+                        <small>Download on the</small>
+                        <strong data-i18n="btn_app_store">App Store</strong>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                    <img src="logo.png" style="width: 40px; height: auto;">
+                    <h4 style="margin:0;">Ferghanaregdavomat</h4>
+                </div>
+                <p data-i18n="footer_desc">Farg'ona viloyati Maktabgacha va maktab ta'limi boshqarmasi tizimidagi
+                    o‘quvchilar davomati bo‘yicha maxsus portal.</p>
+            </div>
+            <div class="footer-section">
+                <h4 data-i18n="footer_contact">Bog'lanish</h4>
+                <p><i class="fas fa-map-marker-alt"></i> Farg‘ona v., Dodxox ko‘chasi 2 uy</p>
+                <p><i class="fas fa-phone"></i> +998 (88) 595-23-23</p>
+                <p><i class="fas fa-envelope"></i> imronbekr@gmail.com</p>
+            </div>
+            <div class="footer-section">
+                <h4 data-i18n="footer_links">Tezkor havolalar</h4>
+                <ul style="padding:0; list-style:none;">
+                    <li><a href="/" data-i18n="nav_home">Bosh sahifa</a></li>
+                    <li><a href="/davomat.html" data-i18n="nav_form">Davomat kiritish</a></li>
+                    <li><a href="/dashboard.html" data-i18n="nav_dashboard">Dashboard</a></li>
+                    <li><a href="/about.html" data-i18n="nav_about">Biz haqimizda</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Ferghanaregdavomat. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js?v=2"></script>
+    <script src="/premium/premium.js"></script>
+</body>
+
+</html>
