@@ -1543,23 +1543,24 @@ setInterval(async () => {
                     }
                 }
             }
-
-            // 2. Auto-Report at 16:05 (Daily Excel)
-            if (h === 16 && m === 5 && !dailyReportSent) {
-                console.log("Sending Auto 16:05 Report...");
-                dailyReportSent = true;
-                try {
-                    await sendExcelReport(null, config.REPORT_GROUP_ID);
-                } catch (e) { console.error("Auto Report Failed", e); }
-            }
-
-            // Reset daily report flag at midnight
-            if (h === 0 && dailyReportSent) dailyReportSent = false;
-
-        } catch (e) {
-            console.error("Scheduler check error:", e);
         }
-    }, 45000); // Check every 45 seconds to avoid double trigger on 30s interval
+
+        // 2. Auto-Report at 16:05 (Daily Excel)
+        if (h === 16 && m === 5 && !dailyReportSent) {
+            console.log("Sending Auto 16:05 Report...");
+            dailyReportSent = true;
+            try {
+                await sendExcelReport(null, config.REPORT_GROUP_ID);
+            } catch (e) { console.error("Auto Report Failed", e); }
+        }
+
+        // Reset daily report flag at midnight
+        if (h === 0 && dailyReportSent) dailyReportSent = false;
+
+    } catch (e) {
+        console.error("Scheduler check error:", e);
+    }
+}, 45000); // Check every 45 seconds to avoid double trigger on 30s interval
 }
 
 
