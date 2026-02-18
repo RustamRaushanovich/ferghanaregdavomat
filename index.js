@@ -1438,103 +1438,105 @@ let lastRunSlot = ""; // Format: "YYYY-MM-DD HH:mm"
 let dailyReportSent = false;
 let lastHourProcessed = -1;
 
-console.log("Scheduler started (Checking warnings every min)...");
+function startHourlyCheck() {
+    console.log("Scheduler started (Checking warnings every min)...");
 
-const DISTRICT_OFFICIALS = {
-    "margilon shahri": "Kodirov Abdullajon",
-    "fargona shahri": "Teshaboyev Boburjon Bahodir o'g'li",
-    "quvasoy shahri": "Qurbonov Ulug'bek Jumayevich",
-    "qoqon shahri": "Aliyeva Laziza Xusanovna",
-    "bagdod tumani": "Isaboyeva Elmira Erkinovna",
-    "beshariq tumani": "Po'latov Dilshodjon Qahholrovich",
-    "buvayda tumani": "Axmadjonov Aliyorbek Azizbekovich",
-    "dangara tumani": "Miraminov Abdulaziz G'ayratjon o'g'li",
-    "yozyovon tumani": "Usmonov Shoxrux Rustamjonovich",
-    "oltiariq tumani": "Latipov Zoxidjon Abdurahimovich",
-    "qoshtepa tumani": "Ergasheva Mamlakatxon Muxtorovna",
-    "rishton tumani": "Raximov Abdumutal Abduxalim o'g'li",
-    "sox tumani": "Ibragimov Gulshan Ravshanjonovich",
-    "toshloq tumani": "Ibragimov Ergashali Asqaraliyevich",
-    "uchkoprik tumani": "Yunusova Marg'uba Akramovna",
-    "fargona tumani": "Raximova Mahliyoxon Xolmuxammadovna",
-    "furqat tumani": "Mirzayev Mirzaxamdamjon Valiyevich",
-    "ozbekiston tumani": "Ochildiyeva Gulmiraxon Ne'matillayevna",
-    "quva tumani": "Xolikov Jaxongir Ne'matjonovich"
-};
+    const DISTRICT_OFFICIALS = {
+        "margilon shahri": "Kodirov Abdullajon",
+        "fargona shahri": "Teshaboyev Boburjon Bahodir o'g'li",
+        "quvasoy shahri": "Qurbonov Ulug'bek Jumayevich",
+        "qoqon shahri": "Aliyeva Laziza Xusanovna",
+        "bagdod tumani": "Isaboyeva Elmira Erkinovna",
+        "beshariq tumani": "Po'latov Dilshodjon Qahholrovich",
+        "buvayda tumani": "Axmadjonov Aliyorbek Azizbekovich",
+        "dangara tumani": "Miraminov Abdulaziz G'ayratjon o'g'li",
+        "yozyovon tumani": "Usmonov Shoxrux Rustamjonovich",
+        "oltiariq tumani": "Latipov Zoxidjon Abdurahimovich",
+        "qoshtepa tumani": "Ergasheva Mamlakatxon Muxtorovna",
+        "rishton tumani": "Raximov Abdumutal Abduxalim o'g'li",
+        "sox tumani": "Ibragimov Gulshan Ravshanjonovich",
+        "toshloq tumani": "Ibragimov Ergashali Asqaraliyevich",
+        "uchkoprik tumani": "Yunusova Marg'uba Akramovna",
+        "fargona tumani": "Raximova Mahliyoxon Xolmuxammadovna",
+        "furqat tumani": "Mirzayev Mirzaxamdamjon Valiyevich",
+        "ozbekiston tumani": "Ochildiyeva Gulmiraxon Ne'matillayevna",
+        "quva tumani": "Xolikov Jaxongir Ne'matjonovich"
+    };
 
 
-setInterval(async () => {
-    try {
-        const now = getFargonaTime();
-        const h = now.getHours();
-        const m = now.getMinutes();
-        const dayStr = now.toISOString().split('T')[0];
+    setInterval(async () => {
+        try {
+            const now = getFargonaTime();
+            const h = now.getHours();
+            const m = now.getMinutes();
+            const dayStr = now.toISOString().split('T')[0];
 
-        // Unique slot for this specific check time (e.g. "2024-05-20 10:30")
-        const currentSlot = `${dayStr} ${h}:${m}`;
+            // Unique slot for this specific check time (e.g. "2024-05-20 10:30")
+            const currentSlot = `${dayStr} ${h}:${m}`;
 
-        // 1. Warning & Deadline Checks (08:00 - 16:00)
-        const isTime = (h >= 8 && h <= 16);
+            // 1. Warning & Deadline Checks (08:00 - 16:00)
+            const isTime = (h >= 8 && h <= 16);
 
-        // Only run if:
-        // - It's work hours
-        // - It's exactly 00 or 30 minutes
-        // - We haven't run for this specific time slot yet
-        if (isTime && (m === 0 || m === 30) && lastRunSlot !== currentSlot) {
-            lastRunSlot = currentSlot; // Lock immediately
+            // Only run if:
+            // - It's work hours
+            // - It's exactly 00 or 30 minutes
+            // - We haven't run for this specific time slot yet
+            if (isTime && (m === 0 || m === 30) && lastRunSlot !== currentSlot) {
+                lastRunSlot = currentSlot; // Lock immediately
 
-            const dayOfWeek = now.getDay(); // 0 = Sun
+                const dayOfWeek = now.getDay(); // 0 = Sun
 
-            // Only send warnings Mon-Sat (exclude Sunday)
-            if (dayOfWeek !== 0) {
-                const warningHours = [9, 11, 13, 15];
-                const isDeadline = (h === 15 && m === 30); // 15:30 deadline
-                const isFinalDeadline = (h === 16 && m === 0); // 16:00 final deadline
-                const cutoffH = 15;
-                const cutoffM = 30;
+                // Only send warnings Mon-Sat (exclude Sunday)
+                if (dayOfWeek !== 0) {
+                    const warningHours = [9, 11, 13, 15];
+                    const isDeadline = (h === 15 && m === 30); // 15:30 deadline
+                    const isFinalDeadline = (h === 16 && m === 0); // 16:00 final deadline
+                    const cutoffH = 15;
+                    const cutoffM = 30;
 
-                if (warningHours.includes(h) || isDeadline || isFinalDeadline) {
-                    console.log(`[SCHEDULER] Checking attendance at ${currentSlot}...`);
+                    if (warningHours.includes(h) || isDeadline || isFinalDeadline) {
+                        console.log(`[SCHEDULER] Checking attendance at ${currentSlot}...`);
 
-                    const mData = await getMissingSchools();
-                    if (mData) {
-                        for (const dRaw in mData) {
-                            if (mData[dRaw].length > 0) {
-                                const tid = getTopicId(dRaw);
-                                if (tid) {
-                                    let txt = "";
+                        const mData = await getMissingSchools();
+                        if (mData) {
+                            for (const dRaw in mData) {
+                                if (mData[dRaw].length > 0) {
+                                    const tid = getTopicId(dRaw);
+                                    if (tid) {
+                                        let txt = "";
 
-                                    // 15:30 Warning (30 mins left)
-                                    if (h === 15 && m === 30) {
-                                        txt = `⏳ <b>DIQQAT! 16:00 gacha 30 daqiqa vaqt qoldi!</b>\n\n🚨 <b>${dRaw}</b> bo'yicha quyidagi maktablar hali davomat kiritmagan:\n\n` +
-                                            mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s}`).join('\n') +
-                                            `\n\n❗️ <b>Iltimos, vaqtida ulguring!</b>`;
-                                    }
-                                    // 16:00 Final Warning
-                                    else if (h === 16 && m === 0) {
-                                        const normKey = normalizeKey(dRaw).toLowerCase();
-                                        const official = DISTRICT_OFFICIALS[normKey] || "Mas'ullar";
+                                        // 15:30 Warning (30 mins left)
+                                        if (h === 15 && m === 30) {
+                                            txt = `⏳ <b>DIQQAT! 16:00 gacha 30 daqiqa vaqt qoldi!</b>\n\n🚨 <b>${dRaw}</b> bo'yicha quyidagi maktablar hali davomat kiritmagan:\n\n` +
+                                                mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s}`).join('\n') +
+                                                `\n\n❗️ <b>Iltimos, vaqtida ulguring!</b>`;
+                                        }
+                                        // 16:00 Final Warning
+                                        else if (h === 16 && m === 0) {
+                                            const normKey = normalizeKey(dRaw).toLowerCase();
+                                            const official = DISTRICT_OFFICIALS[normKey] || "Mas'ullar";
 
-                                        txt = `🚫 <b>AFSUSKI! Ish vaqti tugadi (16:00).</b>\n\n😔 <b>${dRaw}</b> bo'yicha quyidagi maktablar bugun davomat kiritishmadi:\n\n` +
-                                            mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s}`).join('\n') +
-                                            `\n\n‼️ <b>Hurmatli ${official}, vaziyatni qattiq nazoratga olishingizni so'rayman!</b>`;
-                                    }
-                                    // Other hours (Standard warning)
-                                    else if (h < 15 || (h === 15 && m < 30)) {
-                                        txt = `⚠️ <b>Eslatma (${h}:00):</b>\n\n📍 <b>${dRaw}</b> da quyidagi maktablar davomat kiritmadi:\n\n` +
-                                            mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s}`).join('\n') +
-                                            `\n\n❗️ Iltimos, faollik ko'rsating.`;
-                                    }
+                                            txt = `🚫 <b>AFSUSKI! Ish vaqti tugadi (16:00).</b>\n\n😔 <b>${dRaw}</b> bo'yicha quyidagi maktablar bugun davomat kiritishmadi:\n\n` +
+                                                mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s}`).join('\n') +
+                                                `\n\n‼️ <b>Hurmatli ${official}, vaziyatni qattiq nazoratga olishingizni so'rayman!</b>`;
+                                        }
+                                        // Other hours (Standard warning)
+                                        else if (h < 15 || (h === 15 && m < 30)) {
+                                            txt = `⚠️ <b>Eslatma (${h}:00):</b>\n\n📍 <b>${dRaw}</b> da quyidagi maktablar davomat kiritmadi:\n\n` +
+                                                mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s}`).join('\n') +
+                                                `\n\n❗️ Iltimos, faollik ko'rsating.`;
+                                        }
 
-                                    if (txt) {
-                                        console.log(`[ALERTS] Sending warning to ${dRaw} (Topic: ${tid})`);
-                                        try {
-                                            await bot.telegram.sendMessage(config.REPORT_GROUP_ID, txt, {
-                                                parse_mode: 'HTML',
-                                                message_thread_id: tid
-                                            });
-                                        } catch (err) {
-                                            console.error(`[ALERTS] Error sending to ${dRaw}:`, err.message);
+                                        if (txt) {
+                                            console.log(`[ALERTS] Sending warning to ${dRaw} (Topic: ${tid})`);
+                                            try {
+                                                await bot.telegram.sendMessage(config.REPORT_GROUP_ID, txt, {
+                                                    parse_mode: 'HTML',
+                                                    message_thread_id: tid
+                                                });
+                                            } catch (err) {
+                                                console.error(`[ALERTS] Error sending to ${dRaw}:`, err.message);
+                                            }
                                         }
                                     }
                                 }
@@ -1543,24 +1545,23 @@ setInterval(async () => {
                     }
                 }
             }
+
+            // 2. Auto-Report at 16:05 (Daily Excel)
+            if (h === 16 && m === 5 && !dailyReportSent) {
+                console.log("Sending Auto 16:05 Report...");
+                dailyReportSent = true;
+                try {
+                    await sendExcelReport(null, config.REPORT_GROUP_ID);
+                } catch (e) { console.error("Auto Report Failed", e); }
+            }
+
+            // Reset daily report flag at midnight
+            if (h === 0 && dailyReportSent) dailyReportSent = false;
+
+        } catch (e) {
+            console.error("Scheduler check error:", e);
         }
-
-        // 2. Auto-Report at 16:05 (Daily Excel)
-        if (h === 16 && m === 5 && !dailyReportSent) {
-            console.log("Sending Auto 16:05 Report...");
-            dailyReportSent = true;
-            try {
-                await sendExcelReport(null, config.REPORT_GROUP_ID);
-            } catch (e) { console.error("Auto Report Failed", e); }
-        }
-
-        // Reset daily report flag at midnight
-        if (h === 0 && dailyReportSent) dailyReportSent = false;
-
-    } catch (e) {
-        console.error("Scheduler check error:", e);
-    }
-}, 45000); // Check every 45 seconds to avoid double trigger on 30s interval
+    }, 45000); // Check every 45 seconds to avoid double trigger on 30s interval
 }
 
 
