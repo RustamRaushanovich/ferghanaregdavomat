@@ -5,6 +5,8 @@ const PAGE_SIZE = 50;
 let tumanPage = 1;
 let absentPage = 1;
 let monitorPage = 1;
+let parentPage = 1;
+const parentLimit = 25;
 const monitorLimit = 20;
 
 // Init
@@ -1135,7 +1137,7 @@ function showTab(tabId) {
     if (tabId === 'tuman') loadTumanData();
     if (tabId === 'students') loadAbsentDetails();
     if (tabId === 'recent') loadRecentActivity();
-    if (tabId === 'parents') { loadParentStats(); loadParentList(); }
+    if (tabId === 'parents') { loadParentFilters(); loadParentList(1); }
     if (tabId === 'analysis') loadAnalysisData();
     if (tabId === 'ranking') showLeaderboard();
     if (tabId === 'profile') displayUserInfo();
@@ -1233,13 +1235,29 @@ async function loadParentFilters() {
                 schools.forEach(s => { if (s !== '-') sSelect.innerHTML += `<option value="${s}">${s}</option>`; });
             }
         }
-        return data; // Pass data to avoid re-fetching if possible, but loadParentList will fetch again for simplicity or we can cache
+
+        // Add search input if it doesn't exist
+        const filterControls = document.querySelector('#parentsView .controls');
+        if (filterControls && !document.getElementById('parentSearch')) {
+            const searchGrp = document.createElement('div');
+            searchGrp.className = 'filter-group';
+            searchGrp.innerHTML = `
+                <label>Qidirish (F.I.SH / Tel)</label>
+                <input type="text" id="parentSearch" placeholder="Ism yoki tel..." oninput="loadParentList(1)" style="min-width:200px; padding:12px 20px;">
+            `;
+            filterControls.appendChild(searchGrp);
+        }
+
+        return data;
     } catch (e) { console.error(e); return []; }
 }
 
-async function loadParentList() {
+async function loadParentList(page = 1) {
+    parentPage = page;
     const dFilter = document.getElementById('parentDistrictFilter') ? document.getElementById('parentDistrictFilter').value : '';
     const sFilter = document.getElementById('parentSchoolFilter') ? document.getElementById('parentSchoolFilter').value : '';
+    const qFilter = document.getElementById('parentSearch') ? document.getElementById('parentSearch').value.toLowerCase() : '';
+
     const tbody = document.querySelector('#parentsTable tbody');
     if (!tbody) return;
 
@@ -1249,7 +1267,7 @@ async function loadParentList() {
         const res = await fetch('/api/stats/parents', { headers: getAuthHeaders() });
         let data = await res.json();
 
-        // Update Stats
+        // Update Stats (only once or for the whole dataset)
         const totalEl = document.getElementById('parent_total_count');
         const topDistEl = document.getElementById('parent_top_district');
 
@@ -1265,17 +1283,29 @@ async function loadParentList() {
         // Filter
         if (dFilter) data = data.filter(p => p.district === dFilter);
         if (sFilter) data = data.filter(p => p.school === sFilter);
+        if (qFilter) {
+            data = data.filter(p =>
+                (p.fio || '').toLowerCase().includes(qFilter) ||
+                (p.phone || '').toString().includes(qFilter) ||
+                (p.child_name || '').toLowerCase().includes(qFilter)
+            );
+        }
+
+        const totalItems = data.length;
+        const offset = (page - 1) * parentLimit;
+        const pageData = data.slice(offset, offset + parentLimit);
 
         tbody.innerHTML = '';
-        if (data.length === 0) {
+        if (pageData.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Ma\'lumot topilmadi</td></tr>';
+            renderPagination('parentPagination', totalItems, page, parentLimit, 'loadParentList');
             return;
         }
 
         const role = localStorage.getItem('dashboard_role');
         const isSuper = role === 'superadmin';
 
-        data.forEach(p => {
+        pageData.forEach(p => {
             const phoneStr = (p.phone || '').toString();
             const maskedPhone = isSuper ? phoneStr :
                 (phoneStr.length > 7 ? phoneStr.substring(0, 6) + '***' + phoneStr.substring(phoneStr.length - 2) : '***');
@@ -1291,8 +1321,10 @@ async function loadParentList() {
                 <td>${p.school || '-'}</td>
                 <td style="font-size:11px; color:#94a3b8">${p.joined_at || '-'}</td>
             `;
-            tbody.innerHTML += `<tr>${tr.innerHTML}</tr>`;
+            tbody.appendChild(tr);
         });
+
+        renderPagination('parentPagination', totalItems, page, parentLimit, 'loadParentList');
     } catch (e) {
         console.error(e);
         tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red">Xatolik: ${e.message}</td></tr>`;

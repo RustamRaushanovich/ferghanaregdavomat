@@ -311,6 +311,13 @@ const attendanceWizard = new Scenes.WizardScene(
         d.sababsiz_turmush = parseInt(ctx.message.text) || 0;
         d.sababsiz_jami = d.sababsiz_muntazam + d.sababsiz_qidiruv + d.sababsiz_chetel + d.sababsiz_boyin + d.sababsiz_ishlab + d.sababsiz_qarshilik + d.sababsiz_jazo + d.sababsiz_nazoratsiz + d.sababsiz_boshqa + d.sababsiz_turmush;
         d.total_absent = d.sababli_jami + d.sababsiz_jami;
+
+        // Validation: Sum check
+        if (d.total_absent > d.total_students) {
+            await ctx.reply(`⚠️ <b>Xato!</b> Jami kelmaganlar (${d.total_absent}) o'quvchilar sonidan (${d.total_students}) ko'p bo'lishi mumkin emas.\n\nIltimos, ma'lumotlarni qaytadan tekshirib kiriting.`, { parse_mode: 'HTML' });
+            return ctx.wizard.selectStep(7); // Go back to total students
+        }
+
         d.students_list = [];
 
         if (d.sababsiz_jami > 0) {

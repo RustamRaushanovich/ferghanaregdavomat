@@ -31,13 +31,18 @@ async function saveAttendance(data) {
             ) RETURNING id;
         `;
 
+        const total_students = parseInt(data.total_students) || 1;
+        const total_absent = (parseInt(data.sababli_total) || 0) + (parseInt(data.sababsiz_total) || 0);
+        let percent = ((total_students - total_absent) / total_students * 100);
+        if (percent < 0) percent = 0;
+        if (percent > 100) percent = 100;
+
         const values = [
-            date, time, data.district, data.school, data.classes_count, data.total_students,
+            date, time, data.district, data.school, data.classes_count, total_students,
             data.sababli_kasal, data.sababli_tadbirlar, data.sababli_oilaviy, data.sababli_ijtimoiy, data.sababli_boshqa, data.sababli_total,
             data.sababsiz_muntazam, data.sababsiz_qidiruv, data.sababsiz_chetel, data.sababsiz_boyin, data.sababsiz_ishlab,
             data.sababsiz_qarshilik, data.sababsiz_jazo, data.sababsiz_nazoratsiz, data.sababsiz_boshqa, data.sababsiz_turmush, data.sababsiz_total,
-            (parseInt(data.sababli_total) + parseInt(data.sababsiz_total)),
-            ((data.total_students - (parseInt(data.sababli_total) + parseInt(data.sababsiz_total))) / data.total_students * 100).toFixed(1),
+            total_absent, percent.toFixed(1),
             data.fio, data.phone, data.inspector, data.user_id || 0, data.source || 'bot', data.bildirgi || null
         ];
 
@@ -338,7 +343,13 @@ async function getViloyatSvod(date) {
             const head = DISTRICT_HEADS[dName] || { name: "-", phone: "-" };
 
             if (tumanRows.length > 0) {
-                const sums = tumanRows.reduce((acc, r) => ({
+                // Ensure unique schools for statistics (the query uses DISTINCT ON, but double check filtering)
+                // Use a map to get latest entries if the query didn't handle it perfectly or for clarity
+                const uniqueEntries = {};
+                tumanRows.forEach(r => { uniqueEntries[normalizeKey(r.school)] = r; });
+                const uniqueRows = Object.values(uniqueEntries);
+
+                const sums = uniqueRows.reduce((acc, r) => ({
                     classes: acc.classes + (parseInt(r.classes_count) || 0),
                     students: acc.students + (parseInt(r.total_students) || 0),
                     sk: acc.sk + (parseInt(r.sababli_kasal) || 0),
@@ -362,14 +373,18 @@ async function getViloyatSvod(date) {
                     sumPerc: acc.sumPerc + (parseFloat(r.percent) || 0)
                 }), { classes: 0, students: 0, sk: 0, st: 0, so: 0, si: 0, sb: 0, sm: 0, sq: 0, sc: 0, sbt: 0, si_ish: 0, sqar: 0, sjaz: 0, snaz: 0, stur: 0, ssb: 0, sababli: 0, sababsiz: 0, total_absent: 0, sumPerc: 0 });
 
-                const yestAvg = yestRows.length > 0 ? (yestRows.reduce((a, b) => a + (parseFloat(b.percent) || 0), 0) / yestRows.length) : 0;
+                // Calculate Yesterday Average accurately
+                const yestUnique = {};
+                yestRows.forEach(r => { yestUnique[normalizeKey(r.school)] = parseFloat(r.percent) || 0; });
+                const yestPercs = Object.values(yestUnique);
+                const yestAvg = yestPercs.length > 0 ? (yestPercs.reduce((a, b) => a + b, 0) / yestPercs.length) : 0;
 
                 return {
                     district: dName,
-                    entries: tumanRows.length,
+                    entries: uniqueRows.length,
                     total_schools: totalSchools,
                     ...sums,
-                    avg_percent: parseFloat((sums.sumPerc / tumanRows.length).toFixed(1)),
+                    avg_percent: parseFloat((sums.sumPerc / uniqueRows.length).toFixed(1)),
                     yesterday_percent: parseFloat(yestAvg.toFixed(1)),
                     head_name: head.name,
                     head_phone: head.phone

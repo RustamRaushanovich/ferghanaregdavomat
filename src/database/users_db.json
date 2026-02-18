@@ -23,12 +23,36 @@
     "name": "R.R",
     "username": "ferghanareg"
   },
+  "174370496": {
+    "district": "Toshloq tumani",
+    "school": "49-maktab",
+    "fio": "Qoraboyev Dostonbek Muxammadjon o'g'l",
+    "phone": "+998916584241",
+    "name": "D O S T O N B E K",
+    "username": "DOSTONBEK_4241"
+  },
   "232799931": {
     "district": "Qo‘shtepa tumani",
     "school": "32",
     "fio": "Ergashev Abdulaziz Valijon o'g'li",
     "phone": "+998915164658",
     "name": "Абдулазиз"
+  },
+  "293599453": {
+    "district": "Quvasoy shahri",
+    "school": "11-IDUM",
+    "fio": "Karabayev Joʻrabek Bazarbayevich",
+    "phone": "998934820348",
+    "name": "Jo'rabek",
+    "username": "karabayev_j"
+  },
+  "337867257": {
+    "district": "Beshariq tumani",
+    "school": "4-maktab",
+    "fio": "Xusanov Dilshodbek Abdullayevich",
+    "phone": "998946772244",
+    "name": "Д.А.Хусанов",
+    "username": "khusanov202"
   },
   "359738327": {
     "district": "O‘zbekiston tumani",
@@ -52,6 +76,13 @@
     "phone": "+998939758877",
     "name": "SHOIR",
     "username": "shoirmirzoElmurodjon"
+  },
+  "388481093": {
+    "district": "Quva tumani",
+    "school": "51 maktab",
+    "fio": "Xolmatov Dilyor Karimovich",
+    "phone": "+998904070838",
+    "name": "D.Xolmatov"
   },
   "433782772": {
     "district": "Bag‘dod tumani",
@@ -113,6 +144,13 @@
     "phone": "998912826602",
     "name": "Isaqova Ximoyat Abdulpattoyevna"
   },
+  "678126751": {
+    "district": "Beshariq tumani",
+    "school": "39-maktab",
+    "fio": "Saminov Otabek Dehqonovich",
+    "phone": "998944919016",
+    "name": "Otabek Saminov"
+  },
   "729895058": {
     "district": "Oltiariq tumani",
     "school": "35",
@@ -143,11 +181,25 @@
     "name": "Шохобиддин",
     "username": "qodirov_0065"
   },
+  "1014560263": {
+    "district": "Uchko‘prik tumani",
+    "school": "42-maktab",
+    "fio": "Boʻstonoy Sattorova Imomaliyevna",
+    "phone": "998995157289",
+    "name": "Б.Сатторова"
+  },
+  "1236401627": {
+    "district": "So‘x tumani",
+    "school": "7 -maktab",
+    "fio": "Mastonov Baxtiyorjon Qambaraliyevich",
+    "phone": "998994826589",
+    "name": "Mastonov"
+  },
   "1384795609": {
     "district": "Qo‘shtepa tumani",
-    "school": "13",
+    "school": "26-maktab",
     "fio": "Ubaydullayev Murodjon Mirzayevich",
-    "phone": "+998934822433",
+    "phone": "998934822433",
     "name": "Murodjon"
   },
   "1387240931": {
@@ -156,6 +208,20 @@
     "fio": "Qunduzov Murodjon Ma'murjonovich",
     "phone": "+998990443830",
     "name": "3-мактаб"
+  },
+  "1400893473": {
+    "district": "Dang‘ara tumani",
+    "school": "40-maktab",
+    "fio": "995241526Dexqonov Iqboljon Urazaliyevich",
+    "phone": "+998995241526",
+    "name": "Dehqonov"
+  },
+  "1666318626": {
+    "district": "Farg‘ona tumani",
+    "school": "38 мактаб",
+    "fio": "Shermonova Raʼnoxon Abdumoʻminovna",
+    "phone": "998911313067",
+    "name": "Ra'no Shermonova"
   },
   "1884999660": {
     "district": "Quvasoy shahri",
@@ -1292,18 +1358,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1316,13 +1382,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -1335,8 +1401,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -1349,13 +1415,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1368,8 +1434,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1382,8 +1448,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "Xususiy"
+        "school": "Xususiy",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -1396,8 +1462,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "23-maktab"
+        "school": "23-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1410,13 +1476,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -1429,13 +1495,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1448,8 +1514,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1462,13 +1528,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "23 мактаб"
+        "school": "23 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -1481,13 +1547,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "23-maktab"
+        "school": "23-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "23-maktab"
+        "school": "23-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1500,13 +1566,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "47-maktab"
+        "school": "47-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1519,13 +1585,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -1538,13 +1604,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1557,8 +1623,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1571,8 +1637,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -1585,8 +1651,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -1599,13 +1665,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "Litsey"
+        "school": "Litsey",
+        "district": "Farg‘ona shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37"
+        "school": "37",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1618,8 +1684,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -1632,8 +1698,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1646,8 +1712,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -1660,13 +1726,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -1679,13 +1745,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "Yoqku bizi maktab"
+        "school": "Yoqku bizi maktab",
+        "district": "Marg‘ilon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1698,13 +1764,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "Qo‘shtepa tumani"
+        "school": "Qo‘shtepa tumani",
+        "district": "Marg‘ilon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1717,8 +1783,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1731,13 +1797,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1750,8 +1816,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "12-maktab"
+        "school": "12-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1764,13 +1830,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "18 мактаб"
+        "school": "18 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Marg‘ilon shahri"
       }
     ]
   },
@@ -1783,18 +1849,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "1-maktab"
+        "school": "1-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -1807,13 +1873,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Uchko‘prik tumani",
-        "school": "37"
+        "school": "37",
+        "district": "Uchko‘prik tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1826,8 +1892,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1840,13 +1906,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "37 мактаб"
+        "school": "37 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "37 мактаб"
+        "school": "37 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -1859,8 +1925,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1873,8 +1939,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1887,8 +1953,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "12-maktab"
+        "school": "12-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -1901,8 +1967,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "12 maktab"
+        "school": "12 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -1915,13 +1981,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Dang‘ara tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Dang‘ara tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -1934,8 +2000,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -1948,13 +2014,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -1967,13 +2033,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "8 мактаб"
+        "school": "8 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "qoʻqon"
+        "school": "qoʻqon",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -1986,8 +2052,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2000,13 +2066,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "/start"
+        "school": "/start",
+        "district": "Marg‘ilon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2019,8 +2085,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2033,13 +2099,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2052,8 +2118,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2066,13 +2132,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -2085,8 +2151,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2099,8 +2165,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2113,13 +2179,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Marg‘ilon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2132,13 +2198,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -2151,8 +2217,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2165,13 +2231,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "31-maktab"
+        "school": "31-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "31-maktab"
+        "school": "31-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -2184,8 +2250,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2198,23 +2264,23 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "29-maktab"
+        "school": "29-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "29-maktab"
+        "school": "29-maktab",
+        "district": "Marg‘ilon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "29-maktab"
+        "school": "29-maktab",
+        "district": "Marg‘ilon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2227,8 +2293,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "/start"
+        "school": "/start",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -2241,8 +2307,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2255,8 +2321,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2269,8 +2335,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "8 мактаб"
+        "school": "8 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2283,8 +2349,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2297,13 +2363,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2316,8 +2382,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -2330,8 +2396,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2344,8 +2410,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2358,13 +2424,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2377,8 +2443,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2391,8 +2457,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2405,8 +2471,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2419,8 +2485,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -2433,13 +2499,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -2452,13 +2518,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2471,8 +2537,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2485,13 +2551,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2504,8 +2570,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2518,8 +2584,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2532,13 +2598,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2551,8 +2617,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2565,8 +2631,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2579,13 +2645,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2598,8 +2664,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2612,13 +2678,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2631,23 +2697,23 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona tumani",
-        "school": "15 мактаб"
+        "school": "15 мактаб",
+        "district": "Farg‘ona tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona tumani",
-        "school": "15 мактаб"
+        "school": "15 мактаб",
+        "district": "Farg‘ona tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona tumani",
-        "school": "15 мактаб"
+        "school": "15 мактаб",
+        "district": "Farg‘ona tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2660,8 +2726,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2674,8 +2740,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2688,8 +2754,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2702,8 +2768,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2716,13 +2782,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "35 мактаб"
+        "school": "35 мактаб",
+        "district": "Marg‘ilon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2735,13 +2801,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2754,8 +2820,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2768,8 +2834,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -2782,8 +2848,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Marg‘ilon shahri"
       }
     ]
   },
@@ -2796,8 +2862,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2810,13 +2876,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -2829,8 +2895,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2843,8 +2909,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -2857,8 +2923,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2871,8 +2937,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2885,8 +2951,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2899,8 +2965,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2913,8 +2979,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -2927,8 +2993,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2941,8 +3007,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2955,8 +3021,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -2969,8 +3035,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -2983,8 +3049,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -2997,18 +3063,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "2 мактаб"
+        "school": "2 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "2 мактаб"
+        "school": "2 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "2 мактаб"
+        "school": "2 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3021,8 +3087,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "19"
+        "school": "19",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -3035,13 +3101,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3054,13 +3120,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3073,13 +3139,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Marg‘ilon shahri"
       }
     ]
   },
@@ -3092,8 +3158,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3106,8 +3172,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3120,8 +3186,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3134,8 +3200,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3148,8 +3214,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3162,8 +3228,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3176,8 +3242,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3190,13 +3256,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Marg‘ilon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Marg‘ilon shahri"
       }
     ]
   },
@@ -3209,8 +3275,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3223,13 +3289,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "31-maktab"
+        "school": "31-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "31-maktab"
+        "school": "31-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3242,13 +3308,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3261,8 +3327,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3275,8 +3341,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3289,8 +3355,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3303,8 +3369,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3317,13 +3383,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "5-maktab"
+        "school": "5-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3336,13 +3402,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3355,8 +3421,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3369,8 +3435,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3383,18 +3449,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3407,8 +3473,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "/start"
+        "school": "/start",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3421,13 +3487,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3440,8 +3506,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3454,18 +3520,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3478,8 +3544,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3492,13 +3558,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3511,8 +3577,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "32-maktab"
+        "school": "32-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3525,8 +3591,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3539,8 +3605,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3553,8 +3619,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3567,8 +3633,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "4-maktab"
+        "school": "4-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3581,8 +3647,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3595,13 +3661,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona tumani",
-        "school": "Farg‘ona tumani"
+        "school": "Farg‘ona tumani",
+        "district": "Farg‘ona tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona tumani",
-        "school": "15 мактаб"
+        "school": "15 мактаб",
+        "district": "Farg‘ona tumani"
       }
     ]
   },
@@ -3614,8 +3680,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3628,8 +3694,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3642,13 +3708,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3661,8 +3727,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "30 мактаб"
+        "school": "30 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3675,13 +3741,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3694,8 +3760,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3708,8 +3774,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3722,13 +3788,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3741,8 +3807,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3755,8 +3821,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3769,8 +3835,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "43-maktab"
+        "school": "43-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3783,8 +3849,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3797,8 +3863,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3811,8 +3877,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3825,13 +3891,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3844,8 +3910,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3858,13 +3924,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3877,8 +3943,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "15 maktab"
+        "school": "15 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -3891,13 +3957,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3910,8 +3976,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -3924,13 +3990,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "34 maktap"
+        "school": "34 maktap",
+        "district": "Farg‘ona shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3943,13 +4009,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -3962,13 +4028,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "2ta farzandim"
+        "school": "2ta farzandim",
+        "district": "Farg‘ona shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -3981,18 +4047,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4005,8 +4071,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -4019,8 +4085,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -4033,13 +4099,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4056,8 +4122,8 @@
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4070,18 +4136,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4094,8 +4160,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4108,13 +4174,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4127,13 +4193,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4146,8 +4212,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4160,8 +4226,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4174,8 +4240,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4188,8 +4254,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "37 maktab"
+        "school": "37 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -4202,8 +4268,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4216,13 +4282,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "37 maktab"
+        "school": "37 maktab",
+        "district": "Farg‘ona shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4235,8 +4301,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4249,13 +4315,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -4268,23 +4334,23 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34"
+        "school": "34",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -4297,8 +4363,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4311,13 +4377,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4330,8 +4396,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16 мактаб"
+        "school": "16 мактаб",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -4344,8 +4410,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -4358,8 +4424,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4372,8 +4438,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4386,8 +4452,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "31-maktab"
+        "school": "31-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -4400,8 +4466,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Marg‘ilon shahri"
       }
     ]
   },
@@ -4414,13 +4480,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4433,13 +4499,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4452,13 +4518,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -4471,18 +4537,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4495,8 +4561,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "16 maktab"
+        "school": "16 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -4509,18 +4575,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "4-maktab"
+        "school": "4-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4533,13 +4599,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -4552,13 +4618,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4571,18 +4637,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4595,8 +4661,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "10-maktab"
+        "school": "10-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4609,8 +4675,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4623,18 +4689,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4647,8 +4713,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4661,8 +4727,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4675,13 +4741,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "34 мактаб"
+        "school": "34 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "34 мактаб"
+        "school": "34 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4694,8 +4760,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4708,8 +4774,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4722,8 +4788,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4736,8 +4802,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4750,13 +4816,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4769,8 +4835,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "2 мактаб"
+        "school": "2 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4783,13 +4849,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "40-maktab"
+        "school": "40-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "40-maktab"
+        "school": "40-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -4802,8 +4868,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4816,8 +4882,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4830,13 +4896,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4849,8 +4915,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "Кукон шахри"
+        "school": "Кукон шахри",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -4863,8 +4929,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "37 maktab"
+        "school": "37 maktab",
+        "district": "Marg‘ilon shahri"
       }
     ]
   },
@@ -4877,8 +4943,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "11-maktab"
+        "school": "11-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4891,13 +4957,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "24-maktab"
+        "school": "24-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "24-maktab"
+        "school": "24-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4910,8 +4976,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4924,8 +4990,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4938,8 +5004,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "34 мактаб"
+        "school": "34 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4952,8 +5018,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "12-maktab"
+        "school": "12-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4966,8 +5032,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -4980,8 +5046,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -4994,8 +5060,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5008,8 +5074,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -5022,8 +5088,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5036,13 +5102,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5055,8 +5121,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5069,13 +5135,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5088,8 +5154,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5102,8 +5168,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "11-maktab"
+        "school": "11-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5116,13 +5182,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16maktab"
+        "school": "16maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -5135,8 +5201,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5149,8 +5215,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5163,13 +5229,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5182,13 +5248,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -5201,8 +5267,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "12-maktab"
+        "school": "12-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5215,8 +5281,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5229,8 +5295,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5243,8 +5309,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5257,8 +5323,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5271,8 +5337,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "23 мактаб"
+        "school": "23 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5285,8 +5351,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5299,18 +5365,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "11-maktab"
+        "school": "11-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "O‘zbekiston tumani",
-        "school": "Z"
+        "school": "Z",
+        "district": "O‘zbekiston tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "40-maktab"
+        "school": "40-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5322,8 +5388,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5336,8 +5402,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5350,13 +5416,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "31-maktab"
+        "school": "31-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "31-maktab"
+        "school": "31-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -5369,8 +5435,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "37 мактаб"
+        "school": "37 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5383,8 +5449,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "11-maktab"
+        "school": "11-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5397,8 +5463,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "19 maktab"
+        "school": "19 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -5411,8 +5477,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "11 мактаб"
+        "school": "11 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5425,8 +5491,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5439,13 +5505,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5458,8 +5524,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -5472,13 +5538,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "24-maktab"
+        "school": "24-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "24-maktab"
+        "school": "24-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5491,8 +5557,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5505,8 +5571,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5519,8 +5585,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -5533,8 +5599,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "12 maktab"
+        "school": "12 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -5547,13 +5613,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -5566,13 +5632,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "15 мактаб"
+        "school": "15 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5585,8 +5651,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5599,18 +5665,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5623,8 +5689,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "24-maktab"
+        "school": "24-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5637,13 +5703,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5656,8 +5722,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "6 maktab"
+        "school": "6 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -5670,8 +5736,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5684,8 +5750,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -5698,8 +5764,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5712,13 +5778,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5731,8 +5797,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5745,8 +5811,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5759,8 +5825,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5773,28 +5839,28 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "Qo‘qon shahri"
+        "school": "Qo‘qon shahri",
+        "district": "Farg‘ona shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5807,13 +5873,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5826,8 +5892,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "1-maktab"
+        "school": "1-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -5840,8 +5906,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5854,13 +5920,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5873,13 +5939,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5892,13 +5958,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "/start"
+        "school": "/start",
+        "district": "Farg‘ona shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5911,8 +5977,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "23-maktab"
+        "school": "23-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5925,8 +5991,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "12-maktab"
+        "school": "12-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5939,8 +6005,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5953,13 +6019,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "11 мактаб"
+        "school": "11 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "11 мактаб"
+        "school": "11 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -5972,8 +6038,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "45-maktab"
+        "school": "45-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -5986,8 +6052,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6000,8 +6066,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6014,8 +6080,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6028,18 +6094,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6052,8 +6118,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6066,13 +6132,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "40 maktab"
+        "school": "40 maktab",
+        "district": "Farg‘ona shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "15 maktab"
+        "school": "15 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -6085,8 +6151,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6099,13 +6165,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6118,8 +6184,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6132,8 +6198,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6146,8 +6212,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6160,13 +6226,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -6179,8 +6245,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6193,13 +6259,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "23-maktab"
+        "school": "23-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "23-maktab"
+        "school": "23-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6212,8 +6278,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6226,8 +6292,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "11 maktab"
+        "school": "11 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -6240,8 +6306,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "Stop"
+        "school": "Stop",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -6254,8 +6320,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "12 maktab"
+        "school": "12 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -6268,8 +6334,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "15 maktab"
+        "school": "15 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -6282,8 +6348,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6296,8 +6362,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "24-maktab"
+        "school": "24-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6310,13 +6376,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "/start"
+        "school": "/start",
+        "district": "Farg‘ona shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "11-maktab"
+        "school": "11-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6329,13 +6395,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona tumani",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Farg‘ona tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona tumani",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Farg‘ona tumani"
       }
     ]
   },
@@ -6348,13 +6414,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "32-maktab"
+        "school": "32-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6367,18 +6433,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "5-maktab"
+        "school": "5-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6391,8 +6457,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "11-maktab"
+        "school": "11-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6405,13 +6471,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "28-maktab"
+        "school": "28-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "28-maktab"
+        "school": "28-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -6424,13 +6490,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "37 мактаб"
+        "school": "37 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "5-ВИДУМИ"
+        "school": "5-ВИДУМИ",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6443,8 +6509,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "20-maktab"
+        "school": "20-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6457,8 +6523,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19"
+        "school": "19",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6471,8 +6537,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6485,13 +6551,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6504,8 +6570,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6518,13 +6584,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6537,8 +6603,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6551,8 +6617,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6565,8 +6631,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6579,8 +6645,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6593,13 +6659,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6612,8 +6678,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6626,8 +6692,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6640,13 +6706,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "/start"
+        "school": "/start",
+        "district": "Farg‘ona shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6659,13 +6725,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Dang‘ara tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Dang‘ara tumani"
       }
     ]
   },
@@ -6678,13 +6744,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Marg‘ilon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6697,8 +6763,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6711,8 +6777,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6725,8 +6791,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "33-maktab"
+        "school": "33-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6739,8 +6805,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6753,8 +6819,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "11-maktab"
+        "school": "11-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6767,13 +6833,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona tumani",
-        "school": "16 мактаб"
+        "school": "16 мактаб",
+        "district": "Farg‘ona tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -6786,8 +6852,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6800,8 +6866,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6814,13 +6880,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "20-maktab"
+        "school": "20-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "20-maktab"
+        "school": "20-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6833,8 +6899,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6847,13 +6913,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "10-maktab"
+        "school": "10-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6866,13 +6932,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "19 maktab"
+        "school": "19 maktab",
+        "district": "Farg‘ona shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19maktab"
+        "school": "19maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6885,8 +6951,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6899,13 +6965,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6918,18 +6984,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15 maktap"
+        "school": "15 maktap",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6942,8 +7008,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -6956,13 +7022,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6975,18 +7041,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -6999,8 +7065,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Marg‘ilon shahri"
       }
     ]
   },
@@ -7013,13 +7079,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "4-maktab"
+        "school": "4-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7032,18 +7098,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "Hammasi 16 maktabda oqiydi"
+        "school": "Hammasi 16 maktabda oqiydi",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -7056,8 +7122,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "12-maktab"
+        "school": "12-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7070,13 +7136,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "40-maktab"
+        "school": "40-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "36-maktab"
+        "school": "36-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7089,8 +7155,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "34 maktab"
+        "school": "34 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -7103,8 +7169,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7117,13 +7183,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "19 maktab"
+        "school": "19 maktab",
+        "district": "Farg‘ona shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7136,13 +7202,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "37 maktab"
+        "school": "37 maktab",
+        "district": "Farg‘ona shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "37 maktab"
+        "school": "37 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -7155,8 +7221,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7169,13 +7235,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7188,8 +7254,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7202,8 +7268,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "/start"
+        "school": "/start",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7216,8 +7282,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7230,8 +7296,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7244,8 +7310,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "1"
+        "school": "1",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -7258,8 +7324,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "20"
+        "school": "20",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7272,8 +7338,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7286,8 +7352,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7300,8 +7366,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Furqat tumani",
-        "school": "20-maktab"
+        "school": "20-maktab",
+        "district": "Furqat tumani"
       }
     ]
   },
@@ -7314,8 +7380,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7328,8 +7394,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "35 maktab"
+        "school": "35 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -7342,8 +7408,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7356,8 +7422,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7370,13 +7436,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7389,8 +7455,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7403,13 +7469,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7422,13 +7488,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7441,13 +7507,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7460,8 +7526,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7474,8 +7540,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7488,8 +7554,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7502,8 +7568,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7516,8 +7582,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7530,13 +7596,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7549,8 +7615,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7563,8 +7629,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7577,8 +7643,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6"
+        "school": "6",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7591,13 +7657,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "25-maktab"
+        "school": "25-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "25-maktab"
+        "school": "25-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7610,8 +7676,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7624,13 +7690,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7643,13 +7709,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7662,13 +7728,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7681,8 +7747,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7695,13 +7761,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "25-maktab"
+        "school": "25-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "25-maktab"
+        "school": "25-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7714,8 +7780,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6maktab"
+        "school": "6maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7728,8 +7794,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "40-maktab"
+        "school": "40-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -7742,8 +7808,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "29-maktab"
+        "school": "29-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -7756,8 +7822,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7770,8 +7836,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "20-maktab"
+        "school": "20-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7784,8 +7850,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "11-maktab"
+        "school": "11-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7798,8 +7864,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7812,8 +7878,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "20-maktab"
+        "school": "20-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7826,8 +7892,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7840,18 +7906,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "39 мактаб"
+        "school": "39 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7864,8 +7930,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "19 maktab"
+        "school": "19 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -7878,18 +7944,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7902,8 +7968,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "20-maktab"
+        "school": "20-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7916,13 +7982,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Marg‘ilon shahri"
       }
     ]
   },
@@ -7935,8 +8001,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7949,8 +8015,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -7963,8 +8029,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7977,8 +8043,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -7991,13 +8057,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8010,8 +8076,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8024,8 +8090,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8038,13 +8104,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8057,8 +8123,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "29 мактаб"
+        "school": "29 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8071,8 +8137,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -8085,8 +8151,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13 maktab"
+        "school": "13 maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8099,8 +8165,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -8113,13 +8179,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "15 мактаб"
+        "school": "15 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8132,8 +8198,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "5 мактаб"
+        "school": "5 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8146,8 +8212,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "29 мактаб"
+        "school": "29 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8160,13 +8226,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "5 мактаб"
+        "school": "5 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "4 мактаб"
+        "school": "4 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8179,8 +8245,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "7 мактаб"
+        "school": "7 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8193,8 +8259,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8207,13 +8273,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8226,8 +8292,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8240,8 +8306,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "24-maktab"
+        "school": "24-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8254,13 +8320,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8273,23 +8339,23 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "37 maktab"
+        "school": "37 maktab",
+        "district": "Farg‘ona shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "12-maktab"
+        "school": "12-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37-maktab"
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8302,8 +8368,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8316,8 +8382,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Marg‘ilon shahri"
       }
     ]
   },
@@ -8330,8 +8396,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -8344,8 +8410,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8358,13 +8424,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8377,18 +8443,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8401,13 +8467,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8420,8 +8486,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8434,8 +8500,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -8448,8 +8514,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "20-maktab"
+        "school": "20-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8462,8 +8528,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8476,8 +8542,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Marg‘ilon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Marg‘ilon shahri"
       }
     ]
   },
@@ -8490,8 +8556,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8504,13 +8570,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "9-maktab"
+        "school": "9-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "9-maktab"
+        "school": "9-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8523,8 +8589,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "O‘zbekiston tumani",
-        "school": "29-maktab"
+        "school": "29-maktab",
+        "district": "O‘zbekiston tumani"
       }
     ]
   },
@@ -8537,13 +8603,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "45-maktab"
+        "school": "45-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "45-maktab"
+        "school": "45-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8556,13 +8622,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona tumani",
-        "school": "37 мактаб"
+        "school": "37 мактаб",
+        "district": "Farg‘ona tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona tumani",
-        "school": "Farg‘ona tumani"
+        "school": "Farg‘ona tumani",
+        "district": "Farg‘ona tumani"
       }
     ]
   },
@@ -8575,8 +8641,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15"
+        "school": "15",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8589,18 +8655,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "5 мактаб"
+        "school": "5 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "5 мактаб"
+        "school": "5 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "5 мактаб"
+        "school": "5 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8613,18 +8679,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "/start"
+        "school": "/start",
+        "district": "Farg‘ona shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8637,8 +8703,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8651,13 +8717,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona tumani",
-        "school": "15 мактаб"
+        "school": "15 мактаб",
+        "district": "Farg‘ona tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "15 maktab"
+        "school": "15 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -8670,8 +8736,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "25-maktab"
+        "school": "25-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8684,8 +8750,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "36 мактаб"
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8698,8 +8764,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8712,8 +8778,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "19 maktab"
+        "school": "19 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -8726,13 +8792,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8745,8 +8811,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8759,8 +8825,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8773,8 +8839,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8787,13 +8853,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "20-maktab"
+        "school": "20-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "20-maktab"
+        "school": "20-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8806,8 +8872,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8820,13 +8886,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona tumani",
-        "school": "19 мактаб"
+        "school": "19 мактаб",
+        "district": "Farg‘ona tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8839,8 +8905,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "8 мактаб"
+        "school": "8 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8853,13 +8919,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8872,8 +8938,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8886,8 +8952,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "7 мактаб"
+        "school": "7 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8900,13 +8966,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona tumani",
-        "school": "34 мактаб"
+        "school": "34 мактаб",
+        "district": "Farg‘ona tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona tumani",
-        "school": "34 мактаб"
+        "school": "34 мактаб",
+        "district": "Farg‘ona tumani"
       }
     ]
   },
@@ -8919,8 +8985,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "40 мактаб"
+        "school": "40 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8933,8 +8999,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8947,8 +9013,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "35-maktab"
+        "school": "35-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -8961,8 +9027,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "20-maktab"
+        "school": "20-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8975,13 +9041,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "47"
+        "school": "47",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "37"
+        "school": "37",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -8994,8 +9060,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9008,8 +9074,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9022,8 +9088,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "48-maktab"
+        "school": "48-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9036,8 +9102,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "11-maktab"
+        "school": "11-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9050,13 +9116,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -9069,8 +9135,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -9083,8 +9149,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "34-maktab"
+        "school": "34-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -9097,8 +9163,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "45-maktab"
+        "school": "45-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9111,13 +9177,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -9130,8 +9196,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "15-maktab"
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9144,8 +9210,12 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "29-maktab"
+        "school": "29-maktab",
+        "district": "Qo‘shtepa tumani"
+      },
+      {
+        "school": "29-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9158,8 +9228,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9172,8 +9242,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "4-maktab"
+        "school": "4-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9186,8 +9256,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -9200,8 +9270,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Yozyovon tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Yozyovon tumani"
       }
     ]
   },
@@ -9214,8 +9284,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "48-maktab"
+        "school": "48-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9228,18 +9298,18 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9252,13 +9322,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "23 мактаб"
+        "school": "23 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "23 мактаб"
+        "school": "23 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -9271,8 +9341,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9285,8 +9355,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "29-maktab"
+        "school": "29-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9299,8 +9369,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "1"
+        "school": "1",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -9313,8 +9383,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9327,8 +9397,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "36 maktab"
+        "school": "36 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -9341,13 +9411,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "10-maktab"
+        "school": "10-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "10-maktab"
+        "school": "10-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9360,13 +9430,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "5 мактаб"
+        "school": "5 мактаб",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "5 мактаб"
+        "school": "5 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -9379,8 +9449,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "16-maktab"
+        "school": "16-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9393,8 +9463,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Farg‘ona shahri",
-        "school": "30 maktab"
+        "school": "30 maktab",
+        "district": "Farg‘ona shahri"
       }
     ]
   },
@@ -9407,8 +9477,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9421,8 +9491,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -9435,8 +9505,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "37 мактаб"
+        "school": "37 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
   },
@@ -9449,8 +9519,8 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "18-maktab"
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9463,13 +9533,13 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘shtepa tumani",
-        "school": "13-maktab"
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
       }
     ]
   },
@@ -9482,14 +9552,116 @@
     "subscriptions": [
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "6-maktab"
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
       },
       {
         "name": "O'quvchi",
-        "district": "Qo‘qon shahri",
-        "school": "5 мактаб"
+        "school": "5 мактаб",
+        "district": "Qo‘qon shahri"
       }
     ]
+  },
+  "parent_6420694515": {
+    "role": "parent",
+    "phone": "998937806161",
+    "fio": "Turdiyev Baxtiyorjon",
+    "lang": "uz_lat",
+    "chat_id": 6420694515,
+    "subscriptions": [
+      {
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
+      },
+      {
+        "school": "19-maktab",
+        "district": "Qo‘shtepa tumani"
+      }
+    ]
+  },
+  "6480771053": {
+    "district": "Qo‘shtepa tumani",
+    "school": "25-maktab",
+    "fio": "Jiyanboyev Akmaljon Adxamovich",
+    "phone": "998941188616",
+    "name": "Akmaljon",
+    "username": "allogenez_admin"
+  },
+  "6137094266": {
+    "district": "So‘x tumani",
+    "school": "24 -maktab",
+    "fio": "Abdulloev Ahmadali Yodgorovich",
+    "phone": "+998994919819",
+    "name": "Abdulloyev"
+  },
+  "8554400311": {
+    "district": "Rishton tumani",
+    "school": "53-maktab",
+    "fio": "Nosirova Xosiyatxon  Tavakkalovna",
+    "phone": "+998903645689",
+    "name": "Dunyo"
+  },
+  "5865138812": {
+    "district": "So‘x tumani",
+    "school": "3 -IDUM",
+    "fio": "Latipov Nasimjon Bobojonovich",
+    "phone": "+996226081881",
+    "name": "So‘x tuman 3-sonli IDUM",
+    "username": "Nasimjon_000"
+  },
+  "parent_486511389": {
+    "role": "parent",
+    "phone": "998996005826",
+    "fio": "Homidov Izzatillo",
+    "lang": "uz_lat",
+    "chat_id": 486511389,
+    "subscriptions": [
+      {
+        "school": "15 maktab",
+        "district": "Farg‘ona shahri"
+      }
+    ]
+  },
+  "8075474589": {
+    "district": "Rishton tumani",
+    "school": "63-maktab",
+    "fio": "Isaqova Zaynabxkn Yusufjonovna",
+    "phone": "998905808408",
+    "name": "Зайнабхон"
+  },
+  "parent_5796227014": {
+    "role": "parent",
+    "phone": "998905071964",
+    "fio": "Olimova zohida",
+    "lang": "uz_lat",
+    "chat_id": 5796227014,
+    "subscriptions": [
+      {
+        "district": "Qo‘qon shahri",
+        "school": "19-maktab"
+      }
+    ]
+  },
+  "5076856719": {
+    "district": "Quva tumani",
+    "school": "XTAFO'MI",
+    "fio": "Muminov Nuriddin",
+    "phone": "+998888200080",
+    "name": "Nuriddin"
+  },
+  "8471451657": {
+    "district": "O‘zbekiston tumani",
+    "school": "16-maktab",
+    "fio": "Имомова Нигорахон Тулкинжоновна",
+    "phone": "998979608085",
+    "name": "Elbek"
+  },
+  "5798545534": {
+    "district": "Beshariq tumani",
+    "school": "19-maktab",
+    "fio": "Ahmadaliyeva Shahloxon Rasulovna",
+    "phone": "998934971284",
+    "name": "Shahloxon",
+    "username": "ShahloxonAhmadaliyeva"
   }
 }
