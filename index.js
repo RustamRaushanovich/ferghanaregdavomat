@@ -1462,7 +1462,6 @@ const DISTRICT_OFFICIALS = {
     "quva tumani": "Xolikov Jaxongir Ne'matjonovich"
 };
 
-const { normalizeKey } = require('./src/utils/topics');
 
 setInterval(async () => {
     try {
