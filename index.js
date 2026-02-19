@@ -177,7 +177,7 @@ app.post('/api/admin/set-pro', auth, async (req, res) => {
 
 // --- SECURITY SHIELD ---
 const requestCount = new Map();
-const SECURITY_ALERT_THRESHOLD = 50; // Max 50 requests per minute per IP
+const SECURITY_ALERT_THRESHOLD = 300; // Increased to 300 to avoid false positives
 
 const securityShield = (req, res, next) => {
     // 1. Basic Security Headers (Manual Helmet)
@@ -198,7 +198,9 @@ const securityShield = (req, res, next) => {
 
     if (logs.length > SECURITY_ALERT_THRESHOLD) {
         if (logs.length === SECURITY_ALERT_THRESHOLD + 1) {
-            alertSuperAdmin(`🚨 <b>SECURITY ALERT!</b>\nSuspicious activity detected from IP: <code>${ip}</code>\nURL: <code>${req.url}</code>\nUser: <code>${req.user ? req.user.username : 'Guest'}</code>`);
+            // Disabled alert to prevent spamming
+            // alertSuperAdmin(`🚨 <b>SECURITY ALERT!</b>\nSuspicious activity detected from IP: <code>${ip}</code>\nURL: <code>${req.url}</code>\nUser: <code>${req.user ? req.user.username : 'Guest'}</code>`);
+            console.warn(`[RATE-LIMIT] IP: ${ip} exceeded threshold.`);
         }
         return res.status(429).json({ error: 'Too many requests. Please try again later.' });
     }

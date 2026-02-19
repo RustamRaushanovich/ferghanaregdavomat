@@ -391,20 +391,23 @@ const attendanceWizard = new Scenes.WizardScene(
     async (ctx) => {
         if (checkNav(ctx)) return;
         ctx.wizard.state.current.parent_name = ctx.message.text;
-        await ctx.reply("📞 <b>Ota-onasining telefon raqamini yozing:</b>\n<i>(Masalan: +998901234567)</i>", { parse_mode: "HTML", ...navButtons() });
+        await ctx.reply("📞 <b>Ota-onasining telefon raqamini yozing:</b>\n\n⚠️ <b>Namuna:</b> +998901234567\n<i>(Faqat raqamlar, probel yoki chiziqchasiz yozing)</i>", { parse_mode: "HTML", ...navButtons() });
         return ctx.wizard.next();
     },
     // 28. LOOP
     async (ctx) => {
         if (checkNav(ctx)) return;
-        const phone = ctx.message.text ? ctx.message.text.trim() : "";
+        const phone = ctx.message.text ? ctx.message.text.trim() : "-";
         const cleanPhone = phone.replace(/[^0-9]/g, '');
 
-        if (cleanPhone.length < 7 || cleanPhone.length > 15) {
-            return ctx.reply("❌ <b>Xato!</b> Telefon raqamini to'g'ri formatda kiriting (Masalan: +998901234567). Faqat raqamlardan iborat bo'lishi shart.", { parse_mode: "HTML" });
+        // Qat'iy tekshiruv: Kamida 9 ta raqam bo'lishi kerak
+        if (cleanPhone.length < 9) {
+            await ctx.reply("❌ <b>Xato! Telefon raqami noto'g'ri.</b>\n\nIltimos, namuna bo'yicha qaytadan kiriting:\n<b>Namuna:</b> +998901234567", { parse_mode: "HTML" });
+            return; // Stay in this step
         }
 
         ctx.wizard.state.current.parent_phone = phone;
+        if (!d.students_list) d.students_list = [];
         d.students_list.push(ctx.wizard.state.current);
 
         if (d.students_list.length < d.sababsiz_jami) {
