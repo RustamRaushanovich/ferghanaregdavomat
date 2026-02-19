@@ -1064,15 +1064,22 @@ function displayUserInfo() {
             proDetails.style.display = 'block';
             const expire = localStorage.getItem('d_pro_expire');
             const purchase = localStorage.getItem('d_pro_purchase');
-            document.getElementById('proPurchaseDate').textContent = purchase || '-';
-            document.getElementById('proExpireDate').textContent = expire || '-';
+
+            const pdEl = document.getElementById('proPurchaseDate');
+            if (pdEl) pdEl.textContent = purchase || '-';
+
+            const peEl = document.getElementById('proExpireDate');
+            if (peEl) peEl.textContent = expire || '-';
 
             // Calculate days left
             if (expire) {
                 const diff = new Date(expire) - new Date();
                 const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-                document.getElementById('proDaysLeft').textContent = days > 0 ? `${days} kun qoldi` : "Muddati tugagan";
-                if (days <= 0) document.getElementById('proDaysLeft').style.background = '#ef4444';
+                const daysEl = document.getElementById('proDaysLeft');
+                if (daysEl) {
+                    daysEl.textContent = days > 0 ? `${days} kun qoldi` : "Muddati tugagan";
+                    if (days <= 0) daysEl.style.background = '#ef4444';
+                }
             }
         }
     } else {
