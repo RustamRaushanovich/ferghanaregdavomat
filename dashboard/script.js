@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     startLiveClock();
     startCountdown();
     fetchWeather();
-    injectTestModeBanner();
+    injectTestModeBanner(); // Restoration requested by user
     initHolidayGreeting();
     updateProMiniBtn();
 
@@ -712,15 +712,8 @@ function processAfterStep5() {
     if (!validateStep(5)) return;
     calculateTotals();
     const sababsiz = parseInt(document.getElementById('sababsiz_total').value) || 0;
-    const fileInput = document.getElementById('bildirgiFile');
+    // Validation for file moved to final submit
 
-    // VALIDATION: If sababsiz > 0 and NOT PRO, must have a file
-    if (sababsiz > 0 && !isPro) {
-        if (!fileInput || !fileInput.files[0]) {
-            alert("Sababsiz kelmagan o'quvchilar aniqlangani sababli, 3-iloiva (bildirishnoma) yuklashingiz shart!");
-            return;
-        }
-    }
 
     const container = document.getElementById('studentInputsContainer');
     const header = document.getElementById('studentDetailsHeader');
@@ -770,27 +763,24 @@ function generateStudentInputs(count) {
     `);
 
     // 3. Bildirgi Upload Logic (RESTORING THIS FOR EVERYONE)
+    const isRequired = !isPro ? 'required' : '';
+    const borderColor = !isPro ? '#f43f5e' : '#10b981';
+    const bgColor = !isPro ? 'rgba(244, 63, 94, 0.03)' : 'rgba(16, 185, 129, 0.03)';
+
     let uploadHtml = `
-        <div class="input-group" style="margin-top:25px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px">
-            <label style="color:#f87171; font-weight:bold; display:flex; align-items:center; gap:8px;">
-                <i class="fas fa-file-upload"></i> Bildirgi Yuklash (3-Ilova) - Majburiy
-            </label>
-            <input type="file" id="bildirgiFile" accept="image/*,application/pdf" required style="padding:12px; background:rgba(244,63,94,0.05); border:1px dashed rgba(244,63,94,0.3); color:white; width:100%; border-radius:12px; cursor:pointer;">
-            <p style="color:#94a3b8; font-size:0.85rem; margin-top:10px; line-height:1.4;">
-                <i class="fas fa-info-circle"></i> Sababsiz dars qoldirgan o'quvchilar uchun tasdiqlangan bildirgi (3-ilova) rasmini yoki PDF faylini yuklashingiz shart.
+        <div class="stat-card" style="margin-top:25px; border: 2px dashed ${borderColor}; background: ${bgColor}; padding: 25px;">
+            <h4 style="color:${borderColor}; margin-bottom:15px; display:flex; align-items:center; gap:10px;">
+                <i class="fas fa-file-signature"></i> 3-ILOVA (BILDIRISHNOMA) YUKLASH ${!isPro ? '<span style="font-size:0.7rem; background:#f43f5e; color:white; padding:2px 6px; border-radius:4px;">MAJBURIY</span>' : ''}
+            </h4>
+            <p style="color:#94a3b8; font-size:0.9rem; margin-bottom:20px; line-height:1.5;">
+                ${!isPro ? "Sababsiz kelmagan o'quvchilar uchun tasdiqlangan bildirgi (3-ilova) nusxasini yuklash <b>majburiy</b>. Файл юкланмагунигача тизим маълумотни қабул қилмайди." : "PRO foydalanuvchi sifatida sizda bildirgi avtomatik shakllantiriladi, ammo xohlasangiz қўлда ҳам юклашингиз мумкин."}
             </p>
+            <div class="input-group">
+                <input type="file" id="bildirgiFile" accept="image/*,application/pdf" ${isRequired} 
+                    style="padding:15px; background:white; color:#1e293b; width:100%; border-radius:12px; border:1px solid #e2e8f0; cursor:pointer;">
+            </div>
         </div>
     `;
-
-    if (isPro) {
-        uploadHtml += `
-            <div class="stat-card" style="margin-top:15px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 12px;">
-                <p style="font-size:0.85rem; color:#10b981; margin:0; display:flex; align-items:center; gap:8px;">
-                    <i class="fas fa-magic"></i> <b>PRO:</b> Sizda avtomatik bildirgi yaratish imkoniyati ham bor, lekin bu yerda qo'lda yuklash ham mumkin.
-                </p>
-            </div>
-        `;
-    }
 
     container.insertAdjacentHTML('beforeend', uploadHtml);
 }
@@ -835,6 +825,16 @@ if (form) form.addEventListener('submit', async (e) => {
 
     // File
     const fileInput = document.getElementById('bildirgiFile');
+    const sababsizNum = parseInt(document.getElementById('sababsiz_total').value) || 0;
+
+    // Final Validation Checklist
+    if (sababsizNum > 0 && !isPro) {
+        if (!fileInput || !fileInput.files[0]) {
+            alert("Sababsiz kelmagan o'quvchilar mavjud! Iltimos, 3-ilova (bildirishnoma) faylini yuklang.");
+            return;
+        }
+    }
+
     if (fileInput && fileInput.files[0]) {
         formData.append('bildirgi', fileInput.files[0]);
     }
@@ -1733,6 +1733,13 @@ async function loadTumanData(page = 1) {
                     <td style="text-align:center"><span class="status-badge" style="background:${colorClass}; color:white;">${p.toFixed(1)}%</span></td>
                     <td style="text-align:center; font-size: 0.8rem">${row.source || 'bot'}</td>
                     <td style="font-size: 0.8rem">${row.fio || '-'}</td>
+                    <td style="text-align:center;">
+                        ${row.bildirgi ? `
+                            <button class="btn btn-pro" onclick="viewBildirgi('${row.bildirgi}')" style="padding: 5px 10px; font-size: 0.75rem; background: var(--success);">
+                                <i class="fas fa-file-download"></i>
+                            </button>
+                        ` : '<span style="opacity:0.3">-</span>'}
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -1741,6 +1748,12 @@ async function loadTumanData(page = 1) {
     } catch (e) {
         console.error("Tuman Data Error:", e);
     }
+}
+
+function viewBildirgi(filename) {
+    if (!filename) return;
+    const token = localStorage.getItem('dashboard_token');
+    window.open(`/api/admin/reports/download/${filename}?token=${token}`, '_blank');
 }
 
 async function loadAbsentDetails(page = 1) {
@@ -2068,4 +2081,3 @@ async function setPro(uid) {
     }
 }
 
-// Final Update Check

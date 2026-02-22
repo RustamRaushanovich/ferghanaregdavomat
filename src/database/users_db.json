@@ -37,12 +37,27 @@
     "phone": "998945548182",
     "name": "Гулматов Ёркинжон Аъзамович"
   },
+  "135613142": {
+    "fio": "Nizomiddinov Ahadjon Akramjonovich",
+    "name": "N.A.A",
+    "phone": "+998972055724",
+    "school": "1-IDUM",
+    "district": "Beshariq tumani"
+  },
   "156702238": {
     "district": "Beshariq tumani",
     "school": "28-maktab",
     "fio": "Saydaliyev Nurbek Mashrabovich",
     "phone": "998930458555",
     "name": "Nurbek"
+  },
+  "170982040": {
+    "fio": "Zamonaliyev Sherali Omonaliyevich",
+    "name": "Sherali",
+    "phone": "998913293233",
+    "school": "37 maktab",
+    "district": "Quva tumani",
+    "username": "Sherali_Zamonaliyev"
   },
   "174370496": {
     "district": "Toshloq tumani",
@@ -69,8 +84,8 @@
   },
   "232799931": {
     "district": "Qo‘shtepa tumani",
-    "school": "32",
-    "fio": "Ergashev Abdulaziz Valijon o'g'li",
+    "school": "9-maktab",
+    "fio": "🔄 Maktab/Tumanni o'zgartirish",
     "phone": "+998915164658",
     "name": "Абдулазиз"
   },
@@ -82,12 +97,50 @@
     "name": "Шухрат",
     "username": "Shuxrat8774"
   },
+  "244934390": {
+    "fio": "Мустафоқулов Азамат Бахтиёрович",
+    "name": "Азамат Бахтиярович",
+    "phone": "998913258905",
+    "school": "22-maktab",
+    "district": "Rishton tumani"
+  },
+  "253118186": {
+    "fio": "Abdupattoyev Asadullox Ikromjon og'li",
+    "name": "Asadullox A",
+    "phone": "998913983548",
+    "school": "22-maktab",
+    "district": "Yozyovon tumani",
+    "username": "Abdullox_A21"
+  },
+  "254416170": {
+    "fio": "Ashurmatov Muhammadjon Isroilovich",
+    "name": "Muhammadjon",
+    "phone": "998905317175",
+    "school": "50-maktab",
+    "district": "Qo‘shtepa tumani"
+  },
   "257198708": {
     "district": "Beshariq tumani",
     "school": "37-maktab",
     "fio": "Ибрагимов Машхур Абдуллаевич",
     "phone": "998903064240",
     "name": "И"
+  },
+  "278623902": {
+    "fio": "Kamalitdinova Maxbuba Abduraxmanovna",
+    "name": "Махбуба Абдурахмановна",
+    "phone": "998911065909",
+    "school": "6-maktab",
+    "district": "Quvasoy shahri",
+    "username": "Mahbuba_1970"
+  },
+  "289124085": {
+    "fio": "Boltaboyev Jahongir Haydarjon o'g'li",
+    "name": "Jahongir Haydarovich",
+    "phone": "998911440009",
+    "school": "39-maktab",
+    "district": "O‘zbekiston tumani",
+    "username": "JahongirHaydarovich"
   },
   "293599453": {
     "district": "Quvasoy shahri",
@@ -113,6 +166,20 @@
     "name": "Азизахон Умарова",
     "username": "Umarova_A_5687"
   },
+  "296461452": {
+    "fio": "Qozixonova Shoiraxon Turgunboyevna",
+    "name": ".....",
+    "phone": "998945542907",
+    "school": "46-maktab",
+    "district": "Rishton tumani"
+  },
+  "298793562": {
+    "fio": "To'raqulov Habibullo Shamsiddinovich",
+    "name": "Habibullo",
+    "phone": "+998999927682",
+    "school": "7-maktab",
+    "district": "Dang‘ara tumani"
+  },
   "301077684": {
     "district": "Beshariq tumani",
     "school": "55-maktab",
@@ -128,6 +195,21 @@
     "phone": "998911441766",
     "name": "Турсуматова"
   },
+  "310748662": {
+    "fio": "G'oibnazarov Oybek Xujazoda",
+    "name": "Хушбахт (Одилжон)",
+    "phone": "998931369332",
+    "school": "4 -maktab",
+    "district": "So‘x tumani",
+    "username": "Xushbaxt1994"
+  },
+  "313731618": {
+    "fio": "Mirzaahmedov Sherali Nuraliyevich",
+    "name": "Sherali",
+    "phone": "998908547752",
+    "school": "12-maktab",
+    "district": "O‘zbekiston tumani"
+  },
   "315151367": {
     "district": "Qo‘shtepa tumani",
     "school": "42-maktab",
@@ -139,7 +221,7 @@
   "321741448": {
     "district": "Qo‘shtepa tumani",
     "school": "13-maktab",
-    "fio": "Otʼboyev Alibobo? Murodilovich",
+    "fio": "Otsboyev Alibkbi Mirodilovich",
     "phone": "998901650790",
     "name": "Ali"
   },
@@ -150,6 +232,13 @@
     "phone": "998944951003",
     "name": "Хамдамов Бобомурод"
   },
+  "326387725": {
+    "fio": "Mirzaliyev Hasanboy Maxammatovich",
+    "name": "Хасанбой",
+    "phone": "998916612703",
+    "school": "40-maktab",
+    "district": "Toshloq tumani"
+  },
   "329623357": {
     "district": "Qo‘shtepa tumani",
     "school": "3-maktab",
@@ -157,9 +246,16 @@
     "phone": "998905619785",
     "name": "3-maktab MMIBDOʻ"
   },
+  "333390147": {
+    "fio": "Qunduzov Murodjon Ma’murjonovich",
+    "name": "Murodjon",
+    "phone": "998903063830",
+    "school": "3-maktab",
+    "district": "Rishton tumani"
+  },
   "337867257": {
     "district": "Beshariq tumani",
-    "school": "52-maktab",
+    "school": "4-maktab",
     "fio": "🔄 Maktab/Tumanni o'zgartirish",
     "phone": "998946772244",
     "name": "Д.А.Хусанов",
@@ -180,6 +276,13 @@
     "phone": "911172019",
     "name": "Фарход Абдураззокович"
   },
+  "372213116": {
+    "fio": "Xo'jamberdiyeva Hayotxon Sharifovna",
+    "name": "🌹⚘🌹🌷🌹",
+    "phone": "998903051310",
+    "school": "50-maktab",
+    "district": "O‘zbekiston tumani"
+  },
   "388446726": {
     "district": "Quvasoy shahri",
     "school": "22-maktab",
@@ -194,6 +297,21 @@
     "fio": "Xolmatov Dilyor Karimovich",
     "phone": "+998904070838",
     "name": "D.Xolmatov"
+  },
+  "402948797": {
+    "fio": "Xudoyqulov Obidjon Abduraximovich",
+    "name": "O",
+    "phone": "998902323020",
+    "school": "19-maktab",
+    "district": "Rishton tumani",
+    "username": "ObidjonXudoyqulov"
+  },
+  "411519330": {
+    "fio": "Mamadaliyev Barhayotjon Muxitdinjon oʻgʻli",
+    "name": "Barhayotjon",
+    "phone": "998901518544",
+    "school": "1-IDUM",
+    "district": "Dang‘ara tumani"
   },
   "414221285": {
     "district": "Dang‘ara tumani",
@@ -216,6 +334,14 @@
     "phone": "998972149331",
     "name": "Qurbonoy Qodirova"
   },
+  "434673743": {
+    "fio": "Roʻziboyev Xalimjon",
+    "name": "Оятилло",
+    "phone": "998901663585",
+    "school": "13-maktab",
+    "district": "Toshloq tumani",
+    "username": "Halimjon_13"
+  },
   "435593632": {
     "district": "Oltiariq tumani",
     "school": "17-maktab",
@@ -232,6 +358,14 @@
     "name": "Umidaxon",
     "username": "umidaxon_shamsiddinova"
   },
+  "439446754": {
+    "fio": "Madaminova Muqaddam Rahimjonovna",
+    "name": "Мукаддам_8-мактаб",
+    "phone": "998916802064",
+    "school": "8-maktab",
+    "district": "Rishton tumani",
+    "username": "madaminova8"
+  },
   "444047614": {
     "district": "O‘zbekiston tumani",
     "school": "58-maktab",
@@ -247,6 +381,28 @@
     "phone": "998911399199",
     "name": "Fayzimatova Zarifaxon"
   },
+  "448708486": {
+    "fio": "Андапулатов Музаффар",
+    "name": "Музаффар",
+    "phone": "998937370773",
+    "school": "3 maktab",
+    "district": "Farg‘ona shahri"
+  },
+  "466272800": {
+    "fio": "Abdurasulova Dilnavoz Odiljonovna",
+    "name": "Дилнавоз Одилжоновна",
+    "phone": "998937387973",
+    "school": "12-maktab",
+    "district": "Quvasoy shahri",
+    "username": "dilya17_89"
+  },
+  "471281876": {
+    "fio": "Xoliqov Umarjon Abdulmajitovich",
+    "name": "$U$X$A$@@@",
+    "phone": "998903904680",
+    "school": "34-maktab",
+    "district": "Yozyovon tumani"
+  },
   "474578846": {
     "district": "Beshariq tumani",
     "school": "45-maktab",
@@ -261,6 +417,21 @@
     "phone": "+998911489868",
     "name": "Динорахон"
   },
+  "496160657": {
+    "fio": "Мирзабоева Махфуза Турсуналиевна",
+    "name": "Mahfuza",
+    "phone": "998906314371",
+    "school": "32 мактаб",
+    "district": "Farg‘ona tumani"
+  },
+  "500366561": {
+    "fio": "Xudayberdiyeva Kamolat Alisherovna",
+    "name": "Камола Алишеровна",
+    "phone": "998916771448",
+    "school": "5 maktab",
+    "district": "Farg‘ona shahri",
+    "username": "Kamola_7980"
+  },
   "503339366": {
     "district": "Beshariq tumani",
     "school": "51-maktab",
@@ -268,6 +439,14 @@
     "phone": "998936498481",
     "name": "Ehsonova Mahbuba Luqmonovna",
     "username": "Mahbuba_1984"
+  },
+  "515194909": {
+    "fio": "Qudratova Nodiraxon Imomaliyevna",
+    "name": "Кудратова Нодирахон",
+    "phone": "998903095775",
+    "school": "61-maktab",
+    "district": "O‘zbekiston tumani",
+    "username": "Dilafruz_077"
   },
   "519849528": {
     "district": "Qo‘shtepa tumani",
@@ -277,6 +456,13 @@
     "name": "Musayev Jumavoy",
     "username": "Musayev_J"
   },
+  "522445768": {
+    "fio": "Жураев Набижон Алимжонович",
+    "name": "Nabijon",
+    "phone": "998905312830",
+    "school": "41-maktab",
+    "district": "Rishton tumani"
+  },
   "529078624": {
     "district": "Uchko‘prik tumani",
     "school": "32",
@@ -284,6 +470,14 @@
     "phone": "998911407074",
     "name": "НОЗИМЖОН",
     "username": "nozimjon778"
+  },
+  "532330732": {
+    "fio": "Akbarova Nargiza Abdulaliyevna",
+    "name": "Nargiza",
+    "phone": "998916713902",
+    "school": "4-maktab",
+    "district": "Rishton tumani",
+    "username": "Nargiza2305"
   },
   "539012341": {
     "district": "Beshariq tumani",
@@ -298,6 +492,20 @@
     "fio": "Isaqova Ximoyat Abdulpattoyevna",
     "phone": "998912826602",
     "name": "Isaqova Ximoyat Abdulpattoyevna"
+  },
+  "549643887": {
+    "fio": "Pirnazarov G'iyosiddin Nomonovich",
+    "name": "Pirnazarov G'iyosiddin",
+    "phone": "+998944928991",
+    "school": "49-maktab",
+    "district": "Beshariq tumani"
+  },
+  "551400688": {
+    "fio": "Haydarova Muqaddam Uraimovna",
+    "name": "6-maktab MMIBDO‘",
+    "phone": "998973350284",
+    "school": "6-maktab",
+    "district": "Beshariq tumani"
   },
   "553364567": {
     "district": "Qo‘qon shahri",
@@ -315,6 +523,13 @@
     "name": "Alisher",
     "username": "imomovalisher21"
   },
+  "557056768": {
+    "fio": "Mirzarahimova Sayyoraxon Ergashevna",
+    "name": "Сайёрахон",
+    "phone": "998934806871",
+    "school": "2-IDUM",
+    "district": "Quvasoy shahri"
+  },
   "563907838": {
     "district": "Beshariq tumani",
     "school": "24-maktab",
@@ -322,12 +537,41 @@
     "phone": "998975954435",
     "name": "Рустамжон"
   },
+  "564248846": {
+    "fio": "Рустамбеков Бахтовар",
+    "name": "Бахтовар",
+    "phone": "+996772227999",
+    "school": "14 -maktab",
+    "district": "So‘x tumani",
+    "username": "Muallim_91"
+  },
+  "569226454": {
+    "fio": "Usmonova Muslima Baxromovna",
+    "name": "Lochinbek",
+    "phone": "998945547495",
+    "school": "17-maktab",
+    "district": "Qo‘qon shahri"
+  },
+  "569846001": {
+    "fio": "Abdullayev Erkin Baydullayevich",
+    "name": "1- maktab Abdullayev",
+    "phone": "+998937313833",
+    "school": "1-maktab",
+    "district": "Quvasoy shahri"
+  },
   "573026956": {
     "district": "Beshariq tumani",
     "school": "36-maktab",
     "fio": "Mamadaliyev Farhodjon Tolipovich",
     "phone": "+998944925826",
     "name": "Фарҳоджон"
+  },
+  "580504914": {
+    "fio": "Мирзабадалов Тўлқинжон",
+    "name": "Тўлқинжон @МТТ.uz",
+    "phone": "998916912872",
+    "school": "6-maktab",
+    "district": "Rishton tumani"
   },
   "582160006": {
     "district": "Qo‘qon shahri",
@@ -337,6 +581,14 @@
     "name": "-",
     "username": "Maktab_3_5"
   },
+  "613642607": {
+    "fio": "Махсудова Хилола Абдулазиз кизи",
+    "name": "Махсудова Хилола Абдулазиз кизи",
+    "phone": "998939824005",
+    "school": "21-maktab",
+    "district": "Quvasoy shahri",
+    "username": "Xilola_4005"
+  },
   "633148495": {
     "district": "Rishton tumani",
     "school": "59-maktab",
@@ -344,12 +596,40 @@
     "phone": "998916969912",
     "name": "Po'latova Umrinsa"
   },
+  "634939076": {
+    "fio": "Xolmatov O'ktamjon Ergashovich",
+    "name": "O'ktamjon",
+    "phone": "998911256363",
+    "school": "25-maktab",
+    "district": "Yozyovon tumani"
+  },
   "649122623": {
     "district": "Beshariq tumani",
     "school": "16-maktab",
     "fio": "O‘rinov Kamoliddin O‘tbosarovich",
     "phone": "998911528309",
     "name": "Уринов"
+  },
+  "653358647": {
+    "fio": "Мамасолиев Шохиджон",
+    "name": "Шохиджон",
+    "phone": "+998902306145",
+    "school": "43-maktab",
+    "district": "Rishton tumani"
+  },
+  "657438553": {
+    "fio": "Sultonov Umarali Xoldaraliyevich",
+    "name": "Султонов Умарали Холдаралиевич",
+    "phone": "998905076314",
+    "school": "53-maktab",
+    "district": "Uchko‘prik tumani"
+  },
+  "669823832": {
+    "fio": "Mominov Qobiljon Mirsobirovich",
+    "name": "К. МИРСОБИРОВИЧ",
+    "phone": "998938873325",
+    "school": "37-maktab",
+    "district": "Rishton tumani"
   },
   "670115402": {
     "district": "Beshariq tumani",
@@ -373,12 +653,49 @@
     "phone": "+998916553778",
     "name": "Husanboy"
   },
+  "677348608": {
+    "fio": "Ergashev Shuxratjon",
+    "name": "SH.S.Ergashev.",
+    "phone": "998978111341",
+    "school": "30 мактаб",
+    "district": "Farg‘ona tumani"
+  },
+  "677792434": {
+    "fio": "Gafarova Shoiraxon Melikovna",
+    "name": "Ш. Меликовна",
+    "phone": "998937310660",
+    "school": "10-maktab",
+    "district": "Quvasoy shahri"
+  },
   "678126751": {
     "district": "Beshariq tumani",
     "school": "39-maktab",
     "fio": "Saminov Otabek Dehqonovich",
     "phone": "998944919016",
     "name": "Otabek Saminov"
+  },
+  "688468194": {
+    "fio": "Fazliddin Suyarjon o'g'li Jumaboyev",
+    "name": "Fazliddin",
+    "phone": "998916666357",
+    "school": "36-maktab",
+    "district": "Qo‘shtepa tumani",
+    "username": "fazliddinjumaboyev"
+  },
+  "693396222": {
+    "fio": "Umarqulova Shaxzodaxon Gulomovna",
+    "name": "Shaxzodaxon",
+    "phone": "998905877483",
+    "school": "28-maktab",
+    "district": "Dang‘ara tumani",
+    "username": "shaxzodaxon28maktab"
+  },
+  "705942120": {
+    "fio": "Rajabov Fariddin Fazlidinovich",
+    "name": "Ражабов",
+    "phone": "998999197133",
+    "school": "28-maktab",
+    "district": "Quvasoy shahri"
   },
   "706396981": {
     "district": "So‘x tumani",
@@ -387,6 +704,14 @@
     "phone": "998770787031",
     "name": "Сӯҳроб",
     "username": "suxtjcom"
+  },
+  "712978814": {
+    "fio": "Rahmonova Fotima Abdusalomovna",
+    "name": "🕊",
+    "phone": "998903027559",
+    "school": "2-IDUM",
+    "district": "Rishton tumani",
+    "username": "raxmonova_fotima"
   },
   "715191450": {
     "district": "Beshariq tumani",
@@ -403,6 +728,14 @@
     "phone": "998911410382",
     "name": "Yorqinoy To‘xtaboyeva"
   },
+  "723394240": {
+    "fio": "G'oyibnazarov Kamoliddin Karimovich",
+    "name": "Нумонжон Дусматов",
+    "phone": "+998972148800",
+    "school": "43-maktab",
+    "district": "Beshariq tumani",
+    "username": "rapqon2010"
+  },
   "727198476": {
     "district": "Beshariq tumani",
     "school": "1-maktab",
@@ -413,11 +746,41 @@
   },
   "729895058": {
     "district": "Oltiariq tumani",
-    "school": "35",
-    "fio": "Dilfuza Mamasiddiqova Yusupovna",
+    "school": "2-IDUM",
+    "fio": "🔄 Maktab/Tumanni o'zgartirish",
     "phone": "/start",
     "name": "🌷Dilfuza",
     "username": "DilfuzaMamasiddikova"
+  },
+  "732056804": {
+    "fio": "Azizov Rasuljon Ahmadjon oʻgʻli",
+    "name": "Rasuljon Azizov",
+    "phone": "998916808049",
+    "school": "30-maktab",
+    "district": "Yozyovon tumani",
+    "username": "Azizov09_99"
+  },
+  "736793101": {
+    "fio": "Yuldashev Anvarjon Abdualiyevich",
+    "name": "Анваржон",
+    "phone": "998973348544",
+    "school": "44-maktab",
+    "district": "Beshariq tumani"
+  },
+  "740467449": {
+    "fio": "Ergasheva Shirmanoy Abduraximovna",
+    "name": "Ширмоной",
+    "phone": "+998911052430",
+    "school": "62-maktab",
+    "district": "Rishton tumani"
+  },
+  "743346789": {
+    "fio": "Qobil Mirzaqulov",
+    "name": "Qobiljon",
+    "phone": "998911182943",
+    "school": "21-maktab",
+    "district": "Yozyovon tumani",
+    "username": "Qobil21"
   },
   "748082130": {
     "district": "Beshariq tumani",
@@ -434,6 +797,14 @@
     "phone": "998979554188",
     "name": "Maxamadjon"
   },
+  "751526182": {
+    "fio": "Anvarjonov Azimjon Anvarjon o‘g‘li",
+    "name": ".Аъзамжон Анваржонович.",
+    "phone": "998903014841",
+    "school": "40-maktab",
+    "district": "Yozyovon tumani",
+    "username": "Anvarjonovich_A_A"
+  },
   "754152675": {
     "district": "Farg‘ona tumani",
     "school": "43 мактаб",
@@ -442,6 +813,27 @@
     "name": "Teacher 43",
     "username": "aktiv_teacher"
   },
+  "757844497": {
+    "fio": "Tillayeva Vasila Yuldashevna",
+    "name": "V.Yuldashevna.",
+    "phone": "998916692302",
+    "school": "16-maktab",
+    "district": "Yozyovon tumani"
+  },
+  "759135129": {
+    "fio": "Davronov Ravshan",
+    "name": "Равшан",
+    "phone": "+998911536830",
+    "school": "42-maktab",
+    "district": "O‘zbekiston tumani"
+  },
+  "777003223": {
+    "fio": "Umarova Tursunoy Abduqunduzovna",
+    "name": "Tursinoy 34-maktab Rishton t",
+    "phone": "+998991222611",
+    "school": "34-maktab",
+    "district": "Rishton tumani"
+  },
   "811282547": {
     "district": "Qo‘shtepa tumani",
     "school": "4-maktab",
@@ -449,12 +841,91 @@
     "phone": "998999800401",
     "name": "Shavkat"
   },
+  "811499821": {
+    "fio": "Otaqulov Javlonbek Xaldarovich",
+    "name": "31- MAKTAB QO'SHTEPA TUMANI",
+    "phone": "+998936473344",
+    "school": "31-maktab",
+    "district": "Qo‘shtepa tumani"
+  },
+  "858084768": {
+    "fio": "Nurida Nazarova Rasulovna",
+    "name": "Sitora Rustamovna",
+    "phone": "998939795816",
+    "school": "27-maktab",
+    "district": "Quvasoy shahri",
+    "username": "Sita8888"
+  },
+  "858693644": {
+    "fio": "Sabirova Ezozaxon Alisher qizi",
+    "name": "Y@gon@",
+    "phone": "998941399229",
+    "school": "4-maktab",
+    "district": "Quvasoy shahri",
+    "username": "Yagona1992"
+  },
+  "875394684": {
+    "fio": "Sultonova Naimaxon Yusupovna",
+    "name": "Наимахон",
+    "phone": "998912003996",
+    "school": "20-maktab",
+    "district": "Furqat tumani"
+  },
+  "879375406": {
+    "fio": "Qoʻchqorov Dostonbek Shuhratjon oʻgʻli",
+    "name": "DOSTONBEK",
+    "phone": "998911319596",
+    "school": "20-maktab",
+    "district": "Yozyovon tumani"
+  },
+  "884584535": {
+    "name": "Sherali",
+    "school": "37 maktab",
+    "district": "Quva tumani",
+    "username": "Omonaliyevich"
+  },
+  "886580408": {
+    "fio": "Kurbanova Gulchehra Ismailovna",
+    "name": "Гулчехра Курбанова",
+    "phone": "998937328311",
+    "school": "9-maktab",
+    "district": "Quvasoy shahri"
+  },
+  "886593946": {
+    "fio": "Qurbonova Madina Tursunaliyevna",
+    "name": "Madina Tursunaliyevna",
+    "phone": "998933749922",
+    "school": "25-maktab",
+    "district": "Quvasoy shahri"
+  },
+  "892357164": {
+    "fio": "Po‘latova O‘g‘iloy Xaydaraliyevna",
+    "name": "Угилойхон",
+    "phone": "998976664484",
+    "school": "61-maktab",
+    "district": "Beshariq tumani"
+  },
   "900093010": {
     "district": "Beshariq tumani",
     "school": "8-maktab",
     "fio": "Yusupova La'lixon Solievna",
     "phone": "998976109575",
     "name": "L.Yusupova"
+  },
+  "900409025": {
+    "fio": "Shirinov Nasivali Uzoqovich",
+    "name": "Ширинов",
+    "phone": "998990972677",
+    "school": "27-maktab",
+    "district": "Beshariq tumani"
+  },
+  "919182059": {
+    "fio": "Xusanov Dilshodbek Abdullayevich",
+    "name": "︎⸙ꠋꠋꠋꠋꠋꠋꠋꠋꠋ𑲯𑲯𑲯𑲯𑲯T🄾ʻ🄷🅃🄰🄽🄰🅉🄰🅁🄾🅅",
+    "phone": "+998944940211",
+    "school": "4-maktab",
+    "district": "Beshariq tumani",
+    "username": "Tohirbek_0211"
   },
   "939193037": {
     "district": "Rishton tumani",
@@ -479,12 +950,28 @@
     "phone": "998995309195",
     "name": "BEKZOD"
   },
+  "961301975": {
+    "fio": "Marasulova Shohsanam Abdumalikovna",
+    "name": "SHOXRUZA",
+    "phone": "+998944659609",
+    "school": "52-maktab",
+    "district": "Beshariq tumani",
+    "username": "Shoxruzichka"
+  },
   "974068862": {
     "district": "So‘x tumani",
     "school": "15 -maktab",
     "fio": "Madumarov Mamadali   Abduqodirovich",
     "phone": "+996776352003",
     "name": "Madumarov Muhammadali"
+  },
+  "976573647": {
+    "fio": "Қосимов Мурзотоир",
+    "name": "Акрамҷон",
+    "phone": "998996010812",
+    "school": "11 -maktab",
+    "district": "So‘x tumani",
+    "username": "akramjon1993"
   },
   "982570955": {
     "district": "Farg‘ona tumani",
@@ -493,12 +980,27 @@
     "phone": "998979661131",
     "name": "39-мактаб Мухаййохон Собирова"
   },
+  "1002457423": {
+    "fio": "Туймамадов Достон Субхонзода",
+    "name": "Шамсутдинов",
+    "phone": "998939763489",
+    "school": "10 -maktab",
+    "district": "So‘x tumani",
+    "username": "Shuhrat000000"
+  },
   "1014560263": {
     "district": "Uchko‘prik tumani",
     "school": "42-maktab",
     "fio": "Boʻstonoy Sattorova Imomaliyevna",
     "phone": "998995157289",
     "name": "Б.Сатторова"
+  },
+  "1019671557": {
+    "fio": "Kenjayev Shahobiddin Kamoldinovich",
+    "name": "Шаҳобиддин Кенжаев",
+    "phone": "998913284310",
+    "school": "47-maktab",
+    "district": "Rishton tumani"
   },
   "1024812025": {
     "district": "Farg‘ona shahri",
@@ -507,12 +1009,42 @@
     "phone": "998911313604",
     "name": "𝓙𝓾𝓶𝓪𝓫𝓸𝔂𝓮𝓿 🎯"
   },
+  "1026582820": {
+    "fio": "Axmadjonov Maxfuzilloxon Ma'rufxo'ja o'g'li",
+    "name": "Maxfuzilloxon",
+    "phone": "998336624499",
+    "school": "29 maktab",
+    "district": "Quva tumani"
+  },
   "1036779688": {
     "district": "Beshariq tumani",
     "school": "7-maktab",
     "fio": "Hasanova Gulrux Abdunabiyevna",
     "phone": "998937308622",
     "name": "Gulrux"
+  },
+  "1048242545": {
+    "fio": "Mamajonova Manzura Turgʻunovna",
+    "name": "Машхурбек...",
+    "phone": "998904064428",
+    "school": "32-maktab",
+    "district": "Yozyovon tumani"
+  },
+  "1101474556": {
+    "fio": "Qosimov Asiljon Arabboyevich",
+    "name": "Асилбек",
+    "phone": "998944403127",
+    "school": "23-maktab",
+    "district": "Yozyovon tumani",
+    "username": "asilbek2327"
+  },
+  "1124978106": {
+    "fio": "Abdullajonova Gulbahor Yo‘ldashovna",
+    "name": "GULBAHOR",
+    "phone": "998911256417",
+    "school": "4-maktab",
+    "district": "Yozyovon tumani",
+    "username": "Gulbahor_85"
   },
   "1160708585": {
     "district": "Beshariq tumani",
@@ -521,12 +1053,42 @@
     "phone": "998999955681",
     "name": "Otaxonov Ikromali 41- maktab MMIBDO'"
   },
+  "1164266554": {
+    "fio": "To'xtaboyeva Odinaxon Osimovna",
+    "name": "Odinaxon",
+    "phone": "998999360167",
+    "school": "51-maktab",
+    "district": "Rishton tumani"
+  },
+  "1177448322": {
+    "fio": "Кушвоқов Турсунали",
+    "name": "Турсунали",
+    "phone": "998939878764",
+    "school": "21-maktab",
+    "district": "Rishton tumani"
+  },
+  "1194887809": {
+    "fio": "Marasulova Shohsanam Abdumalikovna",
+    "name": "UMIDJON PO'LATOV",
+    "phone": "+998941312184",
+    "school": "52-maktab",
+    "district": "Beshariq tumani",
+    "username": "uma8700"
+  },
   "1195118972": {
     "district": "Rishton tumani",
     "school": "15-maktab",
     "fio": "Dehqonova Nargiza Baxtiyarovna",
     "phone": "998990975159",
     "name": "NARGIZA BAXTIYAROVNA"
+  },
+  "1209929597": {
+    "fio": "Mirzayeva Shoira Maribovna",
+    "name": "Shoira",
+    "phone": "998907775120",
+    "school": "30-maktab",
+    "district": "Oltiariq tumani",
+    "username": "Shoira5120"
   },
   "1236401627": {
     "district": "So‘x tumani",
@@ -549,6 +1111,14 @@
     "phone": "998973360579",
     "name": "Ўринбоева Ўлмасой Исломжоновна"
   },
+  "1295695448": {
+    "fio": "HUSANOV LUTFULLA SHUXRATJOVICH",
+    "name": "Lutfulla.H",
+    "phone": "998990014520",
+    "school": "3-IDUM",
+    "district": "Dang‘ara tumani",
+    "username": "Husanov86"
+  },
   "1384795609": {
     "district": "Qo‘shtepa tumani",
     "school": "26-maktab",
@@ -558,10 +1128,17 @@
   },
   "1387240931": {
     "district": "Rishton tumani",
-    "school": "28",
-    "fio": "Qunduzov Murodjon Ma'murjonovich",
+    "school": "3-maktab",
+    "fio": "🔄 Maktab/Tumanni o'zgartirish",
     "phone": "+998990443830",
     "name": "3-мактаб"
+  },
+  "1394272771": {
+    "fio": "Sakkizboyev Vohidjon Abdusalomovich",
+    "name": "Вохиджон",
+    "phone": "998916646599",
+    "school": "9-maktab",
+    "district": "Yozyovon tumani"
   },
   "1400893473": {
     "district": "Dang‘ara tumani",
@@ -570,6 +1147,20 @@
     "phone": "+998995241526",
     "name": "Dehqonov"
   },
+  "1426504002": {
+    "fio": "Soliyev Akbarali Sobirjon oʻgʻli",
+    "name": "Akbarali",
+    "phone": "998901635946",
+    "school": "14-maktab",
+    "district": "Yozyovon tumani"
+  },
+  "1429402653": {
+    "fio": "Ro'ziyev Zafarjon Salomovich",
+    "name": "Zafarjon_Ro'ziyev",
+    "phone": "998911444578",
+    "school": "54-maktab",
+    "district": "O‘zbekiston tumani"
+  },
   "1542893482": {
     "district": "So‘x tumani",
     "school": "12 -maktab",
@@ -577,6 +1168,45 @@
     "phone": "998773684405",
     "name": "FARMONBEK",
     "username": "QFZ_Mathematic"
+  },
+  "1543244109": {
+    "fio": "Narimonov Behzod Hikmatjon oʻgʻli",
+    "name": "Behzod Narimonov",
+    "phone": "998333539333",
+    "school": "40-maktab",
+    "district": "Rishton tumani",
+    "username": "qdpimagist"
+  },
+  "1608358599": {
+    "fio": "Boboyev Abduqahhor Abduxoliqzoda",
+    "name": "Aбдукахор",
+    "phone": "998997243448",
+    "school": "12 -maktab",
+    "district": "So‘x tumani"
+  },
+  "1626254437": {
+    "fio": "G'oyibnazarov Kamoliddin Karimovich",
+    "name": "777",
+    "phone": "998976271006",
+    "school": "43-maktab",
+    "district": "Beshariq tumani",
+    "username": "kamoliddin43334333"
+  },
+  "1645509765": {
+    "fio": "Akbarov Akmalxon Ahmadovich",
+    "name": "Акбаров",
+    "phone": "998994062266",
+    "school": "64-maktab",
+    "district": "O‘zbekiston tumani",
+    "username": "Akbarov2266"
+  },
+  "1652857480": {
+    "fio": "Eraliyeva Dildora erkinovna",
+    "name": "N. Kb",
+    "phone": "998916625712",
+    "school": "4 maktab",
+    "district": "Quva tumani",
+    "username": "nazlik_b"
   },
   "1666318626": {
     "district": "Farg‘ona tumani",
@@ -593,12 +1223,87 @@
     "name": "Мафтуна Маъмуржоновна",
     "username": "Maftuna8899"
   },
+  "1729699394": {
+    "fio": "Qosimov Sadriddin Rahmonjonovich",
+    "name": "садридин",
+    "phone": "+998999099712",
+    "school": "27 -maktab",
+    "district": "So‘x tumani",
+    "username": "makta27"
+  },
+  "1735311653": {
+    "fio": "Madrahimov Muhtorali Akbaraliyevich",
+    "name": "Arabboy",
+    "phone": "998994684178",
+    "school": "26-maktab",
+    "district": "Yozyovon tumani"
+  },
+  "1788584625": {
+    "fio": "Zokirova Barchinoy Mehmonaliyevna",
+    "name": "Барчиной Зокирова",
+    "phone": "998902927620",
+    "school": "42-maktab",
+    "district": "Beshariq tumani",
+    "username": "Barchinoy_Zokirova"
+  },
+  "1796401494": {
+    "fio": "Ergasheva Surayyo Mamurovna",
+    "name": "💐💐BONU. BEK💐💐",
+    "phone": "+998916891652",
+    "school": "37 мактаб",
+    "district": "Qo‘qon shahri",
+    "username": "Mamurovna_1983"
+  },
+  "1808421022": {
+    "fio": "Ismanov Abduraxim Abduxalilovich",
+    "name": "И.А.А.",
+    "phone": "998958598797",
+    "school": "10-maktab",
+    "district": "Yozyovon tumani",
+    "username": "Ismanov8797"
+  },
+  "1810464265": {
+    "fio": "Саидбурхонов Мусожон",
+    "name": "Саидбурхонов Мусожон",
+    "phone": "998992834943",
+    "school": "8-maktab",
+    "district": "Quvasoy shahri"
+  },
+  "1824195003": {
+    "fio": "Abdullayeva Umida Mahammadaminovna",
+    "name": "А. У. М.",
+    "phone": "998913263320",
+    "school": "19-maktab",
+    "district": "Oltiariq tumani"
+  },
+  "1872866211": {
+    "fio": "Ahmedov Haydarali Jakbaraliyevich",
+    "name": "12-maktab Ahmedov Haydarali",
+    "phone": "+998901144586",
+    "school": "12-maktab",
+    "district": "Rishton tumani"
+  },
   "1884999660": {
     "district": "Quvasoy shahri",
     "school": "29-maktab",
     "fio": "Abdusattorov Xushnudbek Zohidjon oʻgʻli",
     "phone": "998901620720",
     "name": "Хушнудбек"
+  },
+  "1914778497": {
+    "fio": "Yusupov Sardorbek Zarifjon o‘g‘li",
+    "name": "Muhammadziyo",
+    "phone": "998943911222",
+    "school": "57-maktab",
+    "district": "Beshariq tumani",
+    "username": "S_Yusupov_500"
+  },
+  "1954105747": {
+    "fio": "Tursunaliyeva Simonaxon Yunusali qizi",
+    "name": "Замдиректор_ш_23",
+    "phone": "998934972161",
+    "school": "23-maktab",
+    "district": "Quvasoy shahri"
   },
   "1957175831": {
     "district": "Farg‘ona tumani",
@@ -608,12 +1313,40 @@
     "name": "21-maktab Sadoqat",
     "username": "Zebuzarbonu_Tursunali"
   },
+  "1964800883": {
+    "fio": "Юсупов Сардорбек Анваржонович",
+    "name": "Сардорбек",
+    "phone": "998979597887",
+    "school": "9-maktab",
+    "district": "Dang‘ara tumani"
+  },
   "1978902946": {
     "district": "Rishton tumani",
     "school": "17-maktab",
     "fio": "Zoidov To'lqinboy Ikromovich",
     "phone": "97.206.37.39",
     "name": "Zoidov To'lqinboy"
+  },
+  "1978945233": {
+    "fio": "Sadirov Xusan Yusupovich",
+    "name": "24",
+    "phone": "998996176693",
+    "school": "24-maktab",
+    "district": "Oltiariq tumani"
+  },
+  "1988193133": {
+    "fio": "Sirodjov Ahmadjon Alijonovich",
+    "name": "Ahadjon",
+    "phone": "+998332600601",
+    "school": "16 -maktab",
+    "district": "So‘x tumani"
+  },
+  "2031785414": {
+    "fio": "Jalilova Oygul Abdullaevna",
+    "name": "Абдуллаевна",
+    "phone": "998908400922",
+    "school": "3-maktab",
+    "district": "Oltiariq tumani"
   },
   "2090280003": {
     "district": "Marg‘ilon shahri",
@@ -646,8 +1379,8 @@
   },
   "6084115921": {
     "district": "Rishton tumani",
-    "school": "26",
-    "fio": "ortiqov muxsin abdusatorovich",
+    "school": "2-maktab",
+    "fio": "Ortiqov Muxsin Abdusattaorovich",
     "phone": "+998940010557",
     "name": "Muxsinjon"
   },
@@ -660,8 +1393,8 @@
   },
   "5122761726": {
     "district": "Toshloq tumani",
-    "school": "34",
-    "fio": "Roziqova Hanipaxon Obidjonovna",
+    "school": "15-maktab",
+    "fio": "🔄 Maktab/Tumanni o'zgartirish",
     "phone": "998913260501",
     "name": "ROZIQOVA H.O.",
     "username": "farzandlarim_baxtim_022208"
@@ -683,7 +1416,7 @@
   },
   "5084346857": {
     "district": "O‘zbekiston tumani",
-    "school": "17",
+    "school": "62-maktab",
     "fio": "Karimova Zulxumor Mirzatillayevna",
     "phone": "998997873819",
     "name": "🌹Karimova Zulxumor 🌹",
@@ -8388,6 +9121,18 @@
         "name": "O'quvchi",
         "school": "16-maktab",
         "district": "Marg‘ilon shahri"
+      },
+      {
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
+      },
+      {
+        "school": "16-maktab",
+        "district": "Marg‘ilon shahri"
+      },
+      {
+        "school": "16-maktab",
+        "district": "Marg‘ilon shahri"
       }
     ]
   },
@@ -10249,8 +10994,789 @@
     "chat_id": 859922760,
     "subscriptions": [
       {
-        "district": "Qo‘qon shahri",
-        "school": "19-maktab"
+        "school": "19-maktab",
+        "district": "Qo‘qon shahri"
+      }
+    ]
+  },
+  "parent_7736761600": {
+    "role": "parent",
+    "phone": "998996302805",
+    "fio": "Maxliyo Karimova",
+    "lang": "uz_lat",
+    "chat_id": 7736761600,
+    "subscriptions": [
+      {
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
+      }
+    ]
+  },
+  "6737708445": {
+    "fio": "Boʻriyeva Salimaxon Murodovna",
+    "name": "Matluba Murodovna",
+    "phone": "998911080702",
+    "school": "38-maktab",
+    "district": "Toshloq tumani"
+  },
+  "7134471373": {
+    "fio": "Sattarova Faridaxon Faxriddinovna",
+    "name": "Ф.",
+    "phone": "+998948629922",
+    "school": "7-maktab",
+    "district": "Quvasoy shahri",
+    "username": "Im_American_teacher"
+  },
+  "5935486673": {
+    "fio": "Xizirbekova Feruza Ulugʻbek qizi",
+    "name": "Feruza 27-maktab",
+    "phone": "998911062719",
+    "school": "27-maktab",
+    "district": "Yozyovon tumani"
+  },
+  "parent_1901429330": {
+    "fio": "Tolibova Shukronaxon",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998908358592",
+    "chat_id": 1901429330,
+    "subscriptions": [
+      {
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
+      }
+    ]
+  },
+  "parent_1963683470": {
+    "fio": "Meliqoʻzizoda Maloxat",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998910440794",
+    "chat_id": 1963683470,
+    "subscriptions": [
+      {
+        "school": "32-maktab",
+        "district": "Qo‘shtepa tumani"
+      },
+      {
+        "school": "32-maktab",
+        "district": "Qo‘shtepa tumani"
+      }
+    ]
+  },
+  "parent_663243766": {
+    "fio": "Boboraximova Ziynat",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998905331817",
+    "chat_id": 663243766,
+    "subscriptions": [
+      {
+        "school": "13-maktab",
+        "district": "Qo‘shtepa tumani"
+      }
+    ]
+  },
+  "parent_8086464175": {
+    "fio": "Mamadaliyeva santalatxon",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998951848587",
+    "chat_id": 8086464175,
+    "subscriptions": [
+      {
+        "school": "30-maktab",
+        "district": "Yozyovon tumani"
+      },
+      {
+        "school": "28-maktab",
+        "district": "Yozyovon tumani"
+      }
+    ]
+  },
+  "5668249934": {
+    "fio": "Faxriddinova Zohida Inomjonovna",
+    "name": "Zohida",
+    "phone": "+998916914245",
+    "school": "36-maktab",
+    "district": "Dang‘ara tumani"
+  },
+  "7039971283": {
+    "fio": "Madaminov Muhammadamin Muhammad o'g'li",
+    "name": "Muhammadamin",
+    "phone": "+998993415588",
+    "school": "29-maktab",
+    "district": "Beshariq tumani",
+    "username": "madaminov_95"
+  },
+  "6563573415": {
+    "fio": "Maraximov Bahodir Xakimovich",
+    "name": "Jaloliddin",
+    "phone": "+998999954881",
+    "school": "38-maktab",
+    "district": "Yozyovon tumani",
+    "username": "Urinboyev_Jaloliddin"
+  },
+  "5384899331": {
+    "fio": "MIRZAQULOV ERKINJON MUSAJONOVICH",
+    "name": "Эркинжон",
+    "phone": "+998999129868",
+    "school": "66-maktab",
+    "district": "Rishton tumani",
+    "username": "Erkinjon68"
+  },
+  "6403928397": {
+    "fio": "Qambarov Husniddin Najmiddin o`g`li",
+    "name": "Qambarov",
+    "phone": "+998947177927",
+    "school": "21-maktab",
+    "district": "Dang‘ara tumani"
+  },
+  "5506250665": {
+    "fio": "Abdullayev Abduvali Axmadovich",
+    "name": "A. Abdullayev",
+    "phone": "998904056752",
+    "school": "Davomat kiritish",
+    "district": "Yozyovon tumani"
+  },
+  "6327466908": {
+    "fio": "G'iyosiddinov Toxirjon Shokirjon o'g'li",
+    "name": "Toxirjon",
+    "phone": "998999155655",
+    "school": "18-maktab",
+    "district": "Quvasoy shahri",
+    "username": "tohirjon1994"
+  },
+  "5930463744": {
+    "fio": "Mamadaliyev Barhayotjon Muxitdinjon oʻgʻli",
+    "name": "Mamadaliyev",
+    "phone": "998948748544",
+    "school": "1-IDUM",
+    "district": "Dang‘ara tumani"
+  },
+  "8414711896": {
+    "fio": "Komilov Furqatbek G'ayratjon o'g'li",
+    "name": "FURQATBEK",
+    "phone": "+998772967363",
+    "school": "57 maktab",
+    "district": "Quva tumani"
+  },
+  "6314160203": {
+    "fio": "Abdullayev Nodirjon Nizomiddinovich",
+    "name": ".",
+    "phone": "998911084998",
+    "school": "66 maktab",
+    "district": "Quva tumani"
+  },
+  "5117143673": {
+    "fio": "Sodiqova Gulnoza saloxiddin",
+    "name": "Содикова",
+    "phone": "998908439446",
+    "school": "39-maktab",
+    "district": "Yozyovon tumani"
+  },
+  "8153369549": {
+    "fio": "Umarjonov Asqarjon Nabijonovich",
+    "name": "Asqarjon",
+    "phone": "998994372349",
+    "school": "2 -IDUM",
+    "district": "So‘x tumani"
+  },
+  "7517268607": {
+    "fio": "Ergashev Dadajon Erali oʻgʻli",
+    "name": "Dadajon",
+    "phone": "998937755235",
+    "school": "11-maktab",
+    "district": "Yozyovon tumani"
+  },
+  "8416345253": {
+    "fio": "Berdiboyev Usmonali Jumaboyevich",
+    "name": "Усмонали",
+    "phone": "998911199296",
+    "school": "64-maktab",
+    "district": "Rishton tumani"
+  },
+  "8341993587": {
+    "fio": "Мадумаров Отабек Абдусаломович",
+    "name": "Отабек Мадумаров",
+    "phone": "998918858283",
+    "school": "50 maktab",
+    "district": "Quva tumani",
+    "username": "Otabek951"
+  },
+  "parent_5608069765": {
+    "fio": "Юлдашев Акмал",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998916937131",
+    "chat_id": 5608069765,
+    "subscriptions": [
+      {
+        "school": "36 мактаб",
+        "district": "Farg‘ona tumani"
+      }
+    ]
+  },
+  "parent_5573496578": {
+    "fio": "Yuldasheva N",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998906286364",
+    "chat_id": 5573496578,
+    "subscriptions": [
+      {
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
+      }
+    ]
+  },
+  "8374833586": {
+    "fio": "Mirzaqaxxorov Dostonbek",
+    "name": "Dostonbek 61",
+    "phone": "998902934313",
+    "school": "61-maktab",
+    "district": "Rishton tumani"
+  },
+  "5905824820": {
+    "fio": "Sulaymonov G'aribjon Ilyosovich",
+    "name": "Ғ. Сулаймонов",
+    "phone": "998993166710",
+    "school": "23 -maktab",
+    "district": "So‘x tumani"
+  },
+  "7315717791": {
+    "fio": "Azamov Saidakmal Saidaxmadovich",
+    "name": "Сайдакмал Азамов",
+    "phone": "998911224688",
+    "school": "16-maktab",
+    "district": "Quvasoy shahri",
+    "username": "mental2024Turkiya"
+  },
+  "8423303371": {
+    "fio": "G'ofurov Abdurashid Xoshimovich",
+    "name": "Abdurashid",
+    "phone": "998950649610",
+    "school": "36-maktab",
+    "district": "Toshloq tumani"
+  },
+  "5166196417": {
+    "fio": "Jo'rayev  Yodgorali  Ro'zimamatovich",
+    "name": "Jo‘rayev Yodgorjon",
+    "phone": "+998974167741",
+    "school": "24-maktab",
+    "district": "Rishton tumani"
+  },
+  "5425239335": {
+    "fio": "G'aybullayev Dilshod Davlatjon o'g'li",
+    "name": "Dilshod",
+    "phone": "998907755807",
+    "school": "1 мактаб",
+    "district": "Farg‘ona tumani",
+    "username": "dili_99951"
+  },
+  "8364437825": {
+    "fio": "Mamajonova Maxfuza Rustamovna",
+    "name": "Maxfuza",
+    "phone": "998773005614",
+    "school": "23-maktab",
+    "district": "Toshloq tumani"
+  },
+  "7375998334": {
+    "fio": "Ziyovidinov Aynidin Bahridinovich",
+    "name": "Айнидин",
+    "phone": "998993047333",
+    "school": "20 -maktab",
+    "district": "So‘x tumani"
+  },
+  "6675383320": {
+    "fio": "Abdurazzoqov Ahrorjon Meliqoʻzi oʻgʻli",
+    "name": "Ahrorjon",
+    "phone": "998500095751",
+    "school": "32-maktab",
+    "district": "Dang‘ara tumani",
+    "username": "Abdurazzoqov_090"
+  },
+  "6392654512": {
+    "fio": "Yigitaliyeva Nazoratxon Muxsinjon qizi",
+    "name": "Yigitaliyeva N",
+    "phone": "998908555441",
+    "school": "24-maktab",
+    "district": "O‘zbekiston tumani"
+  },
+  "parent_1302752570": {
+    "fio": "mominjonova Odinaxon",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998993002766",
+    "chat_id": 1302752570,
+    "subscriptions": [
+      {
+        "school": "20-maktab",
+        "district": "Marg‘ilon shahri"
+      },
+      {
+        "school": "20-maktab",
+        "district": "Marg‘ilon shahri"
+      }
+    ]
+  },
+  "parent_5049692591": {
+    "fio": "Абдураимова Дилором",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998936499787",
+    "chat_id": 5049692591,
+    "subscriptions": [
+      {
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
+      }
+    ]
+  },
+  "parent_8066887846": {
+    "fio": "ГУЛНОРА  ИСАКОВА",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998916591512",
+    "chat_id": 8066887846,
+    "subscriptions": [
+      {
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
+      },
+      {
+        "school": "37-maktab",
+        "district": "Qo‘shtepa tumani"
+      }
+    ]
+  },
+  "6384919224": {
+    "fio": "Mirzaaliyeva Muqaddam",
+    "name": "Malika...",
+    "phone": "998905351405",
+    "school": "19 maktab",
+    "district": "Bag‘dod tumani",
+    "username": "u_malika_1029"
+  },
+  "6300670715": {
+    "fio": "Yusipov Muhammadkarim Isayevich",
+    "name": "𝐗𝐨𝐥𝐦𝐮𝐫𝐨𝐝 𝐎𝐭𝐚𝐛𝐞𝐤𝐨𝐯𝐢𝐜𝐡",
+    "phone": "998947841308",
+    "school": "43 maktab",
+    "district": "Quva tumani",
+    "username": "otabekovich_x01"
+  },
+  "7902983552": {
+    "fio": "Nabiyeva Gulbarno Mahamadsoliyevna",
+    "name": "15-мактаб Гулбарно Маҳамадсолиевна",
+    "phone": "998975018283",
+    "school": "15-maktab",
+    "district": "Quvasoy shahri"
+  },
+  "5028680969": {
+    "fio": "Haytboyeva Zamira Ravshanjonovna",
+    "name": "Zamira",
+    "phone": "998995393183",
+    "school": "59 мактаб",
+    "district": "Farg‘ona tumani",
+    "username": "Za8882"
+  },
+  "7681950130": {
+    "fio": "Xodjayev Komiljon",
+    "name": "Комилжон Ходжаев",
+    "phone": "998507007586",
+    "school": "11 maktab",
+    "district": "Quva tumani",
+    "username": "j1222b"
+  },
+  "parent_6182939909": {
+    "fio": "Mahkamova Yulduzxon",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998903052242",
+    "chat_id": 6182939909,
+    "subscriptions": [
+      {
+        "school": "6-maktab",
+        "district": "Qo‘qon shahri"
+      }
+    ]
+  },
+  "7649047263": {
+    "fio": "Isayev Rashidjon",
+    "name": "Rashidjon",
+    "phone": "998904065060",
+    "school": "30-maktab",
+    "district": "Rishton tumani",
+    "username": "Rashidjon_Isayev"
+  },
+  "parent_1645408837": {
+    "fio": "Nabiyev Najotbek",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998912030690",
+    "chat_id": 1645408837,
+    "subscriptions": [
+      {
+        "school": "22 мактаб",
+        "district": "Qo‘qon shahri"
+      },
+      {
+        "school": "34 мактаб",
+        "district": "Qo‘qon shahri"
+      }
+    ]
+  },
+  "parent_1244309855": {
+    "fio": "Орипов Нуриддин",
+    "lang": "ru",
+    "role": "parent",
+    "phone": "998771997500",
+    "chat_id": 1244309855,
+    "subscriptions": [
+      {
+        "school": "20-maktab",
+        "district": "Qo‘shtepa tumani"
+      }
+    ]
+  },
+  "7954585100": {
+    "fio": "Abdullayev Axrorbek Sharibjon oʻgʻli",
+    "name": "Axrorbek Abdullayev",
+    "phone": "998991725415",
+    "school": "31-IDUM",
+    "district": "Oltiariq tumani"
+  },
+  "parent_489978742": {
+    "fio": "Izzatillo Nurmahmudov",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998904072097",
+    "chat_id": 489978742,
+    "subscriptions": [
+      {
+        "school": "16 maktab",
+        "district": "Farg‘ona shahri"
+      },
+      {
+        "school": "16 maktab",
+        "district": "Farg‘ona shahri"
+      },
+      {
+        "school": "16 maktab",
+        "district": "Farg‘ona shahri"
+      },
+      {
+        "school": "16 maktab",
+        "district": "Farg‘ona shahri"
+      }
+    ]
+  },
+  "parent_6981039552": {
+    "fio": "Рузиева Дилфуза",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998505816500",
+    "chat_id": 6981039552,
+    "subscriptions": [
+      {
+        "school": "2 мактаб",
+        "district": "Farg‘ona tumani"
+      }
+    ]
+  },
+  "parent_5821407529": {
+    "fio": "SHAMSHODBEK AZIMOV",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998908392797",
+    "chat_id": 5821407529,
+    "subscriptions": [
+      {
+        "school": "13 maktab",
+        "district": "Farg‘ona shahri"
+      }
+    ]
+  },
+  "7127128097": {
+    "fio": "Ortiqova Soxiba Mansurovna",
+    "name": "МИРАЗИЗБЕК",
+    "phone": "998934352677",
+    "school": "5-maktab",
+    "district": "O‘zbekiston tumani"
+  },
+  "parent_5283108767": {
+    "fio": "Nurmataliyeva Lolaxon",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998916808977",
+    "chat_id": 5283108767,
+    "subscriptions": [
+      {
+        "school": "49-maktab",
+        "district": "Qo‘shtepa tumani"
+      },
+      {
+        "school": "49",
+        "district": "Marg‘ilon shahri"
+      }
+    ]
+  },
+  "parent_7311124423": {
+    "fio": "Madgʻofurova Nozima",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998916897178",
+    "chat_id": 7311124423,
+    "subscriptions": [
+      {
+        "school": "36 мактаб",
+        "district": "Qo‘qon shahri"
+      }
+    ]
+  },
+  "parent_6207549034": {
+    "fio": "Alloberdiyev Muslimbek",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998912062793",
+    "chat_id": 6207549034,
+    "subscriptions": [
+      {
+        "school": "45-maktab",
+        "district": "Qo‘shtepa tumani"
+      }
+    ]
+  },
+  "parent_8141133880": {
+    "fio": "Davlatyorova Surayyoxon",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998906440919",
+    "chat_id": 8141133880,
+    "subscriptions": [
+      {
+        "school": "49-maktab",
+        "district": "Qo‘shtepa tumani"
+      },
+      {
+        "school": "49-maktab",
+        "district": "Qo‘shtepa tumani"
+      }
+    ]
+  },
+  "5298655144": {
+    "fio": "Xazratqulova Maftuna Abduvaqqosovna",
+    "name": "Мафтуна Абдуваққосовна",
+    "phone": "998943852383",
+    "school": "8-maktab",
+    "district": "O‘zbekiston tumani"
+  },
+  "5497044699": {
+    "fio": "Raimov Shaxboz Rasulovich",
+    "name": "Raimov",
+    "phone": "998337092992",
+    "school": "3 мактаб",
+    "district": "Farg‘ona tumani",
+    "username": "Shoxshox92"
+  },
+  "parent_7687470422": {
+    "fio": "Ergashaliyeva Muslimaxon",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998774244585",
+    "chat_id": 7687470422,
+    "subscriptions": [
+      {
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
+      }
+    ]
+  },
+  "5394936831": {
+    "fio": "Olimova Moxiraxon Obloyor qizi",
+    "name": "@Obloyorovna MMIBDO'",
+    "phone": "998921924491",
+    "school": "35 мактаб",
+    "district": "Farg‘ona tumani",
+    "username": "Obloyorovna"
+  },
+  "6946955566": {
+    "fio": "Mirzayeva Mahfuza Tursunaliyevna",
+    "name": "💖",
+    "phone": "998906331496",
+    "school": "32 мактаб",
+    "district": "Farg‘ona tumani"
+  },
+  "6387164965": {
+    "fio": "Umarov Jahongir Nuribloevich",
+    "name": "Johongir",
+    "phone": "998905312285",
+    "school": "57 мактаб",
+    "district": "Farg‘ona tumani"
+  },
+  "7784078018": {
+    "fio": "Mamadjanova Xushnoza Maxmudovna",
+    "name": "Xushnoza Maxmudovna",
+    "phone": "998979609502",
+    "school": "57-maktab",
+    "district": "Rishton tumani",
+    "username": "Shukijonim"
+  },
+  "8039968040": {
+    "fio": "Arslonova Munojat",
+    "name": "Dilfuza",
+    "phone": "998999046602",
+    "school": "5-maktab",
+    "district": "Dang‘ara tumani"
+  },
+  "parent_1317731905": {
+    "fio": "Sattarova Munavvarxon",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998907753064",
+    "chat_id": 1317731905,
+    "subscriptions": [
+      {
+        "school": "4 VIDUMI",
+        "district": "Farg‘ona shahri"
+      },
+      {
+        "school": "49 maktab",
+        "district": "Farg‘ona shahri"
+      }
+    ]
+  },
+  "parent_509229331": {
+    "fio": "Odilova Odinaxon",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998916613294",
+    "chat_id": 509229331,
+    "subscriptions": [
+      {
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
+      },
+      {
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
+      },
+      {
+        "school": "15-maktab",
+        "district": "Qo‘shtepa tumani"
+      }
+    ]
+  },
+  "parent_8407394580": {
+    "fio": "/start",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998918826112",
+    "chat_id": 8407394580,
+    "subscriptions": [
+      {
+        "school": "4 VIDUMI",
+        "district": "Farg‘ona shahri"
+      },
+      {
+        "school": "49-maktab",
+        "district": "Qo‘shtepa tumani"
+      }
+    ]
+  },
+  "6988716508": {
+    "fio": "Badalov Gʻayratjon Tursunaliyevich",
+    "name": "Ғайратжон",
+    "phone": "998905343303",
+    "school": "13-maktab",
+    "district": "Rishton tumani",
+    "username": "Gayratjon3107"
+  },
+  "6215644320": {
+    "fio": "Нишонов Махамаджон Валиевич",
+    "name": "Махамаджон",
+    "phone": "998902300969",
+    "school": "24 maktab",
+    "district": "Quva tumani",
+    "username": "Maxammadjon09"
+  },
+  "6237173997": {
+    "fio": "Ibragimov Muhammadjon Mamatyunusovich",
+    "name": "Ibragimov",
+    "phone": "998979418140",
+    "school": "36-maktab",
+    "district": "Rishton tumani"
+  },
+  "5244527940": {
+    "fio": "Isoqova Gulnozaxon Valiyevna",
+    "name": "Гулноза",
+    "phone": "998907881413",
+    "school": "14-maktab",
+    "district": "Beshariq tumani"
+  },
+  "7334504110": {
+    "fio": "Байдуллаева Саодатхон",
+    "name": "40-мактаб Зиёдахон ММИБДУ",
+    "phone": "998990037934",
+    "school": "40 мактаб",
+    "district": "Farg‘ona tumani"
+  },
+  "6182020319": {
+    "fio": "Urozov Abdumalik tursunaliyevich",
+    "name": "Урозов Абдумалик",
+    "phone": "+998952431371",
+    "school": "30 -maktab",
+    "district": "So‘x tumani"
+  },
+  "parent_8106679875": {
+    "fio": "Shahzodbek Tolqinboyev",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998902721713",
+    "chat_id": 8106679875,
+    "subscriptions": [
+      {
+        "school": "18-maktab",
+        "district": "Qo‘shtepa tumani"
+      }
+    ]
+  },
+  "7966639020": {
+    "fio": "Ахмаджонов Изатжон Вахобжонович",
+    "name": "Иззатжон",
+    "phone": "+998996171908",
+    "school": "19 -maktab",
+    "district": "So‘x tumani"
+  },
+  "5678551633": {
+    "fio": "Xolqoʻziyeva Mohida Nematjonovna",
+    "name": "м.",
+    "phone": "998885915800",
+    "school": "13-maktab",
+    "district": "Oltiariq tumani"
+  },
+  "5811243601": {
+    "fio": "Ahmadjonov Solijon Ahmadjonovich",
+    "name": "Солижон",
+    "phone": "998997859968",
+    "school": "5 -maktab",
+    "district": "So‘x tumani"
+  },
+  "parent_7985202709": {
+    "role": "parent",
+    "phone": "998998349221",
+    "fio": "Ahmadjonov Asadbek",
+    "lang": "uz_lat",
+    "chat_id": 7985202709,
+    "subscriptions": [
+      {
+        "district": "Yozyovon tumani",
+        "school": "16-maktab"
+      },
+      {
+        "district": "Yozyovon tumani",
+        "school": "16-maktab"
       }
     ]
   }

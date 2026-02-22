@@ -177,7 +177,7 @@ app.post('/api/admin/set-pro', auth, async (req, res) => {
 
 // --- SECURITY SHIELD ---
 const requestCount = new Map();
-const SECURITY_ALERT_THRESHOLD = 300; // Increased to 300 to avoid false positives
+const SECURITY_ALERT_THRESHOLD = 50; // Max 50 requests per minute per IP
 
 const securityShield = (req, res, next) => {
     // 1. Basic Security Headers (Manual Helmet)
@@ -198,9 +198,7 @@ const securityShield = (req, res, next) => {
 
     if (logs.length > SECURITY_ALERT_THRESHOLD) {
         if (logs.length === SECURITY_ALERT_THRESHOLD + 1) {
-            // Disabled alert to prevent spamming
-            // alertSuperAdmin(`🚨 <b>SECURITY ALERT!</b>\nSuspicious activity detected from IP: <code>${ip}</code>\nURL: <code>${req.url}</code>\nUser: <code>${req.user ? req.user.username : 'Guest'}</code>`);
-            console.warn(`[RATE-LIMIT] IP: ${ip} exceeded threshold.`);
+            alertSuperAdmin(`🚨 <b>SECURITY ALERT!</b>\nSuspicious activity detected from IP: <code>${ip}</code>\nURL: <code>${req.url}</code>\nUser: <code>${req.user ? req.user.username : 'Guest'}</code>`);
         }
         return res.status(429).json({ error: 'Too many requests. Please try again later.' });
     }
@@ -247,24 +245,24 @@ bot.use(session());
 bot.start(async (ctx) => {
     console.log(`[START] User: ${ctx.from.id}`);
 
-    // Leave any active scene to reset
     try { await ctx.scene.leave(); } catch (e) { }
 
     const { date, day } = getTodayInfo();
-    const caption = `🌸 <b>Assalomu alaykum!</b>\nFarg'ona viloyati maktabgacha va maktab ta'limi boshqarmasi tizimidagi <b>@Ferghanaregdavomat_bot</b> ga xush kelibsiz.\n\n📅 <b>Bugungi sana:</b> ${date} (${day})\n\nBiz bilan hamkor bo'lganingiz uchun yana bir bor tabriklaymiz!\nKuningiz xayrli va mazmunli o'tsin! ✨`;
+    const caption = `🏛 <b>FARG‘ONA VILOYATI MAKTABGACHA VA MAKTAB TA’LIMI BOSHQARMASI</b>\n\n` +
+        `🤖 <b>@Ferghanaregdavomat_bot</b> — o‘quvchilar davomatini monitoring qilish tizimiga xush kelibsiz.\n\n` +
+        `📅 <b>Bugungi sana:</b> ${date} (${day})\n` +
+        `✨ <b>Holat:</b> Tizim rasmiy rejimda ishlamoqda.\n\n` +
+        `<i>Iltimos, quyidagi menyudan kerakli bo‘limni tanlang:</i>`;
 
-    // Tugmalarni tayyorlash
     let buttons = [["📊 Davomat kiritish"]];
 
     const uid = Number(ctx.from.id);
     const isPro = db.checkPro(uid);
 
-    // Admin bo'lsa, Admin Panel tugmasini qo'shish
     if (config.ALL_ADMINS.map(Number).includes(uid)) {
         buttons.push(["⚙️ Admin Panel"]);
     }
 
-    // PRO Analitika button for PRO users (School level)
     if (isPro) {
         buttons.push(["📊 PRO Analitika"]);
     }
@@ -309,14 +307,6 @@ app.get('/api/stats/viloyat', auth, async (req, res) => {
     const now = getFargonaTime();
     const date = req.query.date || now.toISOString().split('T')[0];
     const data = await getViloyatSvod(date);
-
-    // If district admin, they can only see their own district in viloyat summary if needed,
-    // but usually they see the full summary but limited in other views.
-    // However, user said "hududlar kesmida", so maybe hide viloyat svod for them.
-    if (req.user.role === 'district') {
-        const userDistNorm = normalizeKey(req.user.district);
-        return res.json(data.filter(d => normalizeKey(d.district) === userDistNorm));
-    }
     res.json(data);
 });
 
@@ -660,7 +650,7 @@ app.post('/api/submit', upload.single('bildirgi'), async (req, res) => {
     if (flatData.sababsiz_total > 0) {
         const isProUser = db.checkProByPhone(d.phone);
         if (req.file) {
-            flatData.bildirgi = req.file.path;
+            flatData.bildirgi = path.basename(req.file.path);
         } else if (isProUser) {
             try {
                 console.log("Generating Auto Bildirgi for PRO user...");
@@ -672,7 +662,7 @@ app.post('/api/submit', upload.single('bildirgi'), async (req, res) => {
                     sababsiz_total: flatData.sababsiz_total,
                     students_list: students_list
                 });
-                flatData.bildirgi = pdfPath;
+                flatData.bildirgi = path.basename(pdfPath);
             } catch (e) {
                 console.error("Auto Bildirgi Error:", e);
                 // Even for PRO, if auto-gen fails, we might need a fallback, but for now let's just log
@@ -1466,104 +1456,8 @@ function startHourlyCheck() {
     };
 
 
-    setInterval(async () => {
-        try {
-            const now = getFargonaTime();
-            const h = now.getHours();
-            const m = now.getMinutes();
-            const dayStr = now.toISOString().split('T')[0];
-
-            // Unique slot for this specific check time (e.g. "2024-05-20 10:30")
-            const currentSlot = `${dayStr} ${h}:${m}`;
-
-            // 1. Warning & Deadline Checks (08:00 - 16:00)
-            const isTime = (h >= 8 && h <= 16);
-
-            // Only run if:
-            // - It's work hours
-            // - It's exactly 00 or 30 minutes
-            // - We haven't run for this specific time slot yet
-            if (isTime && (m === 0 || m === 30) && lastRunSlot !== currentSlot) {
-                lastRunSlot = currentSlot; // Lock immediately
-
-                const dayOfWeek = now.getDay(); // 0 = Sun
-
-                // Only send warnings Mon-Sat (exclude Sunday)
-                if (dayOfWeek !== 0) {
-                    const warningHours = [9, 11, 13, 15];
-                    const isDeadline = (h === 15 && m === 30); // 15:30 deadline
-                    const isFinalDeadline = (h === 16 && m === 0); // 16:00 final deadline
-                    const cutoffH = 15;
-                    const cutoffM = 30;
-
-                    if (warningHours.includes(h) || isDeadline || isFinalDeadline) {
-                        console.log(`[SCHEDULER] Checking attendance at ${currentSlot}...`);
-
-                        const mData = await getMissingSchools();
-                        if (mData) {
-                            for (const dRaw in mData) {
-                                if (mData[dRaw].length > 0) {
-                                    const tid = getTopicId(dRaw);
-                                    if (tid) {
-                                        let txt = "";
-
-                                        // 15:30 Warning (30 mins left)
-                                        if (h === 15 && m === 30) {
-                                            txt = `⏳ <b>DIQQAT! 16:00 gacha 30 daqiqa vaqt qoldi!</b>\n\n🚨 <b>${dRaw}</b> bo'yicha quyidagi maktablar hali davomat kiritmagan:\n\n` +
-                                                mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s}`).join('\n') +
-                                                `\n\n❗️ <b>Iltimos, vaqtida ulguring!</b>`;
-                                        }
-                                        // 16:00 Final Warning
-                                        else if (h === 16 && m === 0) {
-                                            const normKey = normalizeKey(dRaw).toLowerCase();
-                                            const official = DISTRICT_OFFICIALS[normKey] || "Mas'ullar";
-
-                                            txt = `🚫 <b>AFSUSKI! Ish vaqti tugadi (16:00).</b>\n\n😔 <b>${dRaw}</b> bo'yicha quyidagi maktablar bugun davomat kiritishmadi:\n\n` +
-                                                mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s}`).join('\n') +
-                                                `\n\n‼️ <b>Hurmatli ${official}, vaziyatni qattiq nazoratga olishingizni so'rayman!</b>`;
-                                        }
-                                        // Other hours (Standard warning)
-                                        else if (h < 15 || (h === 15 && m < 30)) {
-                                            txt = `⚠️ <b>Eslatma (${h}:00):</b>\n\n📍 <b>${dRaw}</b> da quyidagi maktablar davomat kiritmadi:\n\n` +
-                                                mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s}`).join('\n') +
-                                                `\n\n❗️ Iltimos, faollik ko'rsating.`;
-                                        }
-
-                                        if (txt) {
-                                            console.log(`[ALERTS] Sending warning to ${dRaw} (Topic: ${tid})`);
-                                            try {
-                                                await bot.telegram.sendMessage(config.REPORT_GROUP_ID, txt, {
-                                                    parse_mode: 'HTML',
-                                                    message_thread_id: tid
-                                                });
-                                            } catch (err) {
-                                                console.error(`[ALERTS] Error sending to ${dRaw}:`, err.message);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // 2. Auto-Report at 16:05 (Daily Excel)
-            if (h === 16 && m === 5 && !dailyReportSent) {
-                console.log("Sending Auto 16:05 Report...");
-                dailyReportSent = true;
-                try {
-                    await sendExcelReport(null, config.REPORT_GROUP_ID);
-                } catch (e) { console.error("Auto Report Failed", e); }
-            }
-
-            // Reset daily report flag at midnight
-            if (h === 0 && dailyReportSent) dailyReportSent = false;
-
-        } catch (e) {
-            console.error("Scheduler check error:", e);
-        }
-    }, 45000); // Check every 45 seconds to avoid double trigger on 30s interval
+    // Administrative Official Names (Handles by scheduler.js now)
+    // Removed redundant setInterval logic to prevent duplicate messages.
 }
 
 

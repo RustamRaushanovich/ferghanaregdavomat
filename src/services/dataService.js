@@ -261,8 +261,9 @@ async function exportDistrictExcel(district, date) {
         sheet1.mergeCells('L2:L3'); sheet1.getCell('L2').value = "Sababsiz jami";
         sheet1.mergeCells('M2:V2'); sheet1.getCell('M2').value = "Shundan Sababsizlar:";
         ["Muntazam", "Qidiruv", "Chet el", "Bo'yin", "Ish", "Qarshilik", "Jazo", "Nazoratsiz", "Boshqa", "Turmush"].forEach((v, i) => sheet1.getCell(3, 13 + i).value = v);
+        sheet1.mergeCells('W2:W3'); sheet1.getCell('W2').value = "Bildirgi";
 
-        for (let r = 2; r <= 3; r++) { sheet1.getRow(r).height = 40; for (let c = 1; c <= 22; c++) setStyle(sheet1.getCell(r, c), { bold: true, fill: c >= 12 ? 'FFF8CBAD' : 'FFC6E0B4', size: 9 }); }
+        for (let r = 2; r <= 3; r++) { sheet1.getRow(r).height = 40; for (let c = 1; c <= 23; c++) setStyle(sheet1.getCell(r, c), { bold: true, fill: c >= 12 ? 'FFF8CBAD' : 'FFC6E0B4', size: 9 }); }
 
         const entriesRes = await db.query(`
             SELECT DISTINCT ON (district, school) *
@@ -277,7 +278,7 @@ async function exportDistrictExcel(district, date) {
         districtSchools.forEach((sName, i) => {
             const d = tumanEntries.find(e => normalizeKey(e.school) === normalizeKey(sName)) || {};
             const st = parseInt(d.total_students) || 0; const tab = parseInt(d.total_absent) || 0; const perc = st > 0 ? ((st - tab) / st * 100).toFixed(1) : 0;
-            const row = sheet1.addRow([i + 1, sName, d.classes_count || 0, st, perc + '%', tab, d.sababli_kasal || 0, d.sababli_tadbirlar || 0, d.sababli_oilaviy || 0, d.sababli_ijtimoiy || 0, d.sababli_boshqa || 0, d.sababsiz_jami || 0, d.sababsiz_muntazam || 0, d.sababsiz_qidiruv || 0, d.sababsiz_chetel || 0, d.sababsiz_boyin || 0, d.sababsiz_ishlab || 0, d.sababsiz_qarshilik || 0, d.sababsiz_jazo || 0, d.sababsiz_nazoratsiz || 0, d.sababsiz_boshqa || 0, d.sababsiz_turmush || 0]);
+            const row = sheet1.addRow([i + 1, sName, d.classes_count || 0, st, perc + '%', tab, d.sababli_kasal || 0, d.sababli_tadbirlar || 0, d.sababli_oilaviy || 0, d.sababli_ijtimoiy || 0, d.sababli_boshqa || 0, d.sababsiz_jami || 0, d.sababsiz_muntazam || 0, d.sababsiz_qidiruv || 0, d.sababsiz_chetel || 0, d.sababsiz_boyin || 0, d.sababsiz_ishlab || 0, d.sababsiz_qarshilik || 0, d.sababsiz_jazo || 0, d.sababsiz_nazoratsiz || 0, d.sababsiz_boshqa || 0, d.sababsiz_turmush || 0, d.bildirgi ? 'Mavjud' : '-']);
             row.eachCell(c => setStyle(c));
             v_cl += (d.classes_count || 0); v_st += st; v_tab += tab;
             v_sab[0] += (d.sababli_kasal || 0); v_sab[1] += (d.sababli_tadbirlar || 0); v_sab[2] += (d.sababli_oilaviy || 0); v_sab[3] += (d.sababli_ijtimoiy || 0); v_sab[4] += (d.sababli_boshqa || 0);
@@ -288,7 +289,7 @@ async function exportDistrictExcel(district, date) {
         const sumRow = sheet1.addRow(["", "TUMAN JAMI", v_cl, v_st, totalPerc + '%', v_tab, ...v_sab, ...v_ss]);
         sumRow.eachCell(c => setStyle(c, { bold: true, fill: 'FFFFFF00' }));
 
-        sheet1.getColumn(2).width = 30; for (let c = 3; c <= 22; c++) sheet1.getColumn(c).width = 11;
+        sheet1.getColumn(2).width = 30; for (let c = 3; c <= 23; c++) sheet1.getColumn(c).width = 11;
         const filePath = path.join(path.resolve(__dirname, '../../assets'), `HISOBOT_${district.replace(/[^a-zA-Z0-9]/g, '_')}_${targetDate}.xlsx`);
         await workbook.xlsx.writeFile(filePath); return filePath;
     } catch (e) { console.error("District Excel Error:", e); return null; }

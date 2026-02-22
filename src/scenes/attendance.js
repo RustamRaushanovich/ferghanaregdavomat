@@ -391,7 +391,7 @@ const attendanceWizard = new Scenes.WizardScene(
     async (ctx) => {
         if (checkNav(ctx)) return;
         ctx.wizard.state.current.parent_name = ctx.message.text;
-        await ctx.reply("📞 <b>Ota-onasining telefon raqamini yozing:</b>\n\n⚠️ <b>Namuna:</b> +998901234567\n<i>(Faqat raqamlar, probel yoki chiziqchasiz yozing)</i>", { parse_mode: "HTML", ...navButtons() });
+        await ctx.reply("📞 <b>Ota-onasining telefon raqamini yozing:</b>\n<i>(Masalan: +998901234567)</i>", { parse_mode: "HTML", ...navButtons() });
         return ctx.wizard.next();
     },
     // 28. LOOP
@@ -400,10 +400,9 @@ const attendanceWizard = new Scenes.WizardScene(
         const phone = ctx.message.text ? ctx.message.text.trim() : "-";
         const cleanPhone = phone.replace(/[^0-9]/g, '');
 
-        // Qat'iy tekshiruv: Kamida 9 ta raqam bo'lishi kerak
-        if (cleanPhone.length < 9) {
-            await ctx.reply("❌ <b>Xato! Telefon raqami noto'g'ri.</b>\n\nIltimos, namuna bo'yicha qaytadan kiriting:\n<b>Namuna:</b> +998901234567", { parse_mode: "HTML" });
-            return; // Stay in this step
+        // Judayam qisqa bo'lsa yoki shubhali bo'lsa ogohlantiramiz, lekin to'xtatmaymiz
+        if (cleanPhone.length < 5) {
+            await ctx.reply("⚠️ <b>Ogohlantirish:</b> Telefon raqami juda qisqa yoki noto'g'ri ko'rinadi. Lekin qabul qilindi.", { parse_mode: "HTML" });
         }
 
         ctx.wizard.state.current.parent_phone = phone;

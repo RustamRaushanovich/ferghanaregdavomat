@@ -10,29 +10,37 @@ function formatAttendanceReport(d, isPro, source) {
     const totalAbsent = d.total_absent || (parseInt(d.sababli_jami || d.sababli_total || 0) + parseInt(d.sababsiz_jami || d.sababsiz_total || 0));
     const percent = d.total_students > 0 ? (((d.total_students - totalAbsent) / d.total_students) * 100).toFixed(1) : 0;
 
-    const statusLabel = isPro ? "(PRO ✨)" : "(Oddiy)";
-    const sourceLabel = source === 'web' ? "🌐 <b>WEB SAHIFA ORQALI KIRITILDI</b>" : "🤖 <b>BOT ORQALI KIRITILDI</b>";
+    const emoji = percent >= 95 ? "🟢" : (percent >= 90 ? "🟡" : "🔴");
+    const proBadge = isPro ? "✨ <b>PREMIUM</b>" : "🔹 Standart";
 
-    // Mask phone logic
+    // Header based on source
+    const header = source === 'web'
+        ? "🌐 <b>WEB DASHBOARD HISOBOTI</b>"
+        : "🤖 <b>BOT INTEGRATSIYASI</b>";
+
+    // Phone masking
     const clean = (d.phone || '').replace(/\D/g, '');
-    let maskedPhone = d.phone;
-    if (clean.length >= 9) {
-        maskedPhone = `+998 ***** ${clean.slice(-4)}`;
-    }
+    const maskedPhone = clean.length >= 9 ? `+998 ** *** ${clean.slice(-4)}` : (d.phone || 'Noma\'lum');
 
     const sababli = d.sababli_jami || d.sababli_total || 0;
     const sababsiz = d.sababsiz_jami || d.sababsiz_total || 0;
 
-    return `${sourceLabel}\n\n` +
-        `📍 <b>${d.district}, ${d.school}</b>\n` +
-        `📊 Davomat ko'rsatkichi: <b>${percent} %</b> ${statusLabel}\n` +
-        `🎒 Jami sinflar soni: ${d.classes_count}\n` +
-        `👥 Jami o'quvchilar: ${d.total_students}\n` +
-        `✅ Sababli kelmaganlar: ${sababli}\n` +
-        `🚫 Sababsiz kelmaganlar: ${sababsiz}\n` +
-        `📉 Jami kelmaganlar: ${totalAbsent}\n` +
-        `☎️ Tel: ${maskedPhone}\n` +
-        `👤 Mas'ul: ${d.fio}`;
+    return `🏢 <b>DARALATALANGAN HISOBOT</b>\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `${header}\n\n` +
+        `📍 <b>Hudud:</b> ${d.district}\n` +
+        `🏫 <b>Muassasa:</b> ${d.school}\n\n` +
+        `${emoji} <b>Davomat: ${percent}%</b>\n` +
+        `👥 Jami o'quvchilar: <b>${d.total_students}</b>\n` +
+        `🎒 Sinflar soni: <b>${d.classes_count}</b>\n\n` +
+        `✅ Sababli: ${sababli}\n` +
+        `🚫 Sababsiz: <b>${sababsiz}</b>\n` +
+        `📉 Jami kelmagan: ${totalAbsent}\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `👤 Mas'ul: <b>${d.fio}</b>\n` +
+        `📞 Aloqa: ${maskedPhone}\n` +
+        `💎 Maqom: ${proBadge}\n\n` +
+        `📅 <i>Sana: ${getFargonaTime().toLocaleDateString('uz-UZ')}</i>`;
 }
 
 module.exports = { formatAttendanceReport };

@@ -39,10 +39,12 @@ body.light-mode {
 
 body {
     background: #0f172a;
-    background-image: linear-gradient(rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0.94)), url('logo.png');
-    background-size: 30%;
+    background-image: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 10% 20%, rgba(236, 72, 153, 0.05) 0%, transparent 40%),
+        url('logo.png');
+    background-size: cover, cover, 25%;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: center, center, center;
     background-attachment: fixed;
     min-height: 100vh;
     display: flex;
@@ -52,7 +54,6 @@ body {
     overflow-x: hidden;
     color: var(--text-main);
     padding-top: 140px;
-    /* Increased for widgets */
 }
 
 /* Widgets Bar */
@@ -144,10 +145,11 @@ body {
     left: 0;
     width: 100%;
     height: 70px;
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(20px);
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
     z-index: 1000;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .nav-container {
@@ -832,6 +834,52 @@ footer {
     padding: 10px;
     background: rgba(255, 255, 255, 0.02);
     border-radius: 12px;
+}
+
+/* Pulsing PRO Badge */
+.pro-mini-btn {
+    background: linear-gradient(135deg, #facc15, #fbbf24);
+    color: #000;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(250, 204, 21, 0.4);
+    animation: crownPulse 2s infinite ease-in-out;
+}
+
+@keyframes crownPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 4px 15px rgba(250, 204, 21, 0.4);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 4px 25px rgba(250, 204, 21, 0.6);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 4px 15px rgba(250, 204, 21, 0.4);
+    }
+}
+
+.status-high {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.status-low {
+    background: rgba(244, 63, 94, 0.1);
+    color: #f43f5e;
+    border: 1px solid rgba(244, 63, 94, 0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
 }
 
 .map-node {
