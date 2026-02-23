@@ -86,56 +86,38 @@ const PremiumUI = {
                 container.after(btnGroup);
             }
         }
-
-        // 3. Show Pro Banner for non-pro students/schools
-        if (!this.isPro && localStorage.getItem('dashboard_role') !== 'superadmin') {
-            const container = document.querySelector('.dashboard-container');
-            const attendanceContainer = document.querySelector('.attendance-card'); // For davomat page
-            const target = container || attendanceContainer;
-            if (target) {
-                const banner = document.createElement('div');
-                banner.className = 'pro-banner';
-                banner.innerHTML = `
-                    <div>
-                        <h4 style="margin:0; color:#ffd700"><i class="fas fa-star"></i> Premium imkoniyatlar</h4>
-                        <p style="margin:5px 0 0; font-size:0.85rem; color:#94a3b8">3-ilova bildirshnomalarni avtomatik generatsiya qilish.</p>
-                    </div>
-                    <button class="pro-btn" onclick="PremiumUI.showModal()">PRO ga o'tish</button>
-                `;
-                target.prepend(banner);
-            }
-        }
     },
 
     setupModal() {
+        // Marketing modal removed as per user request
+    },
+
+    showModal() {
+        // Marketing modal removed
+    },
+
+    showAnalytics() {
+        // Analytics modal content (for existing PRO users)
+        const modal = document.getElementById('premiumModal');
+        if (!modal) {
+            // If modal doesn't exist, create a basic container for analytics
+            this.createAnalyticsContainer();
+        }
+        document.getElementById('modalContentDefault').style.display = 'none';
+        document.getElementById('modalContentAnalytics').style.display = 'block';
+        document.getElementById('premiumModal').style.display = 'block';
+        this.loadAnalytics();
+    },
+
+    createAnalyticsContainer() {
         const modal = document.createElement('div');
         modal.className = 'premium-modal';
         modal.id = 'premiumModal';
         modal.innerHTML = `
             <div class="premium-modal-content">
                 <span class="close-modal" onclick="PremiumUI.hideModal()">&times;</span>
-                <div id="modalContentDefault">
-                    <i class="fas fa-crown" style="font-size:3rem; color:#ffd700"></i>
-                    <h2>Davomat PRO</h2>
-                    <div class="premium-price">24,000 so'm <small style="font-size:1rem; color:#94a3b8">/ oyiga</small></div>
-                    <p style="color:#94a3b8">Kuniga bor yo'g'i 1,000 so'mdan to'g'ri keladi.</p>
-                    
-                    <ul class="premium-features-list">
-                        <li><i class="fas fa-check-circle"></i> 3-Ilova (Bildirishnoma) avtomatik tayyorlash</li>
-                        <li><i class="fas fa-check-circle"></i> Maktab bo'yicha batafsil 30 kunlik tahlil</li>
-                        <li><i class="fas fa-check-circle"></i> Ota-onalarga avtomatik SMS yuborish</li>
-                        <li><i class="fas fa-check-circle"></i> AI orqali takroriy dars qoldirishlarni aniqlash</li>
-                    </ul>
-
-                    <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; margin-top:20px; font-size:0.9rem">
-                        <p><b>Eslatma:</b> Premium obuna ixtiyoriy. Siz hech qanday majburiyatsiz foydalanishingiz mumkin.</p>
-                    </div>
-
-                    <button class="export-btn" style="width:100%; margin-top:20px; background:#ffd700; color:#000" onclick="PremiumUI.pay()">
-                        Hozir faollashtirish
-                    </button>
-                </div>
-                <div id="modalContentAnalytics" style="display:none">
+                <div id="modalContentDefault" style="display:none"></div>
+                <div id="modalContentAnalytics">
                     <h2 style="color:#ffd700"><i class="fas fa-brain"></i> Pro Analitika</h2>
                     <div id="analyticsBody" style="text-align:left; margin-top:20px; max-height:400px; overflow-y:auto;">
                         <div class="loader"><i class="fas fa-spinner fa-spin"></i> Tahlil qilinmoqda...</div>
@@ -144,19 +126,6 @@ const PremiumUI = {
             </div>
         `;
         document.body.appendChild(modal);
-    },
-
-    showModal() {
-        document.getElementById('modalContentDefault').style.display = 'block';
-        document.getElementById('modalContentAnalytics').style.display = 'none';
-        document.getElementById('premiumModal').style.display = 'block';
-    },
-
-    showAnalytics() {
-        document.getElementById('modalContentDefault').style.display = 'none';
-        document.getElementById('modalContentAnalytics').style.display = 'block';
-        document.getElementById('premiumModal').style.display = 'block';
-        this.loadAnalytics();
     },
 
     showNoticeModal() {

@@ -566,9 +566,6 @@
             <button class="tab-btn" onclick="showTab('reports')" id="tab_reports">
                 <i class="fas fa-file-invoice"></i> Hisobotlar
             </button>
-            <button class="tab-btn" onclick="showTab('profile')" id="tab_profile" data-i18n="tab_profile">
-                <i class="fas fa-user-cog"></i> Profil
-            </button>
             <button class="tab-btn" onclick="showTab('school')" id="tab_school" style="display:none"
                 data-i18n="tab_school">
                 <i class="fas fa-school"></i> Mening Maktabim
@@ -940,140 +937,10 @@
             <div id="pwMsg" style="margin-top:10px; font-weight:bold"></div>
         </div>
 
-        <!-- PRO Subscription Section -->
-        <div class="pro-card" id="proSubCard">
-            <div class="pro-badge">PRO VERSION</div>
-            <h3 style="color: #fff; margin-bottom: 10px;"><i class="fas fa-crown"></i> PRO imkoniyatlariga ega bo'ling
-            </h3>
-            <p style="color: #94a3b8; font-size: 0.9rem;">Tizimning barcha imkoniyatlaridan cheklovsiz foydalanish va
-                kengaytirilgan tahlillarni ko'rish uchun PRO obunaga o'ting.</p>
-
-            <ul class="pro-features">
-                <li><i class="fas fa-check-circle"></i> Premium Excel va PDF hisobotlar</li>
-                <li><i class="fas fa-check-circle"></i> Avtomatlashtirilgan AI tahlillar</li>
-                <li><i class="fas fa-check-circle"></i> Monitoring 24/7 (Real-vaqt)</li>
-                <li><i class="fas fa-check-circle"></i> Ota-onalar uchun SMS xabarnomalar</li>
-                <li><i class="fas fa-check-circle"></i> Shaxsiy maslahatchi va texnik yordam</li>
-            </ul>
-
-            <button class="btn-pro" onclick="subscribePro()">
-                <i class="fas fa-bolt"></i> 👑 PRO OBUNAGA O'TISH
-            </button>
-        </div>
-
+        <!-- PRO Subscription Section Removed -->
     </div>
 
-    <!-- 7b. PRO USER VIEW -->
-    <div id="proUserView" class="report-view">
-        <div style="text-align:center; margin-bottom:40px;">
-            <h1 style="font-size: 2.5rem; margin-bottom:10px;"><i class="fas fa-crown" style="color:#facc15"></i> 👑 PRO
-                ✨
-                Imkoniyatlar</h1>
-            <p style="color:#94a3b8; font-size:1.1rem;">Tizimdan maksimal darajada foydalaning va tahlillarni
-                chuqurlashtiring</p>
-        </div>
-
-        <div
-            style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:30px; margin-bottom:50px;">
-            <!-- Plan Basic -->
-            <div class="stat-card" style="border: 1px solid rgba(255,255,255,0.05); opacity:0.8;">
-                <h3 style="color:#94a3b8; text-align:center;">BASIC</h3>
-                <div style="font-size:2rem; text-align:center; margin:15px 0;">Bepul</div>
-                <ul style="list-style:none; padding:0; line-height:2;">
-                    <li><i class="fas fa-check-circle" style="color:#10b981"></i> Kunlik davomat statistikasi</li>
-                    <li><i class="fas fa-check-circle" style="color:#10b981"></i> Viloyat va tuman svodlari</li>
-                    <li><i class="fas fa-check-circle" style="color:#10b981"></i> Excel hisobotlarni yuklash</li>
-                    <li style="opacity:0.3;"><i class="fas fa-times-circle"></i> Mukammal AI tahlillar</li>
-                    <li style="opacity:0.3;"><i class="fas fa-times-circle"></i> Telegram bot orqali bildirishnomalar
-                    </li>
-                    <li style="opacity:0.3;"><i class="fas fa-times-circle"></i> Ota-onalar bilan integratsiya</li>
-                </ul>
-            </div>
-
-            <!-- Plan PRO -->
-            <div class="stat-card"
-                style="border: 2px solid #6366f1; background: rgba(99, 102, 241, 0.05); transform:scale(1.05);">
-                <div
-                    style="position:absolute; top:-15px; left:50%; transform:translateX(-50%); background:#6366f1; color:white; padding:5px 20px; border-radius:20px; font-size:12px; font-weight:bold;">
-                    TAVSIYA ETILADI</div>
-                <h3 style="color:#fff; text-align:center;">👑 PRO ✨</h3>
-                <div style="font-size:2rem; text-align:center; margin:5px 0; color:#facc15;">25 000 so'm <span
-                        style="font-size:1rem; color:#94a3b8;">/ oy</span></div>
-                <ul style="list-style:none; padding:0; line-height:1.6; font-size: 0.9rem;">
-                    <li style="margin-bottom:10px;"><i class="fas fa-star" style="color:#facc15"></i> <b>Barcha BASIC
-                            funksiyalari:</b> Web va Botdagi barcha bazaviy imkoniyatlar.</li>
-                    <li style="margin-bottom:10px;"><i class="fas fa-star" style="color:#facc15"></i> <b>AI Insight:</b>
-                        Davomat tendensiyalari bo'yicha Web va Botda aqlli tahlillar.</li>
-                    <li style="margin-bottom:10px;"><i class="fas fa-star" style="color:#facc15"></i> <b>Bot
-                            Control:</b> Telegram orqali ma'lumotlarni ko'rish va boshqarish (Faqat biriktirilgan
-                        hudud/maktab uchun).</li>
-                    <li style="margin-bottom:10px;"><i class="fas fa-star" style="color:#facc15"></i> <b>Push:</b>
-                        Kechikkan hisobotlar haqida Botga avtomatik eslatmalar kelishi.</li>
-                    <li style="margin-bottom:10px;"><i class="fas fa-star" style="color:#facc15"></i> <b>History:</b>
-                        Yillik arxiv ma'lumotlarini Web/Botda ko'rish va Excel yuklash.</li>
-                    <li style="margin-bottom:10px;"><i class="fas fa-star" style="color:#facc15"></i> <b>Support:</b>
-                        Har qanday savollar bo'yicha 24/7 ustuvor yordam tizimi.</li>
-                </ul>
-                <p
-                    style="text-align:center; color:#94a3b8; font-size:11px; margin-top:15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top:10px;">
-                    <i class="fas fa-sync"></i> Barcha funksiyalar Web va Botda to'liq sinxronlangan holda ishlaydi.
-                </p>
-            </div>
-        </div>
-
-        <div
-            style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 20px; padding: 25px; margin-bottom: 40px; display: flex; gap: 20px; align-items: center;">
-            <i class="fas fa-exclamation-circle" style="font-size: 2.5rem; color: #fbbf24;"></i>
-            <div>
-                <h3 style="color: #fbbf24; margin: 0 0 10px 0;">Diqqat: Ushbu xizmat mutlaqo IXTIYORIY!</h3>
-                <p style="margin:0; color: #fff; line-height: 1.5; font-size: 0.95rem;">
-                    Tizimning asosiy monitoring va hisobot xizmatlari barcha uchun har doim <b>bepul</b> bo'lib qoladi.
-                    👑 PRO obuna faqatgina qo'shimcha tahlillar va avtomatlashtirilgan qulayliklarni istovchilar uchun
-                    mo'ljallangan.
-                    Hech kim ushbu to'lovni amalga oshirishga majburlanmaydi.
-                </p>
-            </div>
-        </div>
-
-        <div
-            style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius:30px; padding:40px; display:flex; flex-wrap:wrap; gap:40px; align-items:center; justify-content:center;">
-            <div style="flex:1; min-width:300px;">
-                <h2 style="margin-bottom:20px;">👑 PRO To'lov va faollashtirish</h2>
-                <div
-                    style="background:rgba(99,102,241,0.1); border-left:4px solid #6366f1; padding:20px; border-radius:10px; margin-bottom:20px;">
-                    <p style="margin:0; font-size:0.95rem; line-height:1.6;">
-                        1. Quyidagi karta raqamiga <b>25 000 so'm</b> to'lovni amalga oshiring. <br>
-                        2. To'lov chekini (skrinshotini) bizning administratorga yuboring. <br>
-                        3. Administrator profilingizni 5 daqiqa ichida 👑 PRO statusiga o'tkazadi.
-                    </p>
-                </div>
-            </div>
-
-
-            <div style="flex:1; display:flex; justify-content:center;">
-                <div class="pro-footer-card" style="margin:0; width:100%;">
-                    <div class="card-brand">HUMO</div>
-                    <div class="card-chip"></div>
-                    <span class="card-num-footer" style="font-size:1.5rem;">9860 1234 5678 9012</span>
-                    <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-                        <span class="card-holder-footer">M. RUSTAMOV</span>
-                        <div style="text-align:right;">
-                            <div style="font-size:8px; color:#64748b; margin-bottom:2px;">VAL THRU</div>
-                            <div style="font-size:12px; color:#fff;">12/28</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div style="text-align:center; margin-top:40px;">
-            <a href="https://t.me/ferghanareg" target="_blank" class="btn btn-pro"
-                style="display:inline-flex; align-items:center; gap:10px; padding:15px 40px; background:#229ED9;">
-                <i class="fab fa-telegram-plane"></i> Adminga chekni yuborish
-            </a>
-        </div>
-
-    </div>
+    <!-- PRO USER VIEW REMOVED -->
 
     <!-- 8. KUNLIK HISOBOTLAR BO'LIMI -->
     <div id="reportsView" class="report-view">

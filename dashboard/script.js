@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const dRes = await fetch('/api/districts');
             const districts = await dRes.json();
             districts.forEach(d => {
+                if (d === 'Test rejimi' || d === 'MMT Boshqarma') return;
                 const opt = document.createElement('option');
                 opt.value = opt.textContent = d;
                 distSelect.appendChild(opt);
@@ -504,8 +505,8 @@ function injectTestModeBanner() {
         left: 0; 
         width: 100%; 
         height: 28px;
-        background: linear-gradient(90deg, #facc15, #fbbf24); 
-        color: #000; 
+        background: linear-gradient(90deg, #ef4444, #dc2626); 
+        color: #fff; 
         z-index: 1050;
         display: flex; 
         align-items: center; 

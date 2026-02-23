@@ -25,7 +25,7 @@ function formatAttendanceReport(d, isPro, source) {
     const sababli = d.sababli_jami || d.sababli_total || 0;
     const sababsiz = d.sababsiz_jami || d.sababsiz_total || 0;
 
-    return `🏢 <b>DARALATALANGAN HISOBOT</b>\n` +
+    return `🏢 <b>TASDIQLANGAN HISOBOT</b>\n` +
         `━━━━━━━━━━━━━━━\n` +
         `${header}\n\n` +
         `📍 <b>Hudud:</b> ${d.district}\n` +
