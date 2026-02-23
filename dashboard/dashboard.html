@@ -1271,10 +1271,10 @@
                     tbody.innerHTML += row;
                 });
 
-                document.getElementById('v_total_entries').textContent = totalE;
-                document.getElementById('v_avg_percent').textContent = (totalS > 0 ? ((totalS - totalAbsentSum) / totalS * 100).toFixed(1) : 0) + '%';
-                document.getElementById('v_total_sababsiz').textContent = totalSababsiz;
-                document.getElementById('v_total_students').textContent = totalS;
+                document.getElementById('total_entries').textContent = totalE;
+                document.getElementById('total_avg').textContent = (totalS > 0 ? ((totalS - totalAbsentSum) / totalS * 100).toFixed(1) : 0) + '%';
+                document.getElementById('total_absents').textContent = totalSababsiz;
+                document.getElementById('total_students_v').textContent = totalS;
                 renderHeatmap(data);
             } catch (e) {
                 document.querySelector('#viloyatTable tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#ef4444">Xatolik: ${e.message}</td></tr>`;

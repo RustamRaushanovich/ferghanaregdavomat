@@ -1,14 +1,11 @@
 const { Telegraf } = require('telegraf');
 const cron = require('node-cron');
-const { getViloyatSvod, exportToExcel, exportWeeklyExcel } = require('./dataService');
-const { getMissingSchools } = require('./sheet');
+const { getViloyatSvod, exportToExcel, exportWeeklyExcel, getMissingSchools } = require('./dataService');
 const { getFargonaTime } = require('../utils/fargona');
 const topicsConfig = require('../config/topics');
 const { getTopicId, normalizeKey } = require('../utils/topics');
 const config = require('../config/config');
 const msgs = require('../utils/messages');
-const fs = require('fs');
-const path = require('path');
 require('dotenv').config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -40,10 +37,10 @@ async function sendHumorStatus(type) {
 }
 
 /**
- * Daily Summary (Svod) at 16:30
+ * Daily Summary (Svod) at 16:15
  */
 async function sendDailySummary() {
-    console.log("🕒 [CRON] Starting daily summary at 16:30...");
+    console.log("🕒 [CRON] Starting daily summary at 16:15...");
     const now = getFargonaTime();
     const dateStr = now.toISOString().split('T')[0];
 
@@ -54,42 +51,33 @@ async function sendDailySummary() {
         let enteredSchools = 0;
         let vStudents = 0;
         let vAbsents = 0;
-        let vSababsiz = 0;
 
         svod.forEach(d => {
             enteredSchools += (d.entries || 0);
             vStudents += (d.students || 0);
             vAbsents += (d.total_absent || 0);
-            vSababsiz += (d.sababsiz || 0);
         });
 
         const vPercent = vStudents > 0 ? ((vStudents - vAbsents) / vStudents * 100).toFixed(1) : 0;
 
         let msg = `📊 <b>KUNLIK YAKUNIY HISOBOT (SVOD)</b>\n\n`;
         msg += `📅 Sana: <b>${dateStr}</b>\n`;
-        msg += `🕒 Vaqt: <b>16:30</b>\n\n`;
+        msg += `🕒 Vaqt: <b>16:15</b>\n\n`;
         msg += `🏢 Kiritgan maktablar: <b>${enteredSchools} ta</b>\n`;
         msg += `👥 Jami o'quvchilar: <b>${vStudents.toLocaleString()}</b>\n`;
-        msg += `🚫 Sababsiz kelmaganlar: <b>${vSababsiz} ta</b>\n`;
         msg += `📉 Davomat ko'rsatkichi: <b>${vPercent}%</b>\n\n`;
         msg += `👇 Batafsil hududlar kesimida Excel hisobotda:`;
 
+        // 1. Send to Report Group (MMT Boshqarma Topic)
+        const mainTopicId = getTopicId("MMT Boshqarma");
         if (filePath) {
-            // Save to historical records
-            const historyDir = path.join(__dirname, '../../assets/reports_history');
-            if (!fs.existsSync(historyDir)) fs.mkdirSync(historyDir, { recursive: true });
-            const historyPath = path.join(historyDir, `HISOBOT_${dateStr}.xlsx`);
-            fs.copyFileSync(filePath, historyPath);
-
-            // 1. Send to Report Group (MMT Boshqarma Topic)
-            const mainTopicId = getTopicId("MMT Boshqarma");
             await bot.telegram.sendDocument(REPORT_GROUP_ID, { source: filePath }, {
                 caption: msg,
                 parse_mode: 'HTML',
                 message_thread_id: mainTopicId
             });
 
-            // 2. Send to Admin Recipients privately (The 5 people)
+            // 2. Send to Admin Recipients privately
             for (const adminId of ADMIN_RECIPIENTS) {
                 try {
                     await bot.telegram.sendDocument(adminId, { source: filePath }, {
@@ -144,9 +132,12 @@ async function sendWeeklyAnalyticalSummary() {
  */
 async function sendPendingReportsWarning(hour) {
     console.log(`🕒 [CRON] Starting pending reports warning at ${hour}:00...`);
+    const now = getFargonaTime();
+    const dateStr = now.toISOString().split('T')[0];
+
     try {
         const mData = await getMissingSchools();
-        if (!mData || !mData.missing) return;
+        if (!mData) return;
 
         // Iterate through all districts defined in topics
         const topics = topicsConfig.getTopics();
@@ -154,7 +145,7 @@ async function sendPendingReportsWarning(hour) {
         for (const distName in topics) {
             if (distName === "Test rejimi" || distName === "MMT Boshqarma") continue;
 
-            const missing = mData.missing[distName] || [];
+            const missing = mData[distName] || [];
             if (missing.length > 0) {
                 const topicId = topics[distName];
                 let txt = msgs.getWarningMsg(distName, hour) + "\n\n";
@@ -183,13 +174,13 @@ async function sendPendingReportsWarning(hour) {
 async function sendDeadlineWarning(type) {
     const hour = type === '30min' ? 15 : 16;
     const mData = await getMissingSchools();
-    if (!mData || !mData.missing) return;
+    if (!mData) return;
 
     const topics = topicsConfig.getTopics();
     for (const distName in topics) {
         if (distName === "Test rejimi" || distName === "MMT Boshqarma") continue;
 
-        const missing = mData.missing[distName] || [];
+        const missing = mData[distName] || [];
         if (missing.length > 0) {
             const topicId = topics[distName];
             let txt = type === '30min' ? msgs.getDeadline30Msg(distName) : msgs.getFinalDeadlineMsg(distName);
@@ -221,8 +212,8 @@ function initCrons() {
     // 3. Humor: Sunday (09:30 Sunday)
     cron.schedule('30 9 * * 0', () => sendHumorStatus('sunday'), { timezone: "Asia/Tashkent" });
 
-    // 4. Daily Summary at 16:30 (Monday-Saturday)
-    cron.schedule('30 16 * * 1-6', () => {
+    // 4. Daily Summary at 16:15 (Monday-Saturday)
+    cron.schedule('15 16 * * 1-6', () => {
         sendDailySummary();
     }, { timezone: "Asia/Tashkent" });
 
@@ -232,7 +223,7 @@ function initCrons() {
     }, { timezone: "Asia/Tashkent" });
 
     // 6. Warnings (09:00, 11:00, 13:00, 15:00 Mon-Sat)
-    cron.schedule('0 9,11,13,15 * * 1-6', () => {
+    cron.schedule('0 9,11,13,15 * * 1-6', (e) => {
         const h = new Date().getHours();
         sendPendingReportsWarning(h);
     }, { timezone: "Asia/Tashkent" });
@@ -243,7 +234,7 @@ function initCrons() {
     // 8. Deadline 16:00 (Final warning)
     cron.schedule('0 16 * * 1-6', () => sendDeadlineWarning('final'), { timezone: "Asia/Tashkent" });
 
-    console.log("🚀 [Scheduler] Fully optimized crons initialized.");
+    console.log("🚀 [Scheduler] Optimized crons initialized (Daily 16:15, Weekly Sun 10:00).");
 }
 
 module.exports = { initCrons };

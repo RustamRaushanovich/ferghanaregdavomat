@@ -48,8 +48,7 @@ const ProAnalytics = {
             let avg = 0;
 
             res.rows.forEach(r => {
-                const d = new Date(r.date);
-                const dateShort = `${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getDate().toString().padStart(2, '0')}`; // MM.DD
+                const dateShort = r.date.split('-').slice(1).join('.'); // MM.DD
                 const p = parseFloat(r.percent);
                 avg += p;
 
@@ -108,10 +107,9 @@ const ProAnalytics = {
                 const counts = {};
                 days.forEach(d => counts[d] = (counts[d] || 0) + 1);
 
-                for (const [dayStr, count] of Object.entries(counts)) {
+                for (const [day, count] of Object.entries(counts)) {
                     if (count >= 3) {
-                        const dayIndex = parseInt(dayStr, 10);
-                        insights.push(`⚠️ <b>${student}</b> oxirgi vaqtlarda asosan <b>${dayNames[dayIndex]}</b> kunlari dars qoldirgan (${count} marta). Bunga e'tibor qaratish kerak.`);
+                        insights.push(`⚠️ <b>${student}</b> oxirgi vaqtlarda asosan <b>${dayNames[day]}</b> kunlari dars qoldirgan (${count} marta). Bunga e'tibor qaratish kerak.`);
                     }
                 }
             }

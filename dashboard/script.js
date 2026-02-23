@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const dRes = await fetch('/api/districts');
             const districts = await dRes.json();
             districts.forEach(d => {
-                if (d === 'Test rejimi' || d === 'MMT Boshqarma') return;
                 const opt = document.createElement('option');
                 opt.value = opt.textContent = d;
                 distSelect.appendChild(opt);
@@ -86,7 +85,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     displayUserInfo();
 });
 
-// Merged into the main checkProUser function below line 600
+async function checkProUser() {
+    const phone = document.getElementById('phone')?.value.replace(/\D/g, '');
+    if (!phone || phone.length < 9) return;
+
+    try {
+        const res = await fetch(`/api/check-pro?phone=${phone}`);
+        const data = await res.json();
+        isPro = data.is_pro;
+
+        const proMini = document.getElementById('proMiniBtn');
+        if (proMini) proMini.style.color = isPro ? '#facc15' : '';
+
+        // Update auto-generate message
+        const proMsg = document.getElementById('proAutoMsg');
+        if (proMsg) {
+            if (isPro) proMsg.classList.remove('hidden');
+            else proMsg.classList.add('hidden');
+        }
+    } catch (e) {
+        console.error("Pro check failed");
+    }
+}
 
 const translations = {
     uz: {
@@ -484,8 +504,8 @@ function injectTestModeBanner() {
         left: 0; 
         width: 100%; 
         height: 28px;
-        background: linear-gradient(90deg, #ef4444, #dc2626); 
-        color: #fff; 
+        background: linear-gradient(90deg, #facc15, #fbbf24); 
+        color: #000; 
         z-index: 1050;
         display: flex; 
         align-items: center; 
@@ -582,37 +602,21 @@ async function fetchWeather() {
 async function checkProUser() {
     const phoneInput = document.getElementById('phone');
     const phone = phoneInput ? phoneInput.value.replace(/\D/g, '') : '';
-    if (!phone || phone.length < 9) return;
+    if (!phone) return;
     try {
         const res = await fetch(`/api/check-pro?phone=${phone}`);
         const data = await res.json();
         isPro = data.is_pro;
-
-        // UI Updates
-        const proMini = document.getElementById('proMiniBtn');
-        if (proMini) proMini.style.color = isPro ? '#facc15' : '';
-
-        const proMsg = document.getElementById('proAutoMsg');
-        if (proMsg) {
-            if (isPro) proMsg.classList.remove('hidden');
-            else proMsg.classList.add('hidden');
-        }
-
         const badge = document.getElementById('premiumBadge');
-        if (badge) {
-            if (isPro) badge.classList.remove('hidden');
-            else badge.classList.add('hidden');
-        }
+        if (badge && isPro) badge.classList.remove('hidden');
 
         // Update Global PRO state if needed
         if (isPro) {
             localStorage.setItem('d_is_pro', 'true');
-            localStorage.setItem('d_pro_expire', data.pro_expire_date || '');
-            localStorage.setItem('d_pro_purchase', data.pro_purchase_date || '');
-        } else {
-            localStorage.setItem('d_is_pro', 'false');
+            localStorage.setItem('d_pro_expire', data.pro_expire_date);
+            localStorage.setItem('d_pro_purchase', data.pro_purchase_date);
         }
-    } catch (e) { console.error("Pro check failed:", e); }
+    } catch (e) { }
 }
 
 
@@ -866,8 +870,8 @@ if (form) form.addEventListener('submit', async (e) => {
             const data = await res.json();
             document.getElementById('successOverlay').classList.remove('hidden');
 
-            // PRO: Show download button ONLY if user is PRO and bildirgi was generated
-            if (data.bildirgi && isPro) {
+            // PRO: Show download button if bildirgi was generated
+            if (data.bildirgi) {
                 const downloadBtn = document.getElementById('downloadBildirgiBtn');
                 const proSection = document.getElementById('proDownloadSection');
                 if (downloadBtn && proSection) {

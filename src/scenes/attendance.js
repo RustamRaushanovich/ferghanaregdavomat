@@ -405,7 +405,6 @@ const attendanceWizard = new Scenes.WizardScene(
             await ctx.reply("⚠️ <b>Ogohlantirish:</b> Telefon raqami juda qisqa yoki noto'g'ri ko'rinadi. Lekin qabul qilindi.", { parse_mode: "HTML" });
         }
 
-        const d = ctx.wizard.state.data;
         ctx.wizard.state.current.parent_phone = phone;
         if (!d.students_list) d.students_list = [];
         d.students_list.push(ctx.wizard.state.current);
