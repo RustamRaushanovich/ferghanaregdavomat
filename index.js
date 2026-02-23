@@ -18,6 +18,7 @@ const express = require('express');
 const multer = require('multer');
 const { generateBildirgi } = require('./src/utils/pdfGenerator');
 const webpush = require('web-push');
+const { notifyParents } = require('./src/services/notifications');
 
 // Web Push Config
 if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {

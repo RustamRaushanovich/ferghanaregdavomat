@@ -86,28 +86,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     displayUserInfo();
 });
 
-async function checkProUser() {
-    const phone = document.getElementById('phone')?.value.replace(/\D/g, '');
-    if (!phone || phone.length < 9) return;
-
-    try {
-        const res = await fetch(`/api/check-pro?phone=${phone}`);
-        const data = await res.json();
-        isPro = data.is_pro;
-
-        const proMini = document.getElementById('proMiniBtn');
-        if (proMini) proMini.style.color = isPro ? '#facc15' : '';
-
-        // Update auto-generate message
-        const proMsg = document.getElementById('proAutoMsg');
-        if (proMsg) {
-            if (isPro) proMsg.classList.remove('hidden');
-            else proMsg.classList.add('hidden');
-        }
-    } catch (e) {
-        console.error("Pro check failed");
-    }
-}
+// Merged into the main checkProUser function below line 600
 
 const translations = {
     uz: {
@@ -603,21 +582,37 @@ async function fetchWeather() {
 async function checkProUser() {
     const phoneInput = document.getElementById('phone');
     const phone = phoneInput ? phoneInput.value.replace(/\D/g, '') : '';
-    if (!phone) return;
+    if (!phone || phone.length < 9) return;
     try {
         const res = await fetch(`/api/check-pro?phone=${phone}`);
         const data = await res.json();
         isPro = data.is_pro;
+
+        // UI Updates
+        const proMini = document.getElementById('proMiniBtn');
+        if (proMini) proMini.style.color = isPro ? '#facc15' : '';
+
+        const proMsg = document.getElementById('proAutoMsg');
+        if (proMsg) {
+            if (isPro) proMsg.classList.remove('hidden');
+            else proMsg.classList.add('hidden');
+        }
+
         const badge = document.getElementById('premiumBadge');
-        if (badge && isPro) badge.classList.remove('hidden');
+        if (badge) {
+            if (isPro) badge.classList.remove('hidden');
+            else badge.classList.add('hidden');
+        }
 
         // Update Global PRO state if needed
         if (isPro) {
             localStorage.setItem('d_is_pro', 'true');
-            localStorage.setItem('d_pro_expire', data.pro_expire_date);
-            localStorage.setItem('d_pro_purchase', data.pro_purchase_date);
+            localStorage.setItem('d_pro_expire', data.pro_expire_date || '');
+            localStorage.setItem('d_pro_purchase', data.pro_purchase_date || '');
+        } else {
+            localStorage.setItem('d_is_pro', 'false');
         }
-    } catch (e) { }
+    } catch (e) { console.error("Pro check failed:", e); }
 }
 
 
@@ -871,8 +866,8 @@ if (form) form.addEventListener('submit', async (e) => {
             const data = await res.json();
             document.getElementById('successOverlay').classList.remove('hidden');
 
-            // PRO: Show download button if bildirgi was generated
-            if (data.bildirgi) {
+            // PRO: Show download button ONLY if user is PRO and bildirgi was generated
+            if (data.bildirgi && isPro) {
                 const downloadBtn = document.getElementById('downloadBildirgiBtn');
                 const proSection = document.getElementById('proDownloadSection');
                 if (downloadBtn && proSection) {
