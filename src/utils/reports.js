@@ -1,4 +1,4 @@
-const { getFargonaTime } = require('./fargona');
+const { getFargonaDate } = require('./fargona');
 
 /**
  * Formats the attendance report for Telegram
@@ -40,7 +40,7 @@ function formatAttendanceReport(d, isPro, source) {
         `👤 Mas'ul: <b>${d.fio}</b>\n` +
         `📞 Aloqa: ${maskedPhone}\n` +
         `💎 Maqom: ${proBadge}\n\n` +
-        `📅 <i>Sana: ${getFargonaTime().toLocaleDateString('uz-UZ')}</i>`;
+        `📅 <i>Sana: ${getFargonaDate()}</i>`;
 }
 
 module.exports = { formatAttendanceReport };

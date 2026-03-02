@@ -54,7 +54,7 @@ async function getSchools(district) {
 
 const { getFargonaTime } = require('../utils/fargona');
 
-const { saveAttendance } = require('./dataService');
+const { saveAttendance, getMissingSchools: getMissingLocal } = require('./dataService');
 
 // Ma'lumotlarni saqlash
 async function saveData(data) {
@@ -103,13 +103,7 @@ async function generatePdf(data) {
 }
 
 async function getMissingSchools() {
-    try {
-        const res = await axios.get(GOOGLE_SCRIPT_URL, { params: { action: "missing" } });
-        return res.data;
-    } catch (e) {
-        console.error("getMissingSchools Error:", e.message);
-        return null;
-    }
+    return await getMissingLocal();
 }
 
 module.exports = { getSchools, saveData, getDistrictStats, generatePdf, getMissingSchools };

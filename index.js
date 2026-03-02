@@ -12,7 +12,7 @@ const topicsConfig = require('./src/config/topics');
 const TOPICS = topicsConfig.getTopics();
 const config = require('./src/config/config');
 const { getTopicId, normalizeKey } = require('./src/utils/topics');
-const { getFargonaTime } = require('./src/utils/fargona');
+const { getFargonaTime, getFargonaDate } = require('./src/utils/fargona');
 const axios = require('axios');
 const express = require('express');
 const multer = require('multer');
@@ -70,15 +70,14 @@ app.post('/api/login', (req, res) => {
     const user = USERS[username];
     if (user && user.password === password) {
         const token = generateToken();
-        // Store user with username for easy lookup later
         tokens.set(token, { ...user, username });
         res.json({
             token,
             role: user.role,
-            username: user.username,
+            username: user.username || username,
             district: user.district,
             school: user.school || null,
-
+            assigned_schools: user.assigned_schools || [],  // Inspektor-Psixolog uchun
             fio: user.fio || '',
             phone: user.phone || ''
         });
@@ -174,6 +173,241 @@ app.post('/api/admin/set-pro', auth, async (req, res) => {
     res.json({ success: true, user });
 });
 
+// ===== INSPEKTOR-PSIXOLOG BOSHQARUVI =====
+
+// Barcha inspektor-psixologlar ro'yxati (superadmin uchun)
+app.get('/api/admin/inspectors', auth, (req, res) => {
+    if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    const inspectors = Object.entries(USERS)
+        .filter(([, u]) => u.role === 'inspektor_psixolog')
+        .map(([login, u]) => ({ login, ...u }));
+    res.json(inspectors);
+});
+
+// Yangi inspektor-psixolog yaratish yoki tahrirlash
+app.post('/api/admin/inspectors/create', auth, async (req, res) => {
+    if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    const { login, password, fio, phone, district, assigned_schools } = req.body;
+    if (!login || !password || !district) return res.status(400).json({ error: 'Login, parol va hudud majburiy' });
+    if (!Array.isArray(assigned_schools) || assigned_schools.length === 0) {
+        return res.status(400).json({ error: 'Kamida 1 ta maktab biriktirilishi kerak' });
+    }
+
+    USERS[login] = {
+        password,
+        role: 'inspektor_psixolog',
+        district,
+        fio: fio || '',
+        phone: phone || '',
+        assigned_schools  // Array of school names
+    };
+    await saveUsers();
+    res.json({ success: true, login });
+});
+
+// Inspektor-Psixologni o'chirish
+app.delete('/api/admin/inspectors/:login', auth, async (req, res) => {
+    if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    const { login } = req.params;
+    if (!USERS[login] || USERS[login].role !== 'inspektor_psixolog') {
+        return res.status(404).json({ error: 'Inspektor topilmadi' });
+    }
+    delete USERS[login];
+    await saveUsers();
+    res.json({ success: true });
+});
+
+// Inspektor-Psixolog: o'z maktablari bo'yicha davomat
+app.get('/api/inspektor/davomat', auth, async (req, res) => {
+    if (req.user.role !== 'inspektor_psixolog' && req.user.role !== 'superadmin') {
+        return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    }
+    const { date } = req.query;
+    const now = getFargonaTime();
+    const targetDate = date || now.toISOString().split('T')[0];
+    const assignedSchools = req.user.assigned_schools || [];
+    const district = req.user.district;
+
+    if (assignedSchools.length === 0) return res.json({ rows: [], total: 0 });
+
+    try {
+        const entriesRes = await sqlite.query(`
+            SELECT DISTINCT ON (district, school) *
+            FROM attendance
+            WHERE date = $1
+            ORDER BY district, school, id DESC
+        `, [targetDate]);
+
+        const { normalizeKey } = require('./src/utils/topics');
+        const allRows = assignedSchools.map(sName => {
+            const entry = entriesRes.rows.find(e =>
+                normalizeKey(e.school) === normalizeKey(sName) &&
+                normalizeKey(e.district) === normalizeKey(district)
+            );
+            if (entry) return { ...entry, percent: parseFloat(entry.percent), submitted: true };
+            return {
+                district, school: sName,
+                date: targetDate, time: '-',
+                classes_count: 0, total_students: 0,
+                sababli_jami: 0, sababsiz_jami: 0,
+                total_absent: 0, percent: 0,
+                fio: 'Kiritilmagan', submitted: false
+            };
+        });
+
+        res.json({ rows: allRows, total: allRows.length, date: targetDate });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Inspektor-Psixolog: sababsiz kelmaganlar ro'yxati
+app.get('/api/inspektor/sababsizlar', auth, async (req, res) => {
+    if (req.user.role !== 'inspektor_psixolog' && req.user.role !== 'superadmin') {
+        return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    }
+    const { date } = req.query;
+    const now = getFargonaTime();
+    const targetDate = date || now.toISOString().split('T')[0];
+    const assignedSchools = req.user.assigned_schools || [];
+    const district = req.user.district;
+    const { normalizeKey } = require('./src/utils/topics');
+
+    if (assignedSchools.length === 0) return res.json({ rows: [], total: 0 });
+
+    try {
+        const result = await sqlite.query(`
+            SELECT s.class, s.name, s.address, s.parent_name, s.parent_phone,
+                   a.school, a.district, a.date, a.fio as submitter_fio, a.inspector, a.time
+            FROM absent_students s
+            JOIN attendance a ON s.attendance_id = a.id
+            WHERE a.date = $1 AND LOWER(a.district) ILIKE $2
+            ORDER BY a.school, s.class
+        `, [targetDate, `%${district}%`]);
+
+        const filtered = result.rows.filter(r =>
+            assignedSchools.some(sName => normalizeKey(r.school) === normalizeKey(sName))
+        );
+
+        res.json({ rows: filtered, total: filtered.length, date: targetDate });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Inspektor-Psixolog: oxirgi N kun davomida o'z maktablarining statistikasi
+app.get('/api/inspektor/statistika', auth, async (req, res) => {
+    if (req.user.role !== 'inspektor_psixolog' && req.user.role !== 'superadmin') {
+        return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    }
+    const assignedSchools = req.user.assigned_schools || [];
+    const district = req.user.district;
+    const days = parseInt(req.query.days) || 7;
+    const { normalizeKey } = require('./src/utils/topics');
+
+    if (assignedSchools.length === 0) return res.json([]);
+
+    try {
+        const result = await sqlite.query(`
+            SELECT date, school, total_students, total_absent, sababsiz_jami, percent
+            FROM attendance
+            WHERE date >= NOW()::date - INTERVAL '${days} days'
+              AND LOWER(district) ILIKE $1
+            ORDER BY date DESC, school
+        `, [`%${district}%`]);
+
+        const filtered = result.rows.filter(r =>
+            assignedSchools.some(sName => normalizeKey(r.school) === normalizeKey(sName))
+        );
+
+        res.json(filtered);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Inspektor-Psixolog: oylik psixologik hisbotni saqlash
+app.post('/api/inspektor/report', auth, async (req, res) => {
+    if (req.user.role !== 'inspektor_psixolog' && req.user.role !== 'superadmin') {
+        return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    }
+    const {
+        district, school, month, total_students_surveyed,
+        risk_count, conflict_count, anxiety_count,
+        family_issues_count, counseled_count, notes
+    } = req.body;
+
+    try {
+        await sqlite.query(`
+            INSERT INTO psixolog_reports (
+                district, school, month, fio, phone, 
+                total_students_surveyed, risk_count, conflict_count, 
+                anxiety_count, family_issues_count, counseled_count, 
+                notes, created_by
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+            ON CONFLICT (district, school, month) DO UPDATE SET
+                total_students_surveyed = EXCLUDED.total_students_surveyed,
+                risk_count = EXCLUDED.risk_count,
+                conflict_count = EXCLUDED.conflict_count,
+                anxiety_count = EXCLUDED.anxiety_count,
+                family_issues_count = EXCLUDED.family_issues_count,
+                counseled_count = EXCLUDED.counseled_count,
+                notes = EXCLUDED.notes,
+                updated_at = NOW()
+        `, [
+            district, school, month, req.user.fio, req.user.phone,
+            total_students_surveyed, risk_count, conflict_count,
+            anxiety_count, family_issues_count, counseled_count,
+            notes, req.user.username
+        ]);
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Inspektor-Psixolog: oylik hisobotlar ro'yxatini olish
+app.get('/api/inspektor/reports', auth, async (req, res) => {
+    if (req.user.role !== 'inspektor_psixolog' && req.user.role !== 'superadmin') {
+        return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    }
+    const { district } = req.user;
+    const assignedSchools = req.user.assigned_schools || [];
+
+    try {
+        let query = 'SELECT * FROM psixolog_reports';
+        let params = [];
+
+        if (req.user.role === 'inspektor_psixolog') {
+            query += ' WHERE district = $1 AND school = ANY($2)';
+            params = [district, assignedSchools];
+        }
+        query += ' ORDER BY month DESC, created_at DESC';
+
+        const result = await sqlite.query(query, params);
+        res.json(result.rows);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Inspektor-Psixolog: hisobotni o'chirish
+app.delete('/api/inspektor/reports/:id', auth, async (req, res) => {
+    if (req.user.role !== 'inspektor_psixolog' && req.user.role !== 'superadmin') {
+        return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    }
+    const { id } = req.params;
+    try {
+        if (req.user.role === 'superadmin') {
+            await sqlite.query('DELETE FROM psixolog_reports WHERE id = $1', [id]);
+        } else {
+            await sqlite.query('DELETE FROM psixolog_reports WHERE id = $1 AND created_by = $2', [id, req.user.username]);
+        }
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
 
 // --- SECURITY SHIELD ---
 const requestCount = new Map();
@@ -304,8 +538,7 @@ const { getViloyatSvod, getTumanSvod, getTodayAbsentsDetails, getRecentActivity,
 const { notifyParents } = require('./src/services/notifications');
 
 app.get('/api/stats/viloyat', auth, async (req, res) => {
-    const now = getFargonaTime();
-    const date = req.query.date || now.toISOString().split('T')[0];
+    const date = req.query.date || getFargonaDate();
     const data = await getViloyatSvod(date);
     res.json(data);
 });
@@ -314,8 +547,7 @@ app.get('/api/stats/tuman', auth, async (req, res) => {
     const { tuman, date } = req.query;
     const limit = parseInt(req.query.limit) || 50;
     const offset = parseInt(req.query.offset) || 0;
-    const now = getFargonaTime();
-    const targetDate = date || now.toISOString().split('T')[0];
+    const targetDate = date || getFargonaDate();
 
     const finalTuman = req.user.role === 'district' ? req.user.district : tuman;
     if (!finalTuman) return res.status(400).json({ error: 'Tuman required' });
@@ -327,8 +559,7 @@ app.get('/api/stats/tuman', auth, async (req, res) => {
 app.get('/api/stats/absentees', auth, async (req, res) => {
     const limit = parseInt(req.query.limit) || 50;
     const offset = parseInt(req.query.offset) || 0;
-    const now = getFargonaTime();
-    const date = req.query.date || now.toISOString().split('T')[0];
+    const date = req.query.date || getFargonaDate();
     const data = await getTodayAbsentsDetails(date, limit, offset);
 
     if (req.user.role === 'district') {
@@ -595,6 +826,124 @@ app.get('/api/stats/parents', auth, (req, res) => {
         res.json(parents);
     } catch (e) { res.status(500).json([]); }
 });
+
+// ===== PSIXOLOG BO'LIMI API =====
+
+// Psixolog hisobotini saqlash
+app.post('/api/psixolog/submit', auth, async (req, res) => {
+    if (req.user.role !== 'superadmin' && req.user.role !== 'district') {
+        return res.status(403).json({ error: "Ruxsat yo'q" });
+    }
+    const d = req.body;
+    if (!d.district || !d.month) return res.status(400).json({ error: "Hudud va oyni kiriting" });
+
+    try {
+        await sqlite.query(`
+            INSERT INTO psixolog_reports (
+                district, school, month, fio, phone,
+                total_students_surveyed, risk_count, conflict_count,
+                anxiety_count, family_issues_count, drug_risk_count,
+                counseled_count, referred_count, notes, created_by
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+            ON CONFLICT (district, school, month) DO UPDATE SET
+                fio=EXCLUDED.fio, phone=EXCLUDED.phone,
+                total_students_surveyed=EXCLUDED.total_students_surveyed,
+                risk_count=EXCLUDED.risk_count, conflict_count=EXCLUDED.conflict_count,
+                anxiety_count=EXCLUDED.anxiety_count,
+                family_issues_count=EXCLUDED.family_issues_count,
+                drug_risk_count=EXCLUDED.drug_risk_count,
+                counseled_count=EXCLUDED.counseled_count,
+                referred_count=EXCLUDED.referred_count,
+                notes=EXCLUDED.notes, updated_at=NOW()
+        `, [
+            d.district, d.school || 'Umumiy', d.month, d.fio || '', d.phone || '',
+            parseInt(d.total_students_surveyed) || 0, parseInt(d.risk_count) || 0,
+            parseInt(d.conflict_count) || 0, parseInt(d.anxiety_count) || 0,
+            parseInt(d.family_issues_count) || 0, parseInt(d.drug_risk_count) || 0,
+            parseInt(d.counseled_count) || 0, parseInt(d.referred_count) || 0,
+            d.notes || '', req.user.username
+        ]);
+
+        // Telegram notification
+        const topicId = getTopicId(d.district);
+        const reportGroupId = config.REPORT_GROUP_ID;
+        const psyMsg = `🧠 <b>PSIXOLOG HISOBOTI</b>\n\n` +
+            `📍 <b>Hudud:</b> ${d.district}\n` +
+            `🏫 <b>Maktab:</b> ${d.school || 'Umumiy'}\n` +
+            `📅 <b>Oy:</b> ${d.month}\n` +
+            `👤 <b>Psixolog:</b> ${d.fio || '-'}\n\n` +
+            `👥 <b>Tekshirilgan o'quvchilar:</b> ${d.total_students_surveyed || 0}\n` +
+            `⚠️ <b>Risk guruhida:</b> ${d.risk_count || 0}\n` +
+            `🤝 <b>Konsultatsiya oldi:</b> ${d.counseled_count || 0}\n` +
+            `🏥 <b>Yuborildi:</b> ${d.referred_count || 0}`;
+        try {
+            if (topicId) {
+                await bot.telegram.sendMessage(reportGroupId, psyMsg, { parse_mode: 'HTML', message_thread_id: topicId });
+            }
+        } catch (e) { console.error("Psixolog TG Error:", e.message); }
+
+        res.json({ success: true });
+    } catch (e) {
+        console.error("Psixolog Submit Error:", e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Psixolog hisobotlarini ko'rish
+app.get('/api/psixolog/reports', auth, async (req, res) => {
+    const { month, district } = req.query;
+    const finalDistrict = req.user.role === 'district' ? req.user.district : district;
+
+    try {
+        let sql = `SELECT * FROM psixolog_reports WHERE 1=1`;
+        const params = [];
+        if (month) { params.push(month); sql += ` AND month = $${params.length}`; }
+        if (finalDistrict) { params.push(finalDistrict); sql += ` AND district ILIKE $${params.length}`; }
+        sql += ` ORDER BY created_at DESC LIMIT 200`;
+        const result = await sqlite.query(sql, params);
+        res.json(result.rows);
+    } catch (e) {
+        // Table might not exist yet
+        if (e.message && e.message.includes('does not exist')) {
+            res.json([]);
+        } else {
+            res.status(500).json({ error: e.message });
+        }
+    }
+});
+
+// Psixolog umumiy statistika
+app.get('/api/psixolog/stats', auth, async (req, res) => {
+    const { month } = req.query;
+    try {
+        let sql = `
+            SELECT district,
+                SUM(total_students_surveyed) as total_surveyed,
+                SUM(risk_count) as total_risk,
+                SUM(conflict_count) as total_conflict,
+                SUM(anxiety_count) as total_anxiety,
+                SUM(family_issues_count) as total_family,
+                SUM(drug_risk_count) as total_drug,
+                SUM(counseled_count) as total_counseled,
+                SUM(referred_count) as total_referred,
+                COUNT(*) as school_count
+            FROM psixolog_reports
+        `;
+        const params = [];
+        if (month) { params.push(month); sql += ` WHERE month = $1`; }
+        sql += ` GROUP BY district ORDER BY total_risk DESC`;
+        const result = await sqlite.query(sql, params);
+        res.json(result.rows);
+    } catch (e) {
+        if (e.message && e.message.includes('does not exist')) {
+            res.json([]);
+        } else {
+            res.status(500).json({ error: e.message });
+        }
+    }
+});
+
+
 
 app.post('/api/submit', upload.single('bildirgi'), async (req, res) => {
     const d = req.body;

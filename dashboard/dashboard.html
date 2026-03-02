@@ -491,6 +491,7 @@
             opacity: 0.8;
             background: linear-gradient(to right, #fff, #94a3b8);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
     </style>
@@ -582,6 +583,12 @@
             </button>
             <button class="tab-btn" onclick="showTab('pro')" id="tab_pro" style="display:none">
                 <i class="fas fa-crown"></i> 👑 PRO Management
+            </button>
+            <button class="tab-btn" onclick="showTab('psixolog')" id="tab_psixolog">
+                <i class="fas fa-user-shield"></i> 👮 Inspektor-Psixolog
+            </button>
+            <button class="tab-btn" onclick="showTab('inspektorAdmin')" id="tab_inspektorAdmin" style="display:none">
+                <i class="fas fa-users-cog"></i> 👮 Inspektorlar boshqaruvi
             </button>
 
 
@@ -1109,6 +1116,349 @@
     </div>
     </div>
 
+    <!-- 👮 ИИБ INSPEKTOR-PSIXOLOG BO'LIMI -->
+    <div id="psixologView" class="report-view">
+        <!-- Header -->
+        <div
+            style="display:flex; align-items:center; gap:20px; margin-bottom:30px; background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(59,130,246,0.1)); padding:25px; border-radius:20px; border:1px solid rgba(99,102,241,0.3);">
+            <div
+                style="width:65px; height:65px; background:linear-gradient(135deg,#3b82f6,#1d4ed8); border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; box-shadow:0 10px 30px rgba(59,130,246,0.4);">
+                👮</div>
+            <div>
+                <h2 style="margin:0; color:#93c5fd; font-size:1.5rem;">ИИБ Inspektor-Psixolog Kabineti</h2>
+                <p style="margin:5px 0 0; color:#94a3b8;" id="insp_welcome_text">Biriktirilgan maktablaringiz davomati
+                    va sababsiz o'quvchilar nazorati</p>
+            </div>
+            <button onclick="loadInspektorData()" class="export-btn"
+                style="margin-left:auto; background:linear-gradient(135deg,#3b82f6,#1d4ed8); padding:12px 22px;">
+                <i class="fas fa-sync-alt"></i> Yangilash
+            </button>
+        </div>
+
+        <!-- Assigned Schools Info Bar -->
+        <div id="insp_schools_bar"
+            style="display:none; margin-bottom:20px; background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); font-size:0.9rem;">
+            <span style="color:#94a3b8;"><i class="fas fa-link"></i> Biriktirilgan: </span>
+            <span id="insp_schools_list" style="color:white; font-weight:600;"></span>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-stats"
+            style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); margin-bottom:25px;">
+            <div class="stat-card" style="border-top:3px solid #3b82f6;">
+                <h4><i class="fas fa-school"></i> Biriktirilgan maktablar</h4>
+                <div class="value" id="insp_total_schools">0</div>
+            </div>
+            <div class="stat-card" style="border-top:3px solid #10b981;">
+                <h4><i class="fas fa-check-circle"></i> Hisobot topshirdi</h4>
+                <div class="value" id="insp_submitted">0</div>
+            </div>
+            <div class="stat-card" style="border-top:3px solid #f59e0b;">
+                <h4><i class="fas fa-clock"></i> Kutilmoqda</h4>
+                <div class="value" id="insp_pending">0</div>
+            </div>
+            <div class="stat-card" style="border-top:3px solid #ef4444;">
+                <h4><i class="fas fa-user-times"></i> Sababsiz (bugun)</h4>
+                <div class="value red" id="insp_sababsiz_count">0</div>
+            </div>
+            <div class="stat-card" style="border-top:3px solid #a855f7;">
+                <h4><i class="fas fa-chart-line"></i> O'rtacha davomat</h4>
+                <div class="value" id="insp_avg_percent">0%</div>
+            </div>
+        </div>
+
+        <!-- Date Filter -->
+        <div class="controls" style="margin-bottom:25px;">
+            <div class="filter-group">
+                <label>Sana</label>
+                <input type="date" id="inspektorDate" onchange="loadInspektorData()" style="min-width:200px;">
+            </div>
+            <div class="filter-group">
+                <label>Ko'rinish</label>
+                <select id="inspektorView" onchange="switchInspektorView(this.value)" style="min-width:180px;">
+                    <option value="davomat">📊 Davomat holati</option>
+                    <option value="sababsizlar">🚨 Sababsiz o'quvchilar</option>
+                    <option value="statistika">📈 Analitika va Statistika</option>
+                    <option value="reports">📝 Oylik psixologik hisobotlar</option>
+                </select>
+            </div>
+            <button onclick="exportInspektorAbsent()" class="export-btn"
+                style="background:#10b981; border:none; padding:10px 18px; border-radius:10px; color:white; cursor:pointer; font-weight:600;">
+                <i class="fas fa-file-excel"></i> Ro'yxatni yuklash
+            </button>
+        </div>
+
+        <!-- VIEW 1: DAVOMAT HOLATI -->
+        <div id="insp_davomat_view">
+            <div class="stat-card" style="margin-bottom:20px;">
+                <h4 style="margin-bottom:15px; color:#93c5fd;"><i class="fas fa-school"></i> Maktablar bo'yicha bugungi
+                    davomat holati</h4>
+                <div style="overflow-x:auto;">
+                    <table id="inspektorDavomatTable">
+                        <thead>
+                            <tr>
+                                <th>Holat</th>
+                                <th>Maktab nomi</th>
+                                <th>Vaqt</th>
+                                <th>O'quvchilar</th>
+                                <th>Sababli</th>
+                                <th>Sababsiz</th>
+                                <th>Davomat %</th>
+                                <th>Kiritgan mas'ul</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inspektorDavomatTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: SABABSIZ O'QUVCHILAR -->
+        <div id="insp_sababsiz_view" style="display:none;">
+            <div class="stat-card">
+                <h4 style="margin-bottom:15px; color:#f87171;"><i class="fas fa-exclamation-triangle"></i> Sababsiz
+                    kelmaganlar ro'yxati</h4>
+                <div style="overflow-x:auto;">
+                    <table id="inspektorSababsizTable">
+                        <thead>
+                            <tr>
+                                <th>Maktab</th>
+                                <th>Sinf</th>
+                                <th>O'quvchi F.I.SH</th>
+                                <th>Manzil</th>
+                                <th>Ota-onasi</th>
+                                <th>Ota-ona telefon</th>
+                                <th>Mas'ul inspektor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inspektorSababsizTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: 7 KUNLIK STATISTIKA -->
+        <div id="insp_statistika_view" style="display:none;">
+            <div class="stat-card">
+                <h4 style="margin-bottom:15px; color:#a78bfa;"><i class="fas fa-chart-line"></i> Biriktirilgan maktablar
+                    davomati tahlili (Oxirgi 7 kun)</h4>
+
+                <!-- Chart Container -->
+                <div style="background:rgba(0,0,0,0.2); padding:20px; border-radius:15px; margin-bottom:25px;">
+                    <canvas id="inspAnalysisChart" style="max-height:300px; width:100%;"></canvas>
+                </div>
+
+                <div style="overflow-x:auto;">
+                    <table id="inspektorStatTable">
+                        <thead>
+                            <tr>
+                                <th>Sana</th>
+                                <th>Maktab</th>
+                                <th>O'quvchilar</th>
+                                <th>Kelmadi (Jami)</th>
+                                <th>Sababsiz</th>
+                                <th>Davomat %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inspektorStatTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 4: OYLIK HISOBOTLAR -->
+        <div id="insp_reports_view" style="display:none;">
+            <div class="stat-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h4 style="margin:0; color:#3b82f6;"><i class="fas fa-file-medical"></i> Psixologik monitoring
+                        hisobotlari</h4>
+                    <button onclick="showCreatePsixologReportModal()" class="btn btn-pro" style="padding:10px 20px;">
+                        <i class="fas fa-plus"></i> Yangi hisobot topshirish
+                    </button>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table id="inspektorReportsTable">
+                        <thead>
+                            <tr>
+                                <th>Oy</th>
+                                <th>Maktab</th>
+                                <th>Risk guruhi</th>
+                                <th>Ziddiyatlar</th>
+                                <th>Tashvish (%)</th>
+                                <th>Konsultatsiya</th>
+                                <th>Sana</th>
+                                <th>Harakat</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inspektorReportsTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: YANIG PSIXOLOGIK HISOBOT -->
+    <div id="createPsixologReportModal" class="modal"
+        style="display:none; position:fixed; z-index:10000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px);">
+        <div class="modal-content"
+            style="background:#1e293b; color:white; margin:5% auto; padding:30px; border-radius:30px; width:90%; max-width:650px; border:1px solid rgba(99,102,241,0.3); box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                <h2 style="margin:0; color:#93c5fd;"><i class="fas fa-plus-circle"></i> Oylik psixologik hisobot</h2>
+                <span onclick="document.getElementById('createPsixologReportModal').style.display='none'"
+                    style="cursor:pointer; font-size:1.5rem; color:#94a3b8;"><i class="fas fa-times"></i></span>
+            </div>
+
+            <form id="psixologReportForm" onsubmit="event.preventDefault(); submitPsixologReport();"
+                style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                <div class="filter-group" style="grid-column: span 1;">
+                    <label>Hisobot oyi</label>
+                    <input type="month" id="rep_month" required style="width:100%;">
+                </div>
+                <div class="filter-group" style="grid-column: span 1;">
+                    <label>Maktabni tanlang</label>
+                    <select id="rep_school" required style="width:100%;"></select>
+                </div>
+                <div class="filter-group">
+                    <label>Sorovnoma o'tkazildi (soni)</label>
+                    <input type="number" id="rep_surveyed" min="0" value="0" style="width:100%;">
+                </div>
+                <div class="filter-group">
+                    <label>Risk guruhidagi o'quvchilar</label>
+                    <input type="number" id="rep_risk" min="0" value="0" style="width:100%;">
+                </div>
+                <div class="filter-group">
+                    <label>Ziddiyat holatlari</label>
+                    <input type="number" id="rep_conflict" min="0" value="0" style="width:100%;">
+                </div>
+                <div class="filter-group">
+                    <label>Tashvish/depressiya holatlari</label>
+                    <input type="number" id="rep_anxiety" min="0" value="0" style="width:100%;">
+                </div>
+                <div class="filter-group">
+                    <label>Oilaviy muammolar</label>
+                    <input type="number" id="rep_family" min="0" value="0" style="width:100%;">
+                </div>
+                <div class="filter-group">
+                    <label>Konsultatsiya olganlar</label>
+                    <input type="number" id="rep_counseled" min="0" value="0" style="width:100%;">
+                </div>
+                <div class="filter-group" style="grid-column: span 2;">
+                    <label>Qo'shimcha izohlar</label>
+                    <textarea id="rep_notes" rows="3"
+                        style="width:100%; background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:white; padding:10px;"></textarea>
+                </div>
+                <div style="grid-column: span 2; display:flex; gap:15px; margin-top:10px;">
+                    <button type="submit" class="btn btn-pro"
+                        style="flex:1; justify-content:center; padding:15px; font-weight:bold;">
+                        <i class="fas fa-paper-plane"></i> Hisobotni yuborish
+                    </button>
+                    <button type="button"
+                        onclick="document.getElementById('createPsixologReportModal').style.display='none'"
+                        class="export-btn" style="background:#475569; padding:15px;">
+                        Bekor qilish
+                    </button>
+                </div>
+            </form>
+            <div id="psixologRepMsg" style="margin-top:15px; text-align:center; font-weight:bold;"></div>
+        </div>
+    </div>
+
+    <!-- ADMIN: Inspektor-Psixolog Yaratish Paneli (superadmin uchun) -->
+    <div id="inspektorAdminView" class="report-view">
+        <div
+            style="display:flex; align-items:center; gap:20px; margin-bottom:25px; background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(99,102,241,0.1)); padding:20px; border-radius:18px; border:1px solid rgba(59,130,246,0.3);">
+            <div
+                style="width:55px; height:55px; background:linear-gradient(135deg,#3b82f6,#6366f1); border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
+                👮</div>
+            <div>
+                <h3 style="margin:0; color:#93c5fd;">ИИБ Inspektor-Psixologlar boshqaruvi</h3>
+                <p style="margin:3px 0 0; color:#94a3b8; font-size:0.9rem;">Inspektor-psixologlarga login yaratish va
+                    maktablar biriktirish</p>
+            </div>
+            <button onclick="showCreateInspektorModal()" class="export-btn"
+                style="margin-left:auto; background:linear-gradient(135deg,#3b82f6,#1d4ed8); padding:10px 20px;">
+                <i class="fas fa-plus"></i> Yangi inspektor qo'shish
+            </button>
+        </div>
+
+        <div class="stat-card">
+            <h4 style="margin-bottom:15px;"><i class="fas fa-list"></i> Barcha inspektor-psixologlar</h4>
+            <div style="overflow-x:auto;">
+                <table id="inspektorListTable">
+                    <thead>
+                        <tr>
+                            <th>Login</th>
+                            <th>F.I.SH</th>
+                            <th>Hudud</th>
+                            <th>Telefon</th>
+                            <th>Biriktirilgan maktablar</th>
+                            <th>Harakat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inspektorListTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inspektor Yaratish Modal -->
+    <div id="createInspektorModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:9999; overflow-y:auto; backdrop-filter:blur(5px);">
+        <div
+            style="max-width:680px; margin:30px auto; background:#0f172a; border-radius:25px; padding:35px; border:1px solid rgba(59,130,246,0.4); box-shadow:0 30px 80px rgba(59,130,246,0.25);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                <h3 style="margin:0; color:#93c5fd;"><i class="fas fa-user-plus"></i> Yangi Inspektor-Psixolog</h3>
+                <button onclick="document.getElementById('createInspektorModal').style.display='none'"
+                    style="background:rgba(255,255,255,0.1); border:none; color:white; width:35px; height:35px; border-radius:50%; cursor:pointer; font-size:1.1rem;">✕</button>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                <div class="filter-group">
+                    <label>Login *</label>
+                    <input type="text" id="new_insp_login" placeholder="Masalan: insp_fargona1" style="width:100%;">
+                </div>
+                <div class="filter-group">
+                    <label>Parol *</label>
+                    <input type="password" id="new_insp_password" placeholder="Kuchli parol kiriting"
+                        style="width:100%;">
+                </div>
+                <div class="filter-group">
+                    <label>F.I.SH</label>
+                    <input type="text" id="new_insp_fio" placeholder="Inspektor to'liq ismi" style="width:100%;">
+                </div>
+                <div class="filter-group">
+                    <label>Telefon</label>
+                    <input type="text" id="new_insp_phone" placeholder="+998 90 xxx xx xx" style="width:100%;">
+                </div>
+                <div class="filter-group" style="grid-column:span 2;">
+                    <label>Hudud *</label>
+                    <select id="new_insp_district" onchange="loadInspSchoolsForDistrict()" style="width:100%;">
+                        <option value="">Tanlang...</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="grid-column:span 2;">
+                    <label>Biriktirilgan maktablar * <span
+                            style="color:#94a3b8; font-weight:normal; font-size:0.85rem;">(bir nechta tanlash mumkin —
+                            Ctrl+Click)</span></label>
+                    <select id="new_insp_schools" multiple
+                        style="width:100%; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:white; border-radius:12px; padding:8px; font-family:Outfit,sans-serif; min-height:160px;">
+                        <option value="" disabled>Avval hudud tanlang...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="createInspMsg" style="margin:15px 0; font-weight:bold; text-align:center;"></div>
+            <div style="display:flex; gap:15px; margin-top:20px;">
+                <button onclick="createInspektor()" class="export-btn" style="flex:1; padding:14px; font-size:1rem;">
+                    <i class="fas fa-save"></i> Yaratish
+                </button>
+                <button onclick="document.getElementById('createInspektorModal').style.display='none'"
+                    style="background:rgba(255,255,255,0.1); border:none; color:white; padding:14px 22px; border-radius:15px; cursor:pointer; font-family:Outfit,sans-serif;">Bekor
+                    qilish</button>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         // AUTH CHECK
@@ -1161,6 +1511,21 @@
             if (userUsername === 'qirol') {
                 document.getElementById('tab_pro').style.display = 'flex';
             }
+            // Superadmin inspektor boshqaruvi
+            document.getElementById('tab_inspektorAdmin').style.display = 'flex';
+        } else if (userRole === 'inspektor_psixolog') {
+            // Inspektor faqat o'z kabinetini ko'radi
+            const allTabs = document.querySelectorAll('.tab-btn');
+            allTabs.forEach(t => t.style.display = 'none');
+            document.getElementById('tab_psixolog').style.display = 'flex';
+            document.getElementById('tab_psixolog').innerHTML = '<i class="fas fa-user-shield"></i> Mening Kabinetim';
+            // Biriktirilgan maktablarni ko'rsatish
+            const assignedSchools = JSON.parse(localStorage.getItem('dashboard_assigned_schools') || '[]');
+            const infoEl = document.getElementById('insp_welcome_text');
+            if (infoEl && assignedSchools.length > 0) {
+                infoEl.textContent = `Biriktirilgan maktablar (${assignedSchools.length} ta): ${assignedSchools.join(', ')}`;
+            }
+            showTab('psixolog');
         }
 
 
@@ -1211,7 +1576,8 @@
                 case 'pro': loadTgUsers(); break;
                 case 'proUser': break;
                 case 'ranking': if (window.loadRankingData) loadRankingData(); break;
-
+                case 'psixolog': loadInspektorInit(); break;
+                case 'inspektorAdmin': loadInspektorAdminList(); break;
             }
         }
 
@@ -1277,7 +1643,7 @@
                 document.getElementById('total_students_v').textContent = totalS;
                 renderHeatmap(data);
             } catch (e) {
-                document.querySelector('#viloyatTable tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#ef4444">Xatolik: ${e.message}</td></tr>`;
+                document.querySelector('#viloyatTable tbody').innerHTML = `< tr > <td colspan="7" style="text-align:center; padding:30px; color:#ef4444">Xatolik: ${e.message}</td></tr > `;
             }
         }
 
@@ -1288,13 +1654,13 @@
             data.forEach(item => {
                 const node = document.createElement('div');
                 node.className = 'map-node';
-                node.title = `${item.district}: ${item.avg_percent.toFixed(1)}%`;
+                node.title = `${item.district}: ${item.avg_percent.toFixed(1)}% `;
                 let color = '#f43f5e';
                 if (item.avg_percent >= 95) color = '#10b981';
                 else if (item.avg_percent >= 90) color = '#facc15';
 
                 node.style.background = color;
-                node.innerHTML = `<span style="font-size:9px; color:#000; font-weight:bold; text-align:center;">${item.district}</span>`;
+                node.innerHTML = `< span style = "font-size:9px; color:#000; font-weight:bold; text-align:center;" > ${item.district}</span > `;
                 node.onclick = () => {
                     document.getElementById('tumanSelect').value = item.district;
                     showTab('tuman');
@@ -1310,7 +1676,7 @@
                 const date = document.getElementById('tumanDate').value;
                 if (!tuman) return;
 
-                const data = await apiFetch(`/api/stats/tuman?tuman=${encodeURIComponent(tuman)}&date=${date}`);
+                const data = await apiFetch(`/ api / stats / tuman ? tuman = ${encodeURIComponent(tuman)}& date=${date} `);
                 const tbody = document.querySelector('#tumanTable tbody');
                 tbody.innerHTML = '';
 
@@ -1318,7 +1684,7 @@
                     const isSent = item.fio !== 'Kiritilmagan';
                     // Use text colors that pop on dark background, remove background fills
                     // Sababli: Cyan/Teal (#2dd4bf), Sababsiz: Orange/Yellow (#fbbf24)
-                    const row = `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    const row = `< tr style = "border-bottom: 1px solid rgba(255,255,255,0.05);" >
                         <td style="text-align:center">
                             ${isSent ? '<i class="fas fa-check-circle" style="color:#10b981; font-size:1.1rem"></i>' : '<i class="fas fa-times-circle" style="color:#ef4444; font-size:1.1rem"></i>'}
                         </td>
@@ -1327,14 +1693,14 @@
                         <td style="color:#e2e8f0">${item.classes_count}</td>
                         <td style="color:#e2e8f0">${item.total_students}</td>
                         
-                        <!-- Sababli (Cyan tint text) -->
+                        <!--Sababli(Cyan tint text) -->
                         <td style="color:#2dd4bf; font-weight:500">${item.sababli_kasal || 0}</td>
                         <td style="color:#2dd4bf">${item.sababli_tadbirlar || 0}</td>
                         <td style="color:#2dd4bf">${item.sababli_oilaviy || 0}</td>
                         <td style="color:#2dd4bf">${item.sababli_ijtimoiy || 0}</td>
                         <td style="color:#2dd4bf">${item.sababli_boshqa || 0}</td>
                         
-                        <!-- Sababsiz (Orange/Red tint text) -->
+                        <!--Sababsiz(Orange / Red tint text) -->
                         <td style="color:#fbbf24; font-weight:bold">${item.sababsiz_muntazam || 0}</td>
                         <td style="color:#f87171">${item.sababsiz_qidiruv || 0}</td>
                         <td style="color:#f87171">${item.sababsiz_chetel || 0}</td>
@@ -1351,11 +1717,11 @@
                             ${isSent ? (item.source === 'web' ? '<i class="fas fa-globe" style="color:#3b82f6" title="Web"></i>' : '<i class="fab fa-telegram" style="color:#0088cc" title="Bot"></i>') : '-'}
                         </td>
                         <td style="font-size:11px; color:#cbd5e1; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${item.fio}">${item.fio}</td>
-                    </tr>`;
+                    </tr > `;
                     tbody.innerHTML += row;
                 });
             } catch (e) {
-                document.querySelector('#tumanTable tbody').innerHTML = `<tr><td colspan="23" style="text-align:center; padding:30px; color:#ef4444">Xatolik: ${e.message}</td></tr>`;
+                document.querySelector('#tumanTable tbody').innerHTML = `< tr > <td colspan="23" style="text-align:center; padding:30px; color:#ef4444">Xatolik: ${e.message}</td></tr > `;
             }
         }
 
@@ -1368,9 +1734,9 @@
                 data.forEach(item => {
                     const sourceIcon = item.source === 'web' ? '<i class="fas fa-globe" style="color:#3b82f6" title="Web Sahifa"></i> web' : '<i class="fab fa-telegram" style="color:#0088cc" title="Telegram Bot"></i> bot';
                     const d = item.date.split('-');
-                    const displayDate = d.length === 3 ? `${d[2]}.${d[1]}.${d[0]}` : item.date;
+                    const displayDate = d.length === 3 ? `${d[2]}.${d[1]}.${d[0]} ` : item.date;
 
-                    const row = `<tr>
+                    const row = `< tr >
                         <td style="font-weight: 500;">
                             <span style="color: #818cf8;">${item.time}</span> 
                             <span style="color: #94a3b8; font-size: 0.8em; margin-left: 5px;">${displayDate}</span>
@@ -1381,24 +1747,24 @@
                         <td style="text-align:center"><span style="color:${item.sababsiz_jami > 0 ? '#f43f5e' : '#10b981'}; font-weight:bold">${item.sababsiz_jami}</span></td>
                         <td style="text-align:center">${sourceIcon}</td>
                         <td style="font-size: 11px;">${item.fio}</td>
-                    </tr>`;
+                    </tr > `;
                     tbody.innerHTML += row;
                 });
             } catch (e) {
-                document.querySelector('#recentTable tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#ef4444">Ma'lumotlarni yuklashda xatolik: ${e.message}</td></tr>`;
+                document.querySelector('#recentTable tbody').innerHTML = `< tr > <td colspan="7" style="text-align:center; padding:30px; color:#ef4444">Ma'lumotlarni yuklashda xatolik: ${e.message}</td></tr > `;
             }
         }
 
         async function loadAbsentDetails() {
             try {
                 const date = document.getElementById('absentDate').value;
-                const data = await apiFetch(`/api/stats/absentees?date=${date}`);
+                const data = await apiFetch(`/ api / stats / absentees ? date = ${date} `);
                 const tbody = document.querySelector('#absentTable tbody');
                 tbody.innerHTML = '';
 
                 data.forEach(item => {
                     const statusColor = item.streak >= 3 ? '#ef4444' : '#facc15';
-                    const row = `<tr>
+                    const row = `< tr >
                         <td style="font-size: 0.8em; color: #94a3b8;">${item.date}</td>
                         <td>${item.district}</td>
                         <td>${item.school}</td>
@@ -1408,11 +1774,11 @@
                         <td>${item.parent_name}</td>
                         <td>${item.parent_phone}</td>
                         <td><span class="status-badge" style="background:${statusColor}; color:#000; font-size:10px">${item.status} (${item.streak} kun)</span></td>
-                    </tr>`;
+                    </tr > `;
                     tbody.innerHTML += row;
                 });
             } catch (e) {
-                document.querySelector('#absentTable tbody').innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px; color:#ef4444">Xatolik: ${e.message}</td></tr>`;
+                document.querySelector('#absentTable tbody').innerHTML = `< tr > <td colspan="9" style="text-align:center; padding:30px; color:#ef4444">Xatolik: ${e.message}</td></tr > `;
             }
         }
 
@@ -1424,8 +1790,8 @@
             const yesterday = yesterdayDate.toISOString().split('T')[0];
 
             let [todayData, yesterdayData] = await Promise.all([
-                apiFetch(`/api/stats/viloyat?date=${today}`).catch(() => []),
-                apiFetch(`/api/stats/viloyat?date=${yesterday}`).catch(() => [])
+                apiFetch(`/ api / stats / viloyat ? date = ${today} `).catch(() => []),
+                apiFetch(`/ api / stats / viloyat ? date = ${yesterday} `).catch(() => [])
             ]);
 
             if (!Array.isArray(todayData)) todayData = [];
@@ -1458,7 +1824,7 @@
                     else if (p >= 90) color = '#facc15';
 
                     node.style.borderTop = `4px solid ${color} `;
-                    node.innerHTML = `<div class="name" style = "font-size:9px; font-weight:bold; color:white;" > ${pos.n}</div > <div class="val">${p > 0 ? p.toFixed(1) + '%' : '-'}</div>`;
+                    node.innerHTML = `< div class="name" style = "font-size:9px; font-weight:bold; color:white;" > ${pos.n}</div > <div class="val">${p > 0 ? p.toFixed(1) + '%' : '-'}</div>`;
                     node.onclick = () => {
                         document.getElementById('tumanSelect').value = dData.district || pos.n;
                         showTab('tuman');
@@ -1476,21 +1842,21 @@
             const diff = todayAvg - yesterdayAvg;
 
             const comparisonHtml = `
-                <div style = "font-size: 0.9rem; margin-top: 5px; color: ${diff >= 0 ? '#10b981' : '#f43f5e'}" >
-                    <i class="fas fa-caret-${diff >= 0 ? 'up' : 'down'}"></i> 
+            < div style = "font-size: 0.9rem; margin-top: 5px; color: ${diff >= 0 ? '#10b981' : '#f43f5e'}" >
+                <i class="fas fa-caret-${diff >= 0 ? 'up' : 'down'}"></i> 
                     ${Math.abs(diff).toFixed(1)}% <sup>kechagiga nisbatan</sup>
                 </div >
-                `;
+            `;
 
             const analysisSummary = document.getElementById('analysisSummary');
             if (analysisSummary) {
                 analysisSummary.innerHTML = `
-                <div class="stat-card" >
+            < div class="stat-card" >
                         <h4>Viloyat o'rtacha davomati</h4>
                         <div class="value">${todayAvg.toFixed(1)}%</div>
                         ${comparisonHtml}
                     </div >
-                `;
+            `;
             }
 
             if (todayData.length > 0) {
@@ -1500,18 +1866,18 @@
                 const bottom3 = sorted.filter(d => d.entries > 0).slice(-3).reverse();
 
                 document.getElementById('topDistricts').innerHTML = top3.map(d => `
-                <div class="l-item top" >
+            < div class="l-item top" >
                         <span><b>${d.district}</b></span>
                         <span class="status-badge status-high">${d.avg_percent.toFixed(1)}%</span>
                     </div >
-                `).join('');
+            `).join('');
 
                 document.getElementById('bottomDistricts').innerHTML = bottom3.map(d => `
-                <div class="l-item bottom" >
+            < div class="l-item bottom" >
                         <span><b>${d.district}</b></span>
                         <span class="status-badge status-low">${d.avg_percent.toFixed(1)}%</span>
                     </div >
-                `).join('');
+            `).join('');
 
                 // AI Insights text
                 const best = top3[0];

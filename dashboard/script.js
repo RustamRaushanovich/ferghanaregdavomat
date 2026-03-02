@@ -12,6 +12,8 @@ const monitorLimit = 20;
 // Init
 document.addEventListener('DOMContentLoaded', async () => {
     initThemeAndLang();
+    initSpringMode();
+    initDashboard();
     checkAccessTime();
     startLiveClock();
     startCountdown();
@@ -19,7 +21,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     injectTestModeBanner(); // Restoration requested by user
     initHolidayGreeting();
     updateProMiniBtn();
-
 
     // Admin Mode Indicator
     if (localStorage.getItem('dashboard_token')) {
@@ -29,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.body.appendChild(badge);
     }
 
-    // Load Districts
+    // Load Districts for Form (if exists)
     const distSelect = document.getElementById('district');
     if (distSelect) {
         try {
@@ -84,6 +85,155 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Display User Info
     displayUserInfo();
 });
+
+async function initDashboard() {
+    const token = localStorage.getItem('dashboard_token');
+    const userRole = localStorage.getItem('dashboard_role');
+    const userDistrict = localStorage.getItem('dashboard_district');
+    const userSchool = localStorage.getItem('dashboard_school');
+    const userUsername = localStorage.getItem('dashboard_username');
+
+    if (!token && window.location.pathname.includes('dashboard.html')) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Adjust for Roles
+    if (userRole === 'district') {
+        const tabViloyat = document.getElementById('tab_viloyat');
+        if (tabViloyat) tabViloyat.innerHTML = '<i class="fas fa-map"></i> Mening Hududim';
+
+        const tumanSelect = document.getElementById('tumanSelect');
+        if (tumanSelect) {
+            tumanSelect.innerHTML = `<option value="${userDistrict}">${userDistrict}</option>`;
+            tumanSelect.disabled = true;
+        }
+    } else if (userRole === 'school') {
+        ['tab_viloyat', 'tab_tuman', 'tab_students'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+        const tabSchool = document.getElementById('tab_school');
+        if (tabSchool) tabSchool.style.display = 'flex';
+
+        const header = document.getElementById('schoolNameHeader');
+        if (header) header.textContent = userSchool;
+
+        showTab('school');
+    } else if (userRole === 'superadmin') {
+        const tabAdmin = document.getElementById('tab_admin');
+        if (tabAdmin) tabAdmin.style.display = 'flex';
+
+        if (userUsername === 'qirol') {
+            const tabPro = document.getElementById('tab_pro');
+            if (tabPro) tabPro.style.display = 'flex';
+        }
+
+        const tabInspAdmin = document.getElementById('tab_inspektorAdmin');
+        if (tabInspAdmin) tabInspAdmin.style.display = 'flex';
+    } else if (userRole === 'inspektor_psixolog') {
+        document.querySelectorAll('.tab-btn').forEach(t => t.style.display = 'none');
+        const tabInsp = document.getElementById('tab_psixolog');
+        if (tabInsp) {
+            tabInsp.style.display = 'flex';
+            tabInsp.innerHTML = '<i class="fas fa-user-shield"></i> Mening Kabinetim';
+        }
+
+        const assignedSchools = JSON.parse(localStorage.getItem('dashboard_assigned_schools') || '[]');
+        const infoEl = document.getElementById('insp_welcome_text');
+        if (infoEl && assignedSchools.length > 0) {
+            infoEl.innerHTML = `<i class="fas fa-shield-alt"></i> Biriktirilgan maktablar soni: <b>${assignedSchools.length} ta</b>`;
+            const schoolsBar = document.getElementById('insp_schools_bar');
+            const schoolsList = document.getElementById('insp_schools_list');
+            if (schoolsBar && schoolsList) {
+                schoolsBar.style.display = 'block';
+                schoolsList.textContent = assignedSchools.join(', ');
+            }
+        }
+        showTab('psixolog');
+    }
+
+    if (userRole === 'district' || userRole === 'superadmin') {
+        ['tab_parents', 'tab_ranking'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'flex';
+        });
+    }
+
+    // Set default dates
+    const fargonaNow = new Date(new Date().getTime() + (5 * 60 + new Date().getTimezoneOffset()) * 60000);
+    const dateStr = fargonaNow.toISOString().split('T')[0];
+    ['viloyatDate', 'tumanDate', 'absentDate'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = dateStr;
+    });
+
+    // Auto load districts
+    if (userRole !== 'district' && userRole !== 'school' && userRole !== 'inspektor_psixolog') {
+        loadDistricts();
+    }
+
+    // Initial data load based on active tab
+    const activeTab = document.querySelector('.tab-btn.active');
+    if (activeTab) {
+        const tabId = activeTab.id.replace('tab_', '');
+        triggerTabLoad(tabId);
+    } else {
+        // Fallback to viloyat if nothing active
+        if (userRole !== 'school' && userRole !== 'inspektor_psixolog') {
+            showTab('viloyat');
+        }
+    }
+}
+
+async function loadDistricts() {
+    try {
+        const data = await apiFetch(`/api/districts`);
+        if (!Array.isArray(data)) return;
+        const select = document.getElementById('tumanSelect');
+        if (!select) return;
+
+        // Clear except first
+        select.innerHTML = '<option value="">Hududni tanlang...</option>';
+        data.forEach(d => {
+            if (d === 'Test rejimi') return;
+            const opt = document.createElement('option');
+            opt.value = d;
+            opt.textContent = d;
+            select.appendChild(opt);
+        });
+    } catch (e) { console.error("Load districts error:", e); }
+}
+
+function triggerTabLoad(id) {
+    switch (id) {
+        case 'viloyat': loadViloyatData(); break;
+        case 'tuman': loadTumanData(); break;
+        case 'students': loadAbsentDetails(); break;
+        case 'recent': loadRecentActivity(); break;
+        case 'analysis': loadAnalysisData(); break;
+        case 'school': loadSchoolData(); break;
+        case 'parents': loadParentFilters(); loadParentList(); break;
+        case 'admin': loadAdminPanel(); break;
+        case 'pro': loadTgUsers(); break;
+        case 'ranking': loadRankingData(); break;
+        case 'psixolog': loadInspektorInit(); break;
+        case 'inspektorAdmin': loadInspektorAdminList(); break;
+    }
+}
+
+function showTab(id) {
+    document.querySelectorAll('.report-view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+    const targetView = document.getElementById(id + 'View');
+    if (targetView) targetView.classList.add('active');
+
+    const targetBtn = document.getElementById('tab_' + id);
+    if (targetBtn) targetBtn.classList.add('active');
+
+    triggerTabLoad(id);
+}
 
 async function checkProUser() {
     const phone = document.getElementById('phone')?.value.replace(/\D/g, '');
@@ -313,6 +463,52 @@ function initThemeAndLang() {
     const savedLang = localStorage.getItem('lang') || 'uz';
     updateLangButtons(savedLang);
     applyTranslations(savedLang);
+    initSpringMode();
+}
+
+function initSpringMode() {
+    // March, April, May are spring months
+    const now = new Date();
+    const month = now.getMonth();
+    const savedSpring = localStorage.getItem('spring_mode');
+
+    // Auto-enable in spring months or if previously enabled
+    if ((month >= 2 && month <= 4) || savedSpring === 'true') {
+        document.documentElement.classList.add('spring-mode');
+        // Add a small indicator near user badge if not present
+        if (!document.getElementById('springIndicator')) {
+            const ind = document.createElement('span');
+            ind.id = 'springIndicator';
+            ind.innerHTML = ' 🌱';
+            ind.title = "Bahoriy kayfiyat!";
+            const navBrand = document.querySelector('.nav-branding h3');
+            if (navBrand) navBrand.appendChild(ind);
+        }
+        createBlossoms();
+    }
+}
+
+function createBlossoms() {
+    if (window.blossomInterval) return;
+    const symbols = ['🌸', '🌷', '🌱', '🦋', '🍀', '🌼'];
+    window.blossomInterval = setInterval(() => {
+        // Only if spring mode is active
+        if (!document.documentElement.classList.contains('spring-mode')) {
+            clearInterval(window.blossomInterval);
+            window.blossomInterval = null;
+            return;
+        }
+
+        const b = document.createElement('div');
+        b.className = 'blossom';
+        b.style.left = Math.random() * 100 + 'vw';
+        b.style.fontSize = (Math.random() * 15 + 15) + 'px';
+        b.style.opacity = Math.random() * 0.6 + 0.4;
+        b.style.animationDuration = (Math.random() * 6 + 4) + 's';
+        b.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        document.body.appendChild(b);
+        setTimeout(() => b.remove(), 10000);
+    }, 2000);
 }
 
 function updateLangButtons(lang) {
@@ -1432,7 +1628,17 @@ async function loadViloyatData() {
         if (!tbody) return;
         tbody.innerHTML = '';
 
-        if (!Array.isArray(data)) throw new Error("Ma'lumot topilmadi");
+        if (data && data.error) {
+            tbody.innerHTML = `<tr><td colspan="23" style="text-align:center; padding:50px; color:#ef4444;">
+                <i class="fas fa-exclamation-triangle fa-2x"></i><br>Xatolik yuz berdi: ${data.error}
+            </td></tr>`;
+            return;
+        }
+
+        if (!Array.isArray(data) || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="23" style="text-align:center; padding:50px; opacity:0.6;"><i class="fas fa-folder-open fa-2x"></i><br>Ushbu sana uchun ma\'lumotlar topilmadi</td></tr>';
+            return;
+        }
 
         let t_entries = 0, t_students = 0, t_sababsiz = 0, t_absent = 0;
 
@@ -2081,3 +2287,417 @@ async function setPro(uid) {
     }
 }
 
+
+// ===== ИИБ INSPEKTOR-PSIXOLOG BO'LIMI =====
+
+function switchInspektorView(viewPrefix) {
+    document.getElementById('insp_davomat_view').style.display = 'none';
+    document.getElementById('insp_sababsiz_view').style.display = 'none';
+    document.getElementById('insp_statistika_view').style.display = 'none';
+    document.getElementById('insp_reports_view').style.display = 'none';
+
+    document.getElementById('insp_' + viewPrefix + '_view').style.display = 'block';
+
+    if (viewPrefix === 'reports') loadInspektorReports();
+}
+
+function getInspektorDate() {
+    const el = document.getElementById('inspektorDate');
+    if (!el.value) {
+        // Sets today Fargona time
+        const now = new Date(new Date().getTime() + (5 * 60 + new Date().getTimezoneOffset()) * 60000);
+        el.value = now.toISOString().split('T')[0];
+    }
+    return el.value;
+}
+
+async function loadInspektorInit() {
+    getInspektorDate();
+    await loadInspektorData();
+}
+
+async function loadInspektorData() {
+    const date = getInspektorDate();
+    const token = localStorage.getItem('dashboard_token');
+
+    // 1. Davomat view load
+    try {
+        const dRes = await fetch(`/api/inspektor/davomat?date=${date}`, { headers: { 'Authorization': token } });
+        const dData = await dRes.json();
+
+        let sub = 0; let pend = 0; let totSababsiz = 0; let sumPer = 0; let totSch = dData.total || 0;
+
+        const dTbody = document.getElementById('inspektorDavomatTbody');
+        if (dData.rows.length === 0) {
+            dTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Maktablar biriktirilmagan</td></tr>';
+        } else {
+            dTbody.innerHTML = dData.rows.map(r => {
+                if (r.submitted) sub++; else pend++;
+                totSababsiz += (parseInt(r.sababsiz_jami) || 0);
+                sumPer += parseFloat(r.percent || 0);
+
+                const statusIcon = r.submitted ? '<i class="fas fa-check-circle" style="color:#10b981;"></i>' : '<i class="fas fa-clock" style="color:#f59e0b;"></i>';
+                const color = r.percent >= 98 ? '#10b981' : r.percent >= 90 ? '#f59e0b' : '#ef4444';
+
+                return `<tr>
+                    <td style="text-align:center; font-size:1.2rem;">${statusIcon}</td>
+                    <td><b>${r.school}</b></td>
+                    <td style="text-align:center;">${r.time}</td>
+                    <td style="text-align:center;">${r.total_students || 0}</td>
+                    <td style="text-align:center; color:#f59e0b;">${r.sababli_jami || 0}</td>
+                    <td style="text-align:center; color:#ef4444; font-weight:bold;">${r.sababsiz_jami || 0}</td>
+                    <td style="text-align:center; color:${color}; font-weight:bold;">${r.percent}%</td>
+                    <td>${r.fio || '-'}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        // Update summary cards
+        document.getElementById('insp_total_schools').textContent = totSch;
+        document.getElementById('insp_submitted').textContent = sub;
+        document.getElementById('insp_pending').textContent = pend;
+        document.getElementById('insp_sababsiz_count').textContent = totSababsiz;
+        const avg = totSch > 0 ? (sumPer / totSch).toFixed(1) : 0;
+        document.getElementById('insp_avg_percent').textContent = avg + '%';
+        if (totSababsiz > 5) document.getElementById('insp_sababsiz_count').classList.add('flash-red');
+        else document.getElementById('insp_sababsiz_count').classList.remove('flash-red');
+
+    } catch (e) { console.error('Inspektor davomat error:', e); }
+
+    // 2. Sababsiz view load
+    try {
+        const sRes = await fetch(`/api/inspektor/sababsizlar?date=${date}`, { headers: { 'Authorization': token } });
+        const sData = await sRes.json();
+        const sTbody = document.getElementById('inspektorSababsizTbody');
+
+        if (sData.rows.length === 0) {
+            sTbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#10b981;"><i class="fas fa-check-circle fa-2x"></i><br>Bugun sababsiz o\'quvchilar yo\'q</td></tr>';
+        } else {
+            sTbody.innerHTML = sData.rows.map(r => `<tr>
+                <td><b>${r.school}</b></td>
+                <td style="text-align:center; color:#93c5fd; font-weight:bold;">${r.class}</td>
+                <td><i class="fas fa-user" style="color:#ef4444;"></i> ${r.name}</td>
+                <td style="font-size:0.9rem;">${r.address || '-'}</td>
+                <td>${r.parent_name || '-'}</td>
+                <td>${r.parent_phone ? `<a href="tel:${r.parent_phone}" style="color:#34d399; text-decoration:none;"><i class="fas fa-phone"></i> ${r.parent_phone}</a>` : '-'}</td>
+                <td style="font-size:0.9rem; color:#94a3b8;">${r.inspector || r.submitter_fio || '-'}</td>
+            </tr>`).join('');
+        }
+    } catch (e) { console.error('Inspektor sababsiz error:', e); }
+
+    // 3. Statistika view load
+    try {
+        const stRes = await fetch(`/api/inspektor/statistika?days=7`, { headers: { 'Authorization': token } });
+        const stData = await stRes.json();
+        const stTbody = document.getElementById('inspektorStatTbody');
+
+        if (stData.length === 0) {
+            stTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Ma\'lumot yo\'q</td></tr>';
+        } else {
+            stTbody.innerHTML = stData.map(r => {
+                const color = r.percent >= 98 ? '#10b981' : r.percent >= 90 ? '#f59e0b' : '#ef4444';
+                return `<tr>
+                    <td style="text-align:center;">${r.date.substring(0, 10)}</td>
+                    <td><b>${r.school}</b></td>
+                    <td style="text-align:center;">${r.total_students}</td>
+                    <td style="text-align:center; color:#f59e0b;">${r.total_absent}</td>
+                    <td style="text-align:center; color:#ef4444; font-weight:bold;">${r.sababsiz_jami}</td>
+                    <td style="text-align:center; color:${color}; font-weight:bold;">${r.percent}%</td>
+                </tr>`;
+            }).join('');
+            renderInspektorChart(stData);
+        }
+    } catch (e) { console.error('Inspektor stat error:', e); }
+}
+
+// --- Psixologik Hisobotlar Logic ---
+function showCreatePsixologReportModal() {
+    const schools = JSON.parse(localStorage.getItem('dashboard_assigned_schools') || '[]');
+    const sel = document.getElementById('rep_school');
+    sel.innerHTML = schools.map(s => `<option value="${s}">${s}</option>`).join('');
+
+    // Set current month
+    const now = new Date();
+    document.getElementById('rep_month').value = now.toISOString().substring(0, 7);
+    document.getElementById('psixologRepMsg').innerHTML = '';
+    document.getElementById('createPsixologReportModal').style.display = 'block';
+}
+
+async function submitPsixologReport() {
+    const token = localStorage.getItem('dashboard_token');
+    const district = localStorage.getItem('dashboard_district');
+    const msgEl = document.getElementById('psixologRepMsg');
+
+    const formData = {
+        district,
+        school: document.getElementById('rep_school').value,
+        month: document.getElementById('rep_month').value,
+        total_students_surveyed: parseInt(document.getElementById('rep_surveyed').value) || 0,
+        risk_count: parseInt(document.getElementById('rep_risk').value) || 0,
+        conflict_count: parseInt(document.getElementById('rep_conflict').value) || 0,
+        anxiety_count: parseInt(document.getElementById('rep_anxiety').value) || 0,
+        family_issues_count: parseInt(document.getElementById('rep_family').value) || 0,
+        counseled_count: parseInt(document.getElementById('rep_counseled').value) || 0,
+        notes: document.getElementById('rep_notes').value
+    };
+
+    try {
+        msgEl.innerHTML = '<span style="color:#f59e0b;">⏳ Yuborilmoqda...</span>';
+        const res = await fetch('/api/inspektor/report', {
+            method: 'POST',
+            headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        const result = await res.json();
+        if (result.success) {
+            msgEl.innerHTML = '<span style="color:#10b981;">✅ Hisobot muvaffaqiyatli qabul qilindi!</span>';
+            setTimeout(() => {
+                document.getElementById('createPsixologReportModal').style.display = 'none';
+                loadInspektorReports();
+            }, 1500);
+        } else {
+            msgEl.innerHTML = `<span style="color:#ef4444;">❌ Xatolik: ${result.error}</span>`;
+        }
+    } catch (e) {
+        msgEl.innerHTML = '<span style="color:#ef4444;">❌ Tarmoq xatoligi</span>';
+    }
+}
+
+async function loadInspektorReports() {
+    const token = localStorage.getItem('dashboard_token');
+    const tbody = document.getElementById('inspektorReportsTbody');
+    try {
+        const res = await fetch('/api/inspektor/reports', { headers: { 'Authorization': token } });
+        const data = await res.json();
+
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Hozircha hisobotlar mavjud emas</td></tr>';
+        } else {
+            tbody.innerHTML = data.map(r => `<tr>
+                <td><b>${r.month}</b></td>
+                <td>${r.school}</td>
+                <td style="text-align:center; color:#ef4444; font-weight:bold;">${r.risk_count}</td>
+                <td style="text-align:center;">${r.conflict_count}</td>
+                <td style="text-align:center; color:#93c5fd;">${r.total_students_surveyed > 0 ? ((r.anxiety_count / r.total_students_surveyed) * 100).toFixed(1) : 0}%</td>
+                <td style="text-align:center;">${r.counseled_count}</td>
+                <td style="font-size:0.8rem; color:#94a3b8;">${new Date(r.created_at).toLocaleDateString()}</td>
+                <td>
+                    <button onclick="deletePsixologReport(${r.id})" style="background:none; border:none; color:#ef4444; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`).join('');
+        }
+    } catch (e) { console.error('Load reports error:', e); }
+}
+
+async function deletePsixologReport(id) {
+    if (!confirm("Ushbu hisobotni o'chirib tashlaysizmi?")) return;
+    const token = localStorage.getItem('dashboard_token');
+    try {
+        await fetch(`/api/inspektor/reports/${id}`, { method: 'DELETE', headers: { 'Authorization': token } });
+        loadInspektorReports();
+    } catch (e) { }
+}
+
+let inspChartInstance = null;
+function renderInspektorChart(data) {
+    const canvas = document.getElementById('inspAnalysisChart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (inspChartInstance) inspChartInstance.destroy();
+
+    // Group by date
+    const grouped = {};
+    data.forEach(r => {
+        const d = r.date.substring(0, 10);
+        if (!grouped[d]) grouped[d] = { sum: 0, count: 0 };
+        grouped[d].sum += parseFloat(r.percent);
+        grouped[d].count++;
+    });
+
+    const labels = Object.keys(grouped).sort();
+    const values = labels.map(l => (grouped[l].sum / grouped[l].count).toFixed(1));
+
+    inspChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'O\'rtacha davomat (%)',
+                data: values,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#fff',
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { min: 0, max: 100, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => ` Davomat: ${ctx.parsed.y}%`
+                    }
+                }
+            }
+        }
+    });
+}
+
+function exportInspektorAbsent() {
+    const table = document.getElementById('inspektorSababsizTable');
+    if (!table || table.rows.length <= 1) {
+        showToast("Yuklash uchun ma'lumot yo'q", 'info');
+        return;
+    }
+
+    let csv = "\uFEFF"; // BOM for Excel UTF-8
+    const headers = Array.from(table.querySelectorAll('th')).map(th => th.innerText);
+    csv += headers.join(",") + "\n";
+
+    Array.from(table.querySelectorAll('tbody tr')).forEach(tr => {
+        const row = Array.from(tr.querySelectorAll('td')).map(td => `"${td.innerText.replace(/"/g, '""')}"`);
+        csv += row.join(",") + "\n";
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const date = document.getElementById('inspektorDate').value;
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", `Sababsizlar_${date}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// ===== INSPEKTOR ADMIN ====
+async function loadInspektorAdminList() {
+    const token = localStorage.getItem('dashboard_token');
+    try {
+        const res = await fetch('/api/admin/inspectors', { headers: { 'Authorization': token } });
+        const data = await res.json();
+        const tbody = document.getElementById('inspektorListTbody');
+
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Inspektorlar kiritilmagan</td></tr>';
+        } else {
+            tbody.innerHTML = data.map(u => `<tr>
+                <td><b>${u.login}</b></td>
+                <td>${u.fio || '-'}</td>
+                <td>${u.district || '-'}</td>
+                <td>${u.phone || '-'}</td>
+                <td style="max-width:300px; font-size:0.85rem; color:#94a3b8;">${(u.assigned_schools || []).join(', ')}</td>
+                <td style="text-align:center;">
+                    <button onclick="deleteInspektor('${u.login}')" style="background:#ef4444; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer;" title="O'chirish"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`).join('');
+        }
+    } catch (e) { console.error('Error loading inspectors:', e); }
+
+    // Load districts for modal if not yet loaded
+    const select = document.getElementById('new_insp_district');
+    if (select.children.length <= 1) {
+        try {
+            const dRes = await fetch('/api/districts');
+            const dists = await dRes.json();
+            select.innerHTML = '<option value="">Hududni tanlang...</option>' + dists.map(d => `<option value="${d}">${d}</option>`).join('');
+        } catch (e) { }
+    }
+}
+
+async function loadInspSchoolsForDistrict() {
+    const dist = document.getElementById('new_insp_district').value;
+    const schoolSel = document.getElementById('new_insp_schools');
+    schoolSel.innerHTML = '<option value="" disabled>Yuklanmoqda...</option>';
+
+    if (!dist) {
+        schoolSel.innerHTML = '<option value="" disabled>Avval hudud tanlang...</option>';
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/schools?tuman=${encodeURIComponent(dist)}`);
+        const schools = await res.json();
+        schoolSel.innerHTML = schools.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+    } catch (e) {
+        schoolSel.innerHTML = '<option value="" disabled>Xatolik yuz berdi</option>';
+    }
+}
+
+function showCreateInspektorModal() {
+    document.getElementById('new_insp_login').value = '';
+    document.getElementById('new_insp_password').value = '';
+    document.getElementById('new_insp_fio').value = '';
+    document.getElementById('new_insp_phone').value = '';
+    document.getElementById('new_insp_district').value = '';
+    document.getElementById('new_insp_schools').innerHTML = '<option value="" disabled>Avval hudud tanlang...</option>';
+    document.getElementById('createInspMsg').innerHTML = '';
+
+    document.getElementById('createInspektorModal').style.display = 'block';
+}
+
+async function createInspektor() {
+    const login = document.getElementById('new_insp_login').value.trim();
+    const password = document.getElementById('new_insp_password').value.trim();
+    const fio = document.getElementById('new_insp_fio').value.trim();
+    const phone = document.getElementById('new_insp_phone').value.trim();
+    const district = document.getElementById('new_insp_district').value;
+
+    const schoolSel = document.getElementById('new_insp_schools');
+    const assigned_schools = Array.from(schoolSel.selectedOptions).map(opt => opt.value);
+
+    if (!login || !password || !district || assigned_schools.length === 0) {
+        document.getElementById('createInspMsg').innerHTML = '<span style="color:#ef4444;">Barcha majburiy maydonlarni to\'ldiring va kamida 1 ta maktab tanlang!</span>';
+        return;
+    }
+
+    const token = localStorage.getItem('dashboard_token');
+    try {
+        document.getElementById('createInspMsg').innerHTML = '<span style="color:#f59e0b;">⏳ Saqlanmoqda...</span>';
+        const res = await fetch('/api/admin/inspectors/create', {
+            method: 'POST',
+            headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ login, password, fio, phone, district, assigned_schools })
+        });
+        const result = await res.json();
+
+        if (result.success) {
+            document.getElementById('createInspMsg').innerHTML = '<span style="color:#10b981;">✅ Inspektor muvaffaqiyatli saqlandi!</span>';
+            setTimeout(() => {
+                document.getElementById('createInspektorModal').style.display = 'none';
+                loadInspektorAdminList();
+            }, 1000);
+        } else {
+            document.getElementById('createInspMsg').innerHTML = `<span style="color:#ef4444;">❌ Xatolik: ${result.error}</span>`;
+        }
+    } catch (e) {
+        document.getElementById('createInspMsg').innerHTML = `<span style="color:#ef4444;">❌ Tarmoq xatoligi</span>`;
+    }
+}
+
+async function deleteInspektor(login) {
+    if (!confirm(`${login} nomli inspektorni o'chirib tashlaysizmi?`)) return;
+
+    const token = localStorage.getItem('dashboard_token');
+    try {
+        const res = await fetch(`/api/admin/inspectors/${encodeURIComponent(login)}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': token }
+        });
+        const result = await res.json();
+        if (result.success) {
+            loadInspektorAdminList();
+        } else {
+            alert('Xatolik: ' + result.error);
+        }
+    } catch (e) { alert('Tarmoq xatoligi'); }
+}

@@ -183,6 +183,7 @@
                     localStorage.setItem('dashboard_school', data.school);
                     localStorage.setItem('dashboard_fio', data.fio);
                     localStorage.setItem('dashboard_phone', data.phone);
+                    localStorage.setItem('dashboard_assigned_schools', JSON.stringify(data.assigned_schools || []));
 
                     window.location.href = 'dashboard.html';
                 } else {

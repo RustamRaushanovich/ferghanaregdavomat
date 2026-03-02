@@ -1,7 +1,7 @@
 const { Telegraf } = require('telegraf');
 const cron = require('node-cron');
-const { getViloyatSvod, exportToExcel, exportWeeklyExcel, getMissingSchools } = require('./dataService');
-const { getFargonaTime } = require('../utils/fargona');
+const { getViloyatSvod, getTumanSvod, exportToExcel, exportDistrictExcel, exportWeeklyExcel, getMissingSchools } = require('./dataService');
+const { getFargonaTime, getFargonaDate } = require('../utils/fargona');
 const topicsConfig = require('../config/topics');
 const { getTopicId, normalizeKey } = require('../utils/topics');
 const config = require('../config/config');
@@ -42,7 +42,7 @@ async function sendHumorStatus(type) {
 async function sendDailySummary() {
     console.log("🕒 [CRON] Starting daily summary at 16:15...");
     const now = getFargonaTime();
-    const dateStr = now.toISOString().split('T')[0];
+    const dateStr = getFargonaDate();
 
     try {
         const filePath = await exportToExcel(dateStr);
@@ -95,12 +95,106 @@ async function sendDailySummary() {
 }
 
 /**
+ * District Daily Svod - Sent to Each District's Own Topic at 16:30
+ * Har bir tuman/shahar o'z topiciga o'z hududidagi maktablar bo'yicha svod oladi
+ */
+async function sendDistrictDailySvod() {
+    console.log("🕒 [CRON] Starting district daily svod at 16:30...");
+    const now = getFargonaTime();
+    const dateStr = getFargonaDate();
+    const topics = topicsConfig.getTopics();
+
+    for (const distName in topics) {
+        if (distName === "Test rejimi" || distName === "MMT Boshqarma") continue;
+
+        const topicId = topics[distName];
+        if (!topicId) continue;
+
+        try {
+            // Get district-level data
+            const tumanData = await getTumanSvod(distName, dateStr, 200, 0);
+            const rows = tumanData.rows || [];
+
+            const entered = rows.filter(r => r.fio && r.fio !== 'Kiritilmagan');
+            const missing = rows.filter(r => !r.fio || r.fio === 'Kiritilmagan');
+            const totalSchools = rows.length;
+            const enteredCount = entered.length;
+            const totalStudents = entered.reduce((s, r) => s + (parseInt(r.total_students) || 0), 0);
+            const totalAbsent = entered.reduce((s, r) => s + (parseInt(r.total_absent) || 0), 0);
+            const totalSababsiz = entered.reduce((s, r) => s + (parseInt(r.sababsiz_jami) || 0), 0);
+            const avgPercent = totalStudents > 0
+                ? ((totalStudents - totalAbsent) / totalStudents * 100).toFixed(1)
+                : '0.0';
+
+            const emoji = parseFloat(avgPercent) >= 95 ? '🟢' : parseFloat(avgPercent) >= 90 ? '🟡' : '🔴';
+
+            let msg = `📊 <b>KUNLIK YAKUNIY SVOD — ${distName.toUpperCase()}</b>\n\n`;
+            msg += `📅 <b>Sana:</b> ${dateStr}\n`;
+            msg += `🕒 <b>Eslatma vaqti:</b> 16:30\n\n`;
+            msg += `🏫 <b>Jami maktablar:</b> ${totalSchools} ta\n`;
+            msg += `✅ <b>Hisobot topshirdi:</b> ${enteredCount} ta\n`;
+            msg += `❌ <b>Hisobot topshirmadi:</b> ${missing.length} ta\n\n`;
+            msg += `👥 <b>Jami o'quvchilar:</b> ${totalStudents.toLocaleString()}\n`;
+            msg += `📉 <b>Sababli kelmaganlar:</b> ${totalAbsent - totalSababsiz}\n`;
+            msg += `🚨 <b>Sababsiz kelmaganlar:</b> ${totalSababsiz}\n`;
+            msg += `${emoji} <b>Davomat ko'rsatkichi:</b> ${avgPercent}%\n`;
+
+            if (missing.length > 0) {
+                msg += `\n⚠️ <b>Hisobot topshirmagan maktablar:</b>\n`;
+                missing.slice(0, 20).forEach((m, i) => {
+                    msg += `${i + 1}. ❌ ${m.school}\n`;
+                });
+                if (missing.length > 20) msg += `...va yana ${missing.length - 20} ta maktab.`;
+            }
+
+            // Try to generate district Excel
+            let filePath = null;
+            try {
+                filePath = await exportDistrictExcel(distName, dateStr);
+            } catch (excelErr) {
+                console.error(`Excel error for ${distName}:`, excelErr.message);
+            }
+
+            if (filePath) {
+                const fs = require('fs');
+                if (fs.existsSync(filePath)) {
+                    await bot.telegram.sendDocument(REPORT_GROUP_ID, { source: filePath }, {
+                        caption: msg,
+                        parse_mode: 'HTML',
+                        message_thread_id: topicId
+                    });
+                } else {
+                    await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
+                        parse_mode: 'HTML',
+                        message_thread_id: topicId
+                    });
+                }
+            } else {
+                await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
+                    parse_mode: 'HTML',
+                    message_thread_id: topicId
+                });
+            }
+
+            console.log(`✅ [SVOD] Sent to ${distName} (topic: ${topicId})`);
+            // Small delay to avoid Telegram rate limits
+            await new Promise(r => setTimeout(r, 1000));
+
+        } catch (err) {
+            console.error(`❌ [SVOD] Error for ${distName}:`, err.message);
+        }
+    }
+
+    console.log("✅ [CRON] District daily svod completed.");
+}
+
+/**
  * Weekly Analytical Summary (Sunday 10:00)
  */
 async function sendWeeklyAnalyticalSummary() {
     console.log("🕒 [CRON] Starting weekly analytical report at 10:00...");
     const now = getFargonaTime();
-    const dateStr = now.toISOString().split('T')[0];
+    const dateStr = getFargonaDate();
 
     try {
         const filePath = await exportWeeklyExcel(dateStr);
@@ -133,7 +227,7 @@ async function sendWeeklyAnalyticalSummary() {
 async function sendPendingReportsWarning(hour) {
     console.log(`🕒 [CRON] Starting pending reports warning at ${hour}:00...`);
     const now = getFargonaTime();
-    const dateStr = now.toISOString().split('T')[0];
+    const dateStr = getFargonaDate();
 
     try {
         const mData = await getMissingSchools();
@@ -206,8 +300,8 @@ function initCrons() {
     // 1. Humor: Work Start (08:30 Mon-Sat)
     cron.schedule('30 8 * * 1-6', () => sendHumorStatus('start'), { timezone: "Asia/Tashkent" });
 
-    // 2. Humor: Work End (16:30 Mon-Sat)
-    cron.schedule('30 16 * * 1-6', () => sendHumorStatus('end'), { timezone: "Asia/Tashkent" });
+    // 2. Humor: Work End (17:00 Mon-Sat) — 16:30 now used for district svod
+    cron.schedule('0 17 * * 1-6', () => sendHumorStatus('end'), { timezone: "Asia/Tashkent" });
 
     // 3. Humor: Sunday (09:30 Sunday)
     cron.schedule('30 9 * * 0', () => sendHumorStatus('sunday'), { timezone: "Asia/Tashkent" });
@@ -217,24 +311,29 @@ function initCrons() {
         sendDailySummary();
     }, { timezone: "Asia/Tashkent" });
 
-    // 5. Weekly Analytical Summary (Sunday at 10:00)
+    // 5. *** YANGI *** District Daily Svod at 16:30 — Har bir tuman o'z topiciga
+    cron.schedule('30 16 * * 1-6', () => {
+        sendDistrictDailySvod();
+    }, { timezone: "Asia/Tashkent" });
+
+    // 6. Weekly Analytical Summary (Sunday at 10:00)
     cron.schedule('0 10 * * 0', () => {
         sendWeeklyAnalyticalSummary();
     }, { timezone: "Asia/Tashkent" });
 
-    // 6. Warnings (09:00, 11:00, 13:00, 15:00 Mon-Sat)
-    cron.schedule('0 9,11,13,15 * * 1-6', (e) => {
+    // 7. Warnings (09:00 - 15:00 every hour Mon-Sat)
+    cron.schedule('0 9,10,11,12,13,14,15 * * 1-6', (e) => {
         const h = new Date().getHours();
         sendPendingReportsWarning(h);
     }, { timezone: "Asia/Tashkent" });
 
-    // 7. Deadline 15:30 (30 mins warning)
+    // 8. Deadline 15:30 (30 mins warning)
     cron.schedule('30 15 * * 1-6', () => sendDeadlineWarning('30min'), { timezone: "Asia/Tashkent" });
 
-    // 8. Deadline 16:00 (Final warning)
+    // 9. Deadline 16:00 (Final warning)
     cron.schedule('0 16 * * 1-6', () => sendDeadlineWarning('final'), { timezone: "Asia/Tashkent" });
 
-    console.log("🚀 [Scheduler] Optimized crons initialized (Daily 16:15, Weekly Sun 10:00).");
+    console.log("🚀 [Scheduler] Crons initialized: Viloyat svod 16:15 | Tuman svod 16:30 | Weekly Sun 10:00.");
 }
 
 module.exports = { initCrons };
