@@ -4,7 +4,7 @@ const { getTopicId, normalizeKey } = require('../utils/topics');
 const topicsConfig = require('../config/topics');
 const db = require('../database/db');
 const { checkTime } = require('../utils/time');
-const { getFargonaTime, getFargonaDate } = require('../utils/fargona');
+const { getFargonaTime } = require('../utils/fargona');
 const { analyzeAttendancePhoto } = require('../services/ai');
 const { generateBildirishnoma } = require('../services/pdf');
 const { notifyParents } = require('../services/notifications');
@@ -271,7 +271,8 @@ const attendanceWizard = new Scenes.WizardScene(
         // C) Check for Duplicates
         const { district, school } = ctx.wizard.state.data;
         const { checkIfExists } = require('../services/dataService'); // Lazy require to avoid circular dep issues if any
-        const today = getFargonaDate();
+        const now = getFargonaTime();
+        const today = now.toISOString().split('T')[0];
 
         // If 'overwrite' is already true (e.g. from forced arg), skip check? 
         // No, force_role is 'pro', not overwrite.
@@ -444,7 +445,8 @@ const attendanceWizard = new Scenes.WizardScene(
             return ctx.wizard.selectStep(31);
         }
 
-        const today = getFargonaDate();
+        const now = getFargonaTime();
+        const today = now.toLocaleDateString("ru-RU");
         await ctx.replyWithHTML(`📄 <b>Sababsiz kelmagan o‘quvchilar to‘g‘risidagi bildirgini kiriting (Bugungi sana: ${today}).</b>\n<i>(Rasm, PDF yoki matn shaklida yuborishingiz mumkin)</i>`, navButtons());
         return ctx.wizard.next();
     },
@@ -583,7 +585,8 @@ const attendanceWizard = new Scenes.WizardScene(
                     // Non-pro users or cloud version
                     await ctx.reply("📄 Bildirishnoma tayyorlanmoqda (Cloud)...");
                     try {
-                        const pdfDate = getFargonaDate();
+                        const now = getFargonaTime();
+                        const pdfDate = now.toLocaleDateString('ru-RU');
                         const pdfRes = await generatePdf({
                             district: d.district, school: d.school, inspector: d.inspector,
                             date: pdfDate, students: d.students_list

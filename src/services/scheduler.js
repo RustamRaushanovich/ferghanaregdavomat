@@ -1,51 +1,30 @@
 const { Telegraf } = require('telegraf');
 const cron = require('node-cron');
-const { getViloyatSvod, getTumanSvod, exportToExcel, exportDistrictExcel, exportWeeklyExcel, getMissingSchools } = require('./dataService');
-const { getFargonaTime, getFargonaDate } = require('../utils/fargona');
+const { getViloyatSvod, exportToExcel, getTumanSvod } = require('./dataService');
+const { getFargonaTime } = require('../utils/fargona');
 const topicsConfig = require('../config/topics');
-const { getTopicId, normalizeKey } = require('../utils/topics');
-const config = require('../config/config');
-const msgs = require('../utils/messages');
+const { getTopicId } = require('../utils/topics');
 require('dotenv').config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
-const REPORT_GROUP_ID = config.REPORT_GROUP_ID;
-
-// Recipient List for Private Reports
-const ADMIN_RECIPIENTS = config.ADMIN_RECIPIENTS || [];
+const REPORT_GROUP_ID = process.env.REPORT_GROUP_ID || '-1003662758005';
 
 /**
- * Sends a humor-based status message to general channel
+ * Daily Summary (Svod) at 16:30
  */
-async function sendHumorStatus(type) {
-    let msg = "";
-    if (type === 'start') msg = msgs.getWorkStartMsg();
-    else if (type === 'end') msg = msgs.getWorkEndMsg();
-    else if (type === 'sunday') msg = msgs.getSundayMsg();
-
-    if (!msg) return;
-
-    try {
-        const mainTopicId = getTopicId("MMT Boshqarma") || getTopicId("Test rejimi");
-        await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
-            parse_mode: 'HTML',
-            message_thread_id: mainTopicId
-        });
-    } catch (e) {
-        console.error("Humor Msg Error:", e.message);
-    }
-}
-
 /**
- * Daily Summary (Svod) at 16:15
+ * Daily Summary (Svod) at 16:30
  */
 async function sendDailySummary() {
-    console.log("🕒 [CRON] Starting daily summary at 16:15...");
+    console.log("🕒 [CRON] Starting daily summary at 16:30...");
     const now = getFargonaTime();
-    const dateStr = getFargonaDate();
+    const dateStr = now.toISOString().split('T')[0];
 
     try {
+        // 1. Generate Excel Viloyat
         const filePath = await exportToExcel(dateStr);
+
+        // 2. Get Viloyat Summary Data
         const svod = await getViloyatSvod(dateStr);
 
         let enteredSchools = 0;
@@ -53,287 +32,285 @@ async function sendDailySummary() {
         let vAbsents = 0;
 
         svod.forEach(d => {
-            enteredSchools += (d.entries || 0);
-            vStudents += (d.students || 0);
-            vAbsents += (d.total_absent || 0);
+            enteredSchools += d.entries;
+            vStudents += d.students;
+            vAbsents += d.total_absent;
         });
 
         const vPercent = vStudents > 0 ? ((vStudents - vAbsents) / vStudents * 100).toFixed(1) : 0;
 
-        let msg = `📊 <b>KUNLIK YAKUNIY HISOBOT (SVOD)</b>\n\n`;
-        msg += `📅 Sana: <b>${dateStr}</b>\n`;
-        msg += `🕒 Vaqt: <b>16:15</b>\n\n`;
-        msg += `🏢 Kiritgan maktablar: <b>${enteredSchools} ta</b>\n`;
-        msg += `👥 Jami o'quvchilar: <b>${vStudents.toLocaleString()}</b>\n`;
-        msg += `📉 Davomat ko'rsatkichi: <b>${vPercent}%</b>\n\n`;
-        msg += `👇 Batafsil hududlar kesimida Excel hisobotda:`;
+        let mainMsg = `📊 <b>KUNLIK YAKUNIY HISOBOT (SVOD)</b>\n\n`;
+        mainMsg += `📅 Sana: <b>${dateStr}</b>\n`;
+        mainMsg += `🕒 Vaqt: <b>16:30</b>\n\n`;
+        mainMsg += `🏢 Kiritgan maktablar: <b>${enteredSchools} ta</b>\n`;
+        mainMsg += `👥 Jami o'quvchilar: <b>${vStudents.toLocaleString()}</b>\n`;
+        mainMsg += `📉 Davomat ko'rsatkichi: <b>${vPercent}%</b>\n\n`;
+        mainMsg += `👇 Batafsil hududlar kesimida Excel hisobotda:`;
 
-        // 1. Send to Report Group (MMT Boshqarma Topic)
+        // Send to Main Topic (MMT Boshqarma)
         const mainTopicId = getTopicId("MMT Boshqarma");
         if (filePath) {
             await bot.telegram.sendDocument(REPORT_GROUP_ID, { source: filePath }, {
-                caption: msg,
+                caption: mainMsg,
                 parse_mode: 'HTML',
                 message_thread_id: mainTopicId
             });
 
-            // 2. Send to Admin Recipients privately
-            for (const adminId of ADMIN_RECIPIENTS) {
+            // 3. Send Individual District Summaries to their Topics
+            for (const d of svod) {
+                const topicId = getTopicId(d.district);
+                if (!topicId || topicId === mainTopicId) continue;
+
+                let distMsg = `📊 <b>KUNLIK YAKUNIY HISOBOT</b>\n`;
+                distMsg += `📍 Hudud: <b>${d.district}</b>\n`;
+                distMsg += `📅 Sana: <b>${dateStr}</b>\n\n`;
+                distMsg += `🏢 Kiritgan maktablar: <b>${d.entries} / ${d.total_schools}</b>\n`;
+                distMsg += `👥 Jami o'quvchilar: <b>${(d.students || 0).toLocaleString()}</b>\n`;
+                distMsg += `✅ Sababli kelmaganlar: <b>${d.sababli || 0}</b>\n`;
+                distMsg += `🚫 Sababsiz kelmaganlar: <b>${d.sababsiz || 0}</b>\n`;
+                distMsg += `📉 Davomat ko'rsatkichi: <b>${(d.avg_percent || 0).toFixed(1)}%</b>\n\n`;
+                distMsg += `👉 <a href="https://ferghanaregdavomat.uz/dashboard.html">Batafsil dashboardda</a>`;
+
                 try {
-                    await bot.telegram.sendDocument(adminId, { source: filePath }, {
-                        caption: msg,
-                        parse_mode: 'HTML'
+                    await bot.telegram.sendMessage(REPORT_GROUP_ID, distMsg, {
+                        parse_mode: 'HTML',
+                        message_thread_id: topicId,
+                        disable_web_page_preview: true
                     });
                 } catch (err) {
-                    console.error(`Failed to send daily to admin ${adminId}:`, err.message);
+                    console.error(`Error sending individual report to ${d.district}:`, err.message);
                 }
             }
+
+            console.log("✅ [CRON] Daily summaries sent successfully to all topics.");
+
+            // 4. Web Push Notification
+            await sendPushNotifications("Bugungi kun uchun yakuniy hisobotlar tayyor! Ularni dashboardda va Telegram kanallarda ko'rishingiz mumkin.");
         }
     } catch (e) {
         console.error("❌ [CRON] Daily summary error:", e);
     }
 }
 
-/**
- * District Daily Svod - Sent to Each District's Own Topic at 16:30
- * Har bir tuman/shahar o'z topiciga o'z hududidagi maktablar bo'yicha svod oladi
- */
-async function sendDistrictDailySvod() {
-    console.log("🕒 [CRON] Starting district daily svod at 16:30...");
-    const now = getFargonaTime();
-    const dateStr = getFargonaDate();
-    const topics = topicsConfig.getTopics();
+async function sendPushNotifications(message) {
+    const webpush = require('web-push');
+    const db_pg = require('../database/pg');
 
-    for (const distName in topics) {
-        if (distName === "Test rejimi" || distName === "MMT Boshqarma") continue;
+    webpush.setVapidDetails(
+        'mailto:imronbekr@gmail.com',
+        process.env.VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+    );
 
-        const topicId = topics[distName];
-        if (!topicId) continue;
+    try {
+        const res = await db_pg.query('SELECT subscription FROM push_subscriptions');
+        const subscriptions = res.rows.map(r => JSON.parse(r.subscription));
 
-        try {
-            // Get district-level data
-            const tumanData = await getTumanSvod(distName, dateStr, 200, 0);
-            const rows = tumanData.rows || [];
+        const payload = JSON.stringify({
+            title: 'Ferghana Davomat',
+            body: message,
+            icon: '/logo.png'
+        });
 
-            const entered = rows.filter(r => r.fio && r.fio !== 'Kiritilmagan');
-            const missing = rows.filter(r => !r.fio || r.fio === 'Kiritilmagan');
-            const totalSchools = rows.length;
-            const enteredCount = entered.length;
-            const totalStudents = entered.reduce((s, r) => s + (parseInt(r.total_students) || 0), 0);
-            const totalAbsent = entered.reduce((s, r) => s + (parseInt(r.total_absent) || 0), 0);
-            const totalSababsiz = entered.reduce((s, r) => s + (parseInt(r.sababsiz_jami) || 0), 0);
-            const avgPercent = totalStudents > 0
-                ? ((totalStudents - totalAbsent) / totalStudents * 100).toFixed(1)
-                : '0.0';
-
-            const emoji = parseFloat(avgPercent) >= 95 ? '🟢' : parseFloat(avgPercent) >= 90 ? '🟡' : '🔴';
-
-            let msg = `📊 <b>KUNLIK YAKUNIY SVOD — ${distName.toUpperCase()}</b>\n\n`;
-            msg += `📅 <b>Sana:</b> ${dateStr}\n`;
-            msg += `🕒 <b>Eslatma vaqti:</b> 16:30\n\n`;
-            msg += `🏫 <b>Jami maktablar:</b> ${totalSchools} ta\n`;
-            msg += `✅ <b>Hisobot topshirdi:</b> ${enteredCount} ta\n`;
-            msg += `❌ <b>Hisobot topshirmadi:</b> ${missing.length} ta\n\n`;
-            msg += `👥 <b>Jami o'quvchilar:</b> ${totalStudents.toLocaleString()}\n`;
-            msg += `📉 <b>Sababli kelmaganlar:</b> ${totalAbsent - totalSababsiz}\n`;
-            msg += `🚨 <b>Sababsiz kelmaganlar:</b> ${totalSababsiz}\n`;
-            msg += `${emoji} <b>Davomat ko'rsatkichi:</b> ${avgPercent}%\n`;
-
-            if (missing.length > 0) {
-                msg += `\n⚠️ <b>Hisobot topshirmagan maktablar:</b>\n`;
-                missing.slice(0, 20).forEach((m, i) => {
-                    msg += `${i + 1}. ❌ ${m.school}\n`;
-                });
-                if (missing.length > 20) msg += `...va yana ${missing.length - 20} ta maktab.`;
-            }
-
-            // Try to generate district Excel
-            let filePath = null;
-            try {
-                filePath = await exportDistrictExcel(distName, dateStr);
-            } catch (excelErr) {
-                console.error(`Excel error for ${distName}:`, excelErr.message);
-            }
-
-            if (filePath) {
-                const fs = require('fs');
-                if (fs.existsSync(filePath)) {
-                    await bot.telegram.sendDocument(REPORT_GROUP_ID, { source: filePath }, {
-                        caption: msg,
-                        parse_mode: 'HTML',
-                        message_thread_id: topicId
-                    });
-                } else {
-                    await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
-                        parse_mode: 'HTML',
-                        message_thread_id: topicId
-                    });
+        const promises = subscriptions.map(sub =>
+            webpush.sendNotification(sub, payload).catch(e => {
+                if (e.statusCode === 410) {
+                    db_pg.query('DELETE FROM push_subscriptions WHERE subscription = $1', [JSON.stringify(sub)]);
                 }
-            } else {
+            })
+        );
+        await Promise.all(promises);
+        console.log(`✅ [Push] Sent to ${promises.length} devices.`);
+    } catch (e) {
+        console.error("❌ [Push] Error:", e);
+    }
+}
+
+
+/**
+ * Sunday Best Schools Report at 09:00
+ */
+async function sendWeeklyBestSchools() {
+    console.log("🕒 [CRON] Starting weekly best schools report (Sunday 09:00)...");
+    const topics = topicsConfig.getTopics();
+    const districts = Object.keys(topics).filter(d => d !== "Test rejimi" && d !== "MMT Boshqarma");
+
+    // Last 6 days (Mon-Sat)
+    const now = getFargonaTime();
+    const dateRange = [];
+    for (let i = 1; i <= 7; i++) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        dateRange.push(d.toISOString().split('T')[0]);
+    }
+
+    try {
+        const db = require('../database/pg');
+
+        for (const distName of districts) {
+            const topicId = getTopicId(distName);
+            if (!topicId) continue;
+
+            const q = `
+                SELECT school, AVG(percent) as avg_p 
+                FROM attendance 
+                WHERE district = $1 AND date = ANY($2) 
+                GROUP BY school 
+                ORDER BY avg_p DESC LIMIT 5
+            `;
+            const res = await db.query(q, [distName, dateRange]);
+
+            if (res.rows.length > 0) {
+                let msg = `🏆 <b>HAFTALIK ENG NAMUNALI MAKTABLAR</b> (TOP-5)\n`;
+                msg += `📍 Hudud: <b>${distName}</b>\n`;
+                msg += `📅 Davr: ${dateRange[dateRange.length - 1]} dan ${dateRange[0]} gacha\n\n`;
+
+                res.rows.forEach((r, i) => {
+                    msg += `${getMedal(i + 1)} <b>${r.school}</b> — ${parseFloat(r.avg_p).toFixed(1)}%\n`;
+                });
+
+                msg += `\n👏 <i>Tabriklaymiz! Davomatni namunali saqlashda davom eting.</i>`;
+
                 await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
                     parse_mode: 'HTML',
                     message_thread_id: topicId
                 });
             }
-
-            console.log(`✅ [SVOD] Sent to ${distName} (topic: ${topicId})`);
-            // Small delay to avoid Telegram rate limits
-            await new Promise(r => setTimeout(r, 1000));
-
-        } catch (err) {
-            console.error(`❌ [SVOD] Error for ${distName}:`, err.message);
         }
-    }
-
-    console.log("✅ [CRON] District daily svod completed.");
-}
-
-/**
- * Weekly Analytical Summary (Sunday 10:00)
- */
-async function sendWeeklyAnalyticalSummary() {
-    console.log("🕒 [CRON] Starting weekly analytical report at 10:00...");
-    const now = getFargonaTime();
-    const dateStr = getFargonaDate();
-
-    try {
-        const filePath = await exportWeeklyExcel(dateStr);
-        let msg = `📈 <b>HAFTALIK ANALITIK TAHLIL (SVOD)</b>\n\n`;
-        msg += `📅 Sana: <b>${dateStr}</b> (Yakshanba)\n`;
-        msg += `📊 O'tgan haftadagi umumiy davomat ko'rsatkichlari, eng namunali va tanqidiy maktablar tahlili.\n\n`;
-        msg += `📂 Batafsil ma'lumot ilova qilingan Excel faylda.`;
-
-        if (filePath) {
-            // Send to Admin Recipients privately
-            for (const adminId of ADMIN_RECIPIENTS) {
-                try {
-                    await bot.telegram.sendDocument(adminId, { source: filePath }, {
-                        caption: msg,
-                        parse_mode: 'HTML'
-                    });
-                } catch (err) {
-                    console.error(`Failed to send weekly to admin ${adminId}:`, err.message);
-                }
-            }
-        }
+        console.log("✅ [CRON] Weekly best schools report sent.");
     } catch (e) {
-        console.error("❌ [CRON] Weekly analytical error:", e);
+        console.error("❌ [CRON] Weekly best schools error:", e);
+    }
+}
+
+function getMedal(rank) {
+    if (rank === 1) return '🥇';
+    if (rank === 2) return '🥈';
+    if (rank === 3) return '🥉';
+    return '🔹';
+}
+
+/**
+ * Flash Report for SuperAdmin at 16:45
+ */
+async function sendFlashReport() {
+    console.log("🕒 [CRON] Starting flash report at 16:45...");
+    const now = getFargonaTime();
+    const dateStr = now.toISOString().split('T')[0];
+
+    try {
+        const svod = await getViloyatSvod(dateStr);
+        if (!svod || svod.length === 0) return;
+
+        // Sort for best and worst
+        const sorted = [...svod].sort((a, b) => b.avg_percent - a.avg_percent);
+        const top3 = sorted.slice(0, 3);
+        const bottom3 = sorted.filter(d => d.entries > 0).slice(-3).reverse();
+
+        let msg = `⚡️ <b>FARG'ONA VILOYATI: KUNLIK TEZKOR HISOBOT</b>\n`;
+        msg += `📅 Sana: <b>${dateStr}</b> | 🕒 <b>16:45</b>\n\n`;
+
+        msg += `✅ <b>ENG YAXSHI 3 HUDUD:</b>\n`;
+        top3.forEach((d, i) => {
+            msg += `${i + 1}. ${d.district} — <b>${parseFloat(d.avg_percent).toFixed(1)}%</b>\n`;
+        });
+
+        msg += `\n⚠️ <b>DIQQAT TALAB 3 HUDUD:</b>\n`;
+        bottom3.forEach((d, i) => {
+            msg += `${i + 1}. ${d.district} — <b>${parseFloat(d.avg_percent).toFixed(1)}%</b>\n`;
+        });
+
+        msg += `\n📊 <b>VILOYAT O'RTACHA:</b> <b>${(svod.reduce((acc, curr) => acc + curr.avg_percent, 0) / svod.length).toFixed(1)}%</b>\n`;
+        msg += `🏢 Jami maktablar: ${svod.reduce((acc, curr) => acc + curr.entries, 0)} ta`;
+
+        const superAdminIds = [65002404, 786314811];
+        for (const sid of superAdminIds) {
+            await bot.telegram.sendMessage(sid, msg, { parse_mode: 'HTML' });
+        }
+        console.log("✅ [CRON] Flash report sent.");
+    } catch (e) {
+        console.error("❌ [CRON] Flash report error:", e);
     }
 }
 
 /**
- * Fix for Topic Warnings: Ensure all topics get the message and no duplicates
+ * Warn non-reporting schools every 2 hours
  */
-async function sendPendingReportsWarning(hour) {
-    console.log(`🕒 [CRON] Starting pending reports warning at ${hour}:00...`);
+async function sendPendingReportsWarning() {
+    console.log("🕒 [CRON] Starting non-reporting schools warning...");
     const now = getFargonaTime();
-    const dateStr = getFargonaDate();
+    const dateStr = now.toISOString().split('T')[0];
+    const hour = now.getHours();
 
     try {
-        const mData = await getMissingSchools();
-        if (!mData) return;
-
-        // Iterate through all districts defined in topics
+        const db_pg = require('../database/pg');
+        const { schools_db } = require('../database/db');
         const topics = topicsConfig.getTopics();
+        const districts = Object.keys(topics).filter(d => d !== "Test rejimi" && d !== "MMT Boshqarma");
 
-        for (const distName in topics) {
-            if (distName === "Test rejimi" || distName === "MMT Boshqarma") continue;
+        for (const distName of districts) {
+            const topicId = getTopicId(distName);
+            if (!topicId) continue;
 
-            const missing = mData[distName] || [];
-            if (missing.length > 0) {
-                const topicId = topics[distName];
-                let txt = msgs.getWarningMsg(distName, hour) + "\n\n";
+            const reportedRes = await db_pg.query(`SELECT school FROM attendance WHERE district = $1 AND date = $2`, [distName, dateStr]);
+            const reportedSchools = reportedRes.rows.map(r => r.school);
 
-                const list = missing.slice(0, 40);
-                list.forEach((s, i) => { txt += `${i + 1}. ❌ ${s}\n`; });
-                if (missing.length > 40) txt += `...ва яна ${missing.length - 40} та мактаб.`;
+            const allSchoolsInDist = schools_db[distName] || [];
+            const missingSchools = allSchoolsInDist.filter(s => !reportedSchools.includes(s));
 
-                txt += `\n\n❗️ Iltimos, o'z vaqtida kiritishni ta'minlang.`;
+            if (missingSchools.length > 0) {
+                let msg = `⚠️ <b>DIQQAT: HISOBOT TOPSHIRMAGAN MAKTABLAR</b>\n`;
+                msg += `📍 Hudud: <b>${distName}</b>\n`;
+                msg += `⏰ Vaqt: <b>${hour}:00</b>\n`;
+                msg += `📅 Sana: <b>${dateStr}</b>\n\n`;
+                msg += `🛑 <b>Topshirmadi: ${missingSchools.length} ta maktab</b>\n`;
 
-                try {
-                    await bot.telegram.sendMessage(REPORT_GROUP_ID, txt, {
-                        parse_mode: 'HTML',
-                        message_thread_id: topicId
-                    });
-                } catch (err) {
-                    console.error(`Error sending warning to ${distName}:`, err.message);
-                }
+                // Show first 30 schools to avoid message length limits
+                const list = missingSchools.slice(0, 30);
+                list.forEach(s => {
+                    msg += `• ${s}\n`;
+                });
+
+                if (missingSchools.length > 30) msg += `...va yana ${missingSchools.length - 30} ta maktab.\n`;
+
+                msg += `\n❗ <i>Iltimos, hisobotlarni zudlik bilan kiritishingizni so'raymiz!</i>`;
+
+                await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
+                    parse_mode: 'HTML',
+                    message_thread_id: topicId
+                });
             }
         }
+        console.log("✅ [CRON] Non-reporting warnings sent.");
     } catch (e) {
         console.error("❌ [CRON] Pending reports warning error:", e);
     }
 }
 
-async function sendDeadlineWarning(type) {
-    const hour = type === '30min' ? 15 : 16;
-    const mData = await getMissingSchools();
-    if (!mData) return;
-
-    const topics = topicsConfig.getTopics();
-    for (const distName in topics) {
-        if (distName === "Test rejimi" || distName === "MMT Boshqarma") continue;
-
-        const missing = mData[distName] || [];
-        if (missing.length > 0) {
-            const topicId = topics[distName];
-            let txt = type === '30min' ? msgs.getDeadline30Msg(distName) : msgs.getFinalDeadlineMsg(distName);
-            txt += "\n\n";
-
-            const list = missing.slice(0, 40);
-            list.forEach((s, i) => { txt += `${i + 1}. ❌ ${s}\n`; });
-
-            try {
-                await bot.telegram.sendMessage(REPORT_GROUP_ID, txt, {
-                    parse_mode: 'HTML',
-                    message_thread_id: topicId
-                });
-            } catch (err) {
-                console.error(`Error sending deadline to ${distName}:`, err.message);
-            }
-        }
-    }
-}
 
 // Initialize Cron Jobs
 function initCrons() {
-    // 1. Humor: Work Start (08:30 Mon-Sat)
-    cron.schedule('30 8 * * 1-6', () => sendHumorStatus('start'), { timezone: "Asia/Tashkent" });
-
-    // 2. Humor: Work End (17:00 Mon-Sat) — 16:30 now used for district svod
-    cron.schedule('0 17 * * 1-6', () => sendHumorStatus('end'), { timezone: "Asia/Tashkent" });
-
-    // 3. Humor: Sunday (09:30 Sunday)
-    cron.schedule('30 9 * * 0', () => sendHumorStatus('sunday'), { timezone: "Asia/Tashkent" });
-
-    // 4. Daily Summary at 16:15 (Monday-Saturday)
-    cron.schedule('15 16 * * 1-6', () => {
+    // 1. Daily Summary at 16:30 (Monday-Saturday)
+    cron.schedule('30 16 * * 1-6', () => {
         sendDailySummary();
     }, { timezone: "Asia/Tashkent" });
 
-    // 5. *** YANGI *** District Daily Svod at 16:30 — Har bir tuman o'z topiciga
-    cron.schedule('30 16 * * 1-6', () => {
-        sendDistrictDailySvod();
+    // 2. Flash Report at 16:45 (Monday-Saturday)
+    cron.schedule('45 16 * * 1-6', () => {
+        sendFlashReport();
     }, { timezone: "Asia/Tashkent" });
 
-    // 6. Weekly Analytical Summary (Sunday at 10:00)
-    cron.schedule('0 10 * * 0', () => {
-        sendWeeklyAnalyticalSummary();
+    // 3. Weekly Best Schools (Sunday at 09:00)
+    cron.schedule('0 9 * * 0', () => {
+        sendWeeklyBestSchools();
     }, { timezone: "Asia/Tashkent" });
 
-    // 7. Warnings (09:00 - 15:00 every hour Mon-Sat)
-    cron.schedule('0 9,10,11,12,13,14,15 * * 1-6', (e) => {
-        const h = new Date().getHours();
-        sendPendingReportsWarning(h);
+    // 4. Pending Reports Warning (Every 2 hours from 10:00 to 14:00, Monday-Saturday)
+    cron.schedule('0 10,12,14 * * 1-6', () => {
+        sendPendingReportsWarning();
     }, { timezone: "Asia/Tashkent" });
 
-    // 8. Deadline 15:30 (30 mins warning)
-    cron.schedule('30 15 * * 1-6', () => sendDeadlineWarning('30min'), { timezone: "Asia/Tashkent" });
-
-    // 9. Deadline 16:00 (Final warning)
-    cron.schedule('0 16 * * 1-6', () => sendDeadlineWarning('final'), { timezone: "Asia/Tashkent" });
-
-    console.log("🚀 [Scheduler] Crons initialized: Viloyat svod 16:15 | Tuman svod 16:30 | Weekly Sun 10:00.");
+    console.log("🚀 [Scheduler] Automated reports initialized.");
 }
 
 module.exports = { initCrons };

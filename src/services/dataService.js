@@ -1,5 +1,5 @@
 const db = require('../database/pg');
-const { getFargonaTime, getFargonaDate, formatDate } = require('../utils/fargona');
+const { getFargonaTime } = require('../utils/fargona');
 const ExcelJS = require('exceljs');
 const path = require('path');
 const fs = require('fs');
@@ -8,7 +8,7 @@ const { normalizeKey } = require('../utils/topics');
 async function saveAttendance(data) {
     try {
         const time = getFargonaTime().toTimeString().split(' ')[0].substring(0, 5);
-        const date = getFargonaDate();
+        const date = getFargonaTime().toISOString().split('T')[0];
 
         // 1. Delete previous entry for this school on this date (Overwrite logic)
         // Clean up associated children records first to avoid orphans/FK issues
@@ -32,19 +32,16 @@ async function saveAttendance(data) {
         `;
 
         const total_students = parseInt(data.total_students) || 1;
-        const sababli_jami = parseInt(data.sababli_jami || data.sababli_total || 0);
-        const sababsiz_jami = parseInt(data.sababsiz_jami || data.sababsiz_total || 0);
-        const total_absent = sababli_jami + sababsiz_jami;
-
+        const total_absent = (parseInt(data.sababli_total) || 0) + (parseInt(data.sababsiz_total) || 0);
         let percent = ((total_students - total_absent) / total_students * 100);
         if (percent < 0) percent = 0;
         if (percent > 100) percent = 100;
 
         const values = [
             date, time, data.district, data.school, data.classes_count, total_students,
-            data.sababli_kasal || 0, data.sababli_tadbirlar || 0, data.sababli_oilaviy || 0, data.sababli_ijtimoiy || 0, data.sababli_boshqa || 0, sababli_jami,
-            data.sababsiz_muntazam || 0, data.sababsiz_qidiruv || 0, data.sababsiz_chetel || 0, data.sababsiz_boyin || 0, data.sababsiz_ishlab || 0,
-            data.sababsiz_qarshilik || 0, data.sababsiz_jazo || 0, data.sababsiz_nazoratsiz || 0, data.sababsiz_boshqa || 0, data.sababsiz_turmush || 0, sababsiz_jami,
+            data.sababli_kasal, data.sababli_tadbirlar, data.sababli_oilaviy, data.sababli_ijtimoiy, data.sababli_boshqa, data.sababli_total,
+            data.sababsiz_muntazam, data.sababsiz_qidiruv, data.sababsiz_chetel, data.sababsiz_boyin, data.sababsiz_ishlab,
+            data.sababsiz_qarshilik, data.sababsiz_jazo, data.sababsiz_nazoratsiz, data.sababsiz_boshqa, data.sababsiz_turmush, data.sababsiz_total,
             total_absent, percent.toFixed(1),
             data.fio, data.phone, data.inspector, data.user_id || 0, data.source || 'bot', data.bildirgi || null
         ];
@@ -89,7 +86,7 @@ const setStyle = (cell, options = {}) => {
 
 async function exportToExcel(date) {
     try {
-        const targetDate = date || getFargonaDate();
+        const targetDate = date || getFargonaTime().toISOString().split('T')[0];
         const schoolsDb = require('../database/db').schools_db;
         const allDistricts = ["Farg'ona shahri", "Marg'ilon shahri", "Qo'qon shahri", "Quvasoy shahri", "Beshariq tumani", "Bag'dod tumani", "Uchko'prik tumani", "Qo'shtepa tumani", "Farg'ona tumani", "O'zbekiston tumani", "Dang'ara tumani", "Rishton tumani", "So'x tumani", "Toshloq tumani", "Oltiariq tumani", "Furqat tumani", "Buvayda tumani", "Quva tumani", "Yozyovon tumani"];
 
@@ -246,7 +243,7 @@ async function exportToExcel(date) {
 
 async function exportDistrictExcel(district, date) {
     try {
-        const targetDate = date || getFargonaDate();
+        const targetDate = date || getFargonaTime().toISOString().split('T')[0];
         const schoolsDb = require('../database/db').schools_db;
         const normD = normalizeKey(district);
         const dbKey = Object.keys(schoolsDb).find(k => normalizeKey(k) === normD);
@@ -264,9 +261,8 @@ async function exportDistrictExcel(district, date) {
         sheet1.mergeCells('L2:L3'); sheet1.getCell('L2').value = "Sababsiz jami";
         sheet1.mergeCells('M2:V2'); sheet1.getCell('M2').value = "Shundan Sababsizlar:";
         ["Muntazam", "Qidiruv", "Chet el", "Bo'yin", "Ish", "Qarshilik", "Jazo", "Nazoratsiz", "Boshqa", "Turmush"].forEach((v, i) => sheet1.getCell(3, 13 + i).value = v);
-        sheet1.mergeCells('W2:W3'); sheet1.getCell('W2').value = "Bildirgi";
 
-        for (let r = 2; r <= 3; r++) { sheet1.getRow(r).height = 40; for (let c = 1; c <= 23; c++) setStyle(sheet1.getCell(r, c), { bold: true, fill: c >= 12 ? 'FFF8CBAD' : 'FFC6E0B4', size: 9 }); }
+        for (let r = 2; r <= 3; r++) { sheet1.getRow(r).height = 40; for (let c = 1; c <= 22; c++) setStyle(sheet1.getCell(r, c), { bold: true, fill: c >= 12 ? 'FFF8CBAD' : 'FFC6E0B4', size: 9 }); }
 
         const entriesRes = await db.query(`
             SELECT DISTINCT ON (district, school) *
@@ -281,7 +277,7 @@ async function exportDistrictExcel(district, date) {
         districtSchools.forEach((sName, i) => {
             const d = tumanEntries.find(e => normalizeKey(e.school) === normalizeKey(sName)) || {};
             const st = parseInt(d.total_students) || 0; const tab = parseInt(d.total_absent) || 0; const perc = st > 0 ? ((st - tab) / st * 100).toFixed(1) : 0;
-            const row = sheet1.addRow([i + 1, sName, d.classes_count || 0, st, perc + '%', tab, d.sababli_kasal || 0, d.sababli_tadbirlar || 0, d.sababli_oilaviy || 0, d.sababli_ijtimoiy || 0, d.sababli_boshqa || 0, d.sababsiz_jami || 0, d.sababsiz_muntazam || 0, d.sababsiz_qidiruv || 0, d.sababsiz_chetel || 0, d.sababsiz_boyin || 0, d.sababsiz_ishlab || 0, d.sababsiz_qarshilik || 0, d.sababsiz_jazo || 0, d.sababsiz_nazoratsiz || 0, d.sababsiz_boshqa || 0, d.sababsiz_turmush || 0, d.bildirgi ? 'Mavjud' : '-']);
+            const row = sheet1.addRow([i + 1, sName, d.classes_count || 0, st, perc + '%', tab, d.sababli_kasal || 0, d.sababli_tadbirlar || 0, d.sababli_oilaviy || 0, d.sababli_ijtimoiy || 0, d.sababli_boshqa || 0, d.sababsiz_jami || 0, d.sababsiz_muntazam || 0, d.sababsiz_qidiruv || 0, d.sababsiz_chetel || 0, d.sababsiz_boyin || 0, d.sababsiz_ishlab || 0, d.sababsiz_qarshilik || 0, d.sababsiz_jazo || 0, d.sababsiz_nazoratsiz || 0, d.sababsiz_boshqa || 0, d.sababsiz_turmush || 0]);
             row.eachCell(c => setStyle(c));
             v_cl += (d.classes_count || 0); v_st += st; v_tab += tab;
             v_sab[0] += (d.sababli_kasal || 0); v_sab[1] += (d.sababli_tadbirlar || 0); v_sab[2] += (d.sababli_oilaviy || 0); v_sab[3] += (d.sababli_ijtimoiy || 0); v_sab[4] += (d.sababli_boshqa || 0);
@@ -292,7 +288,7 @@ async function exportDistrictExcel(district, date) {
         const sumRow = sheet1.addRow(["", "TUMAN JAMI", v_cl, v_st, totalPerc + '%', v_tab, ...v_sab, ...v_ss]);
         sumRow.eachCell(c => setStyle(c, { bold: true, fill: 'FFFFFF00' }));
 
-        sheet1.getColumn(2).width = 30; for (let c = 3; c <= 23; c++) sheet1.getColumn(c).width = 11;
+        sheet1.getColumn(2).width = 30; for (let c = 3; c <= 22; c++) sheet1.getColumn(c).width = 11;
         const filePath = path.join(path.resolve(__dirname, '../../assets'), `HISOBOT_${district.replace(/[^a-zA-Z0-9]/g, '_')}_${targetDate}.xlsx`);
         await workbook.xlsx.writeFile(filePath); return filePath;
     } catch (e) { console.error("District Excel Error:", e); return null; }
@@ -303,10 +299,9 @@ async function getViloyatSvod(date) {
         const topics = require('../config/topics').getTopics();
         const { DISTRICT_HEADS } = require('../config/config');
         const allDistricts = Object.keys(topics).filter(d => d !== "Test rejimi" && d !== "MMT Boshqarma");
-        const targetDate = date || getFargonaDate();
-        const yesterday = new Date(targetDate);
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = formatDate(yesterday);
+        const targetDate = date;
+        const yesterday = new Date(targetDate); yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
 
         const rawEntriesRes = await db.query(`
             WITH normalized_attendance AS (
@@ -326,7 +321,7 @@ async function getViloyatSvod(date) {
                 SELECT 
                     TRIM(REPLACE(REPLACE(district, '‘', ''''), '’', '''')) as norm_dist,
                     TRIM(REPLACE(REPLACE(school, '‘', ''''), '’', '''')) as norm_school,
-                    id, percent
+                    *
                 FROM attendance
                 WHERE date = $1
             )
@@ -342,8 +337,8 @@ async function getViloyatSvod(date) {
             const districtOfficialSchools = (dbKey ? schoolsDb[dbKey] : []).map(s => normalizeKey(s));
             const totalSchools = districtOfficialSchools.length;
 
-            const tumanRows = rawEntriesRes.rows.filter(r => normalizeKey(r.district) === normD && districtOfficialSchools.includes(normalizeKey(r.school)));
-            const yestRows = yestEntriesRes.rows.filter(r => normalizeKey(r.district) === normD && districtOfficialSchools.includes(normalizeKey(r.school)));
+            const tumanRows = rawEntriesRes.rows.filter(r => normalizeKey(r.dist) === normD || normalizeKey(r.norm_dist) === normD || normalizeKey(r.district) === normD);
+            const yestRows = yestEntriesRes.rows.filter(r => normalizeKey(r.dist) === normD || normalizeKey(r.norm_dist) === normD || normalizeKey(r.district) === normD);
 
 
             const head = DISTRICT_HEADS[dName] || { name: "-", phone: "-" };
@@ -518,8 +513,8 @@ async function exportWeeklyExcel(baseDate) {
     try {
         const workbook = new ExcelJS.Workbook();
         const sheet = workbook.addWorksheet('Haftalik Hisobot');
-        const endDate = baseDate || getFargonaDate();
-        const startDate = formatDate(new Date(new Date(endDate).getTime() - 7 * 24 * 60 * 60 * 1000));
+        const endDate = baseDate || getFargonaTime().toISOString().split('T')[0];
+        const startDate = new Date(new Date(endDate).getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
         sheet.mergeCells('A1:H1');
         sheet.getCell('A1').value = `Haftalik Davomat Hisoboti (${startDate} - ${endDate})`;
@@ -573,8 +568,8 @@ async function exportMonthlyExcel(baseDate, district = null) {
         const d = baseDate ? new Date(baseDate) : getFargonaTime();
         const year = d.getFullYear();
         const month = d.getMonth();
-        const startDate = formatDate(new Date(year, month, 1));
-        const endDate = formatDate(new Date(year, month + 1, 0));
+        const startDate = new Date(year, month, 1).toISOString().split('T')[0];
+        const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
 
         const title = district ? `${district} - ${year}-${month + 1} Oylik Hisobot` : `Viloyat - ${year}-${month + 1} Oylik Hisobot`;
         sheet.mergeCells('A1:J1');
@@ -636,44 +631,7 @@ async function exportMonthlyExcel(baseDate, district = null) {
     }
 }
 
-async function getMissingSchools(date) {
-    try {
-        const targetDate = date || getFargonaDate();
-        const schoolsDb = require('../database/db').schools_db;
-        const topics = require('../config/topics').getTopics();
-        const allDistricts = Object.keys(topics).filter(d => d !== "Test rejimi" && d !== "MMT Boshqarma");
-
-        const entriesRes = await db.query(`SELECT district, school FROM attendance WHERE date = $1`, [targetDate]);
-        const entries = entriesRes.rows;
-
-        const missing = {};
-        allDistricts.forEach(dName => {
-            const normD = normalizeKey(dName);
-            const dbKey = Object.keys(schoolsDb).find(k => normalizeKey(k) === normD);
-            const districtOfficialSchools = schoolsDb[dbKey || dName] || [];
-
-            const submittedSchools = entries
-                .filter(e => normalizeKey(e.district) === normD)
-                .map(e => normalizeKey(e.school));
-
-            const districtMissing = districtOfficialSchools.filter(sName => {
-                return !submittedSchools.includes(normalizeKey(sName));
-            });
-
-            if (districtMissing.length > 0) {
-                missing[dName] = districtMissing;
-            }
-        });
-
-        return missing;
-    } catch (e) {
-        console.error("getMissingSchools Local Error:", e);
-        return {};
-    }
-}
-
 module.exports = {
     saveAttendance, exportToExcel, exportDistrictExcel, exportWeeklyExcel, exportMonthlyExcel,
-    getViloyatSvod, getTumanSvod, getTodayAbsentsDetails, getRecentActivity, getTrendStats, checkIfExists,
-    getMissingSchools
+    getViloyatSvod, getTumanSvod, getTodayAbsentsDetails, getRecentActivity, getTrendStats, checkIfExists
 };

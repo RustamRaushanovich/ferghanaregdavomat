@@ -112,13 +112,13 @@
     <div class="login-card">
         <!-- Navigation -->
         <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-            <a href="index.html" style="color: #94a3b8; text-decoration: none; font-size: 0.9rem; transition: 0.3s;"
-                onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'"><i
-                    class="fas fa-home"></i> Bosh sahifa</a>
             <a href="javascript:history.back()"
                 style="color: #94a3b8; text-decoration: none; font-size: 0.9rem; transition: 0.3s;"
                 onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'"><i
                     class="fas fa-arrow-left"></i> Ortga</a>
+            <a href="index.html" style="color: #94a3b8; text-decoration: none; font-size: 0.9rem; transition: 0.3s;"
+                onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'"><i
+                    class="fas fa-home"></i> Bosh sahifa</a>
         </div>
 
         <div style="display:flex; justify-content: center; align-items: center; margin-bottom: 20px;">
@@ -183,7 +183,9 @@
                     localStorage.setItem('dashboard_school', data.school);
                     localStorage.setItem('dashboard_fio', data.fio);
                     localStorage.setItem('dashboard_phone', data.phone);
-                    localStorage.setItem('dashboard_assigned_schools', JSON.stringify(data.assigned_schools || []));
+                    if (data.role === 'inspektor_psixolog') {
+                        localStorage.setItem('dashboard_assigned_schools', JSON.stringify(data.assigned_schools || []));
+                    }
 
                     window.location.href = 'dashboard.html';
                 } else {

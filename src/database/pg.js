@@ -81,6 +81,20 @@ async function initDb() {
                 login TEXT PRIMARY KEY,
                 data JSONB
             );
+            CREATE TABLE IF NOT EXISTS inspector_profiles (
+                phone TEXT PRIMARY KEY,
+                fio TEXT,
+                district TEXT,
+                schools JSONB,
+                last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE TABLE IF NOT EXISTS inspector_activity (
+                id SERIAL PRIMARY KEY,
+                phone TEXT,
+                action TEXT,
+                details TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
         `);
         console.log("🐘 PostgreSQL tables initialized.");
     } catch (e) {

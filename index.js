@@ -12,7 +12,7 @@ const topicsConfig = require('./src/config/topics');
 const TOPICS = topicsConfig.getTopics();
 const config = require('./src/config/config');
 const { getTopicId, normalizeKey } = require('./src/utils/topics');
-const { getFargonaTime, getFargonaDate } = require('./src/utils/fargona');
+const { getFargonaTime } = require('./src/utils/fargona');
 const axios = require('axios');
 const express = require('express');
 const multer = require('multer');
@@ -70,14 +70,15 @@ app.post('/api/login', (req, res) => {
     const user = USERS[username];
     if (user && user.password === password) {
         const token = generateToken();
+        // Store user with username for easy lookup later
         tokens.set(token, { ...user, username });
         res.json({
             token,
             role: user.role,
-            username: user.username || username,
+            username: user.username,
             district: user.district,
             school: user.school || null,
-            assigned_schools: user.assigned_schools || [],  // Inspektor-Psixolog uchun
+            assigned_schools: user.assigned_schools || [], // Inspektor uchun
             fio: user.fio || '',
             phone: user.phone || ''
         });
@@ -201,7 +202,7 @@ app.post('/api/admin/inspectors/create', auth, async (req, res) => {
         phone: phone || '',
         assigned_schools  // Array of school names
     };
-    await saveUsers();
+    saveUsers();
     res.json({ success: true, login });
 });
 
@@ -213,7 +214,7 @@ app.delete('/api/admin/inspectors/:login', auth, async (req, res) => {
         return res.status(404).json({ error: 'Inspektor topilmadi' });
     }
     delete USERS[login];
-    await saveUsers();
+    saveUsers();
     res.json({ success: true });
 });
 
@@ -232,17 +233,23 @@ app.get('/api/inspektor/davomat', auth, async (req, res) => {
 
     try {
         const entriesRes = await sqlite.query(`
-            SELECT DISTINCT ON (district, school) *
-            FROM attendance
-            WHERE date = $1
-            ORDER BY district, school, id DESC
+            WITH normalized_attendance AS (
+                SELECT 
+                    TRIM(REPLACE(REPLACE(district, '‘', ''''), '’', '''')) as norm_dist,
+                    TRIM(REPLACE(REPLACE(school, '‘', ''''), '’', '''')) as norm_school,
+                    *
+                FROM attendance
+                WHERE date = $1
+            )
+            SELECT DISTINCT ON (norm_dist, norm_school) *
+            FROM normalized_attendance
+            ORDER BY norm_dist, norm_school, id DESC
         `, [targetDate]);
 
-        const { normalizeKey } = require('./src/utils/topics');
         const allRows = assignedSchools.map(sName => {
             const entry = entriesRes.rows.find(e =>
-                normalizeKey(e.school) === normalizeKey(sName) &&
-                normalizeKey(e.district) === normalizeKey(district)
+                normalizeKey(e.norm_school || e.school) === normalizeKey(sName) &&
+                (normalizeKey(e.norm_dist || e.dist) === normalizeKey(district) || normalizeKey(e.district) === normalizeKey(district))
             );
             if (entry) return { ...entry, percent: parseFloat(entry.percent), submitted: true };
             return {
@@ -255,155 +262,90 @@ app.get('/api/inspektor/davomat', auth, async (req, res) => {
             };
         });
 
-        res.json({ rows: allRows, total: allRows.length, date: targetDate });
+        res.json({ rows: allRows, total: allRows.length });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
 });
 
-// Inspektor-Psixolog: sababsiz kelmaganlar ro'yxati
+// Inspektor-Psixolog: sababsiz o'quvchilar
 app.get('/api/inspektor/sababsizlar', auth, async (req, res) => {
-    if (req.user.role !== 'inspektor_psixolog' && req.user.role !== 'superadmin') {
-        return res.status(403).json({ error: 'Ruxsat yo\'q' });
-    }
+    if (req.user.role !== 'inspektor_psixolog') return res.status(403).json({ error: 'Ruxsat yo\'q' });
     const { date } = req.query;
-    const now = getFargonaTime();
-    const targetDate = date || now.toISOString().split('T')[0];
+    const targetDate = date || getFargonaTime().toISOString().split('T')[0];
     const assignedSchools = req.user.assigned_schools || [];
     const district = req.user.district;
-    const { normalizeKey } = require('./src/utils/topics');
 
     if (assignedSchools.length === 0) return res.json({ rows: [], total: 0 });
 
     try {
-        const result = await sqlite.query(`
-            SELECT s.class, s.name, s.address, s.parent_name, s.parent_phone,
-                   a.school, a.district, a.date, a.fio as submitter_fio, a.inspector, a.time
+        const schoolsQueryStr = assignedSchools.map(s => `'${s.replace(/'/g, "''")}'`).join(",");
+        const query = `
+            SELECT a.date, a.district, a.school, a.fio as submitter_fio, a.phone as submitter_phone,
+                   s.class, s.name, s.address, s.parent_name, s.parent_phone
             FROM absent_students s
             JOIN attendance a ON s.attendance_id = a.id
-            WHERE a.date = $1 AND LOWER(a.district) ILIKE $2
+            WHERE a.date = $1 AND a.district = $2 AND a.school IN (${schoolsQueryStr})
             ORDER BY a.school, s.class
-        `, [targetDate, `%${district}%`]);
+        `;
+        const resDb = await sqlite.query(query, [targetDate, district]);
 
-        const filtered = result.rows.filter(r =>
-            assignedSchools.some(sName => normalizeKey(r.school) === normalizeKey(sName))
-        );
-
-        res.json({ rows: filtered, total: filtered.length, date: targetDate });
+        const finalRows = [];
+        for (const r of resDb.rows) {
+            const streakRes = await sqlite.query(`
+                SELECT count(DISTINCT a.date) as streak
+                FROM absent_students s
+                JOIN attendance a ON s.attendance_id = a.id
+                WHERE s.name = $1 AND a.school = $2 AND a.district = $3 AND a.date <= $4
+            `, [r.name, r.school, r.district, targetDate]);
+            const streak = parseInt(streakRes.rows[0].streak) || 1;
+            finalRows.push({
+                ...r,
+                streak: streak,
+                status: streak >= 3 ? "🔴 Muntazam" : "🟡 Odatiy"
+            });
+        }
+        res.json({ rows: finalRows, total: finalRows.length });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
 });
 
-// Inspektor-Psixolog: oxirgi N kun davomida o'z maktablarining statistikasi
+// Inspektor-Psixolog: o'ziga tegishli maktablar bo'yicha 7 kunlik statistika (trend tahlil)
 app.get('/api/inspektor/statistika', auth, async (req, res) => {
-    if (req.user.role !== 'inspektor_psixolog' && req.user.role !== 'superadmin') {
-        return res.status(403).json({ error: 'Ruxsat yo\'q' });
-    }
+    if (req.user.role !== 'inspektor_psixolog') return res.status(403).json({ error: 'Ruxsat yo\'q' });
     const assignedSchools = req.user.assigned_schools || [];
     const district = req.user.district;
-    const days = parseInt(req.query.days) || 7;
-    const { normalizeKey } = require('./src/utils/topics');
 
-    if (assignedSchools.length === 0) return res.json([]);
+    if (assignedSchools.length === 0) return res.json({ labels: [], datasets: [] });
 
     try {
-        const result = await sqlite.query(`
-            SELECT date, school, total_students, total_absent, sababsiz_jami, percent
-            FROM attendance
-            WHERE date >= NOW()::date - INTERVAL '${days} days'
-              AND LOWER(district) ILIKE $1
-            ORDER BY date DESC, school
-        `, [`%${district}%`]);
+        const schoolsQueryStr = assignedSchools.map(s => `'${s.replace(/'/g, "''")}'`).join(",");
+        // 7 kunlik interval
+        const query = `
+            SELECT date, AVG(percent) as avg_percent, SUM(sababsiz_jami) as total_sababsiz 
+            FROM attendance 
+            WHERE district = $1 AND school IN (${schoolsQueryStr}) 
+            GROUP BY date 
+            ORDER BY date DESC LIMIT 7
+        `;
+        const resDb = await sqlite.query(query, [district]);
+        let rawData = resDb.rows.map(r => ({ date: r.date, percent: parseFloat(r.avg_percent), sababsiz: parseInt(r.total_sababsiz) })).reverse();
 
-        const filtered = result.rows.filter(r =>
-            assignedSchools.some(sName => normalizeKey(r.school) === normalizeKey(sName))
-        );
+        let labels = [];
+        let dataPercent = [];
+        let dataSababsiz = [];
 
-        res.json(filtered);
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
-});
+        rawData.forEach(d => {
+            labels.push(d.date.substring(5)); // Faqat oy-kun
+            dataPercent.push(d.percent);
+            dataSababsiz.push(d.sababsiz);
+        });
 
-// Inspektor-Psixolog: oylik psixologik hisbotni saqlash
-app.post('/api/inspektor/report', auth, async (req, res) => {
-    if (req.user.role !== 'inspektor_psixolog' && req.user.role !== 'superadmin') {
-        return res.status(403).json({ error: 'Ruxsat yo\'q' });
-    }
-    const {
-        district, school, month, total_students_surveyed,
-        risk_count, conflict_count, anxiety_count,
-        family_issues_count, counseled_count, notes
-    } = req.body;
-
-    try {
-        await sqlite.query(`
-            INSERT INTO psixolog_reports (
-                district, school, month, fio, phone, 
-                total_students_surveyed, risk_count, conflict_count, 
-                anxiety_count, family_issues_count, counseled_count, 
-                notes, created_by
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-            ON CONFLICT (district, school, month) DO UPDATE SET
-                total_students_surveyed = EXCLUDED.total_students_surveyed,
-                risk_count = EXCLUDED.risk_count,
-                conflict_count = EXCLUDED.conflict_count,
-                anxiety_count = EXCLUDED.anxiety_count,
-                family_issues_count = EXCLUDED.family_issues_count,
-                counseled_count = EXCLUDED.counseled_count,
-                notes = EXCLUDED.notes,
-                updated_at = NOW()
-        `, [
-            district, school, month, req.user.fio, req.user.phone,
-            total_students_surveyed, risk_count, conflict_count,
-            anxiety_count, family_issues_count, counseled_count,
-            notes, req.user.username
-        ]);
-        res.json({ success: true });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
-});
-
-// Inspektor-Psixolog: oylik hisobotlar ro'yxatini olish
-app.get('/api/inspektor/reports', auth, async (req, res) => {
-    if (req.user.role !== 'inspektor_psixolog' && req.user.role !== 'superadmin') {
-        return res.status(403).json({ error: 'Ruxsat yo\'q' });
-    }
-    const { district } = req.user;
-    const assignedSchools = req.user.assigned_schools || [];
-
-    try {
-        let query = 'SELECT * FROM psixolog_reports';
-        let params = [];
-
-        if (req.user.role === 'inspektor_psixolog') {
-            query += ' WHERE district = $1 AND school = ANY($2)';
-            params = [district, assignedSchools];
-        }
-        query += ' ORDER BY month DESC, created_at DESC';
-
-        const result = await sqlite.query(query, params);
-        res.json(result.rows);
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
-});
-
-// Inspektor-Psixolog: hisobotni o'chirish
-app.delete('/api/inspektor/reports/:id', auth, async (req, res) => {
-    if (req.user.role !== 'inspektor_psixolog' && req.user.role !== 'superadmin') {
-        return res.status(403).json({ error: 'Ruxsat yo\'q' });
-    }
-    const { id } = req.params;
-    try {
-        if (req.user.role === 'superadmin') {
-            await sqlite.query('DELETE FROM psixolog_reports WHERE id = $1', [id]);
-        } else {
-            await sqlite.query('DELETE FROM psixolog_reports WHERE id = $1 AND created_by = $2', [id, req.user.username]);
-        }
-        res.json({ success: true });
+        res.json({
+            labels: labels,
+            datasets: { percent: dataPercent, sababsiz: dataSababsiz }
+        });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
@@ -411,7 +353,7 @@ app.delete('/api/inspektor/reports/:id', auth, async (req, res) => {
 
 // --- SECURITY SHIELD ---
 const requestCount = new Map();
-const SECURITY_ALERT_THRESHOLD = 200; // Increased to 200 to allow dashboard usage without errors
+const SECURITY_ALERT_THRESHOLD = 300; // Max 300 API requests per minute per IP
 
 const securityShield = (req, res, next) => {
     // 1. Basic Security Headers (Manual Helmet)
@@ -420,7 +362,7 @@ const securityShield = (req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Content-Security-Policy', "default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://kit.fontawesome.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://kit.fontawesome.com;");
 
-    // 2. Rate Limiting (Anti-DDoS / Anti-Brute)
+    // 2. Rate Limiting — applies only to /api routes (static files excluded)
     const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     const now = Date.now();
     const windowStart = now - 60000; // 1 minute window
@@ -448,7 +390,7 @@ const securityShield = (req, res, next) => {
 };
 
 async function alertSuperAdmin(msg) {
-    const superAdminIds = [65002404, 786314811, 291508733, 5310405293];
+    const superAdminIds = [65002404, 786314811];
     for (const sid of superAdminIds) {
         try {
             await bot.telegram.sendMessage(sid, msg, { parse_mode: 'HTML' });
@@ -456,8 +398,12 @@ async function alertSuperAdmin(msg) {
     }
 }
 
-app.use(securityShield);
+// Static files served FIRST — before rate limiting
+// Browser requests (script.js, style.css, images) must NOT trigger security alerts
 app.use(express.static('dashboard'));
+
+// Security shield applied ONLY to /api routes — not static files
+app.use('/api', securityShield);
 
 const { getSchools, saveData } = require('./src/services/sheet');
 
@@ -479,24 +425,24 @@ bot.use(session());
 bot.start(async (ctx) => {
     console.log(`[START] User: ${ctx.from.id}`);
 
+    // Leave any active scene to reset
     try { await ctx.scene.leave(); } catch (e) { }
 
     const { date, day } = getTodayInfo();
-    const caption = `🏛 <b>FARG‘ONA VILOYATI MAKTABGACHA VA MAKTAB TA’LIMI BOSHQARMASI</b>\n\n` +
-        `🤖 <b>@Ferghanaregdavomat_bot</b> — o‘quvchilar davomatini monitoring qilish tizimiga xush kelibsiz.\n\n` +
-        `📅 <b>Bugungi sana:</b> ${date} (${day})\n` +
-        `✨ <b>Holat:</b> Tizim rasmiy rejimda ishlamoqda.\n\n` +
-        `<i>Iltimos, quyidagi menyudan kerakli bo‘limni tanlang:</i>`;
+    const caption = `🌸 <b>Assalomu alaykum!</b>\nFarg'ona viloyati maktabgacha va maktab ta'limi boshqarmasi tizimidagi <b>@Ferghanaregdavomat_bot</b> ga xush kelibsiz.\n\n📅 <b>Bugungi sana:</b> ${date} (${day})\n\nBiz bilan hamkor bo'lganingiz uchun yana bir bor tabriklaymiz!\nKuningiz xayrli va mazmunli o'tsin! ✨`;
 
+    // Tugmalarni tayyorlash
     let buttons = [["📊 Davomat kiritish"]];
 
     const uid = Number(ctx.from.id);
     const isPro = db.checkPro(uid);
 
+    // Admin bo'lsa, Admin Panel tugmasini qo'shish
     if (config.ALL_ADMINS.map(Number).includes(uid)) {
         buttons.push(["⚙️ Admin Panel"]);
     }
 
+    // PRO Analitika button for PRO users (School level)
     if (isPro) {
         buttons.push(["📊 PRO Analitika"]);
     }
@@ -538,7 +484,8 @@ const { getViloyatSvod, getTumanSvod, getTodayAbsentsDetails, getRecentActivity,
 const { notifyParents } = require('./src/services/notifications');
 
 app.get('/api/stats/viloyat', auth, async (req, res) => {
-    const date = req.query.date || getFargonaDate();
+    const now = getFargonaTime();
+    const date = req.query.date || now.toISOString().split('T')[0];
     const data = await getViloyatSvod(date);
     res.json(data);
 });
@@ -547,7 +494,8 @@ app.get('/api/stats/tuman', auth, async (req, res) => {
     const { tuman, date } = req.query;
     const limit = parseInt(req.query.limit) || 50;
     const offset = parseInt(req.query.offset) || 0;
-    const targetDate = date || getFargonaDate();
+    const now = getFargonaTime();
+    const targetDate = date || now.toISOString().split('T')[0];
 
     const finalTuman = req.user.role === 'district' ? req.user.district : tuman;
     if (!finalTuman) return res.status(400).json({ error: 'Tuman required' });
@@ -559,7 +507,8 @@ app.get('/api/stats/tuman', auth, async (req, res) => {
 app.get('/api/stats/absentees', auth, async (req, res) => {
     const limit = parseInt(req.query.limit) || 50;
     const offset = parseInt(req.query.offset) || 0;
-    const date = req.query.date || getFargonaDate();
+    const now = getFargonaTime();
+    const date = req.query.date || now.toISOString().split('T')[0];
     const data = await getTodayAbsentsDetails(date, limit, offset);
 
     if (req.user.role === 'district') {
@@ -751,14 +700,13 @@ app.get('/api/schools', async (req, res) => {
 });
 
 // Admin: List Archived Reports
-app.get('/api/admin/reports', auth, (req, res) => {
-    if (req.user.role !== 'superadmin') return res.status(403).json({ error: "Ruxsat yo'q" });
-    const assetsDir = path.join(__dirname, 'assets');
-    if (!fs.existsSync(assetsDir)) return res.json([]);
-
+app.get('/api/admin/reports', auth, async (req, res) => {
+    if (req.user.role !== 'superadmin') return res.status(403).json([]);
     try {
+        const assetsDir = path.join(__dirname, 'assets');
+        if (!fs.existsSync(assetsDir)) return res.json([]);
         const files = fs.readdirSync(assetsDir)
-            .filter(f => f.endsWith('.xlsx') && f.startsWith('HISOBOT_'))
+            .filter(f => f.endsWith('.xlsx'))
             .map(f => {
                 const stat = fs.statSync(path.join(assetsDir, f));
                 return { name: f, size: (stat.size / 1024).toFixed(1) + ' KB', date: stat.mtime };
@@ -766,7 +714,49 @@ app.get('/api/admin/reports', auth, (req, res) => {
             .sort((a, b) => b.date - a.date);
         res.json(files);
     } catch (e) {
-        res.json([]);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// --- INSPECTOR TRACKING API ---
+app.post('/api/inspector/profile', async (req, res) => {
+    const { phone, fio, district, schools } = req.body;
+    if (!phone) return res.status(400).json({ error: 'Phone required' });
+    try {
+        await sqlite.query(`
+            INSERT INTO inspector_profiles (phone, fio, district, schools, last_active)
+            VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+            ON CONFLICT (phone) DO UPDATE SET
+            fio = EXCLUDED.fio, district = EXCLUDED.district,
+            schools = EXCLUDED.schools, last_active = CURRENT_TIMESTAMP
+        `, [phone, fio, district, JSON.stringify(schools)]);
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.post('/api/inspector/activity', async (req, res) => {
+    const { phone, action, details } = req.body;
+    if (!phone) return res.status(400).json({ error: 'Phone required' });
+    try {
+        await sqlite.query(`INSERT INTO inspector_activity (phone, action, details) VALUES ($1, $2, $3)`, [phone, action, details]);
+        // Also update last_active in profile
+        await sqlite.query(`UPDATE inspector_profiles SET last_active = CURRENT_TIMESTAMP WHERE phone = $1`, [phone]);
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/api/admin/inspectors', auth, async (req, res) => {
+    if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    try {
+        const profiles = await sqlite.query(`SELECT * FROM inspector_profiles ORDER BY last_active DESC`);
+        const activity = await sqlite.query(`SELECT * FROM inspector_activity ORDER BY timestamp DESC LIMIT 100`);
+        res.json({ profiles: profiles.rows, activity: activity.rows });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
     }
 });
 
@@ -827,124 +817,6 @@ app.get('/api/stats/parents', auth, (req, res) => {
     } catch (e) { res.status(500).json([]); }
 });
 
-// ===== PSIXOLOG BO'LIMI API =====
-
-// Psixolog hisobotini saqlash
-app.post('/api/psixolog/submit', auth, async (req, res) => {
-    if (req.user.role !== 'superadmin' && req.user.role !== 'district') {
-        return res.status(403).json({ error: "Ruxsat yo'q" });
-    }
-    const d = req.body;
-    if (!d.district || !d.month) return res.status(400).json({ error: "Hudud va oyni kiriting" });
-
-    try {
-        await sqlite.query(`
-            INSERT INTO psixolog_reports (
-                district, school, month, fio, phone,
-                total_students_surveyed, risk_count, conflict_count,
-                anxiety_count, family_issues_count, drug_risk_count,
-                counseled_count, referred_count, notes, created_by
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
-            ON CONFLICT (district, school, month) DO UPDATE SET
-                fio=EXCLUDED.fio, phone=EXCLUDED.phone,
-                total_students_surveyed=EXCLUDED.total_students_surveyed,
-                risk_count=EXCLUDED.risk_count, conflict_count=EXCLUDED.conflict_count,
-                anxiety_count=EXCLUDED.anxiety_count,
-                family_issues_count=EXCLUDED.family_issues_count,
-                drug_risk_count=EXCLUDED.drug_risk_count,
-                counseled_count=EXCLUDED.counseled_count,
-                referred_count=EXCLUDED.referred_count,
-                notes=EXCLUDED.notes, updated_at=NOW()
-        `, [
-            d.district, d.school || 'Umumiy', d.month, d.fio || '', d.phone || '',
-            parseInt(d.total_students_surveyed) || 0, parseInt(d.risk_count) || 0,
-            parseInt(d.conflict_count) || 0, parseInt(d.anxiety_count) || 0,
-            parseInt(d.family_issues_count) || 0, parseInt(d.drug_risk_count) || 0,
-            parseInt(d.counseled_count) || 0, parseInt(d.referred_count) || 0,
-            d.notes || '', req.user.username
-        ]);
-
-        // Telegram notification
-        const topicId = getTopicId(d.district);
-        const reportGroupId = config.REPORT_GROUP_ID;
-        const psyMsg = `🧠 <b>PSIXOLOG HISOBOTI</b>\n\n` +
-            `📍 <b>Hudud:</b> ${d.district}\n` +
-            `🏫 <b>Maktab:</b> ${d.school || 'Umumiy'}\n` +
-            `📅 <b>Oy:</b> ${d.month}\n` +
-            `👤 <b>Psixolog:</b> ${d.fio || '-'}\n\n` +
-            `👥 <b>Tekshirilgan o'quvchilar:</b> ${d.total_students_surveyed || 0}\n` +
-            `⚠️ <b>Risk guruhida:</b> ${d.risk_count || 0}\n` +
-            `🤝 <b>Konsultatsiya oldi:</b> ${d.counseled_count || 0}\n` +
-            `🏥 <b>Yuborildi:</b> ${d.referred_count || 0}`;
-        try {
-            if (topicId) {
-                await bot.telegram.sendMessage(reportGroupId, psyMsg, { parse_mode: 'HTML', message_thread_id: topicId });
-            }
-        } catch (e) { console.error("Psixolog TG Error:", e.message); }
-
-        res.json({ success: true });
-    } catch (e) {
-        console.error("Psixolog Submit Error:", e);
-        res.status(500).json({ error: e.message });
-    }
-});
-
-// Psixolog hisobotlarini ko'rish
-app.get('/api/psixolog/reports', auth, async (req, res) => {
-    const { month, district } = req.query;
-    const finalDistrict = req.user.role === 'district' ? req.user.district : district;
-
-    try {
-        let sql = `SELECT * FROM psixolog_reports WHERE 1=1`;
-        const params = [];
-        if (month) { params.push(month); sql += ` AND month = $${params.length}`; }
-        if (finalDistrict) { params.push(finalDistrict); sql += ` AND district ILIKE $${params.length}`; }
-        sql += ` ORDER BY created_at DESC LIMIT 200`;
-        const result = await sqlite.query(sql, params);
-        res.json(result.rows);
-    } catch (e) {
-        // Table might not exist yet
-        if (e.message && e.message.includes('does not exist')) {
-            res.json([]);
-        } else {
-            res.status(500).json({ error: e.message });
-        }
-    }
-});
-
-// Psixolog umumiy statistika
-app.get('/api/psixolog/stats', auth, async (req, res) => {
-    const { month } = req.query;
-    try {
-        let sql = `
-            SELECT district,
-                SUM(total_students_surveyed) as total_surveyed,
-                SUM(risk_count) as total_risk,
-                SUM(conflict_count) as total_conflict,
-                SUM(anxiety_count) as total_anxiety,
-                SUM(family_issues_count) as total_family,
-                SUM(drug_risk_count) as total_drug,
-                SUM(counseled_count) as total_counseled,
-                SUM(referred_count) as total_referred,
-                COUNT(*) as school_count
-            FROM psixolog_reports
-        `;
-        const params = [];
-        if (month) { params.push(month); sql += ` WHERE month = $1`; }
-        sql += ` GROUP BY district ORDER BY total_risk DESC`;
-        const result = await sqlite.query(sql, params);
-        res.json(result.rows);
-    } catch (e) {
-        if (e.message && e.message.includes('does not exist')) {
-            res.json([]);
-        } else {
-            res.status(500).json({ error: e.message });
-        }
-    }
-});
-
-
-
 app.post('/api/submit', upload.single('bildirgi'), async (req, res) => {
     const d = req.body;
     const today = getFargonaTime().toISOString().split('T')[0];
@@ -999,7 +871,7 @@ app.post('/api/submit', upload.single('bildirgi'), async (req, res) => {
     if (flatData.sababsiz_total > 0) {
         const isProUser = db.checkProByPhone(d.phone);
         if (req.file) {
-            flatData.bildirgi = path.basename(req.file.path);
+            flatData.bildirgi = req.file.path;
         } else if (isProUser) {
             try {
                 console.log("Generating Auto Bildirgi for PRO user...");
@@ -1011,7 +883,7 @@ app.post('/api/submit', upload.single('bildirgi'), async (req, res) => {
                     sababsiz_total: flatData.sababsiz_total,
                     students_list: students_list
                 });
-                flatData.bildirgi = path.basename(pdfPath);
+                flatData.bildirgi = pdfPath;
             } catch (e) {
                 console.error("Auto Bildirgi Error:", e);
                 // Even for PRO, if auto-gen fails, we might need a fallback, but for now let's just log
@@ -1805,8 +1677,104 @@ function startHourlyCheck() {
     };
 
 
-    // Administrative Official Names (Handles by scheduler.js now)
-    // Removed redundant setInterval logic to prevent duplicate messages.
+    setInterval(async () => {
+        try {
+            const now = getFargonaTime();
+            const h = now.getHours();
+            const m = now.getMinutes();
+            const dayStr = now.toISOString().split('T')[0];
+
+            // Unique slot for this specific check time (e.g. "2024-05-20 10:30")
+            const currentSlot = `${dayStr} ${h}:${m}`;
+
+            // 1. Warning & Deadline Checks (08:00 - 16:00)
+            const isTime = (h >= 8 && h <= 16);
+
+            // Only run if:
+            // - It's work hours
+            // - It's exactly 00 or 30 minutes
+            // - We haven't run for this specific time slot yet
+            if (isTime && (m === 0 || m === 30) && lastRunSlot !== currentSlot) {
+                lastRunSlot = currentSlot; // Lock immediately
+
+                const dayOfWeek = now.getDay(); // 0 = Sun
+
+                // Only send warnings Mon-Sat (exclude Sunday)
+                if (dayOfWeek !== 0) {
+                    const warningHours = [9, 11, 13, 15];
+                    const isDeadline = (h === 15 && m === 30); // 15:30 deadline
+                    const isFinalDeadline = (h === 16 && m === 0); // 16:00 final deadline
+                    const cutoffH = 15;
+                    const cutoffM = 30;
+
+                    if (warningHours.includes(h) || isDeadline || isFinalDeadline) {
+                        console.log(`[SCHEDULER] Checking attendance at ${currentSlot}...`);
+
+                        const mData = await getMissingSchools();
+                        if (mData) {
+                            for (const dRaw in mData) {
+                                if (mData[dRaw].length > 0) {
+                                    const tid = getTopicId(dRaw);
+                                    if (tid) {
+                                        let txt = "";
+
+                                        // 15:30 Warning (30 mins left)
+                                        if (h === 15 && m === 30) {
+                                            txt = `⏳ <b>DIQQAT! 16:00 gacha 30 daqiqa vaqt qoldi!</b>\n\n🚨 <b>${dRaw}</b> bo'yicha quyidagi maktablar hali davomat kiritmagan:\n\n` +
+                                                mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s}`).join('\n') +
+                                                `\n\n❗️ <b>Iltimos, vaqtida ulguring!</b>`;
+                                        }
+                                        // 16:00 Final Warning
+                                        else if (h === 16 && m === 0) {
+                                            const normKey = normalizeKey(dRaw).toLowerCase();
+                                            const official = DISTRICT_OFFICIALS[normKey] || "Mas'ullar";
+
+                                            txt = `🚫 <b>AFSUSKI! Ish vaqti tugadi (16:00).</b>\n\n😔 <b>${dRaw}</b> bo'yicha quyidagi maktablar bugun davomat kiritishmadi:\n\n` +
+                                                mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s}`).join('\n') +
+                                                `\n\n‼️ <b>Hurmatli ${official}, vaziyatni qattiq nazoratga olishingizni so'rayman!</b>`;
+                                        }
+                                        // Other hours (Standard warning)
+                                        else if (h < 15 || (h === 15 && m < 30)) {
+                                            txt = `⚠️ <b>Eslatma (${h}:00):</b>\n\n📍 <b>${dRaw}</b> da quyidagi maktablar davomat kiritmadi:\n\n` +
+                                                mData[dRaw].map((s, i) => `${i + 1}. ❌ ${s}`).join('\n') +
+                                                `\n\n❗️ Iltimos, faollik ko'rsating.`;
+                                        }
+
+                                        if (txt) {
+                                            console.log(`[ALERTS] Sending warning to ${dRaw} (Topic: ${tid})`);
+                                            try {
+                                                await bot.telegram.sendMessage(config.REPORT_GROUP_ID, txt, {
+                                                    parse_mode: 'HTML',
+                                                    message_thread_id: tid
+                                                });
+                                            } catch (err) {
+                                                console.error(`[ALERTS] Error sending to ${dRaw}:`, err.message);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 2. Auto-Report at 16:05 (Daily Excel)
+            if (h === 16 && m === 5 && !dailyReportSent) {
+                console.log("Sending Auto 16:05 Report...");
+                dailyReportSent = true;
+                try {
+                    await sendExcelReport(null, config.REPORT_GROUP_ID);
+                } catch (e) { console.error("Auto Report Failed", e); }
+            }
+
+            // Reset daily report flag at midnight
+            if (h === 0 && dailyReportSent) dailyReportSent = false;
+
+        } catch (e) {
+            console.error("Scheduler check error:", e);
+        }
+    }, 45000); // Check every 45 seconds to avoid double trigger on 30s interval
 }
 
 
