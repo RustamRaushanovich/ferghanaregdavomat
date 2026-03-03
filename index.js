@@ -353,7 +353,7 @@ app.get('/api/inspektor/statistika', auth, async (req, res) => {
 
 // --- SECURITY SHIELD ---
 const requestCount = new Map();
-const SECURITY_ALERT_THRESHOLD = 300; // Max 300 API requests per minute per IP
+const SECURITY_ALERT_THRESHOLD = 1000; // Increased to 1000 API requests per minute
 
 const securityShield = (req, res, next) => {
     // 1. Basic Security Headers (Manual Helmet)
@@ -362,10 +362,10 @@ const securityShield = (req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Content-Security-Policy', "default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://kit.fontawesome.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://kit.fontawesome.com;");
 
-    // 2. Rate Limiting — applies only to /api routes (static files excluded)
+    // 2. Rate Limiting — applies only to /api routes
     const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     const now = Date.now();
-    const windowStart = now - 60000; // 1 minute window
+    const windowStart = now - 60000;
 
     let logs = requestCount.get(ip) || [];
     logs = logs.filter(t => t > windowStart);
@@ -373,8 +373,9 @@ const securityShield = (req, res, next) => {
     requestCount.set(ip, logs);
 
     if (logs.length > SECURITY_ALERT_THRESHOLD) {
-        if (logs.length === SECURITY_ALERT_THRESHOLD + 1) {
-            alertSuperAdmin(`🚨 <b>SECURITY ALERT!</b>\nSuspicious activity detected from IP: <code>${ip}</code>\nURL: <code>${req.url}</code>\nUser: <code>${req.user ? req.user.username : 'Guest'}</code>`);
+        // Skip telegram alert for local IP and only alert on the first breach
+        if (logs.length === SECURITY_ALERT_THRESHOLD + 1 && ip !== '::1' && ip !== '127.0.0.1') {
+            alertSuperAdmin(`🚨 <b>SECURITY ALERT!</b>\nSuspicious volume from IP: <code>${ip}</code>\nURL: <code>${req.url}</code>\nUser: <code>${req.user ? req.user.username : 'Guest'}</code>`);
         }
         return res.status(429).json({ error: 'Too many requests. Please try again later.' });
     }
