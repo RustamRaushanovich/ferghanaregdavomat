@@ -1638,13 +1638,66 @@ bot.hears(/^(📊 )?Davomat kiritish$/, (ctx) => {
     ctx.scene.enter('attendance_wizard');
 });
 
-bot.on('text', (ctx) => {
+bot.on('text', async (ctx) => {
+    const uid = ctx.from.id;
+    const isSuper = config.SUPER_ADMIN_IDS.map(Number).includes(Number(uid)) || uid === 65002404;
+
+    // --- 🏆 RAG'BATLANTIRISH: TASHAKKURNOMA GENERATORI ---
+    if (ctx.message.text.startsWith("reward ") && isSuper) {
+        const parts = ctx.message.text.split(" ");
+        if (parts.length < 3) return ctx.reply("Format: reward [Tuman] [Maktab nomi]");
+
+        const distName = parts[1];
+        const schoolName = parts.slice(2).join(" ");
+
+        await ctx.reply(`🎨 <b>${schoolName}</b> uchun tashakkurnoma tayyorlanmoqda...`, { parse_mode: 'HTML' });
+
+        try {
+            const { generateCertificate } = require('./src/services/rewardService');
+            const buffer = await generateCertificate(schoolName, distName, 'Haftalik');
+
+            const tid = getTopicId(distName);
+            const caption = `🏆 <b>TABRIKLAYMIZ!</b>\n\n<b>${distName}</b>, <b>${schoolName}</b> jamoasi namunali davomat ko'rsatkichlari uchun tashakkurnoma bilan taqdirlanadi! 👏✨`;
+
+            // Send to current user
+            await ctx.replyWithPhoto({ source: buffer }, { caption, parse_mode: 'HTML' });
+
+            // Send to district topic
+            if (tid) {
+                await bot.telegram.sendPhoto(config.REPORT_GROUP_ID, { source: buffer }, {
+                    caption,
+                    parse_mode: 'HTML',
+                    message_thread_id: tid
+                });
+                await ctx.reply("✅ Tashakkurnoma tuman guruhiga yuborildi.");
+            }
+        } catch (e) {
+            console.error("Reward Gen Error:", e);
+            ctx.reply("❌ Xatolik: " + e.message);
+        }
+        return;
+    }
+
+    // Odatiy commands
     if (ctx.message.text.startsWith("revoke ")) {
         const id = ctx.message.text.split(" ")[1];
         if (config.SUPER_ADMIN_IDS.includes(ctx.from.id)) {
             admin.revokePro(ctx, id);
         }
+        return;
     }
+
+    // --- 🤖 SUN'IY INTELLEKT: OVOZLI / MATNLI DAVOMAT YORDAMCHISI (VAKUUMDA) ---
+    const text = ctx.message.text.toLowerCase();
+
+    // Agar matnda "maktab", "o'quvchi" va "kelmadi" / "kasal" kabi so'zlar aralash kelgan bo'lsa
+    if (text.includes("maktab") && (text.includes("kasal") || text.includes("sababsiz") || text.includes("kelmadi"))) {
+        return ctx.reply("🤖 <b>AI Yordamchi:</b>\n\nUshbu matn/ovoz orqali davomat kiritish funksiyasi yaqin kunlarda ishga tushadi. Hozircha 'Davomat kiritish' tugmasidan foydalaning.", { parse_mode: 'HTML' });
+    }
+});
+
+bot.on('voice', (ctx) => {
+    ctx.reply("🎙 <b>Ovozli xabar qabul qilindi.</b>\n\nAI orqali ovozli davomat kiritish funksiyasi tez orada faollashadi. Hozircha tugmalar orqali kiriting.", { parse_mode: 'HTML' });
 });
 
 // --- SCHEDULER (Hourly & Auto-Report) ---
@@ -1813,6 +1866,82 @@ bot.hears("📍 Maktab joylashuvini tasdiqlash", (ctx) => {
             ...Markup.keyboard([[Markup.button.locationRequest("📍 Lokatsiyani yuborish")], ["⬅️ Orqaga"]]).resize()
         }
     );
+});
+
+// --- BOT IMAGE DRAWING HANDLER ---
+bot.hears("🖼 Viloyat Rasm (Test)", async (ctx) => {
+    if (!config.SUPER_ADMIN_IDS.includes(ctx.from.id)) return ctx.reply("⛔️ Ruxsat yo'q.");
+
+    await ctx.reply("⏳ <b>Rasmli hisobot shakllantirilmoqda...</b>", { parse_mode: 'HTML' });
+
+    try {
+        const { createCanvas } = require('canvas');
+        const canvas = createCanvas(1080, 1080);
+        const ct = canvas.getContext('2d');
+
+        // Asosiy fon
+        ct.fillStyle = '#0f172a';
+        ct.fillRect(0, 0, 1080, 1080);
+
+        // Gradient naqshlar
+        const grad = ct.createLinearGradient(0, 0, 1080, 1080);
+        grad.addColorStop(0, '#1e293b');
+        grad.addColorStop(1, '#0f172a');
+        ct.fillStyle = grad;
+        ct.fillRect(0, 0, 1080, 1080);
+
+        // Sarlavha
+        ct.fillStyle = '#ffffff';
+        ct.font = 'bold 50px Arial';
+        ct.textAlign = 'center';
+        ct.fillText("FARG'ONA VILOYATI", 540, 100);
+
+        ct.fillStyle = '#38bdf8';
+        ct.font = 'bold 40px Arial';
+        ct.fillText("DAVOMAT KUNLIK QIZIL ZONASI", 540, 160);
+
+        const dataService = require('./src/services/dataService');
+        const svod = await dataService.getViloyatSvod(getFargonaTime().toISOString().split('T')[0]);
+
+        const worst = [...svod].filter(x => x.entries > 0).sort((a, b) => a.avg_percent - b.avg_percent).slice(0, 5);
+
+        // Chizish 5 ta eng pastni
+        ct.textAlign = 'left';
+        let y = 300;
+        worst.forEach((dist, idx) => {
+            // Box
+            ct.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ct.fillRect(80, y - 50, 920, 80);
+
+            ct.fillStyle = '#ef4444';
+            ct.font = 'bold 40px Arial';
+            ct.fillText(`${idx + 1}. ${dist.district}`, 110, y + 5);
+
+            ct.fillStyle = '#ffffff';
+            ct.textAlign = 'right';
+            ct.font = 'bold 36px Arial';
+            ct.fillText(`${dist.avg_percent}%`, 950, y);
+            ct.textAlign = 'left';
+
+            y += 110;
+        });
+
+        // Sana va vaqt tagida
+        ct.fillStyle = '#94a3b8';
+        ct.font = '30px Arial';
+        ct.textAlign = 'center';
+        ct.fillText(`Sana: ${getFargonaTime().toLocaleDateString('ru-RU')} | MMT Boshqarmasi`, 540, 1000);
+
+        const buffer = canvas.toBuffer('image/png');
+        await ctx.replyWithPhoto({ source: buffer }, {
+            caption: `📊 <b>Kunlik qizil zonalar monitoringi rasm shaklida!</b>`,
+            parse_mode: 'HTML'
+        });
+
+    } catch (e) {
+        console.error("Canvas draw error: ", e);
+        ctx.reply("Rasm chizishda xatolik yuzaga keldi. Modullar topilmagan bo'lishi mumkin.");
+    }
 });
 
 bot.on('location', (ctx) => {

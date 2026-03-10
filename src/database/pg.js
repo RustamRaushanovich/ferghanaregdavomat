@@ -95,6 +95,11 @@ async function initDb() {
                 details TEXT,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+            CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(date);
+            CREATE INDEX IF NOT EXISTS idx_attendance_district ON attendance(district);
+            CREATE INDEX IF NOT EXISTS idx_attendance_school ON attendance(school);
+            CREATE INDEX IF NOT EXISTS idx_absent_students_attendance_id ON absent_students(attendance_id);
+            CREATE INDEX IF NOT EXISTS idx_absent_students_name ON absent_students(name);
         `);
         console.log("🐘 PostgreSQL tables initialized.");
     } catch (e) {

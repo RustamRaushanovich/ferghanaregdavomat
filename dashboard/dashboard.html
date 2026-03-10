@@ -490,6 +490,7 @@
             font-size: 1.2rem;
             opacity: 0.8;
             background: linear-gradient(to right, #fff, #94a3b8);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -599,14 +600,20 @@
         <div id="viloyatView" class="report-view active">
             <div class="controls">
                 <div class="filter-group">
-                    <label>Sana</label>
-                    <input type="date" id="viloyatDate" onchange="loadViloyatData()">
+                    <label data-i18n="v_choose_date">Sana:</label>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <input type="date" id="viloyatDate" onchange="loadViloyatData()">
+                        <button onclick="loadViloyatData()" class="btn btn-pro" style="padding:10px; width:auto;"><i
+                                class="fas fa-sync-alt"></i></button>
+                    </div>
                 </div>
-                <button class="export-btn" onclick="exportViloyatExcel()">
-                    <i class="fas fa-file-excel"></i> Excelga saqlash
-                </button>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn" style="background:var(--secondary); width:auto; padding:12px 20px;"
+                        onclick="toggleTVMode()" id="tvModeBtn"><i class="fas fa-tv"></i> TV-Rejim</button>
+                    <button class="btn btn-pro" style="background:#10b981; width:auto; padding:12px 20px;"
+                        onclick="exportViloyatExcel()"><i class="fas fa-file-excel"></i> Excel Yuklash</button>
+                </div>
             </div>
-
             <div class="stat-card" style="margin-bottom: 20px;">
                 <h4><i class="fas fa-map-marked-alt"></i> <span data-i18n="tab_v_svod">Viloyat Svod</span></h4>
                 <div id="mapContainer" class="map-grid"></div>
@@ -1402,6 +1409,62 @@
             window.location.href = 'login.html';
         }
 
+        // TV-Rejim xususiyati
+        let tvModeInterval;
+        let tvTabInterval;
+        let isTvMode = false;
+        function toggleTVMode() {
+            const btn = document.getElementById('tvModeBtn');
+            const nav = document.querySelector('.navbar');
+            const topBar = document.querySelector('.top-widgets-bar');
+            const tabs = ['viloyat', 'tuman', 'analysis', 'ranking'];
+            let currentTabIdx = 0;
+
+            if (isTvMode) {
+                // TV rejimni o'chirish
+                clearInterval(tvModeInterval);
+                clearInterval(tvTabInterval);
+                isTvMode = false;
+                btn.innerHTML = '<i class="fas fa-tv"></i> TV-Rejim';
+                btn.style.background = 'var(--secondary)';
+                document.body.style.paddingTop = '140px';
+                if (nav) nav.style.display = 'flex';
+                if (topBar) topBar.style.display = 'flex';
+                document.querySelector('.tabs').style.display = 'flex';
+            } else {
+                // TV rejimni yoqish
+                isTvMode = true;
+                btn.innerHTML = '<i class="fas fa-times-circle"></i> Chiqish (TV)';
+                btn.style.background = '#f43f5e';
+
+                if (nav) nav.style.display = 'none';
+                if (topBar) topBar.style.display = 'none';
+                document.querySelector('.tabs').style.display = 'none';
+                document.body.style.paddingTop = '10px';
+
+                alert("TV-Rejim faollashdi. Sahifa har 30 soniyada o'zgaradi va asta-sekin aylanadi.");
+
+                // Tablarni almashtirish (har 30 soniyada)
+                tvTabInterval = setInterval(() => {
+                    currentTabIdx = (currentTabIdx + 1) % tabs.length;
+                    showTab(tabs[currentTabIdx]);
+                    window.scrollTo(0, 0); // Har gal tepaga qaytish
+                }, 30000);
+
+                // Avtomatik kirib boradigan scroll
+                let scrollDirection = 1;
+                tvModeInterval = setInterval(() => {
+                    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                    if (window.scrollY >= maxScroll - 5) {
+                        scrollDirection = -1;
+                    } else if (window.scrollY <= 0) {
+                        scrollDirection = 1;
+                    }
+                    window.scrollBy(0, scrollDirection * 1);
+                }, 80);
+            }
+        }
+
         async function apiFetch(url) {
             try {
                 const res = await fetch(url, {
@@ -1552,11 +1615,18 @@
                     </tr>`;
                     tbody.innerHTML += row;
                 });
+                const elTotalE = document.getElementById('total_entries');
+                if (elTotalE) elTotalE.textContent = totalE;
 
-                document.getElementById('total_entries').textContent = totalE;
-                document.getElementById('total_avg').textContent = (totalS > 0 ? ((totalS - totalAbsentSum) / totalS * 100).toFixed(1) : 0) + '%';
-                document.getElementById('total_absents').textContent = totalSababsiz;
-                document.getElementById('total_students_v').textContent = totalS;
+                const elTotalAvg = document.getElementById('total_avg');
+                if (elTotalAvg) elTotalAvg.textContent = (totalS > 0 ? ((totalS - totalAbsentSum) / totalS * 100).toFixed(1) : 0) + '%';
+
+                const elTotalAbs = document.getElementById('total_absents');
+                if (elTotalAbs) elTotalAbs.textContent = totalSababsiz;
+
+                const elTotalStudV = document.getElementById('total_students_v');
+                if (elTotalStudV) elTotalStudV.textContent = totalS;
+
                 renderHeatmap(data);
             } catch (e) {
                 document.querySelector('#viloyatTable tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#ef4444">Xatolik: ${e.message}</td></tr>`;

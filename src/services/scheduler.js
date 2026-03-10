@@ -171,6 +171,23 @@ async function sendWeeklyBestSchools() {
 
                 msg += `\n👏 <i>Tabriklaymiz! Davomatni namunali saqlashda davom eting.</i>`;
 
+                // --- 🎖 NEW: Generate Image Certificate for #1 school ---
+                try {
+                    const topSchool = res.rows[0];
+                    if (parseFloat(topSchool.avg_p) >= 90) { // Faqat 90% dan yuqori bo'lsa
+                        const { generateCertificate } = require('./rewardService');
+                        const buffer = await generateCertificate(topSchool.school, distName, 'Haftalik');
+
+                        await bot.telegram.sendPhoto(REPORT_GROUP_ID, { source: buffer }, {
+                            caption: `🏆 <b>HAFTANING ENG YAXSHI MAKTABI!</b>\n\n<b>${distName}</b> bo'yicha eng yuqori ko'rsatkich: <b>${topSchool.school}</b> (${parseFloat(topSchool.avg_p).toFixed(1)}%)`,
+                            parse_mode: 'HTML',
+                            message_thread_id: topicId
+                        });
+                    }
+                } catch (imgErr) {
+                    console.error("Reward Image Error:", imgErr.message);
+                }
+
                 await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
                     parse_mode: 'HTML',
                     message_thread_id: topicId

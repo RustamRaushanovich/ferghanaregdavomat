@@ -142,10 +142,7 @@ const attendanceWizard = new Scenes.WizardScene(
         const isPro = ctx.wizard.state.forced_role === 'pro' || db.checkPro(uid);
 
         if (ctx.message && ctx.message.text === "📸 Rasm orqali kiritish (AI)") {
-            if (!isPro) return ctx.reply("⛔️ Bu funksiya faqat PRO foydalanuvchilar uchun.");
-            await ctx.reply("📸 <b>Davomat varaqasi yoki hisobot rasmini yuboring:</b>\n<i>(AI uni tahlil qilib, raqamlarni ajratib oladi)</i>", { parse_mode: 'HTML', ...navButtons() });
-            ctx.wizard.state.ai_mode = true;
-            return; // Stay in this step to wait for photo
+            return ctx.reply("📸 <b>Rasm orqali AI tahlil qilish:</b>\n\nUshbu funksiya test rejimida. Tez orada PRO foydalanuvchilar rasmni tashlab davomatni avtomatik to'ldirishlari mumkin bo'ladi.", { parse_mode: 'HTML' });
         }
 
         if (ctx.wizard.state.ai_mode && ctx.message.photo) {

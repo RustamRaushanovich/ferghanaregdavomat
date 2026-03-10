@@ -5,6 +5,13 @@ const path = require('path');
 const fs = require('fs');
 const { normalizeKey } = require('../utils/topics');
 
+const memCache = {
+    viloyat: {},
+    tuman: {}
+};
+const CACHE_TTL = 15000; // 15 soniya davomida keshda saqlash (dashboard tezligi uchun)
+
+
 async function saveAttendance(data) {
     try {
         const time = getFargonaTime().toTimeString().split(' ')[0].substring(0, 5);
@@ -295,6 +302,11 @@ async function exportDistrictExcel(district, date) {
 }
 
 async function getViloyatSvod(date) {
+    const nowStamp = Date.now();
+    if (memCache.viloyat[date] && (nowStamp - memCache.viloyat[date].timestamp < CACHE_TTL)) {
+        return memCache.viloyat[date].data; // Return from cache
+    }
+
     try {
         const topics = require('../config/topics').getTopics();
         const { DISTRICT_HEADS } = require('../config/config');
@@ -331,7 +343,7 @@ async function getViloyatSvod(date) {
 
         const schoolsDb = require('../database/db').schools_db;
 
-        return allDistricts.map(dName => {
+        const result = allDistricts.map(dName => {
             const normD = normalizeKey(dName);
             const dbKey = Object.keys(schoolsDb).find(k => normalizeKey(k) === normD);
             const districtOfficialSchools = (dbKey ? schoolsDb[dbKey] : []).map(s => normalizeKey(s));
@@ -401,10 +413,26 @@ async function getViloyatSvod(date) {
                 head_name: head.name, head_phone: head.phone
             };
         });
+
+        // Keshga saqlash
+        memCache.viloyat[date] = { data: result, timestamp: nowStamp };
+        return result;
     } catch (e) { console.error("Viloyat Svod Error:", e); return []; }
 }
 
 async function getTumanSvod(district, date, limit = 50, offset = 0) {
+    const cacheKey = `${district}_${date}`;
+    const nowStamp = Date.now();
+
+    // Check main data cache
+    if (memCache.tuman[cacheKey] && (nowStamp - memCache.tuman[cacheKey].timestamp < CACHE_TTL)) {
+        const fullRows = memCache.tuman[cacheKey].data;
+        return {
+            rows: fullRows.slice(offset, offset + limit),
+            total: fullRows.length
+        };
+    }
+
     try {
         const schoolsDb = require('../database/db').schools_db;
         const normDist = normalizeKey(district);
@@ -423,6 +451,9 @@ async function getTumanSvod(district, date, limit = 50, offset = 0) {
             if (entry) return { ...entry, percent: parseFloat(entry.percent) };
             return { district: district, school: sName, time: '-', classes_count: 0, total_students: 0, sababli_jami: 0, sababsiz_jami: 0, total_absent: 0, percent: 0, fio: 'Kiritilmagan' };
         });
+
+        // Format updated cache entry
+        memCache.tuman[cacheKey] = { data: allRows, timestamp: nowStamp };
 
         return {
             rows: allRows.slice(offset, offset + limit),
