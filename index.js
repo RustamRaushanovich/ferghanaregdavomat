@@ -405,18 +405,6 @@ async function alertSuperAdmin(msg) {
 // Browser requests (script.js, style.css, images) must NOT trigger security alerts
 app.use(express.static('dashboard'));
 
-// Security shield applied ONLY to /api routes — not static files
-app.use('/api', securityShield);
-
-const { getSchools, saveData } = require('./src/services/sheet');
-
-const bot = new Telegraf(process.env.BOT_TOKEN, {
-    handlerTimeout: 600000 // 10 minutgacha javob kutish (default 90s edi)
-});
-const PORT = process.env.PORT || 3000;
-const LOGO_PATH = path.join(__dirname, 'assets', 'logo.png');
-
-// --- PREMIUM FEATURES ---
 const premiumRoutes = require('./premium_features/backend/premium_routes');
 app.use('/premium', express.static('premium_features/web'));
 app.use('/api/premium', auth, premiumRoutes);

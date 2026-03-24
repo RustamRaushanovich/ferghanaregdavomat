@@ -92,28 +92,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     displayUserInfo();
 });
 
-async function checkProUser() {
-    const phone = document.getElementById('phone')?.value.replace(/\D/g, '');
-    if (!phone || phone.length < 9) return;
-
-    try {
-        const res = await fetch(`/api/check-pro?phone=${phone}`);
-        const data = await res.json();
-        isPro = data.is_pro;
-
-        const proMini = document.getElementById('proMiniBtn');
-        if (proMini) proMini.style.color = isPro ? '#facc15' : '';
-
-        // Update auto-generate message
-        const proMsg = document.getElementById('proAutoMsg');
-        if (proMsg) {
-            if (isPro) proMsg.classList.remove('hidden');
-            else proMsg.classList.add('hidden');
-        }
-    } catch (e) {
-        console.error("Pro check failed");
-    }
-}
 
 const translations = {
     uz: {
@@ -2189,10 +2167,6 @@ setInterval(() => {
     }
 }, 60000);
 
-function safeSetText(id, text) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = text;
-}
 
 function exportViloyatExcel() {
     const date = document.getElementById('viloyatDate').value;
