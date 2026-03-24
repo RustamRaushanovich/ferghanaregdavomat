@@ -57,14 +57,29 @@
                     <p>o‘quvchilar davomat tizimi</p>
                 </div>
             </div>
-            <div class="nav-right">
-                <a href="/" class="nav-link" data-i18n="nav_home">Asosiy sahifa</a>
-                <a href="/davomat.html" class="nav-link active" data-i18n="nav_form">Davomat kiritish</a>
-                <a href="/dashboard.html" class="nav-link" data-i18n="nav_dashboard">Dashboard</a>
-                <a href="/about.html" class="nav-link" data-i18n="nav_about">Biz haqimizda</a>
-                <button class="login-btn" onclick="location.href='login.html'"><i class="fas fa-sign-in-alt"></i> <span
-                        data-i18n="nav_login">Kirish</span></button>
+                                    <div class="nav-right" style="display:flex; gap:0.5rem; align-items:center;">
+                <a href="/" class="nav-link"><i class="fas fa-home"></i> Asosiy</a>
+                <a href="/davomat.html" class="nav-link"><i class="fas fa-edit"></i> Davomat kiritish</a>
+                <a href="/inspektor.html" class="nav-link"><i class="fas fa-user-shield"></i> Inspektor</a>
+                <a href="/xorij.html" class="nav-link"><i class="fas fa-globe-americas"></i> Xorij</a>
+                <a href="/dashboard.html" class="nav-link"><i class="fas fa-chart-pie"></i> Dashboard</a>
+                
+                <div class="dropdown" style="position:relative; display:inline-block;">
+                    <a href="#" class="nav-link"><i class="fas fa-bars"></i> Boshqa <i class="fas fa-chevron-down" style="font-size:0.7rem; margin-left:3px;"></i></a>
+                    <div class="dropdown-content">
+                        <a href="/ichki_nazorat.html"><i class="fas fa-user-lock"></i> Ichki nazorat</a>
+                        <a href="/mmibdo_rating.html"><i class="fas fa-star"></i> MMIBDO reytingi</a>
+                    </div>
+                </div>
+
+                <a href="/admin.html" class="nav-link"><i class="fas fa-cogs"></i> Admin Panel</a>
+                <a href="/about.html" class="nav-link"><i class="fas fa-info-circle"></i> Biz haqimizda</a>
+                
+                <!-- Extras -->
+                <a href="javascript:showTab('proUser')" class="nav-link" id="nav_proUser" style="color:#facc15; font-weight:bold; display:none;"><i class="fas fa-crown"></i> PRO</a>
+                <a href="javascript:logout()" class="nav-link" id="nav_logout_btn" style="color:#f43f5e; display:none;" title="Chiqish"><i class="fas fa-sign-out-alt"></i></a>
             </div>
+        </div>
         </div>
     </nav>
 

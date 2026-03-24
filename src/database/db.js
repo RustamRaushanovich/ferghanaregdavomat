@@ -8,7 +8,7 @@ const PROMO_FILE = path.join(__dirname, 'promocodes.json');
 const SCHOOLS_FILE = path.join(__dirname, 'schools.json');
 const COORDS_FILE = path.join(__dirname, 'coords.json');
 
-let settings = { vacation_mode: false, location_collection_mode: false, check_location: false };
+let settings = { vacation_mode: false, location_collection_mode: false, check_location: false, maintenance_mode: false };
 let users_db = {};
 let promocodes = {};
 let schools_db = {};

@@ -4,6 +4,7 @@ const { getViloyatSvod, exportToExcel, getTumanSvod } = require('./dataService')
 const { getFargonaTime } = require('../utils/fargona');
 const topicsConfig = require('../config/topics');
 const { getTopicId } = require('../utils/topics');
+const db = require('../database/db');
 require('dotenv').config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -17,6 +18,7 @@ const REPORT_GROUP_ID = process.env.REPORT_GROUP_ID || '-1003662758005';
  */
 async function sendDailySummary() {
     console.log("🕒 [CRON] Starting daily summary at 16:30...");
+    if (db.settings.vacation_mode) return console.log("⏸ Vacation mode ON, skipping.");
     const now = getFargonaTime();
     const dateStr = now.toISOString().split('T')[0];
 
@@ -132,6 +134,7 @@ async function sendPushNotifications(message) {
  */
 async function sendWeeklyBestSchools() {
     console.log("🕒 [CRON] Starting weekly best schools report (Sunday 09:00)...");
+    if (db.settings.vacation_mode) return;
     const topics = topicsConfig.getTopics();
     const districts = Object.keys(topics).filter(d => d !== "Test rejimi" && d !== "MMT Boshqarma");
 
@@ -212,6 +215,7 @@ function getMedal(rank) {
  */
 async function sendFlashReport() {
     console.log("🕒 [CRON] Starting flash report at 16:45...");
+    if (db.settings.vacation_mode) return;
     const now = getFargonaTime();
     const dateStr = now.toISOString().split('T')[0];
 
@@ -255,6 +259,7 @@ async function sendFlashReport() {
  */
 async function sendPendingReportsWarning() {
     console.log("🕒 [CRON] Starting non-reporting schools warning...");
+    if (db.settings.vacation_mode) return;
     const now = getFargonaTime();
     const dateStr = now.toISOString().split('T')[0];
     const hour = now.getHours();

@@ -1,18 +1,13 @@
 # 🏛️ Farg'ona viloyati VMMTB - Davomat Tizimi
 
-## 📦 Bu papka GitHub Upload uchun tayyorlangan
+## 📦 Bu papka GitHub Upload uchun tayyorlangan (MUKAMMAL VERSIYA)
 
-### O'zgartirilgan fayllar (2026-03-24):
-| Fayl | O'zgarish |
-|------|-----------|
-| `index.js` | Xorij API, Me'yoriy Hujjatlar API qo'shildi |
-| `dashboard/xorij.html` | TO'LIQ YANGI - Xorij moduli |
-| `dashboard/admin.html` | Me'yoriy hujjatlar yuklash qo'shildi |
-| `dashboard/about.html` | Me'yoriy hujjatlar bo'limi qo'shildi |
-| `dashboard/dashboard.html` | Xorij statistika kartasi qo'shildi |
-| `dashboard/inspektor.html` | 2-bosqichli wizard |
-| `dashboard/script.js` | Xorij-davomat sinxronizatsiyasi |
-| `.gitignore` | Yangilandi |
+### Bugungi sessiya yangilanishlari (2026-03-24):
+1. **Xorij moduli:** Bot va Web qismlari to'liq integratsiya qilindi.
+2. **Me'yoriy Hujjatlar:** Admin panel orqali yuklash va "Biz haqimizda"da ko'rish.
+3. **Inspektor-Psixolog:** Ro'yxatdan o'tish wizardi va maktablar biriktirish logikasi.
+4. **Dashboard:** Jonli monitor va xorij statistikasi.
+5. **Render Fix:** Barcha zaruriy 'src/scenes' fayllari qo'shildi.
 
 ## 🚀 O'rnatish
 
@@ -26,6 +21,6 @@ Server ishga tushishi uchun `.env` fayl yarating:
 ```
 BOT_TOKEN=...
 GEMINI_API_KEY=...
-DATABASE_URL=...
+DATABASE_URL=... (PostgreSQL URL)
 PORT=3000
 ```

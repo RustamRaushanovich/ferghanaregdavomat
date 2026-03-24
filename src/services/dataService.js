@@ -349,15 +349,12 @@ async function getViloyatSvod(date) {
             const districtOfficialSchools = (dbKey ? schoolsDb[dbKey] : []).map(s => normalizeKey(s));
             const totalSchools = districtOfficialSchools.length;
 
-            const tumanRows = rawEntriesRes.rows.filter(r => normalizeKey(r.dist) === normD || normalizeKey(r.norm_dist) === normD || normalizeKey(r.district) === normD);
-            const yestRows = yestEntriesRes.rows.filter(r => normalizeKey(r.dist) === normD || normalizeKey(r.norm_dist) === normD || normalizeKey(r.district) === normD);
-
+            const tumanRows = rawEntriesRes.rows.filter(r => normalizeKey(r.norm_dist) === normD || normalizeKey(r.district) === normD);
+            const yestRows = yestEntriesRes.rows.filter(r => normalizeKey(r.norm_dist) === normD || normalizeKey(r.district) === normD);
 
             const head = DISTRICT_HEADS[dName] || { name: "-", phone: "-" };
 
             if (tumanRows.length > 0) {
-                // Ensure unique schools for statistics (the query uses DISTINCT ON, but double check filtering)
-                // Use a map to get latest entries if the query didn't handle it perfectly or for clarity
                 const uniqueEntries = {};
                 tumanRows.forEach(r => { uniqueEntries[normalizeKey(r.school)] = r; });
                 const uniqueRows = Object.values(uniqueEntries);
@@ -386,21 +383,15 @@ async function getViloyatSvod(date) {
                     sumPerc: acc.sumPerc + (parseFloat(r.percent) || 0)
                 }), { classes: 0, students: 0, sk: 0, st: 0, so: 0, si: 0, sb: 0, sm: 0, sq: 0, sc: 0, sbt: 0, si_ish: 0, sqar: 0, sjaz: 0, snaz: 0, stur: 0, ssb: 0, sababli: 0, sababsiz: 0, total_absent: 0, sumPerc: 0 });
 
-                // Calculate Yesterday Average accurately
                 const yestUnique = {};
                 yestRows.forEach(r => { yestUnique[normalizeKey(r.school)] = parseFloat(r.percent) || 0; });
                 const yestPercs = Object.values(yestUnique);
                 const yestAvg = yestPercs.length > 0 ? (yestPercs.reduce((a, b) => a + b, 0) / yestPercs.length) : 0;
 
                 return {
-                    district: dName,
-                    entries: uniqueRows.length,
-                    total_schools: totalSchools,
-                    ...sums,
-                    avg_percent: parseFloat((sums.sumPerc / uniqueRows.length).toFixed(1)),
-                    yesterday_percent: parseFloat(yestAvg.toFixed(1)),
-                    head_name: head.name,
-                    head_phone: head.phone
+                    district: dName, entries: uniqueRows.length, total_schools: totalSchools,
+                    ...sums, avg_percent: parseFloat((sums.sumPerc / uniqueRows.length).toFixed(1)),
+                    yesterday_percent: parseFloat(yestAvg.toFixed(1)), head_name: head.name, head_phone: head.phone
                 };
             }
 
@@ -414,7 +405,6 @@ async function getViloyatSvod(date) {
             };
         });
 
-        // Keshga saqlash
         memCache.viloyat[date] = { data: result, timestamp: nowStamp };
         return result;
     } catch (e) { console.error("Viloyat Svod Error:", e); return []; }
@@ -423,76 +413,37 @@ async function getViloyatSvod(date) {
 async function getTumanSvod(district, date, limit = 50, offset = 0) {
     const cacheKey = `${district}_${date}`;
     const nowStamp = Date.now();
-
-    // Check main data cache
     if (memCache.tuman[cacheKey] && (nowStamp - memCache.tuman[cacheKey].timestamp < CACHE_TTL)) {
         const fullRows = memCache.tuman[cacheKey].data;
-        return {
-            rows: fullRows.slice(offset, offset + limit),
-            total: fullRows.length
-        };
+        return { rows: fullRows.slice(offset, offset + limit), total: fullRows.length };
     }
-
     try {
         const schoolsDb = require('../database/db').schools_db;
         const normDist = normalizeKey(district);
         const dbKey = Object.keys(schoolsDb).find(k => normalizeKey(k) === normDist);
         const districtSchools = schoolsDb[dbKey || district] || [];
-
-        const entriesRes = await db.query(`
-            SELECT DISTINCT ON (district, school) *
-            FROM attendance
-            WHERE date = $1
-            ORDER BY district, school, id DESC`, [date]);
+        const entriesRes = await db.query(`SELECT DISTINCT ON (district, school) * FROM attendance WHERE date = $1 ORDER BY district, school, id DESC`, [date]);
         const tumanEntries = entriesRes.rows.filter(e => normalizeKey(e.district) === normDist);
-
         const allRows = districtSchools.map(sName => {
             const entry = tumanEntries.find(e => normalizeKey(e.school) === normalizeKey(sName));
             if (entry) return { ...entry, percent: parseFloat(entry.percent) };
             return { district: district, school: sName, time: '-', classes_count: 0, total_students: 0, sababli_jami: 0, sababsiz_jami: 0, total_absent: 0, percent: 0, fio: 'Kiritilmagan' };
         });
-
-        // Format updated cache entry
         memCache.tuman[cacheKey] = { data: allRows, timestamp: nowStamp };
-
-        return {
-            rows: allRows.slice(offset, offset + limit),
-            total: allRows.length
-        };
+        return { rows: allRows.slice(offset, offset + limit), total: allRows.length };
     } catch (e) { console.error("Tuman Svod Error:", e); return { rows: [], total: 0 }; }
 }
 
 async function getTodayAbsentsDetails(date, limit = 50, offset = 0) {
     try {
-        const countRes = await db.query(`
-            SELECT count(*) 
-            FROM absent_students s 
-            JOIN attendance a ON s.attendance_id = a.id 
-            WHERE a.date = $1`, [date]);
+        const countRes = await db.query(`SELECT count(*) FROM absent_students s JOIN attendance a ON s.attendance_id = a.id WHERE a.date = $1`, [date]);
         const total = parseInt(countRes.rows[0].count);
-
-        const res = await db.query(`
-            SELECT a.date, a.district, a.school, s.class, s.name, s.address, s.parent_name, s.parent_phone, a.inspector, a.fio as submitter_fio, a.phone as submitter_phone
-            FROM absent_students s 
-            JOIN attendance a ON s.attendance_id = a.id 
-            WHERE a.date = $1
-            ORDER BY a.district, a.school, s.class
-            LIMIT $2 OFFSET $3`, [date, limit, offset]);
-
+        const res = await db.query(`SELECT a.date, a.district, a.school, s.class, s.name, s.address, s.parent_name, s.parent_phone, a.inspector, a.fio as submitter_fio, a.phone as submitter_phone FROM absent_students s JOIN attendance a ON s.attendance_id = a.id WHERE a.date = $1 ORDER BY a.district, a.school, s.class LIMIT $2 OFFSET $3`, [date, limit, offset]);
         const finalRows = [];
         for (const r of res.rows) {
-            const streakRes = await db.query(`
-                SELECT count(DISTINCT a.date) as streak
-                FROM absent_students s
-                JOIN attendance a ON s.attendance_id = a.id
-                WHERE s.name = $1 AND a.school = $2 AND a.district = $3 AND a.date <= $4
-            `, [r.name, r.school, r.district, date]);
+            const streakRes = await db.query(`SELECT count(DISTINCT a.date) as streak FROM absent_students s JOIN attendance a ON s.attendance_id = a.id WHERE s.name = $1 AND a.school = $2 AND a.district = $3 AND a.date <= $4`, [r.name, r.school, r.district, date]);
             const streak = parseInt(streakRes.rows[0].streak) || 1;
-            finalRows.push({
-                ...r,
-                streak: streak,
-                status: streak >= 3 ? "Muntazam" : "Odatiy"
-            });
+            finalRows.push({ ...r, streak: streak, status: streak >= 3 ? "Muntazam" : "Odatiy" });
         }
         return { rows: finalRows, total };
     } catch (e) { return { rows: [], total: 0 }; }
@@ -514,30 +465,18 @@ async function getRecentActivity(limit = 20, offset = 0, district = null) {
         let query = 'SELECT * FROM attendance ';
         let countQuery = 'SELECT count(*) as count FROM attendance ';
         let params = [limit, offset];
-
         if (district) {
-            query += 'WHERE district ILIKE $3 ';
+            query += 'WHERE district ILIKE $3 ORDER BY id DESC LIMIT $1 OFFSET $2';
             countQuery += 'WHERE district ILIKE $1 ';
-            query += 'ORDER BY id DESC LIMIT $1 OFFSET $2';
             params.push(`%${district}%`);
-
-            const [rowsRes, countRes] = await Promise.all([
-                db.query(query, params),
-                db.query(countQuery, [`%${district}%`])
-            ]);
+            const [rowsRes, countRes] = await Promise.all([db.query(query, params), db.query(countQuery, [`%${district}%`])]);
             return { rows: rowsRes.rows, total: parseInt(countRes.rows[0].count) };
         } else {
             query += 'ORDER BY id DESC LIMIT $1 OFFSET $2';
-            const [rowsRes, countRes] = await Promise.all([
-                db.query(query, params),
-                db.query(countQuery)
-            ]);
+            const [rowsRes, countRes] = await Promise.all([db.query(query, params), db.query(countQuery)]);
             return { rows: rowsRes.rows, total: parseInt(countRes.rows[0].count) };
         }
-    } catch (e) {
-        console.error("Recent Activity Error:", e);
-        return { rows: [], total: 0 };
-    }
+    } catch (e) { console.error("Recent Activity Error:", e); return { rows: [], total: 0 }; }
 }
 
 async function exportWeeklyExcel(baseDate) {
@@ -546,50 +485,17 @@ async function exportWeeklyExcel(baseDate) {
         const sheet = workbook.addWorksheet('Haftalik Hisobot');
         const endDate = baseDate || getFargonaTime().toISOString().split('T')[0];
         const startDate = new Date(new Date(endDate).getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-
         sheet.mergeCells('A1:H1');
         sheet.getCell('A1').value = `Haftalik Davomat Hisoboti (${startDate} - ${endDate})`;
-        sheet.getCell('A1').font = { bold: true, size: 14 };
-        sheet.getCell('A1').alignment = { horizontal: 'center' };
-
+        sheet.getCell('A1').font = { bold: true, size: 14 }; sheet.getCell('A1').alignment = { horizontal: 'center' };
         const headerRow = ["Tuman/Shahar", "Maktablar", "O'quvchilar", "Sababli", "Sababsiz", "Jami Kelmagan", "O'rtacha %"];
-        const header = sheet.addRow(headerRow);
-        header.eachCell(c => setStyle(c, { bold: true, fill: 'FFC6E0B4' }));
-
-        const res = await db.query(`
-            SELECT district, 
-                   count(DISTINCT school) as schools,
-                   sum(total_students)/count(DISTINCT date) as avg_students,
-                   sum(sababli_jami) as sababli,
-                   sum(sababsiz_jami) as sababsiz,
-                   sum(total_absent) as total_absent,
-                   avg(percent) as avg_p
-            FROM attendance
-            WHERE date >= $1 AND date <= $2
-            GROUP BY district
-            ORDER BY avg_p DESC
-        `, [startDate, endDate]);
-
-        res.rows.forEach(r => {
-            sheet.addRow([
-                r.district,
-                r.schools,
-                Math.round(r.avg_students),
-                r.sababli,
-                r.sababsiz,
-                r.total_absent,
-                parseFloat(r.avg_p).toFixed(1) + '%'
-            ]).eachCell(c => setStyle(c));
-        });
-
+        const header = sheet.addRow(headerRow); header.eachCell(c => setStyle(c, { bold: true, fill: 'FFC6E0B4' }));
+        const res = await db.query(`SELECT district, count(DISTINCT school) as schools, sum(total_students)/count(DISTINCT date) as avg_students, sum(sababli_jami) as sababli, sum(sababsiz_jami) as sababsiz, sum(total_absent) as total_absent, avg(percent) as avg_p FROM attendance WHERE date >= $1 AND date <= $2 GROUP BY district ORDER BY avg_p DESC`, [startDate, endDate]);
+        res.rows.forEach(r => { sheet.addRow([r.district, r.schools, Math.round(r.avg_students), r.sababli, r.sababsiz, r.total_absent, parseFloat(r.avg_p).toFixed(1) + '%']).eachCell(c => setStyle(c)); });
         const assetsDir = path.resolve(__dirname, '../../assets');
         const filePath = path.join(assetsDir, `HAFTALIK_HISOBOT_${endDate}.xlsx`);
-        await workbook.xlsx.writeFile(filePath);
-        return filePath;
-    } catch (e) {
-        console.error("Weekly Excel Error:", e);
-        return null;
-    }
+        await workbook.xlsx.writeFile(filePath); return filePath;
+    } catch (e) { console.error("Weekly Excel Error:", e); return null; }
 }
 
 async function exportMonthlyExcel(baseDate, district = null) {
@@ -597,72 +503,94 @@ async function exportMonthlyExcel(baseDate, district = null) {
         const workbook = new ExcelJS.Workbook();
         const sheet = workbook.addWorksheet('Oylik Hisobot');
         const d = baseDate ? new Date(baseDate) : getFargonaTime();
-        const year = d.getFullYear();
-        const month = d.getMonth();
+        const year = d.getFullYear(); const month = d.getMonth();
         const startDate = new Date(year, month, 1).toISOString().split('T')[0];
         const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
-
         const title = district ? `${district} - ${year}-${month + 1} Oylik Hisobot` : `Viloyat - ${year}-${month + 1} Oylik Hisobot`;
-        sheet.mergeCells('A1:J1');
-        sheet.getCell('A1').value = title;
-        sheet.getCell('A1').font = { bold: true, size: 14 };
-        sheet.getCell('A1').alignment = { horizontal: 'center' };
-
-        const headerRow = district ? ["Maktab", "Kiritilgan kunlar", "O'quvchilar", "Sababli", "Sababsiz", "O'rtacha %"]
-            : ["Tuman", "Maktablar", "O'quvchilar", "Sababli", "Sababsiz", "O'rtacha %"];
-        const header = sheet.addRow(headerRow);
-        header.eachCell(c => setStyle(c, { bold: true, fill: 'FFF8CBAD' }));
-
+        sheet.mergeCells('A1:J1'); sheet.getCell('A1').value = title; sheet.getCell('A1').font = { bold: true, size: 14 }; sheet.getCell('A1').alignment = { horizontal: 'center' };
+        const headerRow = district ? ["Maktab", "Kiritilgan kunlar", "O'quvchilar", "Sababli", "Sababsiz", "O'rtacha %"] : ["Tuman", "Maktablar", "O'quvchilar", "Sababli", "Sababsiz", "O'rtacha %"];
+        const header = sheet.addRow(headerRow); header.eachCell(c => setStyle(c, { bold: true, fill: 'FFF8CBAD' }));
         let query, params;
         if (district) {
-            query = `
-                SELECT school, 
-                       count(date) as days,
-                       avg(total_students) as avg_students,
-                       sum(sababli_jami) as sababli,
-                       sum(sababsiz_jami) as sababsiz,
-                       avg(percent) as avg_p
-                FROM attendance
-                WHERE date >= $1 AND date <= $2 AND district = $3
-                GROUP BY school
-                ORDER BY avg_p DESC
-            `;
+            query = `SELECT school, count(date) as days, avg(total_students) as avg_students, sum(sababli_jami) as sababli, sum(sababsiz_jami) as sababsiz, avg(percent) as avg_p FROM attendance WHERE date >= $1 AND date <= $2 AND district = $3 GROUP BY school ORDER BY avg_p DESC`;
             params = [startDate, endDate, district];
         } else {
-            query = `
-                SELECT district, 
-                       count(DISTINCT school) as schools,
-                       sum(total_students)/count(DISTINCT date) as avg_students,
-                       sum(sababli_jami) as sababli,
-                       sum(sababsiz_jami) as sababsiz,
-                       avg(percent) as avg_p
-                FROM attendance
-                WHERE date >= $1 AND date <= $2
-                GROUP BY district
-                ORDER BY avg_p DESC
-            `;
+            query = `SELECT district, count(DISTINCT school) as schools, sum(total_students)/count(DISTINCT date) as avg_students, sum(sababli_jami) as sababli, sum(sababsiz_jami) as sababsiz, avg(percent) as avg_p FROM attendance WHERE date >= $1 AND date <= $2 GROUP BY district ORDER BY avg_p DESC`;
             params = [startDate, endDate];
         }
-
         const res = await db.query(query, params);
         res.rows.forEach(r => {
-            const rowData = district ? [r.school, r.days, Math.round(r.avg_students), r.sababli, r.sababsiz, parseFloat(r.avg_p).toFixed(1) + '%']
-                : [r.district, r.schools, Math.round(r.avg_students), r.sababli, r.sababsiz, parseFloat(r.avg_p).toFixed(1) + '%'];
+            const rowData = district ? [r.school, r.days, Math.round(r.avg_students), r.sababli, r.sababsiz, parseFloat(r.avg_p).toFixed(1) + '%'] : [r.district, r.schools, Math.round(r.avg_students), r.sababli, r.sababsiz, parseFloat(r.avg_p).toFixed(1) + '%'];
             sheet.addRow(rowData).eachCell(c => setStyle(c));
         });
-
         const assetsDir = path.resolve(__dirname, '../../assets');
         const fileName = district ? `OYLIK_HISOBOT_${district.replace(/[^a-z0-9]/gi, '_')}_${year}_${month + 1}.xlsx` : `OYLIK_HISOBOT_VILOYAT_${year}_${month + 1}.xlsx`;
-        const filePath = path.join(assetsDir, fileName);
-        await workbook.xlsx.writeFile(filePath);
-        return filePath;
-    } catch (e) {
-        console.error("Monthly Excel Error:", e);
-        return null;
-    }
+        const filePath = path.join(assetsDir, fileName); await workbook.xlsx.writeFile(filePath); return filePath;
+    } catch (e) { console.error("Monthly Excel Error:", e); return null; }
+}
+
+async function exportXorijExcel() {
+    try {
+        const dbPath = path.join(__dirname, '..', 'database', 'xorij.json');
+        let data = [];
+        if (fs.existsSync(dbPath)) data = JSON.parse(fs.readFileSync(dbPath));
+        const workbook = new ExcelJS.Workbook();
+        const sheet1 = workbook.addWorksheet('Umumiy Svod');
+        sheet1.mergeCells('A1:P1');
+        sheet1.getCell('A1').value = "Maktabgacha va maktab ta'limi vazirligi tasarrufidagi umumta'lim maktablaridagi chet elga ketgan o'quvchilar haqida MA'LUMOT";
+        sheet1.getCell('A1').font = { bold: true, size: 12 }; sheet1.getCell('A1').alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        sheet1.getRow(1).height = 40;
+        const headers1 = [["№", "A2:A4"], ["Tuman nomi", "B2:B4"], ["Jami chet elga ketgan o'quvchilar", "C2:C4"], ["Shundan", "D2:I2"], ["Chet elga ketish sababi", "J2:O2"]];
+        headers1.forEach(h => { sheet1.mergeCells(h[1]); sheet1.getCell(h[1].split(':')[0]).value = h[0]; });
+        const subHeaders = ["Rossiya", "Qozog'iston", "Turkiya", "BAA", "Misr davlatiga", "Boshqa davlatlarga", "Doimiy yashash", "O'qishga", "Ishlashga", "Davolanishga", "Noma'lum", "Boshqa sabablarga"];
+        sheet1.mergeCells('D3:D4'); sheet1.mergeCells('E3:E4'); sheet1.mergeCells('F3:F4'); sheet1.mergeCells('G3:G4'); sheet1.mergeCells('H3:H4'); sheet1.mergeCells('I3:I4');
+        sheet1.mergeCells('J3:J4'); sheet1.mergeCells('K3:K4'); sheet1.mergeCells('L3:L4'); sheet1.mergeCells('M3:M4'); sheet1.mergeCells('N3:N4'); sheet1.mergeCells('O3:O4');
+        subHeaders.forEach((h, i) => { const cell = sheet1.getCell(3, 4 + i); cell.value = h; });
+        for(let r=2; r<=4; r++) { for(let c=1; c<=15; c++) { setStyle(sheet1.getCell(r, c), { bold: true, size: 9, fill: 'FFD9E1F2' }); } }
+        const topics = require('../config/topics').getTopics();
+        const districts = Object.keys(topics).filter(d => !["Test rejimi", "MMT Boshqarma"].includes(d));
+        districts.forEach((d, i) => {
+            const dData = data.filter(item => item.district === d); const total = dData.length;
+            const c_ros = dData.filter(x => x.country === "Rossiya").length; const c_qoz = dData.filter(x => x.country === "Qozog'iston").length;
+            const c_tur = dData.filter(x => x.country === "Turkiya").length; const c_baa = dData.filter(x => x.country === "BAA").length;
+            const c_mis = dData.filter(x => x.country === "Misr").length; const c_bos = total - (c_ros + c_qoz + c_tur + c_baa + c_mis);
+            const s_doi = dData.filter(x => x.reason === "Doimiy yashash").length; const s_oqi = dData.filter(x => x.reason === "O'qish").length;
+            const s_ish = dData.filter(x => x.reason === "Ishlash").length; const s_dav = dData.filter(x => x.reason === "Davolanish").length;
+            const s_nom = 0; const s_bos = total - (s_doi + s_oqi + s_ish + s_dav + s_nom);
+            const row = sheet1.addRow([i+1, d, total, c_ros, c_qoz, c_tur, c_baa, c_mis, c_bos, s_doi, s_oqi, s_ish, s_dav, s_nom, s_bos]); row.eachCell(cell => setStyle(cell));
+        });
+        const sheet2 = workbook.addWorksheet('Batafsil Ro\'yxat');
+        const headers2 = ["t/r", "Tuman (shahar)", "Maktab va Sinf", "O'quvchi F.I.SH", "Tug'ilgan sanasi", "Davlati va Ketgan sanasi", "Nima sababdan / Kim bilan", "Bugungi holat", "Qonuniylik", "Komissiya qarori", "Maktab buyrug'i", "E-maktab holati", "Doimiy manzili"];
+        const h2 = sheet2.addRow(headers2); h2.eachCell(c => setStyle(c, { bold: true, fill: 'FFE2EFDA' }));
+        data.forEach((item, i) => {
+            const row = sheet2.addRow([
+                i + 1, 
+                item.district, 
+                `${item.school}, ${item.class || ''}`, 
+                item.fio, 
+                item.birth_date, 
+                `${item.country}, ${item.gone_date}`, 
+                `${item.reason} / ${item.with_whom || ''}`, 
+                item.current_state,
+                item.is_legal ? "Qonuniy" : "Noqonuniy",
+                item.commission_doc || "-",
+                item.school_order || "-",
+                item.emaktab_status || "-",
+                item.address
+            ]);
+            row.eachCell(cell => setStyle(cell));
+        });
+        sheet2.getColumn(2).width = 20; sheet2.getColumn(3).width = 20; sheet2.getColumn(4).width = 35; 
+        sheet2.getColumn(6).width = 25; sheet2.getColumn(7).width = 30; sheet2.getColumn(8).width = 20; 
+        sheet2.getColumn(10).width = 25; sheet2.getColumn(11).width = 25; sheet2.getColumn(12).width = 30;
+        sheet2.getColumn(13).width = 40;
+        const assetsDir = path.resolve(__dirname, '../../assets'); const filePath = path.join(assetsDir, `XORIJGA_KETGANLAR_${getFargonaTime().toISOString().split('T')[0]}.xlsx`);
+        await workbook.xlsx.writeFile(filePath); return filePath;
+    } catch (e) { return null; }
 }
 
 module.exports = {
     saveAttendance, exportToExcel, exportDistrictExcel, exportWeeklyExcel, exportMonthlyExcel,
-    getViloyatSvod, getTumanSvod, getTodayAbsentsDetails, getRecentActivity, getTrendStats, checkIfExists
+    getViloyatSvod, getTumanSvod, getTodayAbsentsDetails, getRecentActivity, getTrendStats, checkIfExists,
+    exportXorijExcel
 };
