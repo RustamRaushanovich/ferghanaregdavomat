@@ -164,19 +164,29 @@
                     <p data-i18n="nav_about">Biz haqimizda</p>
                 </div>
             </div>
-            <div class="nav-right">
-                <a href="/" class="nav-link" data-i18n="nav_home">Asosiy sahifa</a>
-                <a href="/davomat.html" class="nav-link" data-i18n="nav_form">Davomat kiritish</a>
-                <a href="/dashboard.html" class="nav-link" data-i18n="nav_dashboard">Dashboard</a>
-                <a href="/about.html" class="nav-link active" data-i18n="nav_about">Biz haqimizda</a>
-                <div class="lang-switcher">
-                    <button onclick="changeLang('uz')" class="lang-btn" id="uz_btn">UZ</button>
-                    <button onclick="changeLang('ru')" class="lang-btn" id="ru_btn">RU</button>
+                                    <div class="nav-right" style="display:flex; gap:0.5rem; align-items:center;">
+                <a href="/" class="nav-link"><i class="fas fa-home"></i> Asosiy</a>
+                <a href="/davomat.html" class="nav-link"><i class="fas fa-edit"></i> Davomat kiritish</a>
+                <a href="/inspektor.html" class="nav-link"><i class="fas fa-user-shield"></i> Inspektor</a>
+                <a href="/xorij.html" class="nav-link"><i class="fas fa-globe-americas"></i> Xorij</a>
+                <a href="/dashboard.html" class="nav-link"><i class="fas fa-chart-pie"></i> Dashboard</a>
+                
+                <div class="dropdown" style="position:relative; display:inline-block;">
+                    <a href="#" class="nav-link"><i class="fas fa-bars"></i> Boshqa <i class="fas fa-chevron-down" style="font-size:0.7rem; margin-left:3px;"></i></a>
+                    <div class="dropdown-content">
+                        <a href="/ichki_nazorat.html"><i class="fas fa-user-lock"></i> Ichki nazorat</a>
+                        <a href="/mmibdo_rating.html"><i class="fas fa-star"></i> MMIBDO reytingi</a>
+                    </div>
                 </div>
-                <div id="userProfileDisplay"></div>
-                <button class="login-btn" onclick="location.href='login.html'"><i class="fas fa-sign-in-alt"></i>
-                    <span data-i18n="nav_login">Kirish</span></button>
+
+                <a href="/admin.html" class="nav-link"><i class="fas fa-cogs"></i> Admin Panel</a>
+                <a href="/about.html" class="nav-link"><i class="fas fa-info-circle"></i> Biz haqimizda</a>
+                
+                <!-- Extras -->
+                <a href="javascript:showTab('proUser')" class="nav-link" id="nav_proUser" style="color:#facc15; font-weight:bold; display:none;"><i class="fas fa-crown"></i> PRO</a>
+                <a href="javascript:logout()" class="nav-link" id="nav_logout_btn" style="color:#f43f5e; display:none;" title="Chiqish"><i class="fas fa-sign-out-alt"></i></a>
             </div>
+        </div>
         </div>
     </nav>
 
@@ -199,7 +209,8 @@
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('boshqarma')">Viloyat Boshqarmasi</button>
             <button class="tab-btn" onclick="switchTab('tuman')">Tuman va Shaharlar</button>
-        </div>
+        
+            <button class="tab-btn" onclick="switchTab('hujjatlar')"><i class="fas fa-file-contract"></i> Me'yoriy Hujjatlar</button></div>
 
         <!-- Boshqarma Section -->
         <div id="boshqarma" class="tab-content active">
@@ -282,6 +293,15 @@
                                 data-i18n="work_weekend">Shan-Yak: Dam olish</span></div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        
+        <!-- Hujjatlar Section -->
+        <div id="hujjatlar" class="tab-content">
+            <div class="about-grid" id="hujjatlarGrid">
+                <!-- Data will be loaded via JS -->
+                <div style="text-align:center; grid-column:1/-1; padding:40px; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Hujjatlar yuklanmoqda...</div>
             </div>
         </div>
 
@@ -384,7 +404,14 @@
             // Find correctly by text or index
             const btns = document.querySelectorAll('.tab-btn');
             if (tabId === 'boshqarma') btns[0].classList.add('active');
-            else if (tabId === 'tuman') btns[1].classList.add('active');
+            else 
+            if (tabId === 'tuman') btns[1].classList.add('active');
+            else if (tabId === 'hujjatlar') btns[2].classList.add('active');
+            
+            if (tabId === 'hujjatlar') {
+                loadHujjatlar();
+            }
+
 
             if (tabId === 'tuman' && document.getElementById('tumanGrid').children.length === 0) {
                 renderTumanCards();
@@ -413,7 +440,37 @@
             applyTranslations(localStorage.getItem('lang') || 'uz');
         }
     </script>
-    <script src="script.js"></script>
+    <script src="script.js">
+        async function loadHujjatlar() {
+            const grid = document.getElementById('hujjatlarGrid');
+            try {
+                const res = await fetch('/api/documents');
+                const docs = await res.json();
+                
+                if(!docs || docs.length === 0) {
+                    grid.innerHTML = '<div style="text-align:center; grid-column:1/-1; color:#94a3b8; padding:20px;">Hujjatlar mavjud emas.</div>';
+                    return;
+                }
+                
+                let html = '';
+                docs.forEach(doc => {
+                    const docLink = doc.filename ? `<a href="/uploads/${doc.filename}" target="_blank" style="display:inline-block; margin-top:15px; padding:10px 20px; background:#10b981; color:white; border-radius:8px; text-decoration:none;"><i class="fas fa-download"></i> Yuklab olish</a>` : '';
+                    html += `
+                    <div class="profile-card" style="text-align:left;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <h3 style="color:var(--primary); margin-bottom:10px; font-size:1.1rem;"><i class="fas fa-file-alt"></i> ${doc.title}</h3>
+                        </div>
+                        <div style="font-size:0.85rem; color:#94a3b8; margin-bottom:10px;"><i class="fas fa-calendar-alt"></i> ${doc.date}</div>
+                        ${docLink}
+                    </div>`;
+                });
+                grid.innerHTML = html;
+            } catch(e) {
+                grid.innerHTML = '<div style="color:red; text-align:center; grid-column:1/-1;">Xatolik yuz berdi.</div>';
+            }
+        }
+
+    </script>
 </body>
 
 </html>

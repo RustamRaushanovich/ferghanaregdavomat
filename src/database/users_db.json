@@ -11624,7 +11624,7 @@
     "username": "allogenez_admin"
   },
   "6137094266": {
-    "district": "So'x tumani",
+    "district": "So‘x tumani",
     "school": "24 -maktab",
     "fio": "Abdulloev Ahmadali Yodgorovich",
     "phone": "+998994919819",
@@ -13793,5 +13793,45 @@
     "fio": "Raimova Yulduz Abdurahmonovna",
     "phone": "998932174412",
     "name": "Юлдуз Абдурахмоновна"
+  },
+  "5812422642": {
+    "fio": "Qodirova Nigoraxon Jaloldinovna",
+    "name": "Нигорахон",
+    "phone": "998996559755",
+    "school": "35 maktab",
+    "district": "Quva tumani"
+  },
+  "parent_6875609450": {
+    "fio": "Nòmonjonova Osiyoxon",
+    "lang": "uz_lat",
+    "role": "parent",
+    "phone": "998947321970",
+    "chat_id": 6875609450,
+    "subscriptions": [
+      {
+        "school": "34 мактаб",
+        "district": "Qo‘qon shahri"
+      },
+      {
+        "school": "34 мактаб",
+        "district": "Qo‘qon shahri"
+      },
+      {
+        "school": "26 мактаб",
+        "district": "Qo‘qon shahri"
+      },
+      {
+        "school": "10-maktab",
+        "district": "Dang‘ara tumani"
+      }
+    ]
+  },
+  "7853671682": {
+    "district": "So‘x tumani",
+    "school": "25 -maktab",
+    "fio": "Karimov Mandonjon Marufjonovich",
+    "phone": "998950900192",
+    "name": "229",
+    "username": "zangat229"
   }
 }

@@ -534,18 +534,29 @@
                     <p data-i18n="nav_dashboard">Davomat Nazorati (Dashboard)</p>
                 </div>
             </div>
-            <div class="nav-right">
-                <a href="/" class="nav-link" data-i18n="nav_home">Asosiy sahifa</a>
-                <a href="/davomat.html" class="nav-link" data-i18n="nav_form">Davomat kiritish</a>
-                <a href="/dashboard.html" class="nav-link active" data-i18n="nav_dashboard">Dashboard</a>
-                <a href="/inspektor.html" class="nav-link" style="color:#818cf8;"><i class="fas fa-user-shield"></i>
-                    Inspektor-Psixolog</a>
-                <a href="javascript:showTab('proUser')" class="nav-link" id="nav_proUser"
-                    style="color:#facc15; font-weight:bold;"><i class="fas fa-crown"></i> 👑 PRO ✨</a>
-                <a href="/about.html" class="nav-link" data-i18n="nav_about">Biz haqimizda</a>
-                <a href="javascript:logout()" class="nav-link" data-i18n="nav_logout"><i
-                        class="fas fa-sign-out-alt"></i> Chiqish</a>
+                                    <div class="nav-right" style="display:flex; gap:0.5rem; align-items:center;">
+                <a href="/" class="nav-link"><i class="fas fa-home"></i> Asosiy</a>
+                <a href="/davomat.html" class="nav-link"><i class="fas fa-edit"></i> Davomat kiritish</a>
+                <a href="/inspektor.html" class="nav-link"><i class="fas fa-user-shield"></i> Inspektor</a>
+                <a href="/xorij.html" class="nav-link"><i class="fas fa-globe-americas"></i> Xorij</a>
+                <a href="/dashboard.html" class="nav-link"><i class="fas fa-chart-pie"></i> Dashboard</a>
+                
+                <div class="dropdown" style="position:relative; display:inline-block;">
+                    <a href="#" class="nav-link"><i class="fas fa-bars"></i> Boshqa <i class="fas fa-chevron-down" style="font-size:0.7rem; margin-left:3px;"></i></a>
+                    <div class="dropdown-content">
+                        <a href="/ichki_nazorat.html"><i class="fas fa-user-lock"></i> Ichki nazorat</a>
+                        <a href="/mmibdo_rating.html"><i class="fas fa-star"></i> MMIBDO reytingi</a>
+                    </div>
+                </div>
+
+                <a href="/admin.html" class="nav-link"><i class="fas fa-cogs"></i> Admin Panel</a>
+                <a href="/about.html" class="nav-link"><i class="fas fa-info-circle"></i> Biz haqimizda</a>
+                
+                <!-- Extras -->
+                <a href="javascript:showTab('proUser')" class="nav-link" id="nav_proUser" style="color:#facc15; font-weight:bold; display:none;"><i class="fas fa-crown"></i> PRO</a>
+                <a href="javascript:logout()" class="nav-link" id="nav_logout_btn" style="color:#f43f5e; display:none;" title="Chiqish"><i class="fas fa-sign-out-alt"></i></a>
             </div>
+        </div>
         </div>
     </nav>
 
@@ -633,6 +644,18 @@
                     <h4 data-i18n="stat_avg">O'rtacha davomat</h4>
                     <div class="value" id="v_avg_percent">0.0%</div>
                 </div>
+
+<div class="stat-card" style="background:rgba(99, 102, 241, 0.1); border:1px solid #6366f1;">
+    <h4><i class="fas fa-plane-departure" style="color:#a78bfa;"></i> Xorijdagi O'quvchilar</h4>
+    <div style="display:grid; grid-template-columns:1fr 1fr; margin-top:10px; font-size:0.8rem;">
+        <div style="color:#10b981; font-weight:bold;">Qonuniy: <span id="v_xorij_legal" style="font-size:1.1rem;">0</span></div>
+        <div style="color:#ef4444; font-weight:bold;">Noqonuniy: <span id="v_xorij_illegal" style="font-size:1.1rem;">0</span></div>
+    </div>
+    <div style="margin-top:5px; text-align:center;">
+        Qaytarilganlar: <b id="v_xorij_returned" style="color:#3b82f6;">0</b><br>
+        <a href="/xorij.html" style="color:#6366f1; text-decoration:none; font-weight:bold; font-size:0.75rem; margin-top:8px; display:inline-block;"><i class="fas fa-list-ul"></i> Batafsil Svodni ochish</a>
+    </div>
+</div>
                 <div class="stat-card">
                     <h4 data-i18n="stat_absents">Sababsizlar</h4>
                     <div class="value red" id="v_total_sababsiz">0</div>
@@ -1587,7 +1610,27 @@
             }
         }
 
-        async function loadViloyatData() {
+        
+        async function fetchXorijDashboardStats() {
+            try {
+                const res = await fetch('/api/xorij', {headers:{'Authorization': localStorage.getItem('dashboard_token')||'test'}});
+                const json = await res.json();
+                let list = json.data || json || [];
+                let leg=0, ill=0, ret=0;
+                list.forEach(k => {
+                    if(k.is_returned) ret++;
+                    else { if(k.qonuniylik==='legal') leg++; else ill++; }
+                });
+                document.getElementById('v_xorij_legal').innerText = leg;
+                document.getElementById('v_xorij_illegal').innerText = ill;
+                document.getElementById('v_xorij_returned').innerText = ret;
+            } catch(e) {}
+        }
+        setInterval(fetchXorijDashboardStats, 60000);
+        setTimeout(fetchXorijDashboardStats, 3000);
+
+
+async function loadViloyatData() {
             try {
                 const date = document.getElementById('viloyatDate').value;
                 const trendData = await apiFetch(`/api/stats/trend?days=30`).catch(() => []);

@@ -431,13 +431,29 @@
                     <p>Davomat tizimi</p>
                 </div>
             </div>
-            <div class="nav-right">
-                <a href="/" class="nav-link">Asosiy sahifa</a>
-                <a href="/davomat.html" class="nav-link">Davomat kiritish</a>
-                <a href="/dashboard.html" class="nav-link">Dashboard</a>
-                <a href="/inspektor.html" class="nav-link active">Inspektor-Psixolog</a>
-                <a href="/about.html" class="nav-link">Biz haqimizda</a>
+                                    <div class="nav-right" style="display:flex; gap:0.5rem; align-items:center;">
+                <a href="/" class="nav-link"><i class="fas fa-home"></i> Asosiy</a>
+                <a href="/davomat.html" class="nav-link"><i class="fas fa-edit"></i> Davomat kiritish</a>
+                <a href="/inspektor.html" class="nav-link"><i class="fas fa-user-shield"></i> Inspektor</a>
+                <a href="/xorij.html" class="nav-link"><i class="fas fa-globe-americas"></i> Xorij</a>
+                <a href="/dashboard.html" class="nav-link"><i class="fas fa-chart-pie"></i> Dashboard</a>
+                
+                <div class="dropdown" style="position:relative; display:inline-block;">
+                    <a href="#" class="nav-link"><i class="fas fa-bars"></i> Boshqa <i class="fas fa-chevron-down" style="font-size:0.7rem; margin-left:3px;"></i></a>
+                    <div class="dropdown-content">
+                        <a href="/ichki_nazorat.html"><i class="fas fa-user-lock"></i> Ichki nazorat</a>
+                        <a href="/mmibdo_rating.html"><i class="fas fa-star"></i> MMIBDO reytingi</a>
+                    </div>
+                </div>
+
+                <a href="/admin.html" class="nav-link"><i class="fas fa-cogs"></i> Admin Panel</a>
+                <a href="/about.html" class="nav-link"><i class="fas fa-info-circle"></i> Biz haqimizda</a>
+                
+                <!-- Extras -->
+                <a href="javascript:showTab('proUser')" class="nav-link" id="nav_proUser" style="color:#facc15; font-weight:bold; display:none;"><i class="fas fa-crown"></i> PRO</a>
+                <a href="javascript:logout()" class="nav-link" id="nav_logout_btn" style="color:#f43f5e; display:none;" title="Chiqish"><i class="fas fa-sign-out-alt"></i></a>
             </div>
+        </div>
         </div>
     </nav>
 
@@ -718,8 +734,9 @@
                     label.innerHTML = `<input type="checkbox" value="${s.replace(/"/g, '&quot;')}" ${isSelected ? 'checked' : ''}> <span>${s}</span>`;
                     if (isSelected) label.classList.add('selected');
                     label.querySelector('input').addEventListener('change', e => {
+                        const expectedCount = parseInt(document.getElementById('insSchoolsCount').value) || 0;
                         const checked2 = document.querySelectorAll('.school-cb-label input:checked').length;
-                        if (checked2 > 10) { e.target.checked = false; alert('Maksimum 10 ta maktab tanlanadi!'); return; }
+                        if (checked2 > expectedCount) { e.target.checked = false; alert('Siz faqat ' + expectedCount + ' ta maktabni tanlay olasiz!'); return; }
                         e.target.parentElement.classList.toggle('selected', e.target.checked);
                         document.getElementById('selectedCount').textContent = document.querySelectorAll('.school-cb-label input:checked').length;
                     });
@@ -771,16 +788,23 @@
             const fio = document.getElementById('insFio').value.trim();
             const phone = document.getElementById('insPhone').value.trim();
             const district = insMyDistrict;
+            const expectedCount = parseInt(document.getElementById('insSchoolsCount').value) || 0;
             const cbs = document.querySelectorAll('.school-cb-label input:checked');
             const schools = Array.from(cbs).map(cb => cb.value);
 
-            if (!fio) return alert('F.I.SH ni kiriting!');
-            if (!phone) return alert('Telefon raqamini kiriting!');
+            if (!fio || !phone) {
+                document.getElementById('insStep2').style.display = 'none';
+                document.getElementById('insStep1').style.display = 'block';
+                return alert('Shaxsiy ma\u0027lumotlar to\u0027ldirilmagan!');
+            }
+            if (expectedCount <= 0) return alert('Nechta maktab biriktirilganini kiritishingiz kerak!');
             if (!district) return alert('Hududni tanlang!');
-            if (schools.length === 0) return alert('Kamida 1 ta maktab tanlang!');
+            if (schools.length !== expectedCount) return alert('Kiritilgan raqam ' + expectedCount + ' ga teng bo\u0027lishi kerak, lekin ' + schools.length + ' ta maktab tanlandi!');
 
             insMyFio = fio; insMyPhone = phone; insMyDistrict = district; insMySchools = schools;
-            localStorage.setItem('ins_profile', JSON.stringify({ fio, phone, district, schools }));
+            localStorage.setItem('ins_profile', JSON.stringify({ fio, phone, district, schools, expectedCount }));
+
+            alert('Ma\u0027lumotlar muvaffaqiyatli saqlandi!');
 
             document.getElementById('insSetupSection').style.display = 'none';
             document.getElementById('insDashSection').style.display = 'block';
@@ -793,8 +817,8 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('insDashDate').value = today;
 
-            saveInsProfile();
-            logInsActivity('start_dash', `District: ${district}`);
+            try { saveInsProfile(); } catch(e){}
+            try { logInsActivity('start_dash', 'District: ' + district); }catch(e){}
             loadInsDashData();
         }
 
@@ -975,6 +999,31 @@
             tick(); setInterval(tick, 1000);
         }
     </script>
+
+<script>
+function goToInsStep2() {
+    const fio = document.getElementById("insFio").value.trim();
+    const phone = document.getElementById("insPhone").value.trim();
+    if (!fio) return alert("Iltimos, ismingizni kiriting!");
+    if (!phone) return alert("Iltimos, telefon raqamingizni kiriting!");
+    document.getElementById("insStep1").style.display = "none";
+    document.getElementById("insStep2").style.display = "block";
+}
+
+function validateSchoolCount() {
+    const val = parseInt(document.getElementById("insSchoolsCount").value) || 0;
+    document.getElementById("expectedCount").textContent = val;
+    const grid = document.getElementById("insSchoolsGrid");
+    if(val <= 0) {
+        grid.style.pointerEvents = "none";
+        grid.style.opacity = "0.5";
+    } else {
+        grid.style.pointerEvents = "auto";
+        grid.style.opacity = "1";
+    }
+}
+</script>
+
 </body>
 
 </html>

@@ -1,3 +1,4 @@
+let schoolIllegalXorijCount = 0;
 let currentStep = 1;
 let isPro = false;
 let deferredPrompt;
@@ -417,15 +418,26 @@ window.showToast = window.showToast || function (msg, type = 'info') {
 };
 
 // Time & Access Logic
-function checkAccessTime() {
+async function checkAccessTime() {
     // 1. Never block if we are on the login, home, or about pages
     const path = window.location.pathname;
-    if (path.includes('login.html') || path.includes('index.html') || path.includes('about.html') || path.includes('inspektor.html') || path === '/') {
+    if (path.includes('login.html') || path.includes('index.html') || path.includes('about.html') || path.includes('inspektor.html') || path.includes('admin.html') || path === '/') {
         return;
     }
 
     // 2. Admins are never blocked
-    if (localStorage.getItem('dashboard_token')) return;
+    const role = localStorage.getItem('dashboard_role');
+    if (role === 'superadmin') return;
+
+    // Fetch settings to check maintenance mode
+    try {
+        const res = await fetch('/api/admin/settings');
+        const settings = await res.json();
+        if (settings.maintenance_mode) {
+            showMaintenanceOverlay();
+            return;
+        }
+    } catch (e) { }
 
     // 3. Only block if the attendance form exists
     if (!document.getElementById('attendanceForm')) return;
@@ -444,6 +456,30 @@ function checkAccessTime() {
     } else if (hour >= 16) {
         showJokeOverlay("Vaqt tugadi! 🌙<br>Hamma uy-uyiga tarqalgan mahalda davomat kiritish kechikdi. Ertaga barvaqtroq kiring!");
     }
+}
+
+function showMaintenanceOverlay() {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        background: #0f172a; color: white; text-align: center; padding: 2rem;
+        font-family: 'Outfit', sans-serif; z-index: 999999;
+    `;
+    overlay.innerHTML = `
+        <div style="background: rgba(255, 255, 255, 0.03); padding: 3rem; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+            <i class="fas fa-tools" style="font-size: 5rem; color: #facc15; margin-bottom: 2rem; display: block;"></i>
+            <h2 style="margin-bottom: 15px; font-size: 1.8rem; font-weight: 600;">Texnik ishlar olib borilmoqda</h2>
+            <p style="color: #94a3b8; margin-bottom: 30px; font-size: 1.1rem; line-height: 1.6;">Tizimda profilaktika ishlari ketayotganligi sababli dashboard vaqtincha yopiq. Iltimos, birozdan so'ng qayta urinib ko'ring.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="index.html" style="color:white; text-decoration:none; padding:12px 25px; border:1px solid rgba(255,255,255,0.2); border-radius:12px; font-weight:600; transition:0.3s; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-home"></i> Bosh sahifa
+                </a>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
 }
 
 function showJokeOverlay(msg) {
@@ -1097,6 +1133,27 @@ function displayUserInfo() {
     } else {
         if (proCard) proCard.style.display = 'block';
         if (proDetails) proDetails.style.display = 'none';
+    }
+
+    // Admin Link Logic
+    const adminTab = document.getElementById('tab_admin');
+    const adminLink = document.querySelector('.nav-link[href="/admin.html"]'); // Check if exists
+
+    if (role === 'superadmin') {
+        if (adminTab) adminTab.style.display = 'flex';
+        // If there's a nav-right, let's add it there too
+        const navRight = document.querySelector('.nav-right');
+        if (navRight && !navRight.querySelector('a[href="admin.html"]')) {
+            const a = document.createElement('a');
+            a.href = 'admin.html';
+            a.className = 'nav-link';
+            a.style.color = '#10b981';
+            a.style.fontWeight = 'bold';
+            a.innerHTML = '<i class="fas fa-user-shield"></i> Admin';
+            navRight.insertBefore(a, navRight.querySelector('a[href="/about.html"]'));
+        }
+    } else {
+        if (adminTab) adminTab.style.display = 'none';
     }
 
     updateProMiniBtn(isActuallyPro);
@@ -2333,3 +2390,42 @@ async function setPro(uid) {
     }
 }
 
+
+
+async function fetchSchoolXorijCount() {
+    const d = document.getElementById("district").value;
+    const s = document.getElementById("school").value;
+    if(!d || !s) return;
+    try {
+        const res = await fetch("/api/xorij", {headers:{"Authorization": "test-token"}}); 
+        const json = await res.json();
+        const data = json.data || json || [];
+        // count how many illegal departures for this school
+        schoolIllegalXorijCount = data.filter(k => k.district === d && k.school === s && !k.is_returned && k.qonuniylik !== "legal").length;
+        
+        let el = document.getElementById("sababsiz_chetel");
+        if(el) {
+            el.value = schoolIllegalXorijCount;
+        }
+    } catch(e){}
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const sch = document.getElementById("school");
+    if(sch) sch.addEventListener("change", fetchSchoolXorijCount);
+    
+    setTimeout(() => {
+        const chetelInput = document.getElementById("sababsiz_chetel");
+        if(chetelInput) {
+            chetelInput.addEventListener("input", (e) => {
+                const val = parseInt(e.target.value) || 0;
+                if(val > schoolIllegalXorijCount) {
+                    const diff = val - schoolIllegalXorijCount;
+                    alert("Alohida Diqqat! Ushbu kiritilayotgan ro'yxatda tizimli xatolik: \nIltimos, Xorij bo'limiga o'tib, yana " + diff + " nafar noqonuniy ketgan o'quvchining ma'lumotlarini batafsil kiriting! \n\nHozircha " + schoolIllegalXorijCount + " ta ba'zadagi tasdiqlangan hujjat qabul qilinadi.");
+                    e.target.value = schoolIllegalXorijCount;
+                    if(typeof calculateTotals === 'function') calculateTotals();
+                }
+            });
+        }
+    }, 2000);
+});

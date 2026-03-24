@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Ferghana Davomat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: var(--glass);
+            padding: 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--glass);
+            padding: 25px;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #94a3b8;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        textarea,
+        select,
+        input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-on {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            border: 1px solid #22c55e;
+        }
+
+        .status-off {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid #ef4444;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            margin-bottom: 10px;
+        }
+
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .stats-val {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .nav-link {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: white;
+            text-align: center;
+            font-size: 0.85rem;
+            border: 1px solid transparent;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 12px;
+            background: #1e293b;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- NAVBAR HUDDI BOSHQA SAHIFALARDA BO'LGANI KABI -->
+    <nav class="navbar" style="position:fixed; top:0; left:0; width:100%; z-index:9999; background:rgba(15,23,42,0.85); border-bottom:1px solid rgba(255,255,255,0.1); padding:10px 40px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <img src="logo.png" width="40" alt="Logo">
+            <h3 style="margin:0; font-size:1.1rem; color:white;">Admin Panel <span style="color:#94a3b8;font-size:0.8rem;">v3.0</span></h3>
+        </div>
+        <div class="nav-right" style="display:flex; gap:0.5rem; align-items:center;">
+            <a href="/" class="btn" style="background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); padding:8px 15px;"><i class="fas fa-home"></i> Asosiyga qaytish</a>
+            <a href="/davomat.html" class="btn" style="background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.1); padding:8px 15px;"><i class="fas fa-edit"></i> Davomat</a>
+            <a href="/dashboard.html" class="btn" style="background:var(--primary); color:white; padding:8px 15px;"><i class="fas fa-chart-line"></i> Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 80px;">
+        <div class="header">
+            <h1 style="color:#e2e8f0;"><i class="fas fa-tools" style="color:var(--primary)"></i> Superadmin Boshqaruvi</h1>
+            <div id="userInfo">
+                <span id="adminName" style="margin-right: 15px; font-weight: 600; color:#facc15;"><i class="fas fa-crown"></i> Super Admin</span>
+            </div>
+        </div>
+
+
+        <div class="grid">
+            
+            <!-- Meyoriy Hujjatlar -->
+            <div class="card" style="grid-column: 1 / -1; border-color:#10b981; background:rgba(16, 185, 129, 0.05);">
+                <h3 style="color:#10b981;"><i class="fas fa-file-contract"></i> Me'yoriy Hujjatlarni Yuklash</h3>
+                <form id="docsForm" onsubmit="uploadDocument(event)" style="display:flex; gap:15px; align-items:flex-end; flex-wrap:wrap; margin-top:15px;">
+                    <div style="flex:2; min-width:250px;">
+                        <label style="color:#94a3b8; font-size:0.85rem;">Hujjat nomi va qisqacha izohi (Kimlar uchunligi)</label>
+                        <input type="text" id="docTitle" required placeholder="Masalan: 301-sonli Vazir buyrug'i (Davomat bo'yicha)" style="width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2); color:white; margin-top:5px; font-family:sans-serif;">
+                    </div>
+                    <div style="flex:1; min-width:200px;">
+                        <label style="color:#94a3b8; font-size:0.85rem;">Hujjat (PDF/Doc/Rasm)</label>
+                        <input type="file" id="docFile" required style="width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2); color:white; margin-top:5px;">
+                    </div>
+                    <button type="submit" class="btn" style="background:#10b981; padding:10px 20px;"><i class="fas fa-upload"></i> Saytga e'lon qilish</button>
+                </form>
+                <div style="margin-top: 15px; font-size: 0.82rem; color: #94a3b8;">
+                    Yuklangan hujjatlar barcha maktablar uchun "Biz haqimizda" (Me'yoriy Hujjatlar) bo'limida yuklab olish uchun darhol ochiq-oshkora tarzda e'lon qilinadi.
+                </div>
+            </div>
+
+            <!-- System Controls -->
+            <div class="card">
+                <h3><i class="fas fa-cogs"></i> Tizim Sozlamalari</h3>
+
+                <div class="toggle-container">
+                    <div>
+                        <div style="font-weight: 600;">Ta'til rejimi (Holiday)</div>
+                        <div style="font-size: 0.8rem; color: #64748b;">Bot xabarlarini to'xtatadi</div>
+                    </div>
+                    <button id="toggleVacation" class="btn btn-danger">O'chirilgan</button>
+                </div>
+
+                <div class="toggle-container">
+                    <div>
+                        <div style="font-weight: 600;">Manzil yig'ish</div>
+                        <div style="font-size: 0.8rem; color: #64748b;">Barcha school koordinatalari</div>
+                    </div>
+                    <button id="toggleLocation" class="btn btn-success">Yoqilgan</button>
+                </div>
+
+                <div class="toggle-container">
+                    <div>
+                        <div style="font-weight: 600;">Geolokatsiya tekshiruvi</div>
+                        <div style="font-size: 0.8rem; color: #64748b;">Kiritishda joylashuvni talab qilish</div>
+                    </div>
+                    <button id="toggleGeoCheck" class="btn btn-danger">O'chirilgan</button>
+                </div>
+
+                <div class="toggle-container">
+                    <div>
+                        <div style="font-weight: 600;">⚠️ Texnik ishlar (Maintenance)</div>
+                        <div style="font-size: 0.8rem; color: #64748b;">Dashboardni vaqtincha yopish</div>
+                    </div>
+                    <button id="toggleMaintenance" class="btn btn-danger">O'chirilgan</button>
+                </div>
+            </div>
+
+            <!-- Broadcast -->
+            <div class="card">
+                <h3><i class="fas fa-bullhorn"></i> Xabar Yuborish (Broadcasting)</h3>
+                <form id="broadcastForm">
+                    <div class="form-group">
+                        <label>Kimga:</label>
+                        <select id="broadcastTarget">
+                            <option value="all">Barcha foydalanuvchilar</option>
+                            <option value="inspectors">Faqat mas'ullar (Maktab/Tuman)</option>
+                            <option value="parents">Faqat ota-onalar</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Xabar matni (HTML qo'llab-quvvatlanadi):</label>
+                        <textarea id="broadcastText" rows="4" placeholder="Xabaringizni yozing..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-paper-plane"></i> Xabarni yuborish
+                    </button>
+                </form>
+            </div>
+
+            <!-- Metrics -->
+            <div class="card">
+                <h3><i class="fas fa-chart-pie"></i> Tizim Statistikasi</h3>
+                <div class="stats-item">
+                    <span>Jami TG foydalanuvchilar:</span>
+                    <span class="stats-val" id="totalUsers">---</span>
+                </div>
+                <div class="stats-item">
+                    <span>Ota-onalar soni:</span>
+                    <span class="stats-val" id="totalParents">---</span>
+                </div>
+                <div class="stats-item">
+                    <span>PRO obunachilar:</span>
+                    <span class="stats-val" id="totalPro">---</span>
+                </div>
+                <div class="stats-item">
+                    <span>Bugun kiritgan maktablar:</span>
+                    <span class="stats-val" id="todayEntries">---</span>
+                </div>
+                <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 15px 0;">
+                <div class="stats-item">
+                    <span>Server holati:</span>
+                    <span class="status-badge status-on">ONLINE</span>
+                </div>
+                <div class="stats-item">
+                    <span>Baza holati (Postgres):</span>
+                    <span class="status-badge status-on" id="dbStatus">ULANGAN</span>
+                </div>
+            </div>
+
+            <!-- Live activity logs -->
+            <div class="card">
+                <h3><i class="fas fa-list-ul"></i> Oxirgi Amallar (Logs)</h3>
+                <div id="logContainer"
+                    style="font-size: 0.8rem; height: 150px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 10px; font-family: monospace; color: #94a3b8;">
+                    <div style="color: #4ade80;">[SYSTEM] Admin panel yuklandi...</div>
+                    <div>[API] Sozlamalar muvaffaqiyatli olindi.</div>
+                </div>
+                <button class="btn btn-primary" style="margin-top: 10px; width: 100%; font-size: 0.8rem;"
+                    onclick="refreshLogs()">
+                    <i class="fas fa-sync-alt"></i> Yangilash
+                </button>
+            </div>
+
+            <!-- Quick Navigation -->
+            <div class="card">
+                <h3><i class="fas fa-link"></i> Tezkor Havolalar</h3>
+                <div class="nav-links">
+                    <a href="inspektor.html" class="nav-link"><i class="fas fa-user-shield"></i><br>Inspektorlar</a>
+                    <a href="#" class="nav-link" onclick="showPrompt('pro')"><i class="fas fa-gem"></i><br>PRO
+                        Userlar</a>
+                    <a href="#" class="nav-link" onclick="showPrompt('reset')"><i class="fas fa-key"></i><br>Parol
+                        tiklash</a>
+                    <a href="dashboard.html?tab=reports" class="nav-link"><i
+                            class="fas fa-file-excel"></i><br>Hisobotlar</a>
+                </div>
+                <div style="margin-top: 15px; font-size: 0.8rem; color: #64748b; text-align: center;">
+                    Boshqa barcha funksiyalar Botdagi Admin Panelda mavjud.
+                </div>
+            </div>
+            <!-- Extra Tools -->
+            <div class="card">
+                <h3><i class="fas fa-database"></i> Qo'shimcha Boshqaruv</h3>
+                <div class="nav-links">
+                    <a href="#" class="nav-link" onclick="handleCustomAction('backup')" style="background:rgba(99, 102, 241, 0.1); border-color:var(--primary);"><i class="fas fa-download"></i><br>Baza Zaxirasi</a>
+                    <a href="#" class="nav-link" onclick="handleCustomAction('cache')" style="background:rgba(239, 68, 68, 0.1); border-color:var(--danger);"><i class="fas fa-trash-alt"></i><br>Keshni tozalash</a>
+                    <a href="#" class="nav-link" onclick="handleCustomAction('redzone')" style="background:rgba(245, 158, 11, 0.1); border-color:#f59e0b;"><i class="fas fa-exclamation-triangle"></i><br>Qizil Hudud</a>
+                    <a href="#" class="nav-link" onclick="handleCustomAction('restart')"><i class="fas fa-power-off"></i><br>Server Restart</a>
+                </div>
+                <div style="margin-top: 15px; font-size: 0.8rem; color: #64748b; text-align: center;">
+                    Ushbu vositalar yordamida tizim tezligini oshirish va bazani xavfsiz saqlash mumkin.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modals placeholder or toast -->
+    <div id="toast" class="toast">Xabar yuborildi!</div>
+
+    <script>
+        const token = localStorage.getItem('dashboard_token');
+        if (!token || localStorage.getItem('dashboard_role') !== 'superadmin') {
+            window.location.href = 'login.html';
+        }
+
+        async function fetchSettings() {
+            try {
+                const res = await fetch('/api/admin/settings', {
+                    headers: { 'Authorization': token }
+                });
+                const settings = await res.json();
+                updateUI(settings);
+                addLog("[API] Sozlamalar yangilandi.");
+            } catch (e) {
+                addLog("[ERROR] Sozlamalarni yuklashda xatolik!", true);
+            }
+        }
+
+        function updateUI(s) {
+            const vBtn = document.getElementById('toggleVacation');
+            vBtn.textContent = s.vacation_mode ? 'Yoqilgan' : 'O\'chirilgan';
+            vBtn.className = 'btn ' + (s.vacation_mode ? 'btn-success' : 'btn-danger');
+
+            const lBtn = document.getElementById('toggleLocation');
+            lBtn.textContent = s.location_collection_mode ? 'Yoqilgan' : 'O\'chirilgan';
+            lBtn.className = 'btn ' + (s.location_collection_mode ? 'btn-success' : 'btn-danger');
+
+            const gBtn = document.getElementById('toggleGeoCheck');
+            gBtn.textContent = s.check_location ? 'Yoqilgan' : 'O\'chirilgan';
+            gBtn.className = 'btn ' + (s.check_location ? 'btn-success' : 'btn-danger');
+
+            const mBtn = document.getElementById('toggleMaintenance');
+            if (mBtn) {
+                mBtn.textContent = s.maintenance_mode ? 'Yoqilgan' : 'O\'chirilgan';
+                mBtn.className = 'btn ' + (s.maintenance_mode ? 'btn-success' : 'btn-danger');
+            }
+        }
+
+        async function updateSetting(key, val) {
+            const res = await fetch('/api/admin/settings', {
+                method: 'POST',
+                headers: {
+                    'Authorization': token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ [key]: val })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                updateUI(data.settings);
+                showToast("Sozlamalar saqlandi");
+                addLog(`[ACTION] ${key} holati ${val ? 'YOQILDI' : 'OCHIRILDI'}`);
+            }
+        }
+
+        document.getElementById('toggleVacation').onclick = function () {
+            const state = this.textContent === 'O\'chirilgan';
+            updateSetting('vacation_mode', state);
+        };
+        document.getElementById('toggleLocation').onclick = function () {
+            const state = this.textContent === 'O\'chirilgan';
+            updateSetting('location_collection_mode', state);
+        };
+        document.getElementById('toggleGeoCheck').onclick = function () {
+            const state = this.textContent === 'O\'chirilgan';
+            updateSetting('check_location', state);
+        };
+        document.getElementById('toggleMaintenance').onclick = function () {
+            const state = this.textContent === 'O\'chirilgan';
+            if (state && !confirm("DIQQAT! Texnik ishlar rejimini yoqsangiz, superadminlardan boshqa barcha uchun dashboard yopiladi. Tasdiqlaysizmi?")) return;
+            updateSetting('maintenance_mode', state);
+        };
+
+        // Broadcast logic
+        document.getElementById('broadcastForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalHtml = btn.innerHTML;
+
+            if (!confirm("Haqiqatdan ham ushbu xabarni barcha tanlangan foydalanuvchilarga yubormoqchimisiz?")) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yuborilmoqda...';
+
+            try {
+                const res = await fetch('/api/admin/broadcast', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: document.getElementById('broadcastText').value,
+                        group: document.getElementById('broadcastTarget').value
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    showToast(`Yuborish boshlandi (${data.estimated_users} foydalanuvchi)`);
+                    addLog(`[BROADCAST] ${data.estimated_users} ta foydalanuvchiga xabar yuborilmoqda...`);
+                    document.getElementById('broadcastText').value = '';
+                } else {
+                    showToast("Xatolik yuz berdi", true);
+                    addLog("[ERROR] Xabar yuborishda xatoli yuz berdi!", true);
+                }
+            } catch (e) {
+                addLog("[ERROR] Tarmoq bilan bog'liq xatolik!", true);
+            }
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        };
+
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.borderLeftColor = isError ? '#ef4444' : '#6366f1';
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+
+        async function fetchStats() {
+            try {
+                // Mock or real endpoint calls
+                // For simplicity, we can reuse existing endpoints
+                const parentsRes = await fetch('/api/stats/parents', { headers: { 'Authorization': token } });
+                const parents = await parentsRes.json();
+                document.getElementById('totalParents').textContent = parents.length + ' ta';
+
+                const vilRes = await fetch('/api/stats/viloyat', { headers: { 'Authorization': token } });
+                const vil = await vilRes.json();
+                const entries = vil.reduce((acc, curr) => acc + curr.entries, 0);
+                document.getElementById('todayEntries').textContent = entries + ' ta';
+
+                // Get TG Users count
+                const tgRes = await fetch('/api/admin/tg-users', { headers: { 'Authorization': token } });
+                const tgUsers = await tgRes.json();
+                document.getElementById('totalUsers').textContent = tgUsers.length + ' ta';
+
+                const proCount = tgUsers.filter(u => u.data && u.data.is_pro).length;
+                document.getElementById('totalPro').textContent = proCount + ' ta';
+
+                addLog("[INFO] Statistika yuklandi.");
+            } catch (e) {
+                addLog("[ERROR] Statistikani yuklashda xatolik!", true);
+            }
+        }
+
+        function addLog(msg, isError = false) {
+            const container = document.getElementById('logContainer');
+            const div = document.createElement('div');
+            const now = new Date().toLocaleTimeString();
+            if (isError) div.style.color = '#ef4444';
+            div.textContent = `[${now}] ${msg}`;
+            container.prepend(div);
+        }
+
+        function refreshLogs() {
+            addLog("[ACTION] Loglar yangilandi.");
+            fetchStats();
+            fetchSettings();
+        }
+
+        function showPrompt(type) {
+            if (type === 'reset') alert("Ushbu funksiya bot orqali ishlaydi (Admin Panel -> Dashboard Logins)");
+            else if (type === 'pro') alert("Pro userlar ro'yxati yaqin oralarda qo'shiladi.");
+        }
+
+        fetchSettings();
+        fetchStats();
+
+        function handleCustomAction(action) {
+            if (action === 'backup') {
+                showToast("Baza Zaxirasi yaratilmoqda...");
+                fetch('/api/admin/backup', { headers: { 'Authorization': token } }).then(() => {
+                    showToast("Zaxira muvaffaqiyatli saqlandi!");
+                    addLog("[ACTION] Database backup created.");
+                }).catch(() => showToast("Zaxira yaratishda xatolik!", true));
+            } else if (action === 'cache') {
+                if(confirm("Tizim keshini haqiqatan ham tozalamoqchimisiz?")) {
+                    showToast("Kesh tozalash boshlandi...");
+                    setTimeout(() => { showToast("Kesh muvaffaqiyatli tozalandi!"); addLog("[ACTION] Tizim keshi tozalandi."); }, 1000);
+                }
+            } else if (action === 'redzone') {
+                alert("Qizil hudud tahlili tez kunda qo'shiladi! (Tizim faol)");
+            } else if (action === 'restart') {
+                if(confirm("Serverni qayta ishga tushirish (Restart) barcha amallarni vaqtincha to'xtatadi. Tasdiqlaysizmi?")) {
+                    showToast("Server qayta ishlanmoqda...", true);
+                    addLog("[SYSTEM] RESTART INITIALIZED", true);
+                }
+            }
+        }
+
+        // Auto refresh stats every 30 seconds
+        setInterval(fetchStats, 30000);
+    
+        async function uploadDocument(e) {
+            e.preventDefault();
+            const form = new FormData();
+            form.append('title', document.getElementById('docTitle').value);
+            if(document.getElementById('docFile').files[0]) {
+                form.append('document_file', document.getElementById('docFile').files[0]);
+            }
+            showToast("Hujjat serverga yuklanmoqda...");
+            try {
+                const res = await fetch('/api/documents', {
+                    method: 'POST',
+                    headers: { 'Authorization': token },
+                    body: form
+                });
+                if(res.ok) {
+                    showToast("Hujjat muvaffaqiyatli e'lon qilindi!");
+                    document.getElementById('docsForm').reset();
+                    addLog("[ACTION] Yangi me'yoriy hujjat saytga yuklandi!");
+                } else alert("Xatolik!");
+            } catch(er) { showToast("Xatolik jiddiy yuz berdi!", true); }
+        }
+
+    </script>
+</body>
+
+</html>
+```

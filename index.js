@@ -4,6 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const attendanceWizard = require('./src/scenes/attendance');
 const broadcastScene = require('./src/scenes/broadcast');
+const xorijWizard = require('./src/scenes/xorij');
+const mmibdoRatingWizard = require('./src/scenes/mmibdoRating');
 const { getDistrictStats, getMissingSchools } = require('./src/services/sheet');
 const admin = require('./src/services/admin');
 const db = require('./src/database/db');
@@ -419,7 +421,7 @@ const premiumRoutes = require('./premium_features/backend/premium_routes');
 app.use('/premium', express.static('premium_features/web'));
 app.use('/api/premium', auth, premiumRoutes);
 
-const stage = new Scenes.Stage([attendanceWizard, broadcastScene]);
+const stage = new Scenes.Stage([attendanceWizard, broadcastScene, xorijWizard]);
 bot.use(session());
 
 // --- GLOBAL COMMANDS (Work even inside scenes) ---
@@ -433,7 +435,7 @@ bot.start(async (ctx) => {
     const caption = `🌸 <b>Assalomu alaykum!</b>\nFarg'ona viloyati maktabgacha va maktab ta'limi boshqarmasi tizimidagi <b>@Ferghanaregdavomat_bot</b> ga xush kelibsiz.\n\n📅 <b>Bugungi sana:</b> ${date} (${day})\n\nBiz bilan hamkor bo'lganingiz uchun yana bir bor tabriklaymiz!\nKuningiz xayrli va mazmunli o'tsin! ✨`;
 
     // Tugmalarni tayyorlash
-    let buttons = [["📊 Davomat kiritish"]];
+    let buttons = [["📊 Davomat kiritish"], ["✈️ Xorijga ketganlar"]];
 
     const uid = Number(ctx.from.id);
     const isPro = db.checkPro(uid);
@@ -468,6 +470,7 @@ bot.start(async (ctx) => {
 
 bot.command("admin", (ctx) => admin.showAdminPanel(ctx));
 bot.command("dashboard", (ctx) => ctx.replyWithHTML("🌐 <b>ONLINE DASHBOARD (SVOD)</b>\n\n👉 <a href='https://ferghanaregdavomat.onrender.com/dashboard.html'>YORDAMCHI DASHBOARD</a>"));
+bot.hears('✈️ Xorijga ketganlar', (ctx) => ctx.scene.enter('xorij_wizard'));
 
 bot.use(stage.middleware());
 
@@ -483,6 +486,149 @@ bot.use((ctx, next) => {
 // --- WEB API ---
 const { getViloyatSvod, getTumanSvod, getTodayAbsentsDetails, getRecentActivity, exportToExcel, exportDistrictExcel, exportWeeklyExcel, exportMonthlyExcel, checkIfExists } = require('./src/services/dataService');
 const { notifyParents } = require('./src/services/notifications');
+
+
+// ==================== XORIJGA KETGANLAR WEB API ====================
+
+app.post('/api/xorij/add', auth, upload.fields([
+    { name: 'doc_qaror', maxCount: 1 },
+    { name: 'doc_buyruq', maxCount: 1 }
+]), (req, res) => {
+    try {
+        const { district, school, student_name, dob, class_name, country, date_left, reason, companion, address, status, qonuniylik, q_sana, q_raqam, b_sana, b_raqam } = req.body;
+        const dbPath = path.join(__dirname, 'src', 'database', 'xorij.json');
+        let data = [];
+        if (fs.existsSync(dbPath)) {
+            data = JSON.parse(fs.readFileSync(dbPath));
+        }
+
+        let doc_q = null, doc_b = null;
+        if (req.files && req.files['doc_qaror']) doc_q = req.files['doc_qaror'][0].filename;
+        if (req.files && req.files['doc_buyruq']) doc_b = req.files['doc_buyruq'][0].filename;
+
+        const newStudent = {
+            id: Date.now(),
+            fio: req.user.fio || 'Web User',
+            district,
+            school,
+            student_name,
+            dob,
+            class: class_name,
+            country,
+            date_left,
+            reason,
+            companion,
+            address,
+            status,
+            qonuniylik,
+            q_sana,
+            q_raqam,
+            b_sana,
+            b_raqam,
+            doc_qaror: doc_q,
+            doc_buyruq: doc_b,
+            is_returned: false
+        };
+
+        data.push(newStudent);
+        fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+        res.json({ success: true, student: newStudent });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.post('/api/xorij/return', auth, upload.single('doc_return'), (req, res) => {
+    try {
+        const { id, ret_date, ret_district, ret_school, ret_class, ret_b_sana, ret_b_raqam } = req.body;
+        const dbPath = path.join(__dirname, 'src', 'database', 'xorij.json');
+        let data = [];
+        if (fs.existsSync(dbPath)) data = JSON.parse(fs.readFileSync(dbPath));
+
+        const idx = data.findIndex(s => s.id == id);
+        if (idx === -1) return res.status(404).json({ error: "Student not found" });
+
+        data[idx].is_returned = true;
+        data[idx].ret_date = ret_date;
+        data[idx].ret_district = ret_district;
+        data[idx].ret_school = ret_school;
+        data[idx].ret_class = ret_class;
+        data[idx].ret_b_sana = ret_b_sana;
+        data[idx].ret_b_raqam = ret_b_raqam;
+        data[idx].doc_return = req.file ? req.file.filename : null;
+
+        fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+
+app.get('/api/xorij', auth, (req, res) => {
+    try {
+        const dbPath = path.join(__dirname, 'src', 'database', 'xorij.json');
+        let data = [];
+        if (fs.existsSync(dbPath)) data = JSON.parse(fs.readFileSync(dbPath));
+        if (req.user.role === 'district' || req.user.role === 'inspektor_psixolog') {
+            data = data.filter(d => d.district === req.user.district);
+        } else if (req.user.role === 'school') {
+            data = data.filter(d => d.district === req.user.district && d.school === req.user.school);
+        }
+        data.sort((a,b) => b.id - a.id);
+        res.json(data);
+    } catch(e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/api/xorij/summary', auth, (req, res) => {
+    try {
+        const dbPath = path.join(__dirname, 'src', 'database', 'xorij.json');
+        let data = [];
+        if (fs.existsSync(dbPath)) data = JSON.parse(fs.readFileSync(dbPath));
+        
+        const summary = {};
+        const districts = Object.keys(TOPICS).filter(d => !["Test rejimi", "MMT Boshqarma"].includes(d));
+        
+        districts.forEach(d => {
+            summary[d] = {
+                total: 0,
+                countries: { "Rossiya": 0, "Qozog'iston": 0, "Turkiya": 0, "BAA": 0, "Misr": 0, "Boshqa": 0 },
+                reasons: { "Doimiy yashash": 0, "O'qish": 0, "Ishlash": 0, "Davolanish": 0, "Boshqa": 0 }
+            };
+        });
+        
+        data.forEach(item => {
+            if (summary[item.district]) {
+                summary[item.district].total++;
+                if (summary[item.district].countries[item.country] !== undefined) summary[item.district].countries[item.country]++;
+                else summary[item.district].countries["Boshqa"]++;
+                
+                if (summary[item.district].reasons[item.reason] !== undefined) summary[item.district].reasons[item.reason]++;
+                else summary[item.district].reasons["Boshqa"]++;
+            }
+        });
+        
+        res.json(summary);
+    } catch(e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/api/xorij/export', auth, async (req, res) => {
+    try {
+        const { exportXorijExcel } = require('./src/services/dataService');
+        const filePath = await exportXorijExcel();
+        if (filePath && fs.existsSync(filePath)) {
+            res.download(filePath);
+        } else {
+            res.status(500).send("Excel generatsiya qilib bo'lmadi.");
+        }
+    } catch(e) {
+        res.status(500).send(e.message);
+    }
+});
 
 app.get('/api/stats/viloyat', auth, async (req, res) => {
     const now = getFargonaTime();
@@ -698,6 +844,108 @@ app.get('/api/schools', async (req, res) => {
     if (!district) return res.status(400).json({ error: 'District required' });
     const schools = await getSchools(district);
     res.json(schools || []);
+});
+
+// --- ADMIN SETTINGS & BROADCAST ---
+
+// Admin: Get settings
+app.get('/api/admin/settings', auth, (req, res) => {
+    if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    res.json(db.settings);
+});
+
+// Admin: Update settings
+
+// ==================== DOCUMENTS (MEYORIY HUJJATLAR) API ====================
+app.post('/api/documents', auth, upload.single('document_file'), (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Faqat Superadmin yuklay oladi!' });
+        }
+        
+        const { title, description } = req.body;
+        const dbPath = path.join(__dirname, 'src', 'database', 'documents.json');
+        let data = [];
+        if (fs.existsSync(dbPath)) data = JSON.parse(fs.readFileSync(dbPath));
+
+        const newDoc = {
+            id: Date.now(),
+            title,
+            description,
+            date: new Date().toISOString().split('T')[0],
+            filename: req.file ? req.file.filename : null
+        };
+
+        data.push(newDoc);
+        fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+        res.json({ success: true, doc: newDoc });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/api/documents', (req, res) => {
+    try {
+        const dbPath = path.join(__dirname, 'src', 'database', 'documents.json');
+        if (!fs.existsSync(dbPath)) return res.json([]);
+        const data = JSON.parse(fs.readFileSync(dbPath));
+        res.json(data.sort((a,b) => b.id - a.id));
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+
+app.post('/api/admin/settings', auth, async (req, res) => {
+    if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    const { vacation_mode, location_collection_mode, check_location } = req.body;
+
+    if (vacation_mode !== undefined) db.settings.vacation_mode = vacation_mode;
+    if (location_collection_mode !== undefined) db.settings.location_collection_mode = location_collection_mode;
+    if (check_location !== undefined) db.settings.check_location = check_location;
+
+    await db.saveSettings();
+    res.json({ success: true, settings: db.settings });
+});
+
+// Admin: Broadcast message
+app.post('/api/admin/broadcast', auth, async (req, res) => {
+    if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    const { message, group } = req.body; // group: 'all', 'inspectors', 'parents'
+
+    if (!message) return res.status(400).json({ error: 'Xabar matni bo\'sh' });
+
+    const users = Object.entries(db.users_db);
+    let targetUids = [];
+
+    if (group === 'inspectors') {
+        targetUids = users.filter(([uid, u]) => u.district && u.school).map(([uid]) => uid);
+    } else if (group === 'parents') {
+        targetUids = users.filter(([uid]) => uid.startsWith('parent_')).map(([uid]) => uid.replace('parent_', ''));
+    } else {
+        targetUids = users.map(([uid]) => uid.replace('parent_', ''));
+    }
+
+    // Remove duplicates and invalid IDs
+    targetUids = [...new Set(targetUids)].filter(id => !isNaN(id));
+
+    res.json({ success: true, estimated_users: targetUids.length });
+
+    // Background broadcasting
+    let sent = 0;
+    let blocked = 0;
+
+    for (const uid of targetUids) {
+        try {
+            await bot.telegram.sendMessage(uid, message, { parse_mode: 'HTML' });
+            sent++;
+        } catch (e) {
+            blocked++;
+        }
+        await new Promise(r => setTimeout(r, 50)); // Avoid flood limits
+    }
+
+    console.log(`[BROADCAST] Sent: ${sent}, Blocked: ${blocked}`);
 });
 
 // Admin: List Archived Reports

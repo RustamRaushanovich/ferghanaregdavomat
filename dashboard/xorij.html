@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xorijga Ketgan O'quvchilar</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .page-container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; padding-top: 100px; }
+        .header-title { text-align: center; padding: 1rem 0; color: #fff; }
+        .tab-nav { display: flex; gap: 10px; margin-bottom: 1.5rem; justify-content: center; flex-wrap:wrap; }
+        .tab-btn { padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #94a3b8; cursor: pointer; transition: 0.3s; font-weight: 600; font-size:0.85rem;}
+        .tab-btn.active { background: #6366f1; color: white; border-color: #6366f1; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+        
+        .data-table { width: 100%; border-collapse: collapse; background: rgba(15, 23, 42, 0.6); border-radius: 12px; overflow: hidden; font-size: 0.85rem; margin-top:20px; }
+        .data-table th, .data-table td { padding: 10px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.08); color: #e2e8f0; }
+        .data-table th { background: rgba(30, 41, 59, 0.8); color: #a78bfa; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
+        .data-table tr:hover { background: rgba(255, 255, 255, 0.03); }
+        
+        .scroll-container { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        .form-card { background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); padding:25px; border-radius:15px; margin-bottom:20px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-size:0.85rem; color:#94a3b8; }
+        .input-group input, .input-group select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; }
+        .input-group select option { background: #0f172a; color: white; }
+        
+        #legalDocs { display:none; padding:15px; background:rgba(16, 185, 129, 0.05); border-radius:10px; border:1px solid rgba(16, 185, 129, 0.2); margin-top:10px;}
+        .setup-warning { color:#f59e0b; font-size:0.85rem; margin-bottom:15px; display:inline-block;}
+        
+        #modalReturn { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000; align-items:center; justify-content:center;}
+        .modal-box { background:#0f172a; padding:25px; border-radius:15px; width:90%; max-width:500px; border:1px solid rgba(255,255,255,0.1); box-shadow:0 10px 30px rgba(0,0,0,0.5);}
+        .btn-green { background:#10b981; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; }
+        .btn-gray { background:rgba(255,255,255,0.1); color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; }
+        
+    </style>
+</head>
+<body>
+    <nav class="navbar" style="position:fixed; top:0; left:0; width:100%; z-index:9999; background:rgba(15,23,42,0.85); border-bottom:1px solid rgba(255,255,255,0.1); padding:10px 40px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <img src="logo.png" width="40" alt="Logo">
+            <h3 style="margin:0; font-size:1.1rem; color:white;">Farg'ona VMMTB <span style="color:#94a3b8;font-size:0.8rem;">Davomat</span></h3>
+        </div>
+        <div class="nav-right" style="display:flex; gap:0.5rem; align-items:center;">
+            <a href="/" class="nav-link"><i class="fas fa-home"></i> Asosiy</a>
+            <a href="/davomat.html" class="nav-link"><i class="fas fa-edit"></i> Davomat kiritish</a>
+            <a href="/inspektor.html" class="nav-link"><i class="fas fa-user-shield"></i> Inspektor</a>
+            <a href="/xorij.html" class="nav-link active"><i class="fas fa-globe-americas"></i> Xorij</a>
+            <a href="/dashboard.html" class="nav-link"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            
+            <div class="dropdown" style="position:relative; display:inline-block;">
+                <a href="#" class="nav-link"><i class="fas fa-bars"></i> Boshqa <i class="fas fa-chevron-down" style="font-size:0.7rem; margin-left:3px;"></i></a>
+                <div class="dropdown-content">
+                    <a href="/ichki_nazorat.html" style="color:#fff;"><i class="fas fa-user-lock"></i> Ichki nazorat</a>
+                    <a href="/mmibdo_rating.html" style="color:#fff;"><i class="fas fa-star"></i> MMIBDO reytingi</a>
+                </div>
+            </div>
+
+            <a href="/admin.html" class="nav-link"><i class="fas fa-cogs"></i> Admin Panel</a>
+            <a href="/about.html" class="nav-link"><i class="fas fa-info-circle"></i> Biz haqimizda</a>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="header-title">
+            <h2><i class="fas fa-globe-americas" style="color:#6366f1;"></i> Xorijga Ketgan O'quvchilar</h2>
+            <p style="color:#94a3b8; font-size:0.9rem;">Maktab hisoboti, Qaytarilganlar ro'yxati va Viloyat bo'yicha svod tahlili</p>
+        </div>
+
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('input')"><i class="fas fa-edit"></i> MA'LUMOT KIRITISH</button>
+            <button class="tab-btn" onclick="switchTab('returned')"><i class="fas fa-undo-alt"></i> QAYTIB KELGANLAR</button>
+            <button class="tab-btn" onclick="switchTab('summary')"><i class="fas fa-chart-pie"></i> UMUMIY SVOD</button>
+            <button class="tab-btn" onclick="switchTab('detailed')"><i class="fas fa-list-ul"></i> BATAFSIL RO'YXAT</button>
+        </div>
+
+        <!-- TAB 1: MA'LUMOT KIRITISH -->
+        <div id="inputTab" class="tab-content active">
+            
+            <div id="schoolAuthSection" class="form-card" style="max-width:600px; margin:0 auto;">
+                <h3 style="margin-bottom:15px; color:#a78bfa;"><i class="fas fa-lock"></i> Maktab profili</h3>
+                <span class="setup-warning"><i class="fas fa-exclamation-circle"></i> O'quvchi qo'shish uchun avval quyidagi ma'lumotlarni to'ldiring.</span>
+                <div class="input-group">
+                    <label>Hudud (Tuman/Shahar)</label>
+                    <select id="xDistrict" onchange="loadXSchools()"><option value="">Hududni tanlang</option></select>
+                </div>
+                <div class="input-group">
+                    <label>Maktab / Ta'lim muassasasi</label>
+                    <select id="xSchool"><option value="">Maktabni tanlang</option></select>
+                </div>
+                <button class="btn-green" onclick="saveSchoolAuth()" style="width:100%;"><i class="fas fa-sign-in-alt"></i> Tizimga kirish</button>
+            </div>
+
+            <div id="schoolDataSection" style="display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="color:#a78bfa;"><i class="fas fa-school"></i> <span id="authSchoolName">Maktab</span> - Xorijdagi o'quvchilar ro'yxati</h3>
+                    <div>
+                        <button class="tab-btn" style="background:#f59e0b; color:white; border:none;" onclick="logoutSchoolAuth()"><i class="fas fa-sign-out-alt"></i> Chiqish</button>
+                        <button class="tab-btn" style="background:#10b981; color:white; border:none;" onclick="openAddForm()"><i class="fas fa-plus"></i> Yangi o'quvchi qo'shish</button>
+                    </div>
+                </div>
+
+                <div id="addStudentForm" class="form-card" style="display:none; border:2px solid #6366f1;">
+                    <h4 style="margin-bottom:15px;"><i class="fas fa-user-plus"></i> O'quvchi ma'lumoti</h4>
+                    <form id="xAddForm" onsubmit="submitNewStudent(event)">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                            <div class="input-group"><label>O'quvchi F.I.SH</label><input type="text" id="xFio" required></div>
+                            <div class="input-group"><label>Tug'ilgan sanasi</label><input type="date" id="xDob" required></div>
+                            <div class="input-group"><label>Sinfi</label><input type="text" id="xClass" required placeholder="Masalan: 5-A"></div>
+                            <div class="input-group">
+                                <label>Qatiy qonuniy chiqib ketganmi?</label>
+                                <select id="xLegal" required onchange="toggleLegalDocs()">
+                                    <option value="">Tanlang</option>
+                                    <option value="legal">Ha (Qonuniy tartibda buyruq bor)</option>
+                                    <option value="illegal">Yo'q (Noqonuniy ketgan)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Legal Documents Section -->
+                        <div id="legalDocs">
+                            <h5 style="margin-bottom:10px; color:#10b981;"><i class="fas fa-file-contract"></i> Asoslovchi Hujjatlar (Qaror / Buyruqlar)</h5>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                                <div class="input-group"><label>Komissiya qarori sanasi</label><input type="date" id="xQsana"></div>
+                                <div class="input-group"><label>Komissiya qarori raqami</label><input type="text" id="xQraqam"></div>
+                                <div class="input-group"><label>Qaror fayli (PDF/Rasm yuklash)</label><input type="file" id="xQfile" accept=".pdf,image/*"></div>
+                                <div class="input-group"><label>Direktor buyrug'i sanasi</label><input type="date" id="xBsana"></div>
+                                <div class="input-group"><label>Buyruq raqami</label><input type="text" id="xBraqam"></div>
+                                <div class="input-group"><label>Buyruq fayli (PDF/Rasm yuklash)</label><input type="file" id="xBfile" accept=".pdf,image/*"></div>
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:15px;">
+                            <div class="input-group">
+                                <label>Qaysi davlatga ketgan?</label>
+                                <select id="xCountry" required>
+                                    <option value="Rossiya">Rossiya</option><option value="Qozog'iston">Qozog'iston</option><option value="Qirg'iziston">Qirg'iziston</option><option value="Turkiya">Turkiya</option><option value="BAA">Birlashgan Arab Amirliklari</option><option value="Koreya">Koreya</option><option value="Boshqa">Boshqa davlatlar</option>
+                                </select>
+                            </div>
+                            <div class="input-group"><label>Jo'nab ketgan sana</label><input type="date" id="xDateLeft" required></div>
+                            <div class="input-group"><label>Ketish sababi</label><input type="text" id="xReason" required placeholder="Masalan: Ota-onasi bilan yashash uchun"></div>
+                            <div class="input-group"><label>Kim bilan ketgan?</label><input type="text" id="xCompanion" required></div>
+                            <div class="input-group"><label>Chet eldagi manzili (Yoki telefon)</label><input type="text" id="xAddress" required></div>
+                            <div class="input-group">
+                                <label>E-maktab platformasi holati</label>
+                                <select id="xStatus" required>
+                                    <option value="Maktab ro'yxatida turibdi">Maktab ro'yxatida faol turibdi</option>
+                                    <option value="Arxivga olingan (Qonuniy)">Arxivga o'tkazilib ro'yxatdan chiqarilgan</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="text-align:right;">
+                            <button type="button" class="btn-gray" onclick="document.getElementById('addStudentForm').style.display='none'">Bekor qilish</button>
+                            <button type="submit" class="btn-green"><i class="fas fa-save"></i> O'quvchini bazaga saqlash</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="scroll-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>O'quvchi F.I.SH</th>
+                                <th>Sinfi</th>
+                                <th>Qonuniylik</th>
+                                <th>Davlat/Sana</th>
+                                <th>Holat (E-maktab)</th>
+                                <th>Ko'rish/Amal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mySchoolStudentsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: QAYTIB KELGANLAR -->
+        <div id="returnedTab" class="tab-content">
+            <h3 style="margin-bottom:15px; color:#10b981;"><i class="fas fa-undo-alt"></i> Xorijdan Qaytarib Olib Kelinganlar</h3>
+            <div class="scroll-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>O'quvchi F.I.SH</th>
+                            <th>Qaytgan Sana</th>
+                            <th>Qabul qilingan Maktab / Sinf</th>
+                            <th>Buyruq raqami va Fayl</th>
+                        </tr>
+                    </thead>
+                    <tbody id="returnedTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 3: UMUMIY SVOD -->
+        <div id="summaryTab" class="tab-content">
+            <div class="scroll-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Tuman nomi</th>
+                            <th>Xorijdagi jami</th>
+                            <th>Qonuniy ketgan</th>
+                            <th>Noqonuniy ketgan</th>
+                            <th>Qaytarib kelingan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summaryTableBody">
+                        <tr><td colspan="5" style="padding:40px;"><i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 4: BATAFSIL RO'YXAT (Adminlar) -->
+        <div id="detailedTab" class="tab-content">
+            <div class="scroll-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Hudud / Maktab</th>
+                            <th>O'quvchi F.I.SH</th>
+                            <th>Davlati / Sana</th>
+                            <th>Qonuniylik (Asoslar)</th>
+                            <th>Fayllar (PDF)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailedTableBody">
+                        <tr><td colspan="5" style="padding:40px;"><i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- RETURN MODAL -->
+    <div id="modalReturn">
+        <div class="modal-box">
+            <h3 style="color:#10b981; margin-bottom:15px;"><i class="fas fa-undo"></i> O'quvchi maktabga qaytdi</h3>
+            <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:15px;">Ushbu o'quvchi xorijdan qaytgan bo'lsa, uning xozirgi ro'yxatdan o'tish buyrug'ini yuklang.</p>
+            <form id="returnForm" onsubmit="submitReturnStudent(event)">
+                <input type="hidden" id="retId">
+                <div class="input-group"><label>Qaytgan/Maktabga kelgan sana</label><input type="date" id="retDate" required></div>
+                <div class="input-group"><label>Qaysi Hududga qo'shildi?</label><input type="text" id="retDist" required></div>
+                <div class="input-group"><label>Qaysi Maktabga?</label><input type="text" id="retSchool" required></div>
+                <div class="input-group"><label>Qaysi Sinfga?</label><input type="text" id="retClass" required></div>
+                <div class="input-group"><label>Maktab direktorining buyruq sanasi</label><input type="date" id="retBsana" required></div>
+                <div class="input-group"><label>Buyruq raqami</label><input type="text" id="retBraqam" required></div>
+                <div class="input-group"><label>Buyruq Fayli (PDF/Rasm)</label><input type="file" id="retFile" accept=".pdf,image/*" required></div>
+                
+                <div style="text-align:right; margin-top:20px;">
+                    <button type="button" class="btn-gray" onclick="document.getElementById('modalReturn').style.display='none'">Bekor qilish</button>
+                    <button type="submit" class="btn-green"><i class="fas fa-check-circle"></i> Saqlash va Qaytganlarga o'tkazish</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        const token = localStorage.getItem('dashboard_token') || localStorage.getItem('auth_token') || 'test-token';
+        const DISTRICTS = ["Farg'ona shahri", "Marg'ilon shahri", "Qo'qon shahri", "Quvasoy shahri", "Bag'dod tumani", "Beshariq tumani", "Buvayda tumani", "Dang'ara tumani", "Yozyovon tumani", "Oltiariq tumani", "Qo'shtepa tumani", "Rishton tumani", "So'x tumani", "Toshloq tumani", "Uchko'prik tumani", "Farg'ona tumani", "Furqat tumani", "O'zbekiston tumani", "Quva tumani"];
+        
+        let allStudents = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const distSelect = document.getElementById('xDistrict');
+            DISTRICTS.forEach(d => distSelect.add(new Option(d, d)));
+            
+            // Check auth for school
+            const authDist = localStorage.getItem('xAuthDist');
+            const authSchool = localStorage.getItem('xAuthSchool');
+            if(authDist && authSchool) {
+                document.getElementById('schoolAuthSection').style.display = 'none';
+                document.getElementById('schoolDataSection').style.display = 'block';
+                document.getElementById('authSchoolName').textContent = authSchool;
+            }
+            
+            fetchXorijData();
+        });
+
+        async function loadXSchools() {
+            const d = document.getElementById('xDistrict').value;
+            const select = document.getElementById('xSchool');
+            select.innerHTML = '<option value="">Yuklanmoqda...</option>';
+            if(!d) return;
+            try {
+                const res = await fetch(`/api/schools?district=${encodeURIComponent(d)}`);
+                const schools = await res.json();
+                select.innerHTML = '<option value="">Maktabni tanlang</option>';
+                schools.forEach(s => select.add(new Option(s, s)));
+            } catch(e) { console.error(e); }
+        }
+
+        function saveSchoolAuth() {
+            const d = document.getElementById('xDistrict').value;
+            const s = document.getElementById('xSchool').value;
+            if(!d || !s) return alert("Hudud va maktabni tanlang!");
+            localStorage.setItem('xAuthDist', d);
+            localStorage.setItem('xAuthSchool', s);
+            window.location.reload();
+        }
+
+        function logoutSchoolAuth() {
+            localStorage.removeItem('xAuthDist');
+            localStorage.removeItem('xAuthSchool');
+            window.location.reload();
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`button[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+        }
+
+        function toggleLegalDocs() {
+            const val = document.getElementById('xLegal').value;
+            document.getElementById('legalDocs').style.display = (val === 'legal') ? 'block' : 'none';
+        }
+
+        function openAddForm() {
+            document.getElementById('addStudentForm').style.display = 'block';
+        }
+
+        async function fetchXorijData() {
+            try {
+                const res = await fetch('/api/xorij', { headers: { 'Authorization': token } });
+                const json = await res.json();
+                if(json.data) allStudents = json.data; // Try fallback if needed
+                else if(Array.isArray(json)) allStudents = json; // Default API returns array directly
+                
+                renderMySchoolStudents();
+                renderReturnedStudents();
+                renderSummaryAndDetailed();
+            } catch(e) { console.error(e); }
+        }
+
+        function renderMySchoolStudents() {
+            const d = localStorage.getItem('xAuthDist');
+            const s = localStorage.getItem('xAuthSchool');
+            const tbody = document.getElementById('mySchoolStudentsTable');
+            if(!d || !s) return;
+            
+            const myKids = allStudents.filter(x => x.district === d && x.school === s && !x.is_returned);
+            
+            if(myKids.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; color:#94a3b8;">Maktabingizda xorijdagi o\'quvchilar yo\'q.</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            myKids.forEach(k => {
+                const legalColor = k.qonuniylik === 'legal' ? '#10b981' : '#ef4444';
+                const legalText = k.qonuniylik === 'legal' ? 'Qonuniy' : 'Noqonuniy';
+                html += `<tr>
+                    <td>${k.student_name}</td>
+                    <td>${k.class}</td>
+                    <td><span style="background:${legalColor}; color:white; padding:3px 8px; border-radius:10px; font-size:0.7rem;">${legalText}</span></td>
+                    <td>${k.country} <br> ${k.date_left}</td>
+                    <td>${k.status || 'Maktab safida'}</td>
+                    <td>
+                        <button class="btn-gray" onclick="openReturnModal('${k.id}')" style="font-size:0.75rem; padding:6px 12px; background:rgba(16,185,129,0.2); color:#10b981; border:1px solid rgba(16,185,129,0.4);"><i class="fas fa-undo"></i> Qaytdi</button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function renderReturnedStudents() {
+            const returned = allStudents.filter(x => x.is_returned);
+            const tbody = document.getElementById('returnedTableBody');
+            if(returned.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="color:#94a3b8;"><br><br>Ro\'yxat bo\'sh.<br><br></td></tr>'; return;
+            }
+            let html = '';
+            returned.forEach(k => {
+                const docLink = k.doc_return ? `<a href="/uploads/${k.doc_return}" target="_blank" style="color:#3b82f6;"><i class="fas fa-file-pdf"></i> Faylni Ko'rish</a>` : '<span style="color:#f59e0b;">Fayl yo\'q</span>';
+                html += `<tr>
+                    <td><strong>${k.student_name}</strong> <br> <span style="font-size:0.7rem; color:#94a3b8;">(Ketgan davlat: ${k.country})</span></td>
+                    <td>${k.ret_date}</td>
+                    <td>${k.ret_district}, ${k.ret_school} <br> ${k.ret_class}-sinfga</td>
+                    <td style="font-size:0.85rem;">Buyruq: ${k.ret_b_raqam} (Sanasi: ${k.ret_b_sana})<br><br>${docLink}</td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function renderSummaryAndDetailed() {
+            // Detailed Table
+            const dBody = document.getElementById('detailedTableBody');
+            const activeStudents = allStudents.filter(x => !x.is_returned);
+            if(activeStudents.length === 0) dBody.innerHTML = '<tr><td colspan="5">Ma\'lumotlar mavjud emas.</td></tr>';
+            else {
+                let html = '';
+                activeStudents.forEach(k => {
+                    const legalText = k.qonuniylik === 'legal' ? `<b style="color:#10b981;">Qonuniy:</b><br>Komissiya: ${k.q_raqam} (${k.q_sana})<br>Buyruq: ${k.b_raqam} (${k.b_sana})` : `<b style="color:#ef4444;">Noqonuniy</b>`;
+                    
+                    const qfile = k.doc_qaror ? `<a href="/uploads/${k.doc_qaror}" target="_blank" style="color:#a78bfa;">Qaror PDF</a>` : '';
+                    const bfile = k.doc_buyruq ? `<a href="/uploads/${k.doc_buyruq}" target="_blank" style="color:#a78bfa;">Buyruq PDF</a>` : '';
+                    const fLinks = (qfile || bfile) ? (qfile + ' | ' + bfile) : '<i class="fas fa-ban" style="color:#64748b;"></i> Yo\'q';
+
+                    html += `<tr>
+                        <td style="text-align:left;">${k.district} <br> <span style="color:#94a3b8;">${k.school}</span></td>
+                        <td><b>${k.student_name}</b> <br> ${k.class}-sinf</td>
+                        <td>${k.country} <br> (${k.date_left})</td>
+                        <td style="text-align:left; font-size:0.8rem; line-height:1.4;">${legalText}</td>
+                        <td style="font-size:0.85rem;">${fLinks}</td>
+                    </tr>`;
+                });
+                dBody.innerHTML = html;
+            }
+
+            // Summary Svod
+            const sBody = document.getElementById('summaryTableBody');
+            let sums = {};
+            DISTRICTS.forEach(d => sums[d] = { total:0, leg:0, illeg:0, ret:0 });
+            
+            allStudents.forEach(k => {
+                const dist = k.district;
+                if(sums[dist]) {
+                    if(k.is_returned) sums[dist].ret++;
+                    else {
+                        sums[dist].total++;
+                        if(k.qonuniylik === 'legal') sums[dist].leg++; 
+                        else sums[dist].illeg++;
+                    }
+                }
+            });
+
+            let sHtml = '';
+            DISTRICTS.forEach(d => {
+                if(sums[d].total > 0 || sums[d].ret > 0) {
+                    sHtml += `<tr>
+                        <td style="text-align:left; padding-left:20px;"><b>${d}</b></td>
+                        <td style="font-size:1.1rem; font-weight:bold;">${sums[d].total}</td>
+                        <td style="color:#10b981; font-weight:bold;">${sums[d].leg}</td>
+                        <td style="color:#ef4444; font-weight:bold;">${sums[d].illeg}</td>
+                        <td style="color:#3b82f6; font-weight:bold;">${sums[d].ret}</td>
+                    </tr>`;
+                }
+            });
+            sBody.innerHTML = sHtml || '<tr><td colspan="5"><br>Svod jadvali bo\'sh.<br><br></td></tr>';
+        }
+
+        async function submitNewStudent(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            
+            formData.append('district', localStorage.getItem('xAuthDist'));
+            formData.append('school', localStorage.getItem('xAuthSchool'));
+            formData.append('student_name', document.getElementById('xFio').value);
+            formData.append('dob', document.getElementById('xDob').value);
+            formData.append('class_name', document.getElementById('xClass').value);
+            formData.append('qonuniylik', document.getElementById('xLegal').value);
+            formData.append('country', document.getElementById('xCountry').value);
+            formData.append('date_left', document.getElementById('xDateLeft').value);
+            formData.append('reason', document.getElementById('xReason').value);
+            formData.append('companion', document.getElementById('xCompanion').value);
+            formData.append('address', document.getElementById('xAddress').value);
+            formData.append('status', document.getElementById('xStatus').value);
+
+            if(document.getElementById('xLegal').value === 'legal') {
+                formData.append('q_sana', document.getElementById('xQsana').value);
+                formData.append('q_raqam', document.getElementById('xQraqam').value);
+                formData.append('b_sana', document.getElementById('xBsana').value);
+                formData.append('b_raqam', document.getElementById('xBraqam').value);
+                if(document.getElementById('xQfile').files[0]) formData.append('doc_qaror', document.getElementById('xQfile').files[0]);
+                if(document.getElementById('xBfile').files[0]) formData.append('doc_buyruq', document.getElementById('xBfile').files[0]);
+            }
+
+            try {
+                const res = await fetch('/api/xorij/add', {
+                    method: 'POST',
+                    headers: { 'Authorization': token },
+                    body: formData
+                });
+                if(res.ok) {
+                    alert("Yangi o\'quvchi muvaffaqiyatli saqlandi! \n(Davomat kiritalayotgan vaqtda Noqonuniy ketganlar sonini Davomat blokiga yozish esingizdan chiqmasin!)");
+                    window.location.reload();
+                } else alert('Xatolik yuz berdi. Iltimos barcha maydonlarni tekshiring.');
+            } catch(er) { console.error(er); alert("Xatolik!"); }
+        }
+
+        function openReturnModal(id) {
+            document.getElementById('retId').value = id;
+            document.getElementById('modalReturn').style.display = 'flex';
+        }
+
+        async function submitReturnStudent(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('id', document.getElementById('retId').value);
+            formData.append('ret_date', document.getElementById('retDate').value);
+            formData.append('ret_district', document.getElementById('retDist').value);
+            formData.append('ret_school', document.getElementById('retSchool').value);
+            formData.append('ret_class', document.getElementById('retClass').value);
+            formData.append('ret_b_sana', document.getElementById('retBsana').value);
+            formData.append('ret_b_raqam', document.getElementById('retBraqam').value);
+            if(document.getElementById('retFile').files[0]) formData.append('doc_return', document.getElementById('retFile').files[0]);
+
+            try {
+                const res = await fetch('/api/xorij/return', {
+                    method: 'POST',
+                    headers: { 'Authorization': token },
+                    body: formData
+                });
+                if(res.ok) {
+                    alert("O'quvchi xorij bazasidan olindi va Qaytib kelganlar ro'yxatiga olib o'tildi. Maktab o'quvchilari safiga qayta o'zlashtirildi!");
+                    window.location.reload();
+                } else {
+                    alert("Xatolik yuz berdi!");
+                }
+            } catch(er) { console.error(er); }
+        }
+    </script>
+</body>
+</html>
