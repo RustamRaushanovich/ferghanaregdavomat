@@ -10,6 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #fbbf24;
+            --accent: rgba(251, 191, 36, 0.1);
+        }
         .tabs {
             display: flex;
             justify-content: center;
@@ -155,40 +159,38 @@
             <a href="https://t.me/ferghanaregdavomat_bot" class="source-link"><i class="fab fa-telegram"></i> bot</a>
         </div>
     </div>
+    
     <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-left">
-                <img src="logo.png" alt="Logo" class="nav-logo">
-                <div class="nav-branding">
-                    <h3>Farg‘ona viloyati VMMTB</h3>
-                    <p data-i18n="nav_about">Biz haqimizda</p>
-                </div>
-            </div>
-                                    <div class="nav-right" style="display:flex; gap:0.5rem; align-items:center;">
-                <a href="/" class="nav-link"><i class="fas fa-home"></i> Asosiy</a>
-                <a href="/davomat.html" class="nav-link"><i class="fas fa-edit"></i> Davomat kiritish</a>
-                <a href="/inspektor.html" class="nav-link"><i class="fas fa-user-shield"></i> Inspektor</a>
-                <a href="/xorij.html" class="nav-link"><i class="fas fa-globe-americas"></i> Xorij</a>
-                <a href="/dashboard.html" class="nav-link"><i class="fas fa-chart-pie"></i> Dashboard</a>
-                
-                <div class="dropdown" style="position:relative; display:inline-block;">
-                    <a href="#" class="nav-link"><i class="fas fa-bars"></i> Boshqa <i class="fas fa-chevron-down" style="font-size:0.7rem; margin-left:3px;"></i></a>
-                    <div class="dropdown-content">
-                        <a href="/ichki_nazorat.html"><i class="fas fa-user-lock"></i> Ichki nazorat</a>
-                        <a href="/mmibdo_rating.html"><i class="fas fa-star"></i> MMIBDO reytingi</a>
-                    </div>
-                </div>
-
-                <a href="/admin.html" class="nav-link"><i class="fas fa-cogs"></i> Admin Panel</a>
-                <a href="/about.html" class="nav-link"><i class="fas fa-info-circle"></i> Biz haqimizda</a>
-                
-                <!-- Extras -->
-                <a href="javascript:showTab('proUser')" class="nav-link" id="nav_proUser" style="color:#facc15; font-weight:bold; display:none;"><i class="fas fa-crown"></i> PRO</a>
-                <a href="javascript:logout()" class="nav-link" id="nav_logout_btn" style="color:#f43f5e; display:none;" title="Chiqish"><i class="fas fa-sign-out-alt"></i></a>
-            </div>
-        </div>
-        </div>
+        <a href="index.html" class="nav-item">
+            <div class="nav-icon-container"><img src="../logo.png"></div>
+            <span>Asosiy</span>
+        </a>
+        <a href="davomat.html" class="nav-item">
+            <div class="nav-icon-container"><img src="../logo.png"></div>
+            <span>Davomat</span>
+        </a>
+        <a href="inspektor.html" class="nav-item">
+            <div class="nav-icon-container"><img src="../_1774360075363.png"></div>
+            <span>Inspektor</span>
+        </a>
+        <a href="xorij.html" class="nav-item">
+            <div class="nav-icon-container"><img src="../_1774360126462.png"></div>
+            <span>Xorij</span>
+        </a>
+        <a href="dashboard.html" class="nav-item">
+            <div class="nav-icon-container"><img src="../_1774360091346.png"></div>
+            <span>Dashboard</span>
+        </a>
+        <a href="admin.html" class="nav-item">
+            <div class="nav-icon-container"><img src="../logo.png"></div>
+            <span>Admin Panel</span>
+        </a>
+        <a href="about.html" class="nav-item active">
+            <div class="nav-icon-container"><img src="../_1774360106880.png"></div>
+            <span>Biz haqimizda</span>
+        </a>
     </nav>
+
 
     <div class="background-blobs">
         <div class="blob blob-1"></div>

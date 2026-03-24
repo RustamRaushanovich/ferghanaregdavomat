@@ -138,17 +138,7 @@ body {
 }
 
 /* Navbar */
-.navbar {
-    position: fixed;
-    top: 40px;
-    left: 0;
-    width: 100%;
-    height: 70px;
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(20px);
-    z-index: 1000;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
+
 
 .nav-container {
     width: 100%;
@@ -194,15 +184,7 @@ body {
     margin-left: auto;
 }
 
-.nav-link {
-    color: var(--text-main);
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
-    padding: 0.5rem 0;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s ease;
-}
+
 
 .nav-link:hover,
 .nav-link.active {
@@ -1034,12 +1016,7 @@ body.dark-mode .stat-card {
         display: none;
     }
 
-    .navbar {
-        height: 60px;
-        top: 0;
-        padding: 0 1rem;
-        background: rgba(15, 23, 42, 0.95);
-    }
+    
 
     .nav-container {
         padding: 0;
@@ -1322,4 +1299,73 @@ body.dark-mode .stat-card {
 .dropdown-content a:hover { background-color: rgba(99, 102, 241, 0.2); color: #818cf8; }
 .dropdown:hover .dropdown-content { display: block; }
 
-.nav-right { gap: 0.5rem !important; align-items: center !important; } .nav-link { padding: 10px 14px !important; border-radius: 12px !important; border: 1px solid transparent !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; display: flex !important; align-items: center !important; gap: 8px !important; border-bottom: none !important; } .nav-link:hover, .nav-link.active { color: white !important; background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(10px) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important; transform: translateY(-2px) !important; } .navbar { position: fixed !important; top: 0 !important; width: 100% !important; z-index: 9999 !important; background: rgba(15, 23, 42, 0.85) !important; border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important; } body { padding-top: 90px !important; }
+.nav-right { gap: 0.5rem !important; align-items: center !important; }  .nav-link:hover, .nav-link.active { color: white !important; background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(10px) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important; transform: translateY(-2px) !important; }  body { padding-top: 90px !important; }
+
+/* --- NEW LUX NAVBAR --- */
+.navbar {
+    display: flex;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    gap: 30px;
+}
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #94a3b8;
+    position: relative;
+}
+.nav-icon-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(251, 191, 36, 0.15), transparent);
+    border: 2px solid rgba(251, 191, 36, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+.nav-icon-container img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+.nav-item span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.nav-item:hover .nav-icon-container {
+    border-color: #fbbf24;
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+}
+.nav-item:hover .nav-icon-container img {
+    transform: scale(1.1);
+}
+.nav-item:hover span {
+    color: #fbbf24;
+}
+.nav-item.active .nav-icon-container {
+    background: radial-gradient(circle at center, rgba(251, 191, 36, 0.4), transparent);
+    border-color: #fbbf24;
+    box-shadow: 0 0 25px rgba(251, 191, 36, 0.5);
+}
+.nav-item.active span {
+    color: #fbbf24;
+}
