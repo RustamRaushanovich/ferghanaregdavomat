@@ -1318,99 +1318,104 @@ body.dark-mode .stat-card {
 
 .nav-right { gap: 0.5rem !important; align-items: center !important; }  .nav-link:hover, .nav-link.active { color: white !important; background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(10px) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important; transform: translateY(-2px) !important; }  body { padding-top: 90px !important; }
 
-/* --- NEW LUX NAVBAR --- */
-.navbar {
-    display: flex;
-    justify-content: center;
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(15px);
-    border-bottom: 1px solid rgba(251, 191, 36, 0.2);
-    padding: 15px 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    gap: 30px;
+
+
+/* --- ULTIMATE GLASS TOP NAVBAR --- */
+body {
+    padding-top: 100px !important; /* Tepadan joy */
+    padding-left: 0 !important; /* Sidebar paddingni olib tashlaymiz */
 }
+
+.navbar {
+    position: fixed;
+    top: 20px;
+    left: 40px;
+    right: 40px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.05); /* Shishasimon shaffof */
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    z-index: 9999;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.nav-branding {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-branding img {
+    height: 40px;
+    width: auto;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
+}
+
+.nav-branding h3 {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.nav-links {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
 .nav-item {
     display: flex;
-    flex-direction: column;
     align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 12px;
     text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    color: #94a3b8;
-    position: relative;
+    color: white !important; /* OQ YOZUV */
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.03); /* Shishasimon tugma */
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
-.nav-icon-container {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: radial-gradient(circle at center, rgba(251, 191, 36, 0.15), transparent);
-    border: 2px solid rgba(251, 191, 36, 0.3);
+
+.nav-item .nav-icon-container {
+    width: 24px;
+    height: 24px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 8px;
-    position: relative;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    transition: all 0.3s ease;
-    overflow: hidden;
-}
-.nav-icon-container img {
-    width: 45px;
-    height: 45px;
-    object-fit: contain;
-    transition: transform 0.3s ease;
-}
-.nav-item span {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.nav-item:hover .nav-icon-container {
-    border-color: #fbbf24;
-    transform: translateY(-5px);
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
-}
-.nav-item:hover .nav-icon-container img {
-    transform: scale(1.1);
-}
-.nav-item:hover span {
-    color: #fbbf24;
-}
-.nav-item.active .nav-icon-container {
-    background: radial-gradient(circle at center, rgba(251, 191, 36, 0.4), transparent);
-    border-color: #fbbf24;
-    box-shadow: 0 0 25px rgba(251, 191, 36, 0.5);
-}
-.nav-item.active span {
-    color: #fbbf24;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
-/* --- FINAL GLOBAL LOGO AND ICON OVERRIDE (NO MORE HUGE LOGOS) --- */
-img { max-width: 100%; height: auto; }
-
-.nav-icon-container, .nav-icon-container img, .navbar .nav-item img {
-    width: 38px !important;
-    height: 38px !important;
-    max-width: 38px !important;
-    max-height: 38px !important;
-    object-fit: contain !important;
-    display: block !important;
+.nav-item img {
+    width: 20px !important;
+    height: 20px !important;
+    filter: brightness(0) invert(1); /* Ikonkani OQ qiladi */
 }
 
-.hero-logo, .logo, .bot-logo, .header-logo, .sidebar-logo, .floating-logo {
-    max-width: 140px !important;
-    height: auto !important;
-    width: auto !important;
-    display: block !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
 }
 
-.navbar .nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
+.nav-item.active {
+    background: rgba(251, 191, 36, 0.3); /* Oltinroq aktiv tugma */
+    border-color: rgba(251, 191, 36, 0.5);
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+}
+
+/* Kichik ekranlar uchun */
+@media (max-width: 1100px) {
+    .nav-item span { display: none; }
+    .navbar { left: 10px; right: 10px; padding: 0 15px; }
 }
