@@ -55,6 +55,9 @@ body {
     /* Increased for widgets */
 }
 
+img { max-width: 100%; height: auto; }
+.nav-logo, .logo, .hero-logo { width: 60px !important; height: 60px !important; display: block; object-fit: contain; }
+.nav-icon-container, .nav-icon-container img { width: 45px !important; height: 45px !important; max-width: 45px !important; max-height: 45px !important; }
 /* Widgets Bar */
 .top-widgets-bar {
     position: fixed;
