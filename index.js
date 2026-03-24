@@ -402,6 +402,9 @@ async function alertSuperAdmin(msg) {
 }
 // Static files served FIRST — before rate limiting
 app.use(express.static('dashboard'));
+app.use('/assets', express.static('assets'));
+app.use('/icons', express.static('icons'));
+app.use('/icons', express.static('dashboard/assets/icons')); // Zaxira yo'li
 
 // Security shield applied ONLY to /api routes — not static files
 app.use('/api', securityShield);
