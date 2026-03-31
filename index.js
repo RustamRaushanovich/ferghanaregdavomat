@@ -173,8 +173,42 @@ app.get('/api/admin/tg-users', auth, async (req, res) => {
 
 // Admin: Set PRO for TG User
 app.post('/api/admin/set-pro', auth, async (req, res) => {
-    const isOwner = req.user.username === 'qirol';
-    if (!isOwner) return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    // Both 'qirol' account and superadmin role can activate
+    const isAuthorized = req.user.username === 'qirol' || req.user.role === 'superadmin';
+    if (!isAuthorized) return res.status(403).json({ error: 'Ruxsat yo\'q' });
+
+    try {
+        const { phone, months } = req.body;
+        if (!phone) return res.status(400).json({ error: 'Telefon raqam required' });
+        
+        const cleanPhone = phone.replace(/\D/g, '');
+        const pPath = path.join(__dirname, 'src', 'database', 'pro_users.json');
+        let proData = [];
+        if (fs.existsSync(pPath)) {
+            const raw = fs.readFileSync(pPath, 'utf8');
+            if(raw) proData = JSON.parse(raw);
+        }
+
+        const now = new Date();
+        const expire = new Date();
+        expire.setMonth(now.getMonth() + (parseInt(months) || 1));
+
+        // Delete existing
+        proData = proData.filter(u => u.phone !== cleanPhone);
+        
+        proData.push({
+            phone: cleanPhone,
+            is_pro: true,
+            pro_purchase_date: new Date().toISOString(),
+            pro_expire_date: expire.toISOString()
+        });
+
+        fs.writeFileSync(pPath, JSON.stringify(proData, null, 2));
+        res.json({ success: true, message: `PRO faollashtirildi (Muddati: ${expire.toLocaleDateString('uz-UZ')})` });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
     const { uid, months } = req.body;
     if (!uid) return res.status(400).json({ error: 'UID required' });
 

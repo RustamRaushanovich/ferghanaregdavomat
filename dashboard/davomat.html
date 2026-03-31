@@ -279,13 +279,22 @@
                 </button>
             </div>
             <!-- PRO Promo in Success Screen -->
-            <div id="proPromoSuccess" style="margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; text-align: left;">
-                <p style="color: #facc15; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px;"><i class="fas fa-crown"></i> PRO-GA O'TING:</p>
-                <ul style="font-size: 0.8rem; color: #94a3b8; padding-left: 15px; margin-bottom: 15px;">
-                    <li>3-ilova (Bildirgi) автоматик тайёрланади</li>
-                    <li>Сиз учун алоҳида шахсий архив сақланади</li>
-                </ul>
-                <button onclick="location.href='dashboard.html#profile'" class="btn" style="padding: 8px 15px; font-size: 0.8rem; background: #6366f1;">Batafsil ma'lumot</button>
+            <div id="proPromoSuccess" style="margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; text-align: center;">
+                 <p style="color: #facc15; font-size: 0.85rem; font-weight: 600; margin-bottom: 12px;"><i class="fas fa-crown"></i> PRO-GA O'TISH</p>
+                 <div id="davomatCardDisplay" style="display:none; margin-bottom:15px; animation: fadeIn 0.3s;">
+                     <img src="/assets/agro_card.png" style="width:100%; border-radius:10px; box-shadow:0 10px 20px rgba(0,0,0,0.4); margin-bottom:12px;">
+                     <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:8px; border:1px solid rgba(255,255,255,0.05);">
+                        <code style="color:#fff; font-size:1.1rem; letter-spacing:1px;">6262 5707 8542 8618</code>
+                        <button onclick="navigator.clipboard.writeText('6262570785428618'); alert('Nusxalandi!')" style="background:none; border:none; color:#facc15; cursor:pointer;"><i class="fas fa-copy"></i></button>
+                     </div>
+                     <p style="margin:0; font-size: 0.8rem; color: #94a3b8;">R.R. Turdiyev (Agrobank)</p>
+                 </div>
+                 <button id="showCardBtnDavomat" onclick="document.getElementById('davomatCardDisplay').style.display='block'; this.style.display='none'; document.getElementById('verifyBtnDavomat').style.display='block';" class="btn btn-pro" style="padding: 10px 20px; font-size: 0.8rem; width:100%;">
+                     To'lov ma'lumotlarini ko'rish
+                 </button>
+                <button id="verifyBtnDavomat" onclick="location.href='https://t.me/ferghanaregdavomat_bot'" class="btn" style="display:none; margin-top:10px; padding: 10px 20px; font-size: 0.8rem; background: #6366f1; width: 100%; border-radius: 8px;">
+                    <i class="fas fa-receipt"></i> To'lovni tasdiqlash
+                </button>
             </div>
 
             <button type="button" class="btn btn-next" onclick="location.reload()" style="margin: 20px auto 0;"

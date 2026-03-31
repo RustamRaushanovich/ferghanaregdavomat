@@ -395,7 +395,29 @@
                     Boshqa barcha funksiyalar Botdagi Admin Panelda mavjud.
                 </div>
             </div>
-            <!-- Extra Tools -->
+            
+            <!-- PRO Management Card -->
+            <div class="card" id="proManagerCard">
+                <h3><i class="fas fa-gem"></i> PRO Obunani faollashtirish</h3>
+                <div style="background:rgba(99,102,241,0.05); padding:15px; border-radius:12px; margin-bottom:15px; font-size:0.85rem; color:#94a3b8;">
+                    <i class="fas fa-info-circle"></i> To'lov тасдиқлангандан кейин фойдаланувчи телефонини киритиб, PRO статусни беришингиз мумкин.
+                </div>
+                <div class="form-group">
+                    <label>Telefon raqam:</label>
+                    <input type="tel" id="proPhone" placeholder="998901234567" style="background:rgba(0,0,0,0.2); border:1px solid var(--glass-border); color:white; padding:10px; border-radius:12px; width:100%;">
+                </div>
+                <div class="form-group">
+                    <label>Oylar soni:</label>
+                    <select id="proMonths" style="background:rgba(0,0,0,0.2); border:1px solid var(--glass-border); color:white; padding:10px; border-radius:12px; width:100%;">
+                        <option value="1">1 oy (25 000 so'm)</option>
+                        <option value="3">3 oy (75 000 so'm)</option>
+                        <option value="6">6 oy (150 000 so'm)</option>
+                        <option value="12">1 yil (300 000 so'm)</option>
+                    </select>
+                </div>
+                <button onclick="activatePro()" class="btn btn-primary" style="width:100%;"><i class="fas fa-check-circle"></i> PRO-ni faollashtirish</button>
+            </div>
+<!-- Extra Tools -->
             <div class="card">
                 <h3><i class="fas fa-database"></i> Qo'shimcha Boshqaruv</h3>
                 <div class="nav-links">
@@ -630,6 +652,28 @@
                     addLog("[ACTION] Yangi me'yoriy hujjat saytga yuklandi!");
                 } else alert("Xatolik!");
             } catch(er) { showToast("Xatolik jiddiy yuz berdi!", true); }
+        }
+
+        async function activatePro() {
+            const phone = document.getElementById('proPhone').value;
+            const months = document.getElementById('proMonths').value;
+            if(!phone) return alert("Telefon raqamni kiriting!");
+
+            if(!confirm("Ushbu foydalanuvchiga PRO status berishni tasdiqlaysizmi?")) return;
+
+            try {
+                const res = await fetch('/api/admin/set-pro', {
+                    method: 'POST',
+                    headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, months })
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    showToast(data.message || "PRO muvaffaqiyatli faollashtirildi!");
+                    document.getElementById('proPhone').value = '';
+                    addLog(`[ACTION] PRO user activated: ${phone}`);
+                } else alert(data.error || "Xatolik!");
+            } catch(e) { alert("Server bilan bog'lanishda xatolik!"); }
         }
 
     </script>
