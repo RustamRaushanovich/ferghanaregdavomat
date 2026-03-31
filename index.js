@@ -80,7 +80,7 @@ app.post('/api/login', (req, res) => {
     if (user && user.password === password) {
         const token = generateToken();
         // Store user with username for easy lookup later
-        tokens.set(token, role: user.role, { ...user, username });
+        tokens.set(token, { ...user, username, role: user.role });
         res.json({
             token,
             role: user.role,
