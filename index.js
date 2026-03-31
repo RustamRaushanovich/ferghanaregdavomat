@@ -418,9 +418,14 @@ const PORT = process.env.PORT || 3000;
 const LOGO_PATH = path.join(__dirname, 'assets', 'logo.png');
 
 // --- PREMIUM FEATURES ---
-const premiumRoutes = require('./premium_features/backend/premium_routes');
-app.use('/premium', express.static('premium_features/web'));
-app.use('/api/premium', auth, premiumRoutes);
+try {
+    const premiumRoutes = require('./premium_features/backend/premium_routes');
+    app.use('/premium', express.static('premium_features/web'));
+    app.use('/api/premium', auth, premiumRoutes);
+    console.log('[PREMIUM] Premium routes yuklandi.');
+} catch (e) {
+    console.warn('[PREMIUM] Premium routes topilmadi, o\'tkazib yuborildi:', e.message);
+}
 
 const stage = new Scenes.Stage([attendanceWizard, broadcastScene, xorijWizard]);
 bot.use(session());

@@ -31,6 +31,39 @@ body.light-mode {
 }
 
 * {
+:root {
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --secondary: #ec4899;
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --success: #10b981;
+}
+
+html.light-mode {
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --text-main: #0f172a;
+    --text-muted: #475569;
+}
+
+html.light-mode body {
+    background: #f1f5f9;
+    color: var(--text-main);
+    background-image: none;
+    /* Remove dark logo background */
+}
+
+body.light-mode {
+    background: #f1f5f9;
+    color: var(--text-main);
+}
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -39,11 +72,7 @@ body.light-mode {
 
 body {
     background: #0f172a;
-    background-image: linear-gradient(rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0.94)), url('logo.png');
-    background-size: 150px; /* Fixed small size instead of 30% */
-    background-repeat: no-repeat;
-    background-position: center;
-    background-attachment: fixed;
+    background-image: none; /* Removed logo.png */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -52,7 +81,6 @@ body {
     overflow-x: hidden;
     color: var(--text-main);
     padding-top: 140px;
-    /* Increased for widgets */
 }
 
 img { max-width: 100%; height: auto; }
