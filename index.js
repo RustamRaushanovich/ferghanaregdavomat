@@ -132,7 +132,8 @@ app.get('/api/admin/users', auth, (req, res) => {
 
 
 // Admin: Reset any user password
-app.post('/api/admin/reset-password
+
+
 // Admin: Export Full SQL Data (Only for Owner/Primary Admin)
 app.get('/api/admin/export-db', auth, async (req, res) => {
     const isOwner = req.user.username === 'mrqirol' || Number(req.user.uid) === 65002404;
