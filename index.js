@@ -866,7 +866,7 @@ app.get('/api/admin/settings', auth, (req, res) => {
 // ==================== DOCUMENTS (MEYORIY HUJJATLAR) API ====================
 app.post('/api/documents', auth, upload.single('document_file'), (req, res) => {
     try {
-        if (req.user.role !== 'admin') {
+        if (req.user.role !== 'superadmin') {
             return res.status(403).json({ error: 'Faqat Superadmin yuklay oladi!' });
         }
         
@@ -2263,3 +2263,4 @@ bot.launch({
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
+
