@@ -1348,10 +1348,17 @@ body.dark-mode .stat-card {
 
 
 
-/* --- ULTIMATE GLASS TOP NAVBAR --- */
+/* --- ULTIMATE GLASS TOP NAVBAR (REFINED) --- */
 body {
-    padding-top: 100px !important; /* Tepadan joy */
-    padding-left: 0 !important; /* Sidebar paddingni olib tashlaymiz */
+    background: linear-gradient(rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.92)), url('/assets/main_logo.jpg') no-repeat center center fixed !important;
+    background-size: cover !important;
+    padding-top: 100px !important;
+    padding-left: 0 !important;
+}
+
+body.light-mode {
+    background: linear-gradient(rgba(241, 245, 249, 0.88), rgba(241, 245, 249, 0.88)), url('/assets/main_logo.jpg') no-repeat center center fixed !important;
+    background-size: cover !important;
 }
 
 .navbar {
@@ -1360,10 +1367,10 @@ body {
     left: 40px;
     right: 40px;
     height: 70px;
-    background: rgba(255, 255, 255, 0.05); /* Shishasimon shaffof */
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 20px;
     display: flex;
     align-items: center;
@@ -1379,22 +1386,26 @@ body {
     gap: 12px;
 }
 
-.nav-branding img {
-    height: 40px;
-    width: auto;
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
+.main-top-logo {
+    width: 45px !important;
+    height: 45px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
 .nav-branding h3 {
-    color: white;
-    font-size: 1.1rem;
+    color: white !important;
+    font-size: 1.2rem !important;
     font-weight: 700;
     margin: 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .nav-links {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     align-items: center;
 }
 
@@ -1402,149 +1413,37 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 18px;
-    border-radius: 12px;
-    text-decoration: none;
-    color: white !important; /* OQ YOZUV */
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.03); /* Shishasimon tugma */
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.nav-item .nav-icon-container {
-    width: 24px;
-    height: 24px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-}
-
-.nav-item img {
-    width: 20px !important;
-    height: 20px !important;
-    filter: brightness(0) invert(1); /* Ikonkani OQ qiladi */
-}
-
-.nav-item:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
-}
-
-.nav-item.active {
-    background: rgba(251, 191, 36, 0.3); /* Oltinroq aktiv tugma */
-    border-color: rgba(251, 191, 36, 0.5);
-    box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
-}
-
-/* Kichik ekranlar uchun */
-@media (max-width: 1100px) {
-    .nav-item span { display: none; }
-    .navbar { left: 10px; right: 10px; padding: 0 15px; }
-}
-
-
-
-/* Custom User Uploaded Background & Horizontal Navbar Enhancements */
-body {
-    background: linear-gradient(rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.92)), url('/assets/main_logo.jpg') no-repeat center center fixed !important;
-    background-size: cover !important;
-}
-body.light-mode {
-    background: linear-gradient(rgba(241, 245, 249, 0.88), rgba(241, 245, 249, 0.88)), url('/assets/main_logo.jpg') no-repeat center center fixed !important;
-    background-size: cover !important;
-}
-
-body .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 40px;
-    height: 70px;
-    background: rgba(15, 23, 42, 0.4) !important;
-    backdrop-filter: blur(15px) !important;
-    -webkit-backdrop-filter: blur(15px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
-    position: fixed;
-    top: 20px;
-    left: 40px;
-    right: 40px;
-    border-radius: 20px;
-    z-index: 9999;
-}
-
-body .navbar .nav-branding a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-}
-
-.main-top-logo {
-    width: 40px !important;
-    height: 40px !important;
-    border-radius: 50% !important;
-    object-fit: cover !important;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-}
-
-body .navbar .nav-branding h3 {
-    font-size: 1.2rem !important;
-    margin: 0 !important;
-    color: white !important;
-    text-shadow: 0 2px 5px rgba(0,0,0,0.5) !important;
-}
-
-body .navbar .nav-links {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-body .navbar .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px !important;
+    padding: 10px 18px !important;
     border-radius: 12px !important;
     text-decoration: none;
-    background: rgba(255, 255, 255, 0.02) !important;
-    border: 1px solid transparent !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     color: rgba(255, 255, 255, 0.9) !important;
     font-size: 0.9rem !important;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
-body .navbar .nav-item i {
+.nav-item i {
     font-size: 1rem !important;
-    color: inherit !important;
 }
 
-/* Glassmorphism & Hover state for top navbar */
-body .navbar .nav-item:hover,
-body .navbar .nav-item.active {
+.nav-item:hover, .nav-item.active {
     background: rgba(255, 255, 255, 0.1) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
-    transform: translateY(-2px) !important;
-    color: #38bdf8 !important; /* Yozuv (va ikonka) rangi oydinlashadi */
-    text-shadow: 0 0 5px rgba(56, 189, 248, 0.3);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2) !important;
+    transform: translateY(-2px);
+    color: #38bdf8 !important;
+    text-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
 }
 
 @media (max-width: 1100px) {
-    body .navbar { left: 10px; right: 10px; padding: 0 15px; }
-    body .navbar .nav-item span { display: none !important; }
+    .navbar { left: 10px; right: 10px; padding: 0 15px; }
+    .nav-item span { display: none !important; }
 }
 
 @media (max-width: 768px) {
-    body .navbar {
+    .navbar {
         top: auto;
         bottom: 0px;
         left: 0;
@@ -1556,9 +1455,10 @@ body .navbar .nav-item.active {
         border: none !important;
         border-top: 1px solid rgba(255,255,255,0.1) !important;
     }
-    body .navbar .nav-branding { display: none !important; }
-    body .navbar .nav-links { width: 100%; justify-content: space-between; gap: 5px; }
-    body .navbar .nav-item { padding: 8px !important; }
-    body .navbar .nav-item i { font-size: 1.2rem !important; }
-    body .navbar .nav-item:hover, body .navbar .nav-item.active { transform: translateY(-3px) !important; }
+    .nav-branding { display: none !important; }
+    .nav-links { width: 100%; justify-content: space-between; gap: 5px; }
+    .nav-item { padding: 8px !important; }
+    .nav-item i { font-size: 1.2rem !important; }
 }
+
+

@@ -40,9 +40,16 @@ if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
 const uploadDir = path.join(__dirname, 'assets', 'uploads');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => { cb(null, uploadDir); },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
 const upload = multer({
-    dest: uploadDir,
-    limits: { fileSize: 10 * 1024 * 1024 }
+    storage: storage,
+    limits: { fileSize: 30 * 1024 * 1024 }
 });
 
 const app = express();
@@ -401,8 +408,14 @@ async function alertSuperAdmin(msg) {
     }
 }
 // Static files served FIRST — before rate limiting
-app.use(express.static('dashboard'));
+app.use(express.static('dashboard', { setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+    }
+}}));
 app.use('/assets', express.static('assets'));
+app.use('/uploads', express.static('assets/uploads')); // Yuklangan hujjatlar uchun
 app.use('/icons', express.static('icons'));
 app.use('/icons', express.static('dashboard/assets/icons')); // Zaxira yo'li
 
@@ -2263,4 +2276,5 @@ bot.launch({
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
+
 
