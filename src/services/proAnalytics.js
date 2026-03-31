@@ -119,6 +119,41 @@ const ProAnalytics = {
             console.error("AI Pattern Error:", e.message);
             return "AI tahlilida xatolik.";
         }
+    },
+
+    /**
+     * Non-submitting schools analysis
+     * Finds schools that missed attendance submission for more than 5 days in the last 30 days
+     */
+    async getNonSubmittingSchools(district = null) {
+        try {
+            const schoolsDb = require('../database/db').schools_db;
+            const districts = district ? [district] : Object.keys(schoolsDb).filter(d => !["Test rejimi", "MMT Boshqarma"].includes(d));
+            const last30DaysRes = await db.query(`
+                SELECT district, school, count(DISTINCT date) as submissions
+                FROM attendance
+                WHERE date >= (CURRENT_DATE - INTERVAL '30 days')
+                GROUP BY district, school
+            `);
+            const submissions = last30DaysRes.rows;
+            const totalWorkDays = 26; // Mon-Sat in 30 days
+
+            const problematic = [];
+            districts.forEach(d => {
+                const districtSchools = schoolsDb[d] || [];
+                districtSchools.forEach(s => {
+                    const sub = submissions.find(row => row.district === d && row.school === s);
+                    const count = sub ? parseInt(sub.submissions) : 0;
+                    if (count < 20) { // Missed 6+ days
+                         problematic.push({ district: d, school: s, submissions: count, missed: (totalWorkDays - count) > 0 ? (totalWorkDays - count) : 0 });
+                    }
+                });
+            });
+            return problematic.sort((a,b) => a.submissions - b.submissions);
+        } catch (e) {
+            console.error("Non-submitting schools error:", e);
+            return [];
+        }
     }
 };
 

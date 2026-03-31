@@ -511,6 +511,7 @@
                 <button onclick="changeLang('uz')" class="lang-btn" id="uz_btn">UZ</button>
                 <button onclick="changeLang('ru')" class="lang-btn" id="ru_btn">RU</button>
             </div>
+            <img src="/assets/main_logo.jpg" onerror="this.src='/assets/logo.png'" alt="Logo" style="height: 40px; width: 40px; border-radius: 50%; border: 2px solid var(--accent); cursor: pointer;" onclick="location.href='index.html'">
         </div>
     </div>
     
@@ -1003,6 +1004,30 @@
 
     <!-- 4.1. ANALYSIS (Leadership Charts) -->
     <div id="analysisView" class="report-view">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="margin:0"><i class="fas fa-chart-pie"></i> Viloyat davomat tahlili (Kecha va Bugun)</h3>
+            <button class="tab-btn" onclick="loadAnalysisData()" style="padding:8px 20px; font-size:13px;">
+                <i class="fas fa-sync-alt"></i> Yangilash
+            </button>
+        </div>
+
+        <div class="stat-card" style="margin-bottom: 25px; background: rgba(244, 63, 94, 0.05); border: 1px solid rgba(244, 63, 94, 0.2);">
+            <h4 style="color: #f43f5e;"><i class="fas fa-exclamation-triangle"></i> Davomat kiritishda sustkashlik qilayotgan maktablar (Oxirgi 30 kun)</h4>
+            <div style="overflow-x: auto; margin-top: 15px; max-height: 400px;">
+                <table id="nonSubmittingTable" style="margin-top: 0; font-size: 0.85rem;">
+                    <thead>
+                        <tr>
+                            <th style="background:#1e293b;">Tuman</th>
+                            <th style="background:#1e293b;">Maktab</th>
+                            <th style="background:#1e293b; text-align:center;">Kiritilgan (kun)</th>
+                            <th style="background:#1e293b; text-align:center;">Qoldirilgan (kun)</th>
+                            <th style="background:#1e293b; text-align:center;">Holat</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <h3 style="margin:0"><i class="fas fa-chart-pie"></i> Viloyat davomat tahlili (Kecha va Bugun)</h3>
             <button class="tab-btn" onclick="loadAnalysisData()" style="padding:8px 20px; font-size:13px;">
@@ -1631,32 +1656,51 @@ async function loadViloyatData() {
                     totalSababsiz += parseInt(item.sababsiz) || 0;
                     totalAbsentSum += parseInt(item.total_absent) || 0;
 
-                    const row = `<tr>
-                        <td class="clickable-dist" onclick="openDistrictStats('${item.district.replace(/'/g, "\\'")}')"><i class="fas fa-search-location"></i> ${item.district}</td>
-                        <td>${item.entries}</td>
-                        <td>${item.students}</td>
-                        <td>${item.sababli}</td>
-                        <td><b style="color:#ef4444">${item.sababsiz}</b></td>
-                        <td style="font-weight:bold">${item.total_absent}</td>
-                        <td><span class="status-badge ${item.avg_percent >= 95 ? 'status-high' : 'status-low'}">${(Number(item.avg_percent) || 0).toFixed(1)}%</span></td>
+                                        const row = `<tr>
+                        <td class="clickable-dist" onclick="openDistrictStats('${item.district.replace(/'/g, "\\'")}')" style="font-weight:600; color:#fff;"><i class="fas fa-search-location" style="color:var(--accent);"></i> ${item.district}</td>
+                        <td style="font-weight:bold; color:#e2e8f0;">${item.total_schools || 0}/${item.entries || 0}</td>
+                        <td>${item.classes || 0}</td>
+                        <td style="color:#94a3b8">${item.students || 0}</td>
+                        
+                        <td style="color:#2dd4bf; font-weight:600;">${item.sk || 0}</td>
+                        <td style="color:#2dd4bf">${item.st || 0}</td>
+                        <td style="color:#2dd4bf">${item.so || 0}</td>
+                        <td style="color:#2dd4bf">${item.si || 0}</td>
+                        <td style="color:#2dd4bf">${item.sb || 0}</td>
+                        
+                        <td style="color:#fbbf24; font-weight:600;">${item.sm || 0}</td>
+                        <td style="color:#f87171">${item.sq || 0}</td>
+                        <td style="color:#f87171">${item.sc || 0}</td>
+                        <td style="color:#f87171">${item.sbt || 0}</td>
+                        <td style="color:#f87171">${item.si_ish || 0}</td>
+                        <td style="color:#f87171">${item.sqar || 0}</td>
+                        <td style="color:#f87171">${item.sjaz || 0}</td>
+                        <td style="color:#f87171">${item.snaz || 0}</td>
+                        <td style="color:#f87171">${item.stur || 0}</td>
+                        <td style="color:#f87171">${item.ssb || 0}</td>
+                        
+                        <td style="font-weight:bold; color:#fff;">${item.total_absent || 0}</td>
+                        <td style="color:#94a3b8; font-size:0.85em;">${(item.yesterday_percent || 0).toFixed(1)}%</td>
+                        <td><span class="status-badge ${item.avg_percent >= 95 ? 'status-high' : 'status-low'}" style="font-size:11px;">${(Number(item.avg_percent) || 0).toFixed(1)}%</span></td>
+                        <td style="font-size:10px; color:#cbd5e1;">${item.head_name || '-'}</td>
                     </tr>`;
                     tbody.innerHTML += row;
                 });
-                const elTotalE = document.getElementById('total_entries');
+                const elTotalE = document.getElementById('v_total_entries');
                 if (elTotalE) elTotalE.textContent = totalE;
 
-                const elTotalAvg = document.getElementById('total_avg');
+                const elTotalAvg = document.getElementById('v_avg_percent');
                 if (elTotalAvg) elTotalAvg.textContent = (totalS > 0 ? ((totalS - totalAbsentSum) / totalS * 100).toFixed(1) : 0) + '%';
 
-                const elTotalAbs = document.getElementById('total_absents');
+                const elTotalAbs = document.getElementById('v_total_sababsiz');
                 if (elTotalAbs) elTotalAbs.textContent = totalSababsiz;
 
-                const elTotalStudV = document.getElementById('total_students_v');
+                const elTotalStudV = document.getElementById('v_total_students');
                 if (elTotalStudV) elTotalStudV.textContent = totalS;
 
                 renderHeatmap(data);
             } catch (e) {
-                document.querySelector('#viloyatTable tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#ef4444">Xatolik: ${e.message}</td></tr>`;
+                document.querySelector('#viloyatTable tbody').innerHTML = `<tr><td colspan="23" style="text-align:center; padding:30px; color:#ef4444">Xatolik: ${e.message}</td></tr>`;
             }
         }
 
@@ -1727,7 +1771,7 @@ async function loadViloyatData() {
                         
                         <td><span class="status-badge ${item.percent >= 95 ? 'status-high' : 'status-low'}" style="font-size:10px">${(Number(item.percent) || 0).toFixed(1)}%</span></td>
                         <td style="text-align:center">
-                            ${isSent ? (item.source === 'web' ? '<i class="fas fa-globe" style="color:#3b82f6" title="Web"></i>' : '<i class="fab fa-telegram" style="color:#0088cc" title="Bot"></i>') : '-'}
+                            ${isSent ? (item.source === 'web' ? '<i class="fas fa-globe" style="color:#3b82f6" title="Web"></i>' : '<i class="fab fa-telegram" style="color:#0088cc" title="Bot"></i>') : '-'} ${item.bildirgi ? '<a href="/uploads/'+item.bildirgi+'" target="_blank" title="Bildirgi" style="margin-left:5px; color:#10b981;"><i class="fas fa-file-pdf"></i></a>' : ''}
                         </td>
                         <td style="font-size:11px; color:#cbd5e1; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${item.fio}">${item.fio}</td>
                     </tr>`;
@@ -1745,7 +1789,7 @@ async function loadViloyatData() {
                 tbody.innerHTML = '';
 
                 data.forEach(item => {
-                    const sourceIcon = item.source === 'web' ? '<i class="fas fa-globe" style="color:#3b82f6" title="Web Sahifa"></i> web' : '<i class="fab fa-telegram" style="color:#0088cc" title="Telegram Bot"></i> bot';
+                    const sourceIcon = (item.source === 'web' ? '<i class="fas fa-globe" style="color:#3b82f6" title="Web Sahifa"></i> web' : '<i class="fab fa-telegram" style="color:#0088cc" title="Telegram Bot"></i> bot') + (item.bildirgi ? ' <a href="/uploads/'+item.bildirgi+'" target="_blank" title="Bildirgi" style="color:#10b981;"><i class="fas fa-file-pdf"></i></a>' : '');
                     const d = item.date.split('-');
                     const displayDate = d.length === 3 ? `${d[2]}.${d[1]}.${d[0]}` : item.date;
 
@@ -1796,6 +1840,33 @@ async function loadViloyatData() {
         }
 
         let districtChart, reasonsChart, trendChart;
+        
+        async function loadNonSubmittingSchools() {
+            try {
+                const data = await apiFetch('/api/stats/non-submitting');
+                const tbody = document.querySelector('#nonSubmittingTable tbody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+                
+                data.forEach(item => {
+                    const statusClass = item.submissions > 15 ? 'status-low' : 'status-low'; // All these are problematic
+                    const row = `<tr>
+                        <td style="color:#cbd5e1;">${item.district}</td>
+                        <td style="font-weight:bold; color:white;">${item.school}</td>
+                        <td style="text-align:center; color:#10b981; font-weight:bold;">${item.submissions} / 26</td>
+                        <td style="text-align:center; color:#f43f5e; font-weight:bold;">${item.missed}</td>
+                        <td style="text-align:center;">
+                            <span class="status-badge status-low" style="font-size:10px;">KRITILMAGAN</span>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+                if(data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#10b981;">Barcha maktablar davomatni o\'z vaqtida kiritmoqda.</td></tr>';
+                }
+            } catch(e) { console.error("Non-submitting fetch failed", e); }
+        }
+
         async function loadAnalysisData() {
             const today = new Date().toISOString().split('T')[0];
             const yesterdayDate = new Date();
@@ -2375,6 +2446,7 @@ async function loadViloyatData() {
 </body>
 
 </html>
+
 
 
 

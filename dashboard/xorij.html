@@ -92,7 +92,15 @@
                     <label>Maktab / Ta'lim muassasasi</label>
                     <select id="xSchool"><option value="">Maktabni tanlang</option></select>
                 </div>
-                <button class="btn-green" onclick="saveSchoolAuth()" style="width:100%;"><i class="fas fa-sign-in-alt"></i> Tizimga kirish</button>
+                <div class="input-group">
+                    <label>Mas'ul shaxs (F.I.SH)</label>
+                    <input type="text" id="xMasul" placeholder="F.I.SH kiring">
+                </div>
+                <div class="input-group">
+                    <label>Telefon raqami</label>
+                    <input type="text" id="xTel" placeholder="+998901234567">
+                </div>
+                <button class="btn-green" onclick="saveSchoolAuth()" style="width:100%;"><i class="fas fa-sign-in-alt"></i> Tizimga кириш</button>
             </div>
 
             <div id="schoolDataSection" style="display:none;">
@@ -138,7 +146,7 @@
                             <div class="input-group">
                                 <label>Qaysi davlatga ketgan?</label>
                                 <select id="xCountry" required>
-                                    <option value="Rossiya">Rossiya</option><option value="Qozog'iston">Qozog'iston</option><option value="Qirg'iziston">Qirg'iziston</option><option value="Turkiya">Turkiya</option><option value="BAA">Birlashgan Arab Amirliklari</option><option value="Koreya">Koreya</option><option value="Boshqa">Boshqa davlatlar</option>
+                                    <option value="Rossiya">Rossiya</option><option value="Qozog'iston">Qozog'iston</option><option value="Qirg'iziston">Qirg'iziston</option><option value="Turkiya">Turkiya</option><option value="Misr">Misr</option><option value="BAA">Birlashgan Arab Amirliklari</option><option value="Koreya">Koreya</option><option value="Boshqa">Boshqa davlatlar</option>
                                 </select>
                             </div>
                             <div class="input-group"><label>Jo'nab ketgan sana</label><input type="date" id="xDateLeft" required></div>
@@ -189,6 +197,7 @@
                             <th>O'quvchi F.I.SH</th>
                             <th>Qaytgan Sana</th>
                             <th>Qabul qilingan Maktab / Sinf</th>
+                            <th>Mas'ul / Vaqt</th>
                             <th>Buyruq raqami va Fayl</th>
                         </tr>
                     </thead>
@@ -227,11 +236,12 @@
                             <th>O'quvchi F.I.SH</th>
                             <th>Davlati / Sana</th>
                             <th>Qonuniylik (Asoslar)</th>
+                            <th>Mas'ul / Vaqt</th>
                             <th>Fayllar (PDF)</th>
                         </tr>
                     </thead>
                     <tbody id="detailedTableBody">
-                        <tr><td colspan="5" style="padding:40px;"><i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...</td></tr>
+                        <tr><td colspan="6" style="padding:40px;"><i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -239,23 +249,81 @@
     </div>
 
     <!-- RETURN MODAL -->
-    <div id="modalReturn">
+    <div id="modalReturn" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000; align-items:center; justify-content:center;">
         <div class="modal-box">
             <h3 style="color:#10b981; margin-bottom:15px;"><i class="fas fa-undo"></i> O'quvchi maktabga qaytdi</h3>
-            <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:15px;">Ushbu o'quvchi xorijdan qaytgan bo'lsa, uning xozirgi ro'yxatdan o'tish buyrug'ini yuklang.</p>
             <form id="returnForm" onsubmit="submitReturnStudent(event)">
                 <input type="hidden" id="retId">
-                <div class="input-group"><label>Qaytgan/Maktabga kelgan sana</label><input type="date" id="retDate" required></div>
-                <div class="input-group"><label>Qaysi Hududga qo'shildi?</label><input type="text" id="retDist" required></div>
-                <div class="input-group"><label>Qaysi Maktabga?</label><input type="text" id="retSchool" required></div>
-                <div class="input-group"><label>Qaysi Sinfga?</label><input type="text" id="retClass" required></div>
-                <div class="input-group"><label>Maktab direktorining buyruq sanasi</label><input type="date" id="retBsana" required></div>
+                <div class="input-group"><label>Qaytgan sana</label><input type="date" id="retDate" required></div>
+                <div class="input-group"><label>Hudud</label><input type="text" id="retDist" required></div>
+                <div class="input-group"><label>Maktab</label><input type="text" id="retSchool" required></div>
+                <div class="input-group"><label>Sinf</label><input type="text" id="retClass" required></div>
+                <div class="input-group"><label>Buyruq sanasi</label><input type="date" id="retBsana" required></div>
                 <div class="input-group"><label>Buyruq raqami</label><input type="text" id="retBraqam" required></div>
-                <div class="input-group"><label>Buyruq Fayli (PDF/Rasm)</label><input type="file" id="retFile" accept=".pdf,image/*" required></div>
-                
-                <div style="text-align:right; margin-top:20px;">
+                <div class="input-group"><label>Fayl (PDF/Rasm)</label><input type="file" id="retFile" accept=".pdf,image/*" required></div>
+                <div style="text-align:right; margin-top:15px;">
                     <button type="button" class="btn-gray" onclick="document.getElementById('modalReturn').style.display='none'">Bekor qilish</button>
-                    <button type="submit" class="btn-green"><i class="fas fa-check-circle"></i> Saqlash va Qaytganlarga o'tkazish</button>
+                    <button type="submit" class="btn-green">Saqlash</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div id="modalEditXorij" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000; align-items:center; justify-content:center; overflow-y:auto; padding:20px 0;">
+        <div class="modal-box" style="max-width:800px; width:95%; margin-top:50px; margin-bottom:50px;">
+            <h3 style="color:#6366f1; margin-bottom:15px;"><i class="fas fa-edit"></i> O'quvchi ma'lumotlarini tahrirlash</h3>
+            <p style="font-size:0.85rem; color:#94a3b8; margin-bottom:20px;">Xatoliklarni to'g'irlash yoki noqonuniy holatdan qonuniyga o'tkazish (hujjat yuklash) mumkin.</p>
+            
+            <form id="editXorijForm" onsubmit="submitUpdateStudent(event)">
+                <input type="hidden" id="editId">
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px;">
+                    <div class="input-group"><label>O'quvchi F.I.SH</label><input type="text" id="editFio" required></div>
+                    <div class="input-group"><label>Tug'ilgan sanasi</label><input type="date" id="editDob" required></div>
+                    <div class="input-group"><label>Sinfi</label><input type="text" id="editClass" required></div>
+                    <div class="input-group">
+                        <label>Qonuniylik holati</label>
+                        <select id="editLegal" required onchange="toggleEditLegalDocs()">
+                            <option value="legal">Qonuniy (Asoslar bor)</option>
+                            <option value="illegal">Noqonuniy (Hujjatlarsiz)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Legal Docs for Editing -->
+                <div id="editLegalDocs" style="display:none; background:rgba(16, 185, 129, 0.05); padding:15px; border-radius:10px; border:1px solid rgba(16, 185, 129, 0.2); margin-top:10px;">
+                    <h5 style="margin-bottom:10px; color:#10b981;"><i class="fas fa-file-contract"></i> Asoslovchi Hujjatlar</h5>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                        <div class="input-group"><label>Qaror sanasi</label><input type="date" id="editQsana"></div>
+                        <div class="input-group"><label>Qaror raqami</label><input type="text" id="editQraqam"></div>
+                        <div class="input-group"><label>Qaror fayli (Agar yangilash kerak bo'lsa)</label><input type="file" id="editQfile" accept=".pdf,image/*"></div>
+                        <div class="input-group"><label>Buyruq sanasi</label><input type="date" id="editBsana"></div>
+                        <div class="input-group"><label>Buyruq raqami</label><input type="text" id="editBraqam"></div>
+                        <div class="input-group"><label>Buyruq fayli (Agar yangilash kerak bo'lsa)</label><input type="file" id="editBfile" accept=".pdf,image/*"></div>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-top:15px;">
+                    <div class="input-group">
+                        <label>Davlati</label>
+                        <select id="editCountry" required>
+                            <option value="Rossiya">Rossiya</option><option value="Qozog'iston">Qozog'iston</option><option value="Qirg'iziston">Qirg'iziston</option><option value="Turkiya">Turkiya</option><option value="Misr">Misr</option><option value="BAA">Birlashgan Arab Amirliklari</option><option value="Koreya">Koreya</option><option value="Boshqa">Boshqa davlatlar</option>
+                        </select>
+                    </div>
+                    <div class="input-group"><label>Ketgan sanasi</label><input type="date" id="editDateLeft" required></div>
+                    <div class="input-group"><label>Ketish sababi</label><input type="text" id="editReason" required></div>
+                    <div class="input-group">
+                        <label>E-maktab holati</label>
+                        <select id="editStatus" required>
+                            <option value="Maktab ro'yxatida turibdi">Maktab ro'yxatida faol turibdi</option>
+                            <option value="Arxivga olingan (Qonuniy)">Arxivga o'tkazilib ro'yxatdan chiqarilgan</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align:right; margin-top:20px;">
+                    <button type="button" class="btn-gray" onclick="document.getElementById('modalEditXorij').style.display='none'">Bekor qilish</button>
+                    <button type="submit" class="btn-green"><i class="fas fa-save"></i> O'zgarishlarni saqlash</button>
                 </div>
             </form>
         </div>
@@ -300,15 +368,21 @@
         function saveSchoolAuth() {
             const d = document.getElementById('xDistrict').value;
             const s = document.getElementById('xSchool').value;
-            if(!d || !s) return alert("Hudud va maktabni tanlang!");
+            const f = document.getElementById('xMasul').value;
+            const t = document.getElementById('xTel').value;
+            if(!d || !s || !f || !t) return alert("Barcha maydonlarni to'ldiring!");
             localStorage.setItem('xAuthDist', d);
             localStorage.setItem('xAuthSchool', s);
+            localStorage.setItem('xAuthMasul', f);
+            localStorage.setItem('xAuthTel', t);
             window.location.reload();
         }
 
         function logoutSchoolAuth() {
             localStorage.removeItem('xAuthDist');
             localStorage.removeItem('xAuthSchool');
+            localStorage.removeItem('xAuthMasul');
+            localStorage.removeItem('xAuthTel');
             window.location.reload();
         }
 
@@ -365,7 +439,10 @@
                     <td>${k.country} <br> ${k.date_left}</td>
                     <td>${k.status || 'Maktab safida'}</td>
                     <td>
-                        <button class="btn-gray" onclick="openReturnModal('${k.id}')" style="font-size:0.75rem; padding:6px 12px; background:rgba(16,185,129,0.2); color:#10b981; border:1px solid rgba(16,185,129,0.4);"><i class="fas fa-undo"></i> Qaytdi</button>
+                        <div style="display:flex; gap:5px; justify-content:center;">
+                            <button class="btn-gray" onclick="openReturnModal('${k.id}')" style="font-size:0.75rem; padding:6px 12px; background:rgba(16,185,129,0.2); color:#10b981; border:1px solid rgba(16,185,129,0.4);"><i class="fas fa-undo"></i> Qaytdi</button>
+                            <button class="btn-gray" onclick="openEditModal('${k.id}')" style="font-size:0.75rem; padding:6px 12px; background:rgba(99,102,241,0.2); color:#818cf8; border:1px solid rgba(99,102,241,0.4);"><i class="fas fa-edit"></i> Tahrirlash</button>
+                        </div>
                     </td>
                 </tr>`;
             });
@@ -385,6 +462,7 @@
                     <td><strong>${k.student_name}</strong> <br> <span style="font-size:0.7rem; color:#94a3b8;">(Ketgan davlat: ${k.country})</span></td>
                     <td>${k.ret_date}</td>
                     <td>${k.ret_district}, ${k.ret_school} <br> ${k.ret_class}-sinfga</td>
+                    <td style="font-size:0.75rem; color:#94a3b8;">${k.updated_by || 'Eski tizim'} <br> ${k.updated_at || ''}</td>
                     <td style="font-size:0.85rem;">Buyruq: ${k.ret_b_raqam} (Sanasi: ${k.ret_b_sana})<br><br>${docLink}</td>
                 </tr>`;
             });
@@ -410,6 +488,7 @@
                         <td><b>${k.student_name}</b> <br> ${k.class}-sinf</td>
                         <td>${k.country} <br> (${k.date_left})</td>
                         <td style="text-align:left; font-size:0.8rem; line-height:1.4;">${legalText}</td>
+                        <td style="font-size:0.75rem; color:#94a3b8;">${k.created_by || 'Eski tizim'} <br> ${k.updated_at || ''}</td>
                         <td style="font-size:0.85rem;">${fLinks}</td>
                     </tr>`;
                 });
@@ -464,6 +543,8 @@
             formData.append('companion', document.getElementById('xCompanion').value);
             formData.append('address', document.getElementById('xAddress').value);
             formData.append('status', document.getElementById('xStatus').value);
+            formData.append('cre_masul', localStorage.getItem('xAuthMasul'));
+            formData.append('cre_tel', localStorage.getItem('xAuthTel'));
 
             if(document.getElementById('xLegal').value === 'legal') {
                 formData.append('q_sana', document.getElementById('xQsana').value);
@@ -517,6 +598,72 @@
                     alert("Xatolik yuz berdi!");
                 }
             } catch(er) { console.error(er); }
+        }
+
+        function openEditModal(id) {
+            const kid = allStudents.find(x => x.id == id);
+            if(!kid) return;
+
+            document.getElementById('editId').value = kid.id;
+            document.getElementById('editFio').value = kid.student_name;
+            document.getElementById('editDob').value = kid.dob;
+            document.getElementById('editClass').value = kid.class;
+            document.getElementById('editLegal').value = kid.qonuniylik;
+            document.getElementById('editCountry').value = kid.country;
+            document.getElementById('editDateLeft').value = kid.date_left;
+            document.getElementById('editReason').value = kid.reason;
+            document.getElementById('editStatus').value = kid.status || 'Maktab ro\'yxatida turibdi';
+            
+            document.getElementById('editQsana').value = kid.q_sana || '';
+            document.getElementById('editQraqam').value = kid.q_raqam || '';
+            document.getElementById('editBsana').value = kid.b_sana || '';
+            document.getElementById('editBraqam').value = kid.b_raqam || '';
+
+            toggleEditLegalDocs();
+            document.getElementById('modalEditXorij').style.display = 'flex';
+        }
+
+        function toggleEditLegalDocs() {
+            const val = document.getElementById('editLegal').value;
+            document.getElementById('editLegalDocs').style.display = (val === 'legal') ? 'block' : 'none';
+        }
+
+        async function submitUpdateStudent(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            
+            formData.append('id', document.getElementById('editId').value);
+            formData.append('student_name', document.getElementById('editFio').value);
+            formData.append('dob', document.getElementById('editDob').value);
+            formData.append('class_name', document.getElementById('editClass').value);
+            formData.append('qonuniylik', document.getElementById('editLegal').value);
+            formData.append('country', document.getElementById('editCountry').value);
+            formData.append('date_left', document.getElementById('editDateLeft').value);
+            formData.append('reason', document.getElementById('editReason').value);
+            formData.append('status', document.getElementById('editStatus').value);
+            formData.append('upd_masul', localStorage.getItem('xAuthMasul'));
+            formData.append('upd_tel', localStorage.getItem('xAuthTel'));
+
+            if(document.getElementById('editLegal').value === 'legal') {
+                formData.append('q_sana', document.getElementById('editQsana').value);
+                formData.append('q_raqam', document.getElementById('editQraqam').value);
+                formData.append('b_sana', document.getElementById('editBsana').value);
+                formData.append('b_raqam', document.getElementById('editBraqam').value);
+                if(document.getElementById('editQfile').files[0]) formData.append('doc_qaror', document.getElementById('editQfile').files[0]);
+                if(document.getElementById('editBfile').files[0]) formData.append('doc_buyruq', document.getElementById('editBfile').files[0]);
+            }
+
+            try {
+                const res = await fetch('/api/xorij/update', {
+                    method: 'POST',
+                    headers: { 'Authorization': token },
+                    body: formData
+                });
+                if(res.ok) {
+                    alert("O'quvchi ma'lumotlari muvaffaqiyatli saqlandi!");
+                    window.location.reload();
+                } else alert('Xatolik yuz berdi.');
+            } catch(er) { console.error(er); alert("API xatosi!"); }
         }
     </script>
 </body>

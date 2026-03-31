@@ -515,7 +515,7 @@ app.post('/api/xorij/add', auth, upload.fields([
     { name: 'doc_buyruq', maxCount: 1 }
 ]), (req, res) => {
     try {
-        const { district, school, student_name, dob, class_name, country, date_left, reason, companion, address, status, qonuniylik, q_sana, q_raqam, b_sana, b_raqam } = req.body;
+        const { district, school, student_name, dob, class_name, country, date_left, reason, companion, address, status, qonuniylik, q_sana, q_raqam, b_sana, b_raqam, cre_masul, cre_tel } = req.body;
         const dbPath = path.join(__dirname, 'src', 'database', 'xorij.json');
         let data = [];
         if (fs.existsSync(dbPath)) {
@@ -547,7 +547,11 @@ app.post('/api/xorij/add', auth, upload.fields([
             b_raqam,
             doc_qaror: doc_q,
             doc_buyruq: doc_b,
-            is_returned: false
+            is_returned: false,
+            created_by: cre_masul ? `${cre_masul} (${cre_tel})` : `${req.user.fio} (${req.user.login})`,
+            created_at: new Date().toLocaleString('uz-UZ'),
+            updated_by: cre_masul ? `${cre_masul} (${cre_tel})` : `${req.user.fio} (${req.user.login})`,
+            updated_at: new Date().toLocaleString('uz-UZ')
         };
 
         data.push(newStudent);
@@ -579,6 +583,49 @@ app.post('/api/xorij/return', auth, upload.single('doc_return'), (req, res) => {
 
         fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
         res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.post('/api/xorij/update', auth, upload.fields([
+    { name: 'doc_qaror', maxCount: 1 },
+    { name: 'doc_buyruq', maxCount: 1 }
+]), (req, res) => {
+    try {
+        const { id, student_name, dob, class_name, country, date_left, reason, companion, address, status, qonuniylik, q_sana, q_raqam, b_sana, b_raqam, upd_masul, upd_tel } = req.body;
+        const dbPath = path.join(__dirname, 'src', 'database', 'xorij.json');
+        if (!fs.existsSync(dbPath)) return res.status(404).json({ error: "No records yet." });
+        
+        let data = JSON.parse(fs.readFileSync(dbPath));
+        const idx = data.findIndex(s => s.id == id);
+        if (idx === -1) return res.status(404).json({ error: "Student not found." });
+
+        if(student_name) data[idx].student_name = student_name;
+        if(dob) data[idx].dob = dob;
+        if(class_name) data[idx].class = class_name;
+        if(country) data[idx].country = country;
+        if(date_left) data[idx].date_left = date_left;
+        if(reason) data[idx].reason = reason;
+        if(companion) data[idx].companion = companion;
+        if(address) data[idx].address = address;
+        if(status) data[idx].status = status;
+        if(qonuniylik) data[idx].qonuniylik = qonuniylik;
+        if(q_sana !== undefined) data[idx].q_sana = q_sana;
+        if(q_raqam !== undefined) data[idx].q_raqam = q_raqam;
+        if(b_sana !== undefined) data[idx].b_sana = b_sana;
+        if(b_raqam !== undefined) data[idx].b_raqam = b_raqam;
+
+        if (req.files) {
+            if (req.files['doc_qaror']) data[idx].doc_qaror = req.files['doc_qaror'][0].filename;
+            if (req.files['doc_buyruq']) data[idx].doc_buyruq = req.files['doc_buyruq'][0].filename;
+        }
+
+        data[idx].updated_by = upd_masul ? `${upd_masul} (${upd_tel})` : `${req.user.fio} (${req.user.login})`;
+        data[idx].updated_at = new Date().toLocaleString('uz-UZ');
+
+        fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+        res.json({ success: true, student: data[idx] });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
@@ -648,6 +695,14 @@ app.get('/api/xorij/export', auth, async (req, res) => {
     } catch(e) {
         res.status(500).send(e.message);
     }
+});
+
+
+app.get('/api/stats/non-submitting', auth, async (req, res) => {
+    const { district } = req.query;
+    const ProAnalytics = require('./src/services/proAnalytics');
+    const data = await ProAnalytics.getNonSubmittingSchools(district);
+    res.json(data);
 });
 
 app.get('/api/stats/viloyat', auth, async (req, res) => {
@@ -929,7 +984,8 @@ app.post('/api/admin/settings', auth, async (req, res) => {
 });
 
 // Admin: Broadcast message
-app.post('/api/admin/broadcast', auth, async (req, res) => {
+app.post('/api/admin/broadcast', auth, upload.single('file'), async (req, res) => {
+    const file = req.file;
     if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Ruxsat yo\'q' });
     const { message, group } = req.body; // group: 'all', 'inspectors', 'parents'
 
