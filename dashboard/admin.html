@@ -216,7 +216,11 @@
             z-index: 1000;
         }
     </style>
-</head>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png"></head>
 
 <body>
     <!-- NAVBAR HUDDI BOSHQA SAHIFALARDA BO'LGANI KABI -->
@@ -416,6 +420,18 @@
                     </select>
                 </div>
                 <button onclick="activatePro()" class="btn btn-primary" style="width:100%;"><i class="fas fa-check-circle"></i> PRO-ni faollashtirish</button>
+            </div>
+
+            <!-- Database Backup Section -->
+            <div class="card" id="dbBackupCard">
+                <h3><i class="fas fa-database"></i> Baza ma'lumotlarini yuklab olish</h3>
+                <div style="background:rgba(16,185,129,0.05); padding:15px; border-radius:12px; margin-bottom:15px; font-size:0.85rem; color:#94a3b8;">
+                    <i class="fas fa-shield-alt"></i> Ushbu funksiya faqat <b>Asosiy Admin</b> (R.R. Turdiyev) uchun ishlayди. 
+                    Barcha davomat, xorijiy o'quvchilar ва Telegram foydalanuvchilarini JSON formatda saqlab olish imkoniyati.
+                </div>
+                <button onclick="downloadBackup()" class="btn btn-primary" style="width:100%; background: #10b981; border: none; box-shadow: 0 10px 20px rgba(16,185,129,0.2);">
+                    <i class="fas fa-download"></i> Ma'lumotlarni saqlash (Backup)
+                </button>
             </div>
 <!-- Extra Tools -->
             <div class="card">
@@ -676,8 +692,53 @@
             } catch(e) { alert("Server bilan bog'lanishda xatolik!"); }
         }
 
-    </script>
-</body>
+    
+        async function downloadBackup() {
+            if(!confirm("Barcha baza ma'lumotlarini (Xorij, Davomat, Userlar) JSON formatda yuklab olishni tasdiqlaysizmi?")) return;
+            
+            try {
+                const res = await fetch('/api/admin/export-db', {
+                    headers: { 'Authorization': token }
+                });
+                if(res.status === 403) return alert("Ruxsat yo'q! Faqat Asosiy Admin uchun.");
+                if(!res.ok) throw new Error("Yuklab olishda xatolik!");
+
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `davomat_db_backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                addLog("[ACTION] Database backup downloaded");
+            } catch(e) { alert("Xatolik: " + e.message); }
+        }
+
+        // Role based UI restrictions
+        function applyRoleRestrictions() {
+            const role = localStorage.getItem('user_role');
+            if (role === 'admin') {
+                const proCards = document.querySelectorAll('#proManagerCard, #dbBackupCard');
+                proCards.forEach(c => c.style.display = 'none');
+                
+                const proLinks = document.querySelectorAll('a[href="#proManagerCard"], a[href="#dbBackupCard"]');
+                proLinks.forEach(l => l.style.visibility = 'hidden');
+                
+                addLog("[SYSTEM] Admin account access restricted.");
+            }
+        }
+        applyRoleRestrictions();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').then(reg => {
+        console.log('PWA ServiceWorker registered');
+      }).catch(err => console.log('SW registration failed:', err));
+    });
+  }
+</script></body>
 
 </html>
 ```

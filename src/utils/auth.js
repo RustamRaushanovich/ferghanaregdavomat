@@ -18,11 +18,9 @@ const USERS = {};
 
 async function loadUsers() {
     // 1. Seed defaults
-    const seedUsers = {
-        "qirol": { password: "2323", role: "superadmin", district: null },
-        "abror4400": { password: "1234", role: "superadmin", district: null },
-        "viloyat": { password: "1234", role: "superadmin", district: null },
-        "VMMTB": { password: "1234", role: "superadmin", district: null }
+        const seedUsers = {
+        "mrqirol": { password: "2323", role: "superadmin", district: null },
+        "VMMTB": { password: "1234", role: "admin", district: null }
     };
 
     Object.keys(TOPICS).forEach(d => {

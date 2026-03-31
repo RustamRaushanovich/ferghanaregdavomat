@@ -80,7 +80,7 @@ app.post('/api/login', (req, res) => {
     if (user && user.password === password) {
         const token = generateToken();
         // Store user with username for easy lookup later
-        tokens.set(token, { ...user, username });
+        tokens.set(token, role: user.role, { ...user, username });
         res.json({
             token,
             role: user.role,
@@ -115,14 +115,14 @@ app.post('/api/change-password', auth, (req, res) => {
 app.get('/api/admin/users', auth, (req, res) => {
     if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Ruxsat yo\'q' });
 
-    const isOwner = req.user.username === 'qirol';
+    const isOwner = req.user.username === 'mrqirol';
     if (isOwner) {
         res.json(USERS);
     } else {
         // Hide owner account from other superadmins
         const filtered = {};
         Object.entries(USERS).forEach(([login, data]) => {
-            if (login !== 'qirol') {
+            if (login !== 'mrqirol') {
                 filtered[login] = data;
             }
         });
@@ -132,14 +132,45 @@ app.get('/api/admin/users', auth, (req, res) => {
 
 
 // Admin: Reset any user password
-app.post('/api/admin/reset-password', auth, async (req, res) => {
+app.post('/api/admin/reset-password
+// Admin: Export Full SQL Data (Only for Owner/Primary Admin)
+app.get('/api/admin/export-db', auth, async (req, res) => {
+    const isOwner = req.user.username === 'mrqirol' || Number(req.user.uid) === 65002404;
+    if (!isOwner) return res.status(403).json({ error: 'Ruxsat yo\'q! Faqat asosiy admin uchun.' });
+
+    try {
+        const attendance = await sqlite.query('SELECT * FROM attendance ORDER BY id DESC LIMIT 5000');
+        const xorij = await sqlite.query('SELECT * FROM xorij_students ORDER BY id DESC');
+        const users = await sqlite.query('SELECT id, data, last_active FROM tg_users');
+        
+        const dump = {
+            export_date: new Date().toISOString(),
+            attendance_count: attendance.rowCount,
+            xorij_count: xorij.rowCount,
+            users_count: users.rowCount,
+            data: {
+                attendance: attendance.rows,
+                xorij: xorij.rows,
+                users: users.rows
+            }
+        };
+
+        res.setHeader('Content-disposition', 'attachment; filename=database_backup.json');
+        res.setHeader('Content-type', 'application/json');
+        res.write(JSON.stringify(dump, null, 2));
+        res.end();
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+', auth, async (req, res) => {
     if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Ruxsat yo\'q' });
     const { targetLogin, newPassword } = req.body;
     if (!USERS[targetLogin]) return res.status(404).json({ error: 'Foydalanuvchi topilmadi' });
 
     // Protect owner account
-    const isOwner = req.user.username === 'qirol';
-    if (targetLogin === 'qirol' && !isOwner) {
+    const isOwner = req.user.username === 'mrqirol';
+    if (targetLogin === 'mrqirol' && !isOwner) {
         return res.status(403).json({ error: 'Bu foydalanuvchi parolini o\'zgartirish taqiqlangan' });
     }
 
@@ -160,7 +191,7 @@ app.post('/api/admin/reset-password', auth, async (req, res) => {
 
 // Admin: Get all TG Users
 app.get('/api/admin/tg-users', auth, async (req, res) => {
-    const isOwner = req.user.username === 'qirol';
+    const isOwner = req.user.username === 'mrqirol';
     if (!isOwner) return res.status(403).json({ error: 'Ruxsat yo\'q' });
     try {
         const result = await sqlite.query('SELECT * FROM tg_users ORDER BY id DESC');
@@ -172,8 +203,8 @@ app.get('/api/admin/tg-users', auth, async (req, res) => {
 
 
 // Admin: Set PRO (Manual Activation)
-app.post('/api/admin/set-pro', auth, async (req, res) => {
-    const isAuthorized = req.user.username === 'qirol' || req.user.role === 'superadmin';
+app.post('/api/admin/set-pro', auth, (req, res, next) => { if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Faqat superadmin uchun' }); next(); },  async (req, res) => {
+    const isAuthorized = req.user.username === 'mrqirol' || req.user.role === 'superadmin';
     if (!isAuthorized) return res.status(403).json({ error: 'Ruxsat yo\'q' });
 
     try {
@@ -534,50 +565,19 @@ const { notifyParents } = require('./src/services/notifications');
 app.post('/api/xorij/add', auth, upload.fields([
     { name: 'doc_qaror', maxCount: 1 },
     { name: 'doc_buyruq', maxCount: 1 }
-]), (req, res) => {
+]), async (req, res) => {
     try {
-        const { district, school, student_name, dob, class_name, country, date_left, reason, companion, address, status, qonuniylik, q_sana, q_raqam, b_sana, b_raqam, cre_masul, cre_tel } = req.body;
-        const dbPath = path.join(__dirname, 'src', 'database', 'xorij.json');
-        let data = [];
-        if (fs.existsSync(dbPath)) {
-            data = JSON.parse(fs.readFileSync(dbPath));
-        }
-
-        let doc_q = null, doc_b = null;
-        if (req.files && req.files['doc_qaror']) doc_q = req.files['doc_qaror'][0].filename;
-        if (req.files && req.files['doc_buyruq']) doc_b = req.files['doc_buyruq'][0].filename;
-
-        const newStudent = {
-            id: Date.now(),
-            fio: req.user.fio || 'Web User',
-            district,
-            school,
-            student_name,
-            dob,
-            class: class_name,
-            country,
-            date_left,
-            reason,
-            companion,
-            address,
-            status,
-            qonuniylik,
-            q_sana,
-            q_raqam,
-            b_sana,
-            b_raqam,
-            doc_qaror: doc_q,
-            doc_buyruq: doc_b,
-            is_returned: false,
-            created_by: cre_masul ? `${cre_masul} (${cre_tel})` : `${req.user.fio} (${req.user.login})`,
-            created_at: new Date().toLocaleString('uz-UZ'),
-            updated_by: cre_masul ? `${cre_masul} (${cre_tel})` : `${req.user.fio} (${req.user.login})`,
-            updated_at: new Date().toLocaleString('uz-UZ')
-        };
-
-        data.push(newStudent);
-        fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-        res.json({ success: true, student: newStudent });
+        const { district, school, student_name, dob, class_name, country, date_left, reason, parent_phone } = req.body;
+        
+        const q = 'INSERT INTO xorij_students (name, class, district, school, country, reason, leave_date, parent_phone, added_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id';
+        const values = [student_name, class_name, district, school, country, reason, date_left, parent_phone, req.user.username];
+        
+        const result = await sqlite.query(q, values);
+        res.json({ success: true, id: result.rows[0].id });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
@@ -1004,45 +1004,59 @@ app.post('/api/admin/settings', auth, async (req, res) => {
     res.json({ success: true, settings: db.settings });
 });
 
-// Admin: Broadcast message
+// Admin: Broadcast message (Supports Files)
 app.post('/api/admin/broadcast', auth, upload.single('file'), async (req, res) => {
-    const file = req.file;
-    if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Ruxsat yo\'q' });
-    const { message, group } = req.body; // group: 'all', 'inspectors', 'parents'
+    const isOwner = req.user.username === 'mrqirol';
+    if (req.user.role !== 'superadmin' && !isOwner) return res.status(403).json({ error: 'Ruxsat yo\'q' });
 
+    const { message, group } = req.body;
     if (!message) return res.status(400).json({ error: 'Xabar matni bo\'sh' });
 
+    const file = req.file;
+
+    // Filter recipients from users_db
     const users = Object.entries(db.users_db);
     let targetUids = [];
 
     if (group === 'inspectors') {
-        targetUids = users.filter(([uid, u]) => u.district && u.school).map(([uid]) => uid);
+        targetUids = users.filter(([uid, u]) => u.district || u.role === 'inspektor_psixolog').map(([uid]) => uid);
     } else if (group === 'parents') {
-        targetUids = users.filter(([uid]) => uid.startsWith('parent_')).map(([uid]) => uid.replace('parent_', ''));
+        targetUids = users.filter(([uid, u]) => u.role === 'parent').map(([uid]) => uid);
     } else {
-        targetUids = users.map(([uid]) => uid.replace('parent_', ''));
+        targetUids = users.map(([uid]) => uid);
     }
 
-    // Remove duplicates and invalid IDs
-    targetUids = [...new Set(targetUids)].filter(id => !isNaN(id));
+    // UNIQUE and VALID IDs
+    targetUids = [...new Set(targetUids)].filter(id => id && !isNaN(id));
 
     res.json({ success: true, estimated_users: targetUids.length });
 
     // Background broadcasting
-    let sent = 0;
-    let blocked = 0;
+    (async () => {
+        let sent = 0;
+        let blocked = 0;
+        const path = require('path');
 
-    for (const uid of targetUids) {
-        try {
-            await bot.telegram.sendMessage(uid, message, { parse_mode: 'HTML' });
-            sent++;
-        } catch (e) {
-            blocked++;
+        for (const uid of targetUids) {
+            try {
+                if (file) {
+                    const filePath = path.join(__dirname, 'assets', 'uploads', file.filename);
+                    if (file.mimetype.startsWith('image/')) {
+                        await bot.telegram.sendPhoto(uid, { source: filePath }, { caption: message, parse_mode: 'HTML' });
+                    } else {
+                        await bot.telegram.sendDocument(uid, { source: filePath }, { caption: message, parse_mode: 'HTML' });
+                    }
+                } else {
+                    await bot.telegram.sendMessage(uid, message, { parse_mode: 'HTML' });
+                }
+                sent++;
+            } catch (e) {
+                blocked++;
+            }
+            await new Promise(r => setTimeout(r, 60)); // Avoid flood limits
         }
-        await new Promise(r => setTimeout(r, 50)); // Avoid flood limits
-    }
-
-    console.log(`[BROADCAST] Sent: ${sent}, Blocked: ${blocked}`);
+        console.log(`[BROADCAST] Finished. Sent: ${sent}, Blocked: ${blocked}`);
+    })();
 });
 
 // Admin: List Archived Reports
@@ -2287,6 +2301,67 @@ bot.hears("🖼 Viloyat Rasm (Test)", async (ctx) => {
         console.error("Canvas draw error: ", e);
         ctx.reply("Rasm chizishda xatolik yuzaga keldi. Modullar topilmagan bo'lishi mumkin.");
     }
+});
+
+
+// PRO: Receipt Handler
+bot.on(['photo', 'document'], async (ctx) => {
+    if (ctx.session && ctx.session.waiting_receipt) {
+        const uid = ctx.from.id;
+        const name = ctx.from.first_name || 'Foydalanuvchi';
+        const userName = ctx.from.username ? '@' + ctx.from.username : 'NoUsername';
+        
+        // Forward to All Super Admins
+        const admins = [65002404]; // Only primary admin
+        
+        for (const adminId of admins) {
+            try {
+                const forwardMsg = `🧾 <b>Yangi to'lov cheki!</b>\n\nKimdan: ${name} (${userName})\nUID: <code>${uid}</code>\n\nPRO статусни фаоллаштириш учун тугмани босинг:`;
+                
+                const keyboard = Markup.inlineKeyboard([
+                    [Markup.button.callback('✅ 1 ойлик (Faollashtirish)', `approve_pro:${uid}:1`)],
+                    [Markup.button.callback('✅ 3 ойлик (Faollashtirish)', `approve_pro:${uid}:3`)],
+                    [Markup.button.callback('❌ Rad etish', `reject_pro:${uid}`)]
+                ]);
+
+                if (ctx.message.photo) {
+                    await ctx.telegram.sendPhoto(adminId, ctx.message.photo[ctx.message.photo.length - 1].file_id, { caption: forwardMsg, parse_mode: 'HTML', ...keyboard });
+                } else if (ctx.message.document) {
+                    await ctx.telegram.sendDocument(adminId, ctx.message.document.file_id, { caption: forwardMsg, parse_mode: 'HTML', ...keyboard });
+                }
+            } catch (e) { console.error("Admin Forward Error:", e.message); }
+        }
+
+        ctx.session.waiting_receipt = false;
+        return ctx.reply("✅ Чекингиз админларга юборилди. Тез орада тасдиқланади!");
+    }
+    // If not waiting receipt, maybe other handlers handle it?
+});
+
+// PRO: Inline Buttons Actions
+bot.action(/approve_pro:(\d+):(\d+)/, async (ctx) => {
+    const [, targetUid, months] = ctx.match;
+    if (!config.SUPER_ADMIN_IDS.includes(ctx.from.id)) return ctx.answerCbQuery("Ruxsat yo'q.");
+
+    try {
+        const result = db.updateUserProMonths(targetUid, parseInt(months));
+        await ctx.answerCbQuery("PRO faollashtirildi!");
+        await ctx.editMessageCaption(ctx.update.callback_query.message.caption + "\n\n✅ <b>FAOLLASHTIRILDI (${months} oy)</b>", { parse_mode: 'HTML' });
+        
+        // Notify User
+        await ctx.telegram.sendMessage(targetUid, `🎉 <b>Tabriklaymiz!</b>\n\nТўловингиз тасдиқланди ва <b>PRO</b> обунангиз ${months} ойга фаоллаштирилди!`, { parse_mode: 'HTML' });
+    } catch (e) {
+        ctx.answerCbQuery("Xatolik: " + e.message);
+    }
+});
+
+bot.action(/reject_pro:(\d+)/, async (ctx) => {
+    const targetUid = ctx.match[1];
+    if (!config.SUPER_ADMIN_IDS.includes(ctx.from.id)) return ctx.answerCbQuery("Ruxsat yo'q.");
+    
+    await ctx.answerCbQuery("Rad etildi.");
+    await ctx.editMessageCaption(ctx.update.callback_query.message.caption + "\n\n❌ <b>RAD ETILDI</b>", { parse_mode: 'HTML' });
+    await ctx.telegram.sendMessage(targetUid, "❌ Узр, тўлов чекингиз тасдиқланмади. Хатолик бўлса @qirol га мурожаат қилинг.");
 });
 
 bot.on('location', (ctx) => {

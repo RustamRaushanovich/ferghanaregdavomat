@@ -2444,7 +2444,15 @@ async function loadViloyatData() {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js?v=101"></script>
     <script src="/premium/premium.js"></script>
-</body>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').then(reg => {
+        console.log('PWA ServiceWorker registered');
+      }).catch(err => console.log('SW registration failed:', err));
+    });
+  }
+</script></body>
 
 </html>
 

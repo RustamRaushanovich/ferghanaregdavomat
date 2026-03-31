@@ -9,7 +9,22 @@ const pool = new Pool({
 async function initDb() {
     try {
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS attendance (
+            
+            CREATE TABLE IF NOT EXISTS xorij_students (
+                id SERIAL PRIMARY KEY,
+                name TEXT,
+                class TEXT,
+                district TEXT,
+                school TEXT,
+                country TEXT,
+                reason TEXT,
+                leave_date DATE,
+                return_date DATE,
+                parent_phone TEXT,
+                added_by TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+CREATE TABLE IF NOT EXISTS attendance (
                 id SERIAL PRIMARY KEY,
                 date DATE,
                 time TEXT,
