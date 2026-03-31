@@ -164,7 +164,7 @@ app.get('/api/admin/export-db', auth, async (req, res) => {
         res.status(500).json({ error: e.message });
     }
 });
-', auth, async (req, res) => {
+app.post('/api/admin/reset-password', auth, async (req, res) => {
     if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Ruxsat yo\'q' });
     const { targetLogin, newPassword } = req.body;
     if (!USERS[targetLogin]) return res.status(404).json({ error: 'Foydalanuvchi topilmadi' });
