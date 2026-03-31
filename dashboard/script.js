@@ -595,6 +595,19 @@ function startCountdown() {
         const s = Math.floor((diff % 60000) / 1000);
 
         timerEl.innerText = `${prefix} ${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        
+        // Critical Warning Logic (Under 30 mins)
+        if (prefix === "Qolgan vaqt:" && h === 0 && m < 60) {
+            color = (m < 30) ? "#f43f5e" : "#facc15";
+            if (m < 30) {
+                timerText.style.transform = 'scale(1.15)';
+                timerText.style.fontWeight = '700';
+            } else {
+                timerText.style.transform = 'scale(1)';
+            }
+        } else {
+            timerText.style.transform = 'scale(1)';
+        }
 
         if (timerText) timerText.style.color = color;
     }, 1000);

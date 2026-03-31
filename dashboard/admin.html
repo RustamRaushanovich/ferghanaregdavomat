@@ -236,7 +236,8 @@
         <a href="xorij.html" class="nav-item "><i class="fas fa-globe"></i> <span>Xorij</span></a>
         <a href="dashboard.html" class="nav-item "><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
         <a href="admin.html" class="nav-item active"><i class="fas fa-cog"></i> <span>Admin</span></a>
-        <a href="about.html" class="nav-item "><i class="fas fa-info-circle"></i> <span>Biz haqimizda</span></a>
+        <a href="about.html?tab=hujjatlar" class="nav-item"><i class="fas fa-file-contract"></i> <span>Hujjatlar</span></a>
+        <a href="about.html" class="nav-item "><i class="fas fa-info-circle"></i> <span>Me'yoriy hujjatlar</span></a>
     </div>
 </nav>
 
@@ -320,9 +321,13 @@
                             <option value="parents">Faqat ota-onalar</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Xabar matni (HTML qo'llab-quvvatlanadi):</label>
+                                        <div class="form-group">
+                        <label>Xabar matni (HTML):</label>
                         <textarea id="broadcastText" rows="4" placeholder="Xabaringizni yozing..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-file-upload"></i> Fayl biriktirish (PDF/Rasm):</label>
+                        <input type="file" id="broadcastFile" style="width:100%; padding:10px; border-radius:12px; border:1px dashed rgba(255,255,255,0.1); background:rgba(0,0,0,0.1); color:white;">
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%;">
                         <i class="fas fa-paper-plane"></i> Xabarni yuborish
@@ -452,10 +457,7 @@
         async function updateSetting(key, val) {
             const res = await fetch('/api/admin/settings', {
                 method: 'POST',
-                headers: {
-                    'Authorization': token,
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Authorization': token },
                 body: JSON.stringify({ [key]: val })
             });
             if (res.ok) {
@@ -498,14 +500,15 @@
             try {
                 const res = await fetch('/api/admin/broadcast', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': token,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: document.getElementById('broadcastText').value,
-                        group: document.getElementById('broadcastTarget').value
-                    })
+                    headers: { 'Authorization': token },
+                    body: (() => {
+                        const fd = new FormData();
+                        fd.append('message', document.getElementById('broadcastText').value);
+                        fd.append('group', document.getElementById('broadcastTarget').value);
+                        const file = document.getElementById('broadcastFile');
+                        if(file && file.files[0]) fd.append('file', file.files[0]);
+                        return fd;
+                    })()
                 });
 
                 if (res.ok) {
