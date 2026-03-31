@@ -171,50 +171,37 @@ app.get('/api/admin/tg-users', auth, async (req, res) => {
 });
 
 
-// Admin: Set PRO for TG User
+// Admin: Set PRO (Manual Activation)
 app.post('/api/admin/set-pro', auth, async (req, res) => {
-    // Both 'qirol' account and superadmin role can activate
     const isAuthorized = req.user.username === 'qirol' || req.user.role === 'superadmin';
     if (!isAuthorized) return res.status(403).json({ error: 'Ruxsat yo\'q' });
 
     try {
-        const { phone, months } = req.body;
-        if (!phone) return res.status(400).json({ error: 'Telefon raqam required' });
-        
-        const cleanPhone = phone.replace(/\D/g, '');
-        const pPath = path.join(__dirname, 'src', 'database', 'pro_users.json');
-        let proData = [];
-        if (fs.existsSync(pPath)) {
-            const raw = fs.readFileSync(pPath, 'utf8');
-            if(raw) proData = JSON.parse(raw);
+        const { phone, uid, months } = req.body;
+        if (phone) {
+            const cleanPhone = phone.replace(/\D/g, '');
+            const pPath = require('path').join(__dirname, 'src', 'database', 'pro_users.json');
+            let proData = [];
+            if (fs.existsSync(pPath)) {
+                const raw = fs.readFileSync(pPath, 'utf8');
+                if (raw) proData = JSON.parse(raw);
+            }
+            const expire = new Date();
+            expire.setMonth(expire.getMonth() + (parseInt(months) || 1));
+            proData = proData.filter(u => u.phone !== cleanPhone);
+            proData.push({ phone: cleanPhone, is_pro: true, pro_purchase_date: new Date().toISOString(), pro_expire_date: expire.toISOString() });
+            fs.writeFileSync(pPath, JSON.stringify(proData, null, 2));
+            return res.json({ success: true, message: `PRO faollashtirildi (${cleanPhone})` });
         }
-
-        const now = new Date();
-        const expire = new Date();
-        expire.setMonth(now.getMonth() + (parseInt(months) || 1));
-
-        // Delete existing
-        proData = proData.filter(u => u.phone !== cleanPhone);
-        
-        proData.push({
-            phone: cleanPhone,
-            is_pro: true,
-            pro_purchase_date: new Date().toISOString(),
-            pro_expire_date: expire.toISOString()
-        });
-
-        fs.writeFileSync(pPath, JSON.stringify(proData, null, 2));
-        res.json({ success: true, message: `PRO faollashtirildi (Muddati: ${expire.toLocaleDateString('uz-UZ')})` });
+        if (uid) {
+            const dbRef = require('./src/database/db');
+            const user = dbRef.updateUserProMonths(uid, parseInt(months) || 1);
+            return res.json({ success: true, user });
+        }
+        res.status(400).json({ error: 'Phone yoki UID kiritilmadi' });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
-});
-    const { uid, months } = req.body;
-    if (!uid) return res.status(400).json({ error: 'UID required' });
-
-    const db = require('./src/database/db');
-    const user = db.updateUserProMonths(uid, parseInt(months) || 1);
-    res.json({ success: true, user });
 });
 
 // ===== INSPEKTOR-PSIXOLOG BOSHQARUVI =====
