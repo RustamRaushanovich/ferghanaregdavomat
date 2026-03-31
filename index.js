@@ -579,10 +579,8 @@ app.post('/api/xorij/add', auth, upload.fields([
         res.status(500).json({ error: e.message });
     }
 });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
-});
+
+
 
 app.post('/api/xorij/return', auth, upload.single('doc_return'), (req, res) => {
     try {
