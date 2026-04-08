@@ -1099,6 +1099,9 @@ function displayUserInfo() {
 
     if (isActuallyPro) {
         if (proCard) proCard.style.display = 'none';
+        if (role === 'school') {
+            document.getElementById('schoolProInsights')?.classList.remove('hidden');
+        }
         if (proDetails && role !== 'superadmin') {
             proDetails.style.display = 'block';
             const expire = localStorage.getItem('d_pro_expire');
@@ -1124,11 +1127,11 @@ function displayUserInfo() {
     } else {
         if (proCard) proCard.style.display = 'block';
         if (proDetails) proDetails.style.display = 'none';
+        document.getElementById('schoolProInsights')?.classList.add('hidden');
     }
 
     // Admin Link Logic
     const adminTab = document.getElementById('tab_admin');
-    const adminLink = document.querySelector('.nav-link[href="/admin.html"]'); // Check if exists
 
     if (role === 'superadmin') {
         if (adminTab) adminTab.style.display = 'flex';
@@ -1154,14 +1157,14 @@ const UZ_HOLIDAYS = {
     "01-01": { uz: "Yangi yil bayrami bilan tabriklaymiz! 🎉", ru: "C Новым годом! 🎉" },
     "14-01": { uz: "Vatan himoyachilari kuni muborak bo'lsin! 🛡️", ru: "С Днем защитников Родины! 🛡️" },
     "08-03": { uz: "Xalqaro xotin-qizlar kuni muborak bo'lsin! 🌷", ru: "С Международным женским днем! 🌷" },
-    "21-03": { uz: "Navro'z ayyomingiz muborak bo'lsin! 🌱", ru: "С праздником Навруз! 🌱" },
+    "21-03": { uz: "Navro'z ayyomingiz muborak bo'lsin! 🌱", ru: "С праздником Навru'z! 🌱" },
     "09-05": { uz: "Xotira va qadrlash kuni. 🕯️", ru: "День памяти и почестей. 🕯️" },
     "01-06": { uz: "Bolalarni himoya qilish kuni! 🎈", ru: "День защиты детей! 🎈" },
     "01-09": { uz: "Mustaqillik kuni muborak bo'lsin! 🇺🇿", ru: "С Днем независимости! 🇺🇿" },
     "01-10": { uz: "O'qituvchi va murabbiylar kuni muborak bo'lsin! 📚", ru: "С Днем учителей и наставников! 📚" },
-    "21-10": { uz: "O'zbek tili bayrami kuni muborak bo'lsin! 🗣️", ru: "С Днем узбекского языка! 🗣️" },
+    "21-10": { uz: "O'zbek tili bayrami kuni muborak bo'lsin! 🗣️", ru: "С Днем uzbekskogo yazyka! 🗣️" },
     "18-11": { uz: "Davlat bayrog'i qabul qilingan kun! 🇺🇿", ru: "День принятия Государственного флага! 🇺🇿" },
-    "08-12": { uz: "Konstitutsiya kuni muborak bo'lsin! 📜", ru: "С Днем Конституции! 📜" }
+    "08-12": { uz: "Konstitutsiya kuni muborak bo'lsin! 📜", ru: "С Днем Konstitutsii! 📜" }
 };
 
 function initHolidayGreeting() {
@@ -1195,14 +1198,8 @@ function updateProMiniBtn(isActuallyPro = null) {
     }
 }
 
-
 function subscribePro() {
-    const s = {
-        uz: "PRO versiyaga o'tish uchun tizim administratori bilan bog'laning:\n\n📞 +998 90 588 47 00\n📧 support@davomat.uz",
-        ru: "Для перехода на PRO версию свяжитесь с системным администратором:\n\n📞 +998 90 588 47 00\n📧 support@davomat.uz"
-    };
-    const lang = localStorage.getItem('lang') || 'uz';
-    alert(s[lang] || s.uz);
+    window.location.href = 'pro.html';
 }
 
 function downloadArchiveReport() {

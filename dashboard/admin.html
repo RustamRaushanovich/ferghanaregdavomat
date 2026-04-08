@@ -555,8 +555,10 @@
                     addLog(`[BROADCAST] ${data.estimated_users} ta foydalanuvchiga xabar yuborilmoqda...`);
                     document.getElementById('broadcastText').value = '';
                 } else {
-                    showToast("Xatolik yuz berdi", true);
-                    addLog("[ERROR] Xabar yuborishda xatoli yuz berdi!", true);
+                    let errMsg = "Noma'lum xatolik yuz berdi";
+                    try { const errObj = await res.json(); errMsg = errObj.error || errMsg; } catch(e) {}
+                    showToast(`Xatolik: ${errMsg}`, true);
+                    addLog(`[ERROR] Xabar yuborishda xato: ${errMsg}`, true);
                 }
             } catch (e) {
                 addLog("[ERROR] Tarmoq bilan bog'liq xatolik!", true);
@@ -741,10 +743,3 @@
 </script></body>
 
 </html>
-```
-
-
-
-
-
-
