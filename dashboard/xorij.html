@@ -67,9 +67,16 @@
 
 
     <div class="page-container">
-        <div class="header-title">
-            <h2><i class="fas fa-globe-americas" style="color:#6366f1;"></i> Xorijga Ketgan O'quvchilar</h2>
-            <p style="color:#94a3b8; font-size:0.9rem;">Maktab hisoboti, Qaytarilganlar ro'yxati va Viloyat bo'yicha svod tahlili</p>
+        <div class="header-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2><i class="fas fa-globe-americas" style="color:#6366f1;"></i> Xorijga Ketgan O'quvchilar</h2>
+                <p style="color:#94a3b8; font-size:0.9rem;">Maktab hisoboti, Qaytarilganlar ro'yxati va Viloyat bo'yicha svod tahlili</p>
+            </div>
+            <div>
+                <a href="/api/xorij/export" target="_blank" class="btn-green" style="text-decoration:none; padding:10px 20px; font-size:0.95rem; display:inline-flex; align-items:center; gap:8px;">
+                    <i class="fas fa-file-excel"></i> Excel (Umumiy ro'yxat)
+                </a>
+            </div>
         </div>
 
         <div class="tab-nav">
@@ -433,10 +440,15 @@
             myKids.forEach(k => {
                 const legalColor = k.qonuniylik === 'legal' ? '#10b981' : '#ef4444';
                 const legalText = k.qonuniylik === 'legal' ? 'Qonuniy' : 'Noqonuniy';
+
+                const qfile = k.doc_qaror ? `<a href="/uploads/${k.doc_qaror}" target="_blank" style="color:#a78bfa;" title="Qaror"><i class="fas fa-file-pdf"></i></a>` : '';
+                const bfile = k.doc_buyruq ? `<a href="/uploads/${k.doc_buyruq}" target="_blank" style="color:#a78bfa;" title="Buyruq"><i class="fas fa-file-pdf"></i></a>` : '';
+                const fLinks = (qfile || bfile) ? (qfile + ' ' + bfile) : '-';
+
                 html += `<tr>
                     <td>${k.student_name}</td>
                     <td>${k.class}</td>
-                    <td><span style="background:${legalColor}; color:white; padding:3px 8px; border-radius:10px; font-size:0.7rem;">${legalText}</span></td>
+                    <td><span style="background:${legalColor}; color:white; padding:3px 8px; border-radius:10px; font-size:0.7rem;">${legalText}</span> <br> <span style="font-size: 1.2rem;">${fLinks}</span></td>
                     <td>${k.country} <br> ${k.date_left}</td>
                     <td>${k.status || 'Maktab safida'}</td>
                     <td>
@@ -562,10 +574,15 @@
                     headers: { 'Authorization': token },
                     body: formData
                 });
+                
+                const data = await res.json();
+                
                 if(res.ok) {
-                    alert("Yangi o\'quvchi muvaffaqiyatli saqlandi! \n(Davomat kiritalayotgan vaqtda Noqonuniy ketganlar sonini Davomat blokiga yozish esingizdan chiqmasin!)");
+                    alert("Yangi o'quvchi muvaffaqiyatli saqlandi! \n(Davomat kiritilayotgan vaqtda Noqonuniy ketganlar sonini Davomat blokiga yozish esingizdan chiqmasin!)");
                     window.location.reload();
-                } else alert('Xatolik yuz berdi. Iltimos barcha maydonlarni tekshiring.');
+                } else {
+                    alert(data.error || 'Xatolik yuz berdi. Iltimos barcha maydonlarni tekshiring.');
+                }
             } catch(er) { console.error(er); alert("Xatolik!"); }
         }
 

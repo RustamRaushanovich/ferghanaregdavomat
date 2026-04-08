@@ -579,6 +579,23 @@ app.post('/api/xorij/add', auth, upload.fields([
         let data = [];
         if (fs.existsSync(dbPath)) data = JSON.parse(fs.readFileSync(dbPath));
         
+        // --- BU YERDAN DUBLIKAT TEKSHIRUV BOSHLANADI ---
+        if (student_name && dob) {
+            const stNameLower = student_name.trim().toLowerCase();
+            const existingStudent = data.find(d => 
+                d.student_name && d.student_name.trim().toLowerCase() === stNameLower && 
+                d.dob === dob &&
+                (!d.is_returned || d.is_returned === false) // faqat hozirda xorijda bo'lganlarni tekshiramiz
+            );
+
+            if (existingStudent) {
+                return res.status(400).json({
+                    error: `Bu o'quvchi xorijga ketganlar ro'yxatida mavjud!\nIltimos tekshirib ko'ring: Ushbu o'quvchi ${existingStudent.district}ning ${existingStudent.school} tomonidan kiritilgan.`
+                });
+            }
+        }
+        // --- DUBLIKAT TEKSHIRUV TUGADI ---
+
         const newStudent = {
             id: Date.now().toString() + Math.floor(Math.random()*1000).toString(),
             district, school, student_name, dob, class: class_name,
