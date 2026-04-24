@@ -655,11 +655,6 @@ app.post('/api/xorij/add', auth, upload.fields([
     }
 });
 
-        res.json({ success: true, id: newStudent.id });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
-});
 
 
 

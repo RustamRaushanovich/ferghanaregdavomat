@@ -5,6 +5,7 @@ const { getFargonaTime } = require('../utils/fargona');
 const topicsConfig = require('../config/topics');
 const { getTopicId } = require('../utils/topics');
 const db = require('../database/db');
+const { DISTRICT_HEADS } = require('../config/config');
 require('dotenv').config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -309,6 +310,71 @@ async function sendPendingReportsWarning() {
     }
 }
 
+/**
+ * Final Report Summary for Districts at 15:30 and 16:30
+ */
+async function sendFinalReportsSummary(timeStr) {
+    console.log(`🕒 [CRON] Starting final reports summary at ${timeStr}...`);
+    if (db.settings.vacation_mode) return;
+    const now = getFargonaTime();
+    const dateStr = now.toISOString().split('T')[0];
+
+    try {
+        const db_pg = require('../database/pg');
+        const { schools_db } = require('../database/db');
+        const topics = topicsConfig.getTopics();
+        const districts = Object.keys(topics).filter(d => d !== "Test rejimi" && d !== "MMT Boshqarma");
+
+        for (const distName of districts) {
+            const topicId = getTopicId(distName);
+            if (!topicId) continue;
+
+            const reportedRes = await db_pg.query(`SELECT school FROM attendance WHERE district = $1 AND date = $2`, [distName, dateStr]);
+            const reportedSchools = reportedRes.rows.map(r => r.school);
+
+            const allSchoolsInDist = schools_db[distName] || [];
+            const missingSchools = allSchoolsInDist.filter(s => !reportedSchools.includes(s));
+
+            let msg = "";
+            if (missingSchools.length === 0) {
+                // ALL SCHOOLS REPORTED!
+                const head = DISTRICT_HEADS[distName] || { name: "tuman mas'uli" };
+                msg = `✅ <b>HAMMAGA RAHMAT!</b>\n\n`;
+                msg += `📍 Hudud: <b>${distName}</b>\n`;
+                msg += `👤 Hurmatli <b>${head.name}</b>,\n\n`;
+                msg += `Tizimingizdagi barcha maktablar <b>100%</b> o‘quvchilar davomatini kiritishdi.\n`;
+                msg += `Barcha maktab mas'ullariga ham o'z minnatdorchiligimizni bildiramiz! 👏\n\n`;
+                msg += `📅 Sana: <b>${dateStr}</b>\n`;
+                msg += `🏁 Holat: <b>YAKUNLANDI</b>`;
+            } else {
+                // SOME SCHOOLS MISSING
+                msg = `⚠️ <b>KUNLIK YAKUNIY OGOHLANTIRISH</b>\n`;
+                msg += `📍 Hudud: <b>${distName}</b>\n`;
+                msg += `🕒 Vaqt: <b>${timeStr}</b>\n`;
+                msg += `📅 Sana: <b>${dateStr}</b>\n\n`;
+                msg += `🛑 <b>Hali ham topshirmadi: ${missingSchools.length} ta maktab</b>\n`;
+
+                const list = missingSchools.slice(0, 40);
+                list.forEach((s, i) => {
+                    msg += `${i+1}. ${s}\n`;
+                });
+
+                if (missingSchools.length > 40) msg += `...va yana ${missingSchools.length - 40} ta maktab.\n`;
+
+                msg += `\n❗ <i>Iltimos, ish kunini yakunlashdan oldin hisobotlarni zudlik bilan kiritishingizni so'raymiz!</i>`;
+            }
+
+            await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
+                parse_mode: 'HTML',
+                message_thread_id: topicId
+            });
+        }
+        console.log(`✅ [CRON] Final summary for ${timeStr} sent.`);
+    } catch (e) {
+        console.error(`❌ [CRON] Final summary error at ${timeStr}:`, e);
+    }
+}
+
 
 // Initialize Cron Jobs
 function initCrons() {
@@ -330,6 +396,13 @@ function initCrons() {
     // 4. Pending Reports Warning (Every 2 hours from 10:00 to 14:00, Monday-Saturday)
     cron.schedule('0 10,12,14 * * 1-6', () => {
         sendPendingReportsWarning();
+    }, { timezone: "Asia/Tashkent" });
+
+    // 5. Final Report Summary (15:30 and 16:30, Monday-Saturday)
+    cron.schedule('30 15,16 * * 1-6', () => {
+        const now = getFargonaTime();
+        const timeStr = `${now.getHours()}:30`;
+        sendFinalReportsSummary(timeStr);
     }, { timezone: "Asia/Tashkent" });
 
     console.log("🚀 [Scheduler] Automated reports initialized.");
