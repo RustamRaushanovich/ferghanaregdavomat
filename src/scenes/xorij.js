@@ -142,7 +142,24 @@ const xorijWizard = new Scenes.WizardScene(
         ctx.wizard.state.xorijData.file_id = fileId;
         ctx.wizard.state.xorijData.text_proof = ctx.message.text || '';
 
-        // Save to JSON DB
+        // Save to PG DB (For Render Persistence)
+        const pg = require('../database/pg');
+        try {
+            const s = ctx.wizard.state.xorijData;
+            await pg.query(`
+                INSERT INTO xorij_students (
+                    json_id, student_name, dob, class_name, district, school, country, reason, companion, address, status, 
+                    qonuniylik, q_sana, b_sana, created_by, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW())
+            `, [
+                s.id.toString(), s.fio, s.birth_date, s.class, s.district, s.school, s.country, s.reason, s.with_whom, s.address, s.current_state,
+                s.is_legal ? 'legal' : 'illegal', s.commission_doc, s.school_order, s.submitter_fio
+            ]);
+        } catch (e) {
+            console.error("Bot Xorij Save PG Error:", e.message);
+        }
+
+        // Save to JSON DB (As local cache/backup)
         let data = [];
         try {
             if(fs.existsSync(dbPath)) data = JSON.parse(fs.readFileSync(dbPath));

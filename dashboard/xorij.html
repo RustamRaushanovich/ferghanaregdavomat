@@ -116,6 +116,9 @@
                     <h3 style="color:#a78bfa;"><i class="fas fa-school"></i> <span id="authSchoolName">Maktab</span> - Xorijdagi o'quvchilar ro'yxati</h3>
                     <div>
                         <button class="tab-btn" style="background:#f59e0b; color:white; border:none;" onclick="logoutSchoolAuth()"><i class="fas fa-sign-out-alt"></i> Chiqish</button>
+                        <a href="/assets/shablon_xorij.xlsx" download class="tab-btn" style="background:#3b82f6; color:white; border:none; text-decoration:none; display:inline-flex; align-items:center; gap:5px;"><i class="fas fa-download"></i> Shablon</a>
+                        <button class="tab-btn" style="background:#8b5cf6; color:white; border:none;" onclick="document.getElementById('excelUploadFile').click()"><i class="fas fa-file-excel"></i> Exceldan yuklash</button>
+                        <input type="file" id="excelUploadFile" style="display:none;" accept=".xlsx, .xls" onchange="uploadXorijExcel(event)">
                         <button class="tab-btn" style="background:#10b981; color:white; border:none;" onclick="openAddForm()"><i class="fas fa-plus"></i> Yangi o'quvchi qo'shish</button>
                     </div>
                 </div>
@@ -181,6 +184,7 @@
                     <table class="data-table">
                         <thead>
                             <tr>
+                                <th>T/r</th>
                                 <th>O'quvchi F.I.SH</th>
                                 <th>Sinfi</th>
                                 <th>Qonuniylik</th>
@@ -202,6 +206,7 @@
                 <table class="data-table">
                     <thead>
                         <tr>
+                            <th>T/r</th>
                             <th>O'quvchi F.I.SH</th>
                             <th>Qaytgan Sana</th>
                             <th>Qabul qilingan Maktab / Sinf</th>
@@ -220,6 +225,7 @@
                 <table class="data-table">
                     <thead>
                         <tr>
+                            <th>T/r</th>
                             <th>Tuman nomi</th>
                             <th>Xorijdagi jami</th>
                             <th>Qonuniy ketgan</th>
@@ -240,6 +246,7 @@
                 <table class="data-table">
                     <thead>
                         <tr>
+                            <th>T/r</th>
                             <th>Hudud / Maktab</th>
                             <th>O'quvchi F.I.SH</th>
                             <th>Davlati / Sana</th>
@@ -437,7 +444,7 @@
             }
             
             let html = '';
-            myKids.forEach(k => {
+            myKids.forEach((k, index) => {
                 const legalColor = k.qonuniylik === 'legal' ? '#10b981' : '#ef4444';
                 const legalText = k.qonuniylik === 'legal' ? 'Qonuniy' : 'Noqonuniy';
 
@@ -446,6 +453,7 @@
                 const fLinks = (qfile || bfile) ? (qfile + ' ' + bfile) : '-';
 
                 html += `<tr>
+                    <td>${index + 1}</td>
                     <td>${k.student_name}</td>
                     <td>${k.class}</td>
                     <td><span style="background:${legalColor}; color:white; padding:3px 8px; border-radius:10px; font-size:0.7rem;">${legalText}</span> <br> <span style="font-size: 1.2rem;">${fLinks}</span></td>
@@ -469,9 +477,10 @@
                 tbody.innerHTML = '<tr><td colspan="4" style="color:#94a3b8;"><br><br>Ro\'yxat bo\'sh.<br><br></td></tr>'; return;
             }
             let html = '';
-            returned.forEach(k => {
+            returned.forEach((k, index) => {
                 const docLink = k.doc_return ? `<a href="/uploads/${k.doc_return}" target="_blank" style="color:#3b82f6;"><i class="fas fa-file-pdf"></i> Faylni Ko'rish</a>` : '<span style="color:#f59e0b;">Fayl yo\'q</span>';
                 html += `<tr>
+                    <td>${index + 1}</td>
                     <td><strong>${k.student_name}</strong> <br> <span style="font-size:0.7rem; color:#94a3b8;">(Ketgan davlat: ${k.country})</span></td>
                     <td>${k.ret_date}</td>
                     <td>${k.ret_district}, ${k.ret_school} <br> ${k.ret_class}-sinfga</td>
@@ -489,7 +498,7 @@
             if(activeStudents.length === 0) dBody.innerHTML = '<tr><td colspan="5">Ma\'lumotlar mavjud emas.</td></tr>';
             else {
                 let html = '';
-                activeStudents.forEach(k => {
+                activeStudents.forEach((k, index) => {
                     const legalText = k.qonuniylik === 'legal' ? `<b style="color:#10b981;">Qonuniy:</b><br>Komissiya: ${k.q_raqam} (${k.q_sana})<br>Buyruq: ${k.b_raqam} (${k.b_sana})` : `<b style="color:#ef4444;">Noqonuniy</b>`;
                     
                     const qfile = k.doc_qaror ? `<a href="/uploads/${k.doc_qaror}" target="_blank" style="color:#a78bfa;">Qaror PDF</a>` : '';
@@ -497,6 +506,7 @@
                     const fLinks = (qfile || bfile) ? (qfile + ' | ' + bfile) : '<i class="fas fa-ban" style="color:#64748b;"></i> Yo\'q';
 
                     html += `<tr>
+                        <td>${index + 1}</td>
                         <td style="text-align:left;">${k.district} <br> <span style="color:#94a3b8;">${k.school}</span></td>
                         <td><b>${k.student_name}</b> <br> ${k.class}-sinf</td>
                         <td>${k.country} <br> (${k.date_left})</td>
@@ -526,9 +536,11 @@
             });
 
             let sHtml = '';
+            let index = 1;
             DISTRICTS.forEach(d => {
                 if(sums[d].total > 0 || sums[d].ret > 0) {
                     sHtml += `<tr>
+                        <td>${index++}</td>
                         <td style="text-align:left; padding-left:20px;"><b>${d}</b></td>
                         <td style="font-size:1.1rem; font-weight:bold;">${sums[d].total}</td>
                         <td style="color:#10b981; font-weight:bold;">${sums[d].leg}</td>
@@ -682,6 +694,40 @@
                     window.location.reload();
                 } else alert('Xatolik yuz berdi.');
             } catch(er) { console.error(er); alert("API xatosi!"); }
+        }
+
+        async function uploadXorijExcel(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('excel_file', file);
+            formData.append('district', localStorage.getItem('xAuthDist') || '');
+            formData.append('school', localStorage.getItem('xAuthSchool') || '');
+            formData.append('masul', localStorage.getItem('xAuthMasul') || '');
+            formData.append('tel', localStorage.getItem('xAuthTel') || '');
+
+            alert("Fayl yuklanmoqda... Iltimos kuting. Bunga biroz vaqt ketishi mumkin.");
+            
+            try {
+                const res = await fetch('/api/xorij/upload-excel', {
+                    method: 'POST',
+                    headers: { 'Authorization': token },
+                    body: formData
+                });
+                const data = await res.json();
+                
+                if(res.ok) {
+                    alert(`✅ Muvaffaqiyatli yuklandi!\nJami qo'shildi: ${data.added} ta o'quvchi.\n(Dublikatlar o'tkazib yuborildi: ${data.skipped} ta)`);
+                    window.location.reload();
+                } else {
+                    alert('❌ Xatolik yuz berdi: ' + (data.error || 'Noma\\'lum xato'));
+                }
+            } catch(er) {
+                console.error(er);
+                alert("Tarmoq yoki server xatosi!");
+            }
+            e.target.value = ''; // Reset file input
         }
     </script>
 </body>

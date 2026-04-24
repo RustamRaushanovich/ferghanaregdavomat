@@ -36,6 +36,49 @@ if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
     console.warn("VAPID Keys missing. Push notifications disabled.");
 }
 
+// --- AUTOMATIC SYNC: JSON TO POSTGRESQL (For Render Persistence) ---
+async function syncJsonToPg() {
+    console.log("🔄 Starting JSON to PostgreSQL sync...");
+    try {
+        // 1. Sync Xorij Students
+        const xPath = path.join(__dirname, 'src', 'database', 'xorij.json');
+        if (fs.existsSync(xPath)) {
+            const xData = JSON.parse(fs.readFileSync(xPath, 'utf8'));
+            for (const s of xData) {
+                await sqlite.query(`
+                    INSERT INTO xorij_students (
+                        json_id, student_name, dob, class_name, district, school, country, reason, companion, address, status, 
+                        qonuniylik, q_sana, q_raqam, b_sana, b_raqam, doc_qaror, doc_buyruq, is_returned, ret_date, 
+                        ret_district, ret_school, ret_class, ret_b_sana, ret_b_raqam, doc_return, created_by, created_at
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28)
+                    ON CONFLICT (json_id) DO NOTHING
+                `, [
+                    s.id, s.student_name, s.dob, s.class, s.district, s.school, s.country, s.reason, s.companion, s.address, s.status,
+                    s.qonuniylik, s.q_sana, s.q_raqam, s.b_sana, s.b_raqam, s.doc_qaror, s.doc_buyruq, s.is_returned || false, s.ret_date,
+                    s.ret_district, s.ret_school, s.ret_class, s.ret_b_sana, s.ret_b_raqam, s.doc_return, s.created_by, s.created_at
+                ]);
+            }
+            console.log(`✅ Synced ${xData.length} Xorij records.`);
+        }
+
+        // 2. Sync Documents
+        const dPath = path.join(__dirname, 'src', 'database', 'documents.json');
+        if (fs.existsSync(dPath)) {
+            const dData = JSON.parse(fs.readFileSync(dPath, 'utf8'));
+            for (const d of dData) {
+                await sqlite.query(`
+                    INSERT INTO documents (id, title, description, date, filename) 
+                    VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
+                `, [d.id, d.title, d.description, d.date, d.filename]);
+            }
+            console.log(`✅ Synced ${dData.length} Documents.`);
+        }
+    } catch (e) {
+        console.error("❌ Sync Error:", e.message);
+    }
+}
+syncJsonToPg();
+
 
 const uploadDir = path.join(__dirname, 'assets', 'uploads');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
@@ -581,45 +624,36 @@ app.post('/api/xorij/add', auth, upload.fields([
         
         // --- BU YERDAN DUBLIKAT TEKSHIRUV BOSHLANADI ---
         if (student_name && dob) {
-            const stNameLower = student_name.trim().toLowerCase();
-            const existingStudent = data.find(d => 
-                d.student_name && d.student_name.trim().toLowerCase() === stNameLower && 
-                d.dob === dob &&
-                (!d.is_returned || d.is_returned === false) // faqat hozirda xorijda bo'lganlarni tekshiramiz
-            );
-
-            if (existingStudent) {
+            const checkRes = await sqlite.query('SELECT * FROM xorij_students WHERE LOWER(student_name) = $1 AND dob = $2 AND is_returned = false', [student_name.trim().toLowerCase(), dob]);
+            if (checkRes.rowCount > 0) {
+                const existing = checkRes.rows[0];
                 return res.status(400).json({
-                    error: `Bu o'quvchi xorijga ketganlar ro'yxatida mavjud!\nIltimos tekshirib ko'ring: Ushbu o'quvchi ${existingStudent.district}ning ${existingStudent.school} tomonidan kiritilgan.`
+                    error: `Bu o'quvchi xorijga ketganlar ro'yxatida mavjud!\nIltimos tekshirib ko'ring: Ushbu o'quvchi ${existing.district}ning ${existing.school} tomonidan kiritilgan.`
                 });
             }
         }
         // --- DUBLIKAT TEKSHIRUV TUGADI ---
 
-        const newStudent = {
-            id: Date.now().toString() + Math.floor(Math.random()*1000).toString(),
-            district, school, student_name, dob, class: class_name,
-            qonuniylik, country, date_left, reason, companion, address, status,
-            q_sana, q_raqam, b_sana, b_raqam,
-            created_by: cre_masul ? `${cre_masul} (${cre_tel})` : req.user.username,
-            created_at: new Date().toLocaleString('uz-UZ'),
-            is_returned: false
-        };
+        const doc_qaror = req.files && req.files['doc_qaror'] ? req.files['doc_qaror'][0].filename : null;
+        const doc_buyruq = req.files && req.files['doc_buyruq'] ? req.files['doc_buyruq'][0].filename : null;
 
-        if (req.files) {
-            if (req.files['doc_qaror']) newStudent.doc_qaror = req.files['doc_qaror'][0].filename;
-            if (req.files['doc_buyruq']) newStudent.doc_buyruq = req.files['doc_buyruq'][0].filename;
-        }
-
-        data.push(newStudent);
-        fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-
-        // Shuningdek Postgres db ga backup sifatida saqlash!
-        try {
-            const q = 'INSERT INTO xorij_students (name, class, district, school, country, reason, leave_date, parent_phone, added_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
-            const values = [student_name, class_name, district, school, country, reason, date_left, 'N/A', req.user.username];
-            await sqlite.query(q, values);
-        } catch(extErr) {} // ignore postgres backup error if table missing
+        const q = `INSERT INTO xorij_students (
+            student_name, dob, class_name, district, school, country, reason, companion, address, status, 
+            qonuniylik, q_sana, q_raqam, b_sana, b_raqam, doc_qaror, doc_buyruq, created_by, created_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, NOW()) RETURNING id`;
+        
+        const values = [
+            student_name, dob, class_name, district, school, country, reason, companion, address, status,
+            qonuniylik, q_sana, q_raqam, b_sana, b_raqam, doc_qaror, doc_buyruq,
+            cre_masul ? `${cre_masul} (${cre_tel})` : req.user.username
+        ];
+        
+        const result = await sqlite.query(q, values);
+        res.json({ success: true, id: result.rows[0].id });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
 
         res.json({ success: true, id: newStudent.id });
     } catch (e) {
@@ -629,26 +663,119 @@ app.post('/api/xorij/add', auth, upload.fields([
 
 
 
-app.post('/api/xorij/return', auth, upload.single('doc_return'), (req, res) => {
+app.post('/api/xorij/upload-excel', auth, upload.single('excel_file'), async (req, res) => {
     try {
-        const { id, ret_date, ret_district, ret_school, ret_class, ret_b_sana, ret_b_raqam } = req.body;
+        if (!req.file) return res.status(400).json({ error: 'Excel fayl yuklanmadi!' });
+        
+        const XLSX = require('xlsx');
+        const workbook = XLSX.readFile(req.file.path);
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
         const dbPath = path.join(__dirname, 'src', 'database', 'xorij.json');
         let data = [];
         if (fs.existsSync(dbPath)) data = JSON.parse(fs.readFileSync(dbPath));
 
-        const idx = data.findIndex(s => s.id == id);
-        if (idx === -1) return res.status(404).json({ error: "Student not found" });
+        let added = 0;
+        let skipped = 0;
+        let currentDistrict = req.user.district || req.body.district || '';
+        let currentSchool = req.user.school || req.body.school || '';
 
-        data[idx].is_returned = true;
-        data[idx].ret_date = ret_date;
-        data[idx].ret_district = ret_district;
-        data[idx].ret_school = ret_school;
-        data[idx].ret_class = ret_class;
-        data[idx].ret_b_sana = ret_b_sana;
-        data[idx].ret_b_raqam = ret_b_raqam;
-        data[idx].doc_return = req.file ? req.file.filename : null;
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            if (!row || !Array.isArray(row)) continue;
 
-        fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+            const nonNullCols = row.filter(cell => cell !== null && cell !== undefined && cell !== '');
+            // Detect merged district header (Murakkab viloyat excel)
+            if (nonNullCols.length === 1 && typeof nonNullCols[0] === 'string' && nonNullCols[0].toLowerCase().includes('туман')) {
+                currentDistrict = nonNullCols[0].trim();
+                continue;
+            }
+
+            let student_name = '';
+            let dob = '';
+            let class_name = '';
+            let country = '';
+            let date_left = '';
+            let reason = '';
+            let companion = '';
+            let address = '';
+            let school = currentSchool;
+            let district = currentDistrict;
+
+            // Simple heuristic to detect format
+            if (row.length >= 8 && row[1] && row[2] && String(row[1]).length > 5 && !String(row[1]).toLowerCase().includes('туман')) {
+                // SHABLON FORMAT (O'quvchi F.I.SH is index 1)
+                student_name = row[1];
+                dob = row[2] || '';
+                class_name = row[3] || '';
+                country = row[4] || '';
+                date_left = row[5] || '';
+                reason = row[6] || '';
+                companion = row[7] || '';
+                address = row[8] || '';
+            } else if (row.length >= 6 && row[4] && typeof row[4] === 'string' && row[4].length > 5) {
+                // MURAKKAB VILOYAT EXCEL FORMAT (O'quvchi F.I.SH is index 4)
+                if (row[2] && String(row[2]).toLowerCase().includes('туман')) district = row[2];
+                if (row[3]) school = String(row[3]).replace(/мактаб/gi, '').trim() + '-maktab';
+                student_name = row[4];
+                dob = row[5] || '';
+                
+                const dSana = String(row[6] || '');
+                country = dSana.split(' ')[0] || dSana;
+                date_left = dSana;
+                reason = row[7] || '';
+                address = row[13] || '';
+            } else {
+                continue;
+            }
+
+            if (!student_name || typeof student_name !== 'string' || student_name.trim().length < 5) continue;
+            const snLower = student_name.toLowerCase();
+            if (snLower.includes("исми ва шарифи") || snLower.includes("f.i.sh")) continue;
+
+            student_name = student_name.trim();
+
+            // Duplicate check
+            const checkDup = await sqlite.query('SELECT id FROM xorij_students WHERE LOWER(student_name) = $1 AND is_returned = false', [snLower]);
+            if (checkDup.rowCount > 0) {
+                skipped++;
+                continue;
+            }
+
+            const q = `INSERT INTO xorij_students (
+                student_name, dob, class_name, district, school, country, reason, companion, address, status, 
+                created_by, created_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())`;
+            
+            await sqlite.query(q, [
+                student_name, dob, class_name, district || 'Noma\'lum', school || 'Noma\'lum', 
+                country, reason, companion, address, 'Chala (Exceldan)', req.user.username || 'System'
+            ]);
+            added++;
+        }
+        try { fs.unlinkSync(req.file.path); } catch(e) {}
+        try { fs.unlinkSync(req.file.path); } catch(e) {}
+
+        res.json({ success: true, added, skipped });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.post('/api/xorij/return', auth, upload.single('doc_return'), async (req, res) => {
+    try {
+        const { id, ret_date, ret_district, ret_school, ret_class, ret_b_sana, ret_b_raqam } = req.body;
+        const doc_return = req.file ? req.file.filename : null;
+
+        const q = `UPDATE xorij_students SET 
+            is_returned = true, ret_date = $1, ret_district = $2, ret_school = $3, 
+            ret_class = $4, ret_b_sana = $5, ret_b_raqam = $6, doc_return = $7, updated_at = NOW() 
+            WHERE id = $8`;
+        
+        await sqlite.query(q, [ret_date, ret_district, ret_school, ret_class, ret_b_sana, ret_b_raqam, doc_return, id]);
+        res.json({ success: true });
         res.json({ success: true });
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -658,69 +785,64 @@ app.post('/api/xorij/return', auth, upload.single('doc_return'), (req, res) => {
 app.post('/api/xorij/update', auth, upload.fields([
     { name: 'doc_qaror', maxCount: 1 },
     { name: 'doc_buyruq', maxCount: 1 }
-]), (req, res) => {
+]), async (req, res) => {
     try {
         const { id, student_name, dob, class_name, country, date_left, reason, companion, address, status, qonuniylik, q_sana, q_raqam, b_sana, b_raqam, upd_masul, upd_tel } = req.body;
-        const dbPath = path.join(__dirname, 'src', 'database', 'xorij.json');
-        if (!fs.existsSync(dbPath)) return res.status(404).json({ error: "No records yet." });
         
-        let data = JSON.parse(fs.readFileSync(dbPath));
-        const idx = data.findIndex(s => s.id == id);
-        if (idx === -1) return res.status(404).json({ error: "Student not found." });
-
-        if(student_name) data[idx].student_name = student_name;
-        if(dob) data[idx].dob = dob;
-        if(class_name) data[idx].class = class_name;
-        if(country) data[idx].country = country;
-        if(date_left) data[idx].date_left = date_left;
-        if(reason) data[idx].reason = reason;
-        if(companion) data[idx].companion = companion;
-        if(address) data[idx].address = address;
-        if(status) data[idx].status = status;
-        if(qonuniylik) data[idx].qonuniylik = qonuniylik;
-        if(q_sana !== undefined) data[idx].q_sana = q_sana;
-        if(q_raqam !== undefined) data[idx].q_raqam = q_raqam;
-        if(b_sana !== undefined) data[idx].b_sana = b_sana;
-        if(b_raqam !== undefined) data[idx].b_raqam = b_raqam;
+        let q = `UPDATE xorij_students SET 
+            student_name = COALESCE($1, student_name), dob = COALESCE($2, dob), class_name = COALESCE($3, class_name), 
+            country = COALESCE($4, country), reason = COALESCE($5, reason), companion = COALESCE($6, companion), 
+            address = COALESCE($7, address), status = COALESCE($8, status), qonuniylik = COALESCE($9, qonuniylik), 
+            q_sana = COALESCE($10, q_sana), q_raqam = COALESCE($11, q_raqam), b_sana = COALESCE($12, b_sana), 
+            b_raqam = COALESCE($13, b_raqam), updated_by = $14, updated_at = NOW()`;
+        
+        const params = [student_name, dob, class_name, country, reason, companion, address, status, qonuniylik, q_sana, q_raqam, b_sana, b_raqam, `${req.user.fio} (${req.user.login})`];
 
         if (req.files) {
-            if (req.files['doc_qaror']) data[idx].doc_qaror = req.files['doc_qaror'][0].filename;
-            if (req.files['doc_buyruq']) data[idx].doc_buyruq = req.files['doc_buyruq'][0].filename;
+            if (req.files['doc_qaror']) {
+                q += `, doc_qaror = $${params.length + 1}`;
+                params.push(req.files['doc_qaror'][0].filename);
+            }
+            if (req.files['doc_buyruq']) {
+                q += `, doc_buyruq = $${params.length + 1}`;
+                params.push(req.files['doc_buyruq'][0].filename);
+            }
         }
 
-        data[idx].updated_by = upd_masul ? `${upd_masul} (${upd_tel})` : `${req.user.fio} (${req.user.login})`;
-        data[idx].updated_at = new Date().toLocaleString('uz-UZ');
+        q += ` WHERE id = $${params.length + 1}`;
+        params.push(id);
 
-        fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-        res.json({ success: true, student: data[idx] });
+        await sqlite.query(q, params);
+        res.json({ success: true });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
 });
 
 
-app.get('/api/xorij', auth, (req, res) => {
+app.get('/api/xorij', auth, async (req, res) => {
     try {
-        const dbPath = path.join(__dirname, 'src', 'database', 'xorij.json');
-        let data = [];
-        if (fs.existsSync(dbPath)) data = JSON.parse(fs.readFileSync(dbPath));
+        let q = 'SELECT * FROM xorij_students';
+        const params = [];
         if (req.user.role === 'district' || req.user.role === 'inspektor_psixolog') {
-            data = data.filter(d => d.district === req.user.district);
+            q += ' WHERE district = $1';
+            params.push(req.user.district);
         } else if (req.user.role === 'school') {
-            data = data.filter(d => d.district === req.user.district && d.school === req.user.school);
+            q += ' WHERE district = $1 AND school = $2';
+            params.push(req.user.district, req.user.school);
         }
-        data.sort((a,b) => b.id - a.id);
-        res.json(data);
+        q += ' ORDER BY id DESC';
+        const result = await sqlite.query(q, params);
+        res.json(result.rows);
     } catch(e) {
         res.status(500).json({ error: e.message });
     }
 });
 
-app.get('/api/xorij/summary', auth, (req, res) => {
+app.get('/api/xorij/summary', auth, async (req, res) => {
     try {
-        const dbPath = path.join(__dirname, 'src', 'database', 'xorij.json');
-        let data = [];
-        if (fs.existsSync(dbPath)) data = JSON.parse(fs.readFileSync(dbPath));
+        const result = await sqlite.query('SELECT district, country, reason FROM xorij_students');
+        const data = result.rows;
         
         const summary = {};
         const districts = Object.keys(TOPICS).filter(d => !["Test rejimi", "MMT Boshqarma"].includes(d));
@@ -1032,39 +1154,24 @@ app.get('/api/admin/settings', auth, (req, res) => {
 // Admin: Update settings
 
 // ==================== DOCUMENTS (MEYORIY HUJJATLAR) API ====================
-app.post('/api/documents', auth, upload.single('document_file'), (req, res) => {
+app.post('/api/documents', auth, upload.single('document_file'), async (req, res) => {
     try {
         if (req.user.role !== 'superadmin') {
             return res.status(403).json({ error: 'Faqat Superadmin yuklay oladi!' });
         }
-        
         const { title, description } = req.body;
-        const dbPath = path.join(__dirname, 'src', 'database', 'documents.json');
-        let data = [];
-        if (fs.existsSync(dbPath)) data = JSON.parse(fs.readFileSync(dbPath));
-
-        const newDoc = {
-            id: Date.now(),
-            title,
-            description,
-            date: new Date().toISOString().split('T')[0],
-            filename: req.file ? req.file.filename : null
-        };
-
-        data.push(newDoc);
-        fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-        res.json({ success: true, doc: newDoc });
+        const q = 'INSERT INTO documents (title, description, date, filename) VALUES ($1, $2, $3, $4) RETURNING *';
+        const result = await sqlite.query(q, [title, description, new Date().toISOString().split('T')[0], req.file ? req.file.filename : null]);
+        res.json({ success: true, doc: result.rows[0] });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
 });
 
-app.get('/api/documents', (req, res) => {
+app.get('/api/documents', async (req, res) => {
     try {
-        const dbPath = path.join(__dirname, 'src', 'database', 'documents.json');
-        if (!fs.existsSync(dbPath)) return res.json([]);
-        const data = JSON.parse(fs.readFileSync(dbPath));
-        res.json(data.sort((a,b) => b.id - a.id));
+        const result = await sqlite.query('SELECT * FROM documents ORDER BY id DESC');
+        res.json(result.rows);
     } catch (e) {
         res.status(500).json({ error: e.message });
     }

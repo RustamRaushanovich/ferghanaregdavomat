@@ -531,62 +531,82 @@ async function exportMonthlyExcel(baseDate, district = null) {
 
 async function exportXorijExcel() {
     try {
-        const dbPath = path.join(__dirname, '..', 'database', 'xorij.json');
-        let data = [];
-        if (fs.existsSync(dbPath)) data = JSON.parse(fs.readFileSync(dbPath));
+        const result = await db.query('SELECT * FROM xorij_students ORDER BY district, school, student_name');
+        const data = result.rows;
+
         const workbook = new ExcelJS.Workbook();
         const sheet1 = workbook.addWorksheet('Umumiy Svod');
         sheet1.mergeCells('A1:P1');
         sheet1.getCell('A1').value = "Maktabgacha va maktab ta'limi vazirligi tasarrufidagi umumta'lim maktablaridagi chet elga ketgan o'quvchilar haqida MA'LUMOT";
         sheet1.getCell('A1').font = { bold: true, size: 12 }; sheet1.getCell('A1').alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
         sheet1.getRow(1).height = 40;
+
         const headers1 = [["№", "A2:A4"], ["Tuman nomi", "B2:B4"], ["Jami chet elga ketgan o'quvchilar", "C2:C4"], ["Shundan", "D2:I2"], ["Chet elga ketish sababi", "J2:O2"]];
         headers1.forEach(h => { sheet1.mergeCells(h[1]); sheet1.getCell(h[1].split(':')[0]).value = h[0]; });
+
         const subHeaders = ["Rossiya", "Qozog'iston", "Turkiya", "BAA", "Misr davlatiga", "Boshqa davlatlarga", "Doimiy yashash", "O'qishga", "Ishlashga", "Davolanishga", "Noma'lum", "Boshqa sabablarga"];
-        sheet1.mergeCells('D3:D4'); sheet1.mergeCells('E3:E4'); sheet1.mergeCells('F3:F4'); sheet1.mergeCells('G3:G4'); sheet1.mergeCells('H3:H4'); sheet1.mergeCells('I3:I4');
-        sheet1.mergeCells('J3:J4'); sheet1.mergeCells('K3:K4'); sheet1.mergeCells('L3:L4'); sheet1.mergeCells('M3:M4'); sheet1.mergeCells('N3:N4'); sheet1.mergeCells('O3:O4');
+        ["D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"].forEach(col => sheet1.mergeCells(`${col}3:${col}4`));
         subHeaders.forEach((h, i) => { const cell = sheet1.getCell(3, 4 + i); cell.value = h; });
-        for(let r=2; r<=4; r++) { for(let c=1; c<=15; c++) { setStyle(sheet1.getCell(r, c), { bold: true, size: 9, fill: 'FFD9E1F2' }); } }
+
+        for (let r = 2; r <= 4; r++) { for (let c = 1; c <= 15; c++) { setStyle(sheet1.getCell(r, c), { bold: true, size: 9, fill: 'FFD9E1F2' }); } }
+
         const topics = require('../config/topics').getTopics();
         const districts = Object.keys(topics).filter(d => !["Test rejimi", "MMT Boshqarma"].includes(d));
+
         districts.forEach((d, i) => {
-            const dData = data.filter(item => item.district === d); const total = dData.length;
-            const c_ros = dData.filter(x => x.country === "Rossiya").length; const c_qoz = dData.filter(x => x.country === "Qozog'iston").length;
-            const c_tur = dData.filter(x => x.country === "Turkiya").length; const c_baa = dData.filter(x => x.country === "BAA").length;
-            const c_mis = dData.filter(x => x.country === "Misr").length; const c_bos = total - (c_ros + c_qoz + c_tur + c_baa + c_mis);
-            const s_doi = dData.filter(x => x.reason === "Doimiy yashash").length; const s_oqi = dData.filter(x => x.reason === "O'qish").length;
-            const s_ish = dData.filter(x => x.reason === "Ishlash").length; const s_dav = dData.filter(x => x.reason === "Davolanish").length;
-            const s_nom = 0; const s_bos = total - (s_doi + s_oqi + s_ish + s_dav + s_nom);
-            const row = sheet1.addRow([i+1, d, total, c_ros, c_qoz, c_tur, c_baa, c_mis, c_bos, s_doi, s_oqi, s_ish, s_dav, s_nom, s_bos]); row.eachCell(cell => setStyle(cell));
+            const dData = data.filter(item => item.district === d);
+            const total = dData.length;
+            const c_ros = dData.filter(x => x.country === "Rossiya").length;
+            const c_qoz = dData.filter(x => x.country === "Qozog'iston").length;
+            const c_tur = dData.filter(x => x.country === "Turkiya").length;
+            const c_baa = dData.filter(x => x.country === "BAA").length;
+            const c_mis = dData.filter(x => x.country === "Misr").length;
+            const c_bos = total - (c_ros + c_qoz + c_tur + c_baa + c_mis);
+
+            const s_doi = dData.filter(x => x.reason === "Doimiy yashash").length;
+            const s_oqi = dData.filter(x => x.reason === "O'qish").length;
+            const s_ish = dData.filter(x => x.reason === "Ishlash").length;
+            const s_dav = dData.filter(x => x.reason === "Davolanish").length;
+            const s_bos = total - (s_doi + s_oqi + s_ish + s_dav);
+
+            const row = sheet1.addRow([i + 1, d, total, c_ros, c_qoz, c_tur, c_baa, c_mis, c_bos, s_doi, s_oqi, s_ish, s_dav, 0, s_bos]);
+            row.eachCell(cell => setStyle(cell));
         });
+
         const sheet2 = workbook.addWorksheet('Batafsil Ro\'yxat');
-        const headers2 = ["t/r", "Tuman (shahar)", "Maktab va Sinf", "O'quvchi F.I.SH", "Tug'ilgan sanasi", "Davlati va Ketgan sanasi", "Nima sababdan / Kim bilan", "Bugungi holat", "Qonuniylik", "Komissiya qarori", "Maktab buyrug'i", "E-maktab holati", "Doimiy manzili"];
+        const headers2 = ["t/r", "Tuman (shahar)", "Maktab va Sinf", "O'quvchi F.I.SH", "Tug'ilgan sanasi", "Davlati", "Ketgan sanasi", "Sababi / Kim bilan", "Bugungi holat", "Qonuniylik", "Hujjatlar (Qaror/Buyruq)", "Doimiy manzili"];
         const h2 = sheet2.addRow(headers2); h2.eachCell(c => setStyle(c, { bold: true, fill: 'FFE2EFDA' }));
+
         data.forEach((item, i) => {
             const row = sheet2.addRow([
-                i + 1, 
-                item.district, 
-                `${item.school}, ${item.class || ''}`, 
-                item.fio, 
-                item.birth_date, 
-                `${item.country}, ${item.gone_date}`, 
-                `${item.reason} / ${item.with_whom || ''}`, 
-                item.current_state,
-                item.is_legal ? "Qonuniy" : "Noqonuniy",
-                item.commission_doc || "-",
-                item.school_order || "-",
-                item.emaktab_status || "-",
+                i + 1,
+                item.district,
+                `${item.school}, ${item.class_name || ''}`,
+                item.student_name,
+                item.dob,
+                item.country,
+                item.q_sana || '-',
+                `${item.reason} / ${item.companion || ''}`,
+                item.status,
+                item.qonuniylik === 'legal' ? "Qonuniy" : "Noqonuniy",
+                `Q:${item.q_raqam || '-'}; B:${item.b_raqam || '-'}`,
                 item.address
             ]);
             row.eachCell(cell => setStyle(cell));
         });
-        sheet2.getColumn(2).width = 20; sheet2.getColumn(3).width = 20; sheet2.getColumn(4).width = 35; 
-        sheet2.getColumn(6).width = 25; sheet2.getColumn(7).width = 30; sheet2.getColumn(8).width = 20; 
-        sheet2.getColumn(10).width = 25; sheet2.getColumn(11).width = 25; sheet2.getColumn(12).width = 30;
-        sheet2.getColumn(13).width = 40;
-        const assetsDir = path.resolve(__dirname, '../../assets'); const filePath = path.join(assetsDir, `XORIJGA_KETGANLAR_${getFargonaTime().toISOString().split('T')[0]}.xlsx`);
-        await workbook.xlsx.writeFile(filePath); return filePath;
-    } catch (e) { return null; }
+
+        sheet2.getColumn(2).width = 20; sheet2.getColumn(3).width = 20; sheet2.getColumn(4).width = 35;
+        sheet2.getColumn(6).width = 15; sheet2.getColumn(7).width = 15; sheet2.getColumn(8).width = 30;
+        sheet2.getColumn(9).width = 20; sheet2.getColumn(11).width = 25; sheet2.getColumn(12).width = 40;
+
+        const assetsDir = path.resolve(__dirname, '../../assets');
+        const filePath = path.join(assetsDir, `XORIJGA_KETGANLAR_${getFargonaTime().toISOString().split('T')[0]}.xlsx`);
+        await workbook.xlsx.writeFile(filePath);
+        return filePath;
+    } catch (e) {
+        console.error("Xorij Export Error:", e);
+        return null;
+    }
 }
 
 module.exports = {

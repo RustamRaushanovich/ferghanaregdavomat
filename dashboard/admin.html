@@ -168,25 +168,25 @@
             margin-bottom: 10px;
         }
 
+
         .stats-item {
             display: flex;
             justify-content: space-between;
             margin-bottom: 15px;
             font-size: 0.9rem;
         }
-
         .stats-val {
             font-weight: 600;
             color: var(--primary);
         }
 
-        .nav-links {
+        .quick-links {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
 
-        .nav-link {
+        .quick-link {
             background: rgba(255, 255, 255, 0.03);
             padding: 15px;
             border-radius: 15px;
@@ -198,7 +198,7 @@
             transition: 0.3s;
         }
 
-        .nav-link:hover {
+        .quick-link:hover {
             background: rgba(255, 255, 255, 0.08);
             border-color: var(--primary);
         }
@@ -376,6 +376,50 @@
                     style="font-size: 0.8rem; height: 150px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 10px; font-family: monospace; color: #94a3b8;">
                     <div style="color: #4ade80;">[SYSTEM] Admin panel yuklandi...</div>
                     <div>[API] Sozlamalar muvaffaqiyatli olindi.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-paper-plane"></i> Xabarni yuborish
+                    </button>
+                </form>
+            </div>
+
+            <!-- Metrics -->
+            <div class="card">
+                <h3><i class="fas fa-chart-pie"></i> Tizim Statistikasi</h3>
+                <div class="stats-item">
+                    <span>Jami TG foydalanuvchilar:</span>
+                    <span class="stats-val" id="totalUsers">---</span>
+                </div>
+                <div class="stats-item">
+                    <span>Ota-onalar soni:</span>
+                    <span class="stats-val" id="totalParents">---</span>
+                </div>
+                <div class="stats-item">
+                    <span>PRO obunachilar:</span>
+                    <span class="stats-val" id="totalPro">---</span>
+                </div>
+                <div class="stats-item">
+                    <span>Bugun kiritgan maktablar:</span>
+                    <span class="stats-val" id="todayEntries">---</span>
+                </div>
+                <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 15px 0;">
+                <div class="stats-item">
+                    <span>Server holati:</span>
+                    <span class="status-badge status-on">ONLINE</span>
+                </div>
+                <div class="stats-item">
+                    <span>Baza holati (Postgres):</span>
+                    <span class="status-badge status-on" id="dbStatus">ULANGAN</span>
+                </div>
+            </div>
+
+            <!-- Live activity logs -->
+            <div class="card">
+                <h3><i class="fas fa-list-ul"></i> Oxirgi Amallar (Logs)</h3>
+                <div id="logContainer"
+                    style="font-size: 0.8rem; height: 150px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 10px; font-family: monospace; color: #94a3b8;">
+                    <div style="color: #4ade80;">[SYSTEM] Admin panel yuklandi...</div>
+                    <div>[API] Sozlamalar muvaffaqiyatli olindi.</div>
                 </div>
                 <button class="btn btn-primary" style="margin-top: 10px; width: 100%; font-size: 0.8rem;"
                     onclick="refreshLogs()">
@@ -386,13 +430,13 @@
             <!-- Quick Navigation -->
             <div class="card">
                 <h3><i class="fas fa-link"></i> Tezkor Havolalar</h3>
-                <div class="nav-links">
-                    <a href="inspektor.html" class="nav-link"><i class="fas fa-user-shield"></i><br>Inspektorlar</a>
-                    <a href="#" class="nav-link" onclick="showPrompt('pro')"><i class="fas fa-gem"></i><br>PRO
+                <div class="quick-links">
+                    <a href="inspektor.html" class="quick-link"><i class="fas fa-user-shield"></i><br>Inspektorlar</a>
+                    <a href="#" class="quick-link" onclick="showPrompt('pro')"><i class="fas fa-gem"></i><br>PRO
                         Userlar</a>
-                    <a href="#" class="nav-link" onclick="showPrompt('reset')"><i class="fas fa-key"></i><br>Parol
+                    <a href="#" class="quick-link" onclick="showPrompt('reset')"><i class="fas fa-key"></i><br>Parol
                         tiklash</a>
-                    <a href="dashboard.html?tab=reports" class="nav-link"><i
+                    <a href="dashboard.html?tab=reports" class="quick-link"><i
                             class="fas fa-file-excel"></i><br>Hisobotlar</a>
                 </div>
                 <div style="margin-top: 15px; font-size: 0.8rem; color: #64748b; text-align: center;">
@@ -432,19 +476,6 @@
                 <button onclick="downloadBackup()" class="btn btn-primary" style="width:100%; background: #10b981; border: none; box-shadow: 0 10px 20px rgba(16,185,129,0.2);">
                     <i class="fas fa-download"></i> Ma'lumotlarni saqlash (Backup)
                 </button>
-            </div>
-<!-- Extra Tools -->
-            <div class="card">
-                <h3><i class="fas fa-database"></i> Qo'shimcha Boshqaruv</h3>
-                <div class="nav-links">
-                    <a href="#" class="nav-link" onclick="handleCustomAction('backup')" style="background:rgba(99, 102, 241, 0.1); border-color:var(--primary);"><i class="fas fa-download"></i><br>Baza Zaxirasi</a>
-                    <a href="#" class="nav-link" onclick="handleCustomAction('cache')" style="background:rgba(239, 68, 68, 0.1); border-color:var(--danger);"><i class="fas fa-trash-alt"></i><br>Keshni tozalash</a>
-                    <a href="#" class="nav-link" onclick="handleCustomAction('redzone')" style="background:rgba(245, 158, 11, 0.1); border-color:#f59e0b;"><i class="fas fa-exclamation-triangle"></i><br>Qizil Hudud</a>
-                    <a href="#" class="nav-link" onclick="handleCustomAction('restart')"><i class="fas fa-power-off"></i><br>Server Restart</a>
-                </div>
-                <div style="margin-top: 15px; font-size: 0.8rem; color: #64748b; text-align: center;">
-                    Ushbu vositalar yordamida tizim tezligini oshirish va bazani xavfsiz saqlash mumkin.
-                </div>
             </div>
 
         </div>
