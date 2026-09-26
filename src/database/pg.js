@@ -7,6 +7,10 @@ const pool = new Pool({
 });
 
 async function initDb() {
+    if (!process.env.DATABASE_URL) {
+        console.warn("⚠️ [PostgreSQL] DATABASE_URL .env faylida ko'rsatilmagan. Iltimos, Supabase/PostgreSQL ulanish manzilini kiriting.");
+        return;
+    }
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS xorij_students (
@@ -84,7 +88,8 @@ async function initDb() {
                 inspector TEXT,
                 user_id BIGINT,
                 source TEXT,
-                bildirgi TEXT
+                bildirgi TEXT,
+                academic_year TEXT DEFAULT '2026-2027'
             );
 
             CREATE TABLE IF NOT EXISTS absent_students (
@@ -156,6 +161,8 @@ async function initDb() {
             CREATE INDEX IF NOT EXISTS idx_attendance_school ON attendance(school);
             CREATE INDEX IF NOT EXISTS idx_absent_students_attendance_id ON absent_students(attendance_id);
             CREATE INDEX IF NOT EXISTS idx_absent_students_name ON absent_students(name);
+
+            ALTER TABLE attendance ADD COLUMN IF NOT EXISTS academic_year TEXT DEFAULT '2026-2027';
         `);
         console.log("🐘 PostgreSQL tables initialized successfully.");
     } catch (e) {
@@ -166,6 +173,11 @@ async function initDb() {
 initDb();
 
 module.exports = {
-    query: (text, params) => pool.query(text, params),
+    query: (text, params) => {
+        if (!process.env.DATABASE_URL) {
+            return Promise.resolve({ rows: [] });
+        }
+        return pool.query(text, params);
+    },
     pool
 };

@@ -186,14 +186,20 @@ const attendanceWizard = new Scenes.WizardScene(
 
         if (ctx.message.contact) {
             ctx.wizard.state.data.phone = ctx.message.contact.phone_number;
-        } else {
-            // Force contact sharing if not superadmin and not opting out
-            const uid = ctx.from.id;
-            const isSuperAdmin = [65002404, 786314811].includes(uid);
-            if (!isSuperAdmin) {
-                return ctx.reply("❌ <b>Xato!</b> Davomat kiritish uchun telefon raqamingizni pastdagi tugmani bosish orqali yuborishingiz shart.", { parse_mode: "HTML" });
+        } else if (ctx.message.text) {
+            let rawText = ctx.message.text.trim();
+            let digitsOnly = rawText.replace(/[^0-9]/g, '');
+            if (digitsOnly.length >= 7) {
+                let formatted = rawText;
+                if (digitsOnly.length === 9) formatted = '+998' + digitsOnly;
+                else if (digitsOnly.length === 12 && digitsOnly.startsWith('998')) formatted = '+' + digitsOnly;
+                else formatted = '+' + digitsOnly;
+                ctx.wizard.state.data.phone = formatted;
+            } else {
+                return ctx.reply("❌ <b>Xato!</b> Iltimos, pastdagi <b>📱 Raqamni yuborish</b> tugmasini bosing yoki telefon raqamingizni to'liq shaklda kiriting (+998901234567).", { parse_mode: "HTML" });
             }
-            ctx.wizard.state.data.phone = ctx.message.text;
+        } else {
+            return ctx.reply("❌ <b>Xato!</b> Iltimos, telefon raqamingizni yuboring.", { parse_mode: "HTML" });
         }
 
         await ctx.reply("👤 <b>Ma’lumot kirituvchining F.I.SH (MMIBDO‘) ni kiriting:</b>\n<i>(Masalan: Turdiyev Rustam Raushanovich)</i>", { parse_mode: "HTML", ...navButtons() });
@@ -219,7 +225,7 @@ const attendanceWizard = new Scenes.WizardScene(
         if (!validDist) return ctx.reply("⚠️ Tanlang:");
 
         ctx.wizard.state.data.district = validDist;
-        await ctx.reply("⏳ <b>Maktablar yuklanmoqda...</b>", Markup.removeKeyboard());
+        await ctx.reply("⏳ <b>Maktablar yuklanmoqda...</b>", { parse_mode: "HTML", ...Markup.removeKeyboard() });
         const schools = await getSchools(dist);
         ctx.wizard.state.schools = schools || []; // Save for validation
 
@@ -394,15 +400,27 @@ const attendanceWizard = new Scenes.WizardScene(
     // 28. LOOP
     async (ctx) => {
         if (checkNav(ctx)) return;
-        const phone = ctx.message.text ? ctx.message.text.trim() : "-";
-        const cleanPhone = phone.replace(/[^0-9]/g, '');
+        const d = ctx.wizard.state.data || {};
+        let rawPhone = ctx.message && ctx.message.contact 
+            ? ctx.message.contact.phone_number 
+            : (ctx.message && ctx.message.text ? ctx.message.text.trim() : "-");
 
-        // Judayam qisqa bo'lsa yoki shubhali bo'lsa ogohlantiramiz, lekin to'xtatmaymiz
-        if (cleanPhone.length < 5) {
+        let digitsOnly = rawPhone.replace(/[^0-9]/g, '');
+        let formattedPhone = rawPhone;
+        if (digitsOnly.length === 9) {
+            formattedPhone = '+998' + digitsOnly;
+        } else if (digitsOnly.length === 12 && digitsOnly.startsWith('998')) {
+            formattedPhone = '+' + digitsOnly;
+        } else if (digitsOnly.length > 0) {
+            formattedPhone = '+' + digitsOnly;
+        }
+
+        if (digitsOnly.length < 5 && digitsOnly.length > 0) {
             await ctx.reply("⚠️ <b>Ogohlantirish:</b> Telefon raqami juda qisqa yoki noto'g'ri ko'rinadi. Lekin qabul qilindi.", { parse_mode: "HTML" });
         }
 
-        ctx.wizard.state.current.parent_phone = phone;
+        if (!ctx.wizard.state.current) ctx.wizard.state.current = {};
+        ctx.wizard.state.current.parent_phone = formattedPhone;
         if (!d.students_list) d.students_list = [];
         d.students_list.push(ctx.wizard.state.current);
 

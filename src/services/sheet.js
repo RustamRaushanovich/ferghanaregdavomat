@@ -63,22 +63,25 @@ async function saveData(data) {
     if (!localSuccess) console.error("Local SQLite save failed, but proceeding to Sheet backup...");
 
     // 2. Backup to Google Sheet (Legacy)
-    try {
-        const payload = JSON.parse(JSON.stringify({ ...data, action: "add" }));
-        const response = await axios.post(GOOGLE_SCRIPT_URL, payload, {
-            headers: { 'Content-Type': 'application/json' }
-        });
+    if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.startsWith('http')) {
+        try {
+            const payload = JSON.parse(JSON.stringify({ ...data, action: "add" }));
+            const response = await axios.post(GOOGLE_SCRIPT_URL, payload, {
+                headers: { 'Content-Type': 'application/json' }
+            });
 
-        if (response.data && response.data.result === 'success') {
-            return true;
-        } else {
-            console.error("Sheet javobi xato:", response.data);
-            return true; // Return true as long as local save worked
+            if (response.data && response.data.result === 'success') {
+                return true;
+            } else {
+                console.error("Sheet javobi xato:", response.data);
+                return true;
+            }
+        } catch (e) {
+            console.error("Sheet backup xatosi:", e.message);
+            return localSuccess;
         }
-    } catch (e) {
-        console.error("Sheet backup xatosi:", e.message);
-        return localSuccess; // Still return success if local save was OK
     }
+    return localSuccess;
 }
 
 

@@ -46,11 +46,9 @@ function initDb() {
     `).run();
 
     // Migration: add source column if it doesn't exist
-    try {
-        db.prepare(`ALTER TABLE attendance ADD COLUMN source TEXT DEFAULT 'bot'`).run();
-    } catch (e) {
-        // Column already exists
-    }
+    try { db.prepare(`ALTER TABLE attendance ADD COLUMN source TEXT DEFAULT 'bot'`).run(); } catch (e) { }
+    try { db.prepare(`ALTER TABLE attendance ADD COLUMN bildirgi TEXT`).run(); } catch (e) { }
+    try { db.prepare(`ALTER TABLE attendance ADD COLUMN academic_year TEXT DEFAULT '2026-2027'`).run(); } catch (e) { }
 
     // Absent Students Table
     db.prepare(`

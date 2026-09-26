@@ -45,7 +45,11 @@
     "fio": "Qosimov Xudoberdi dilshod o‘g‘li",
     "phone": "998902722120",
     "name": "Xudoberdi",
-    "username": "Xudoberdi2120"
+    "username": "Xudoberdi2120",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-24",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:21:19.473Z"
   },
   "132680467": {
     "district": "Beshariq tumani",
@@ -59,7 +63,15 @@
     "name": "N.A.A",
     "phone": "+998972055724",
     "school": "1-IDUM",
-    "district": "Beshariq tumani"
+    "district": "Beshariq tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-24",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:13:01.573Z"
+  },
+  "144002102": {
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "144317516": {
     "fio": "Mirsoliyev Anvar Numonovich",
@@ -75,6 +87,18 @@
     "phone": "998930458555",
     "name": "Nurbek"
   },
+  "157276279": {
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T09:06:28.627Z",
+    "district": "Farg‘ona tumani",
+    "school": "5 мактаб",
+    "fio": "Baxodirov Xasanboy Baxodir oʻgʻli",
+    "phone": "998906318995",
+    "name": "Hasanboy",
+    "username": "Hasanboy995"
+  },
   "168799278": {
     "fio": "Ismoilova Dilnoza Inomovna",
     "name": "Дилнозахон",
@@ -88,7 +112,11 @@
     "phone": "998913293233",
     "school": "37 maktab",
     "district": "Quva tumani",
-    "username": "Sherali_Zamonaliyev"
+    "username": "Sherali_Zamonaliyev",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T09:48:45.954Z"
   },
   "174370496": {
     "district": "Toshloq tumani",
@@ -97,6 +125,10 @@
     "phone": "+998916584241",
     "name": "D O S T O N B E K",
     "username": "DOSTONBEK_4241"
+  },
+  "177220331": {
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "186511473": {
     "fio": "Atabayeva Xurshida Akramjonovna",
@@ -118,7 +150,9 @@
     "name": "MAVJUDAXON",
     "phone": "998905667576",
     "school": "31 мактаб",
-    "district": "Qo‘qon shahri"
+    "district": "Qo‘qon shahri",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "200514289": {
     "fio": "Xasanova Marxabo Askaraliyevna",
@@ -127,6 +161,12 @@
     "school": "25-maktab",
     "district": "Dang'ara tumani",
     "username": "Marxaboxon_4"
+  },
+  "204698586": {
+    "channels_subscribed": false,
+    "last_verified_date": null,
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T11:04:50.278Z"
   },
   "206503930": {
     "district": "So'x tumani",
@@ -141,7 +181,9 @@
     "name": "Mavludaxon",
     "phone": "+998916666426",
     "school": "54 maktab",
-    "district": "Quva tumani"
+    "district": "Quva tumani",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "222562516": {
     "fio": "Islomov Avazbek Atxamjonovich",
@@ -171,7 +213,11 @@
     "fio": "Boltaboyev Shuhrat Sodiqovich",
     "phone": "+998998768774",
     "name": "Шухрат",
-    "username": "Shuxrat8774"
+    "username": "Shuxrat8774",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:20:52.918Z"
   },
   "234881707": {
     "fio": "Хакимова Азиза Хамидовна",
@@ -201,7 +247,11 @@
     "name": "Muhammadjon",
     "phone": "998905317175",
     "school": "50-maktab",
-    "district": "Qo‘shtepa tumani"
+    "district": "Qo‘shtepa tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:18:37.254Z"
   },
   "255733400": {
     "fio": "Gʻofurov Abdurashid Xoshimovich",
@@ -262,7 +312,9 @@
     "name": ".....",
     "phone": "998945542907",
     "school": "46-maktab",
-    "district": "Rishton tumani"
+    "district": "Rishton tumani",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "298793562": {
     "fio": "To'raqulov Habibullo Shamsiddinovich",
@@ -321,7 +373,11 @@
     "fio": "Mansurov Izzatillo Ergashaliyevich",
     "phone": "998979400745",
     "name": "Izzatillo",
-    "username": "izzatillomansurov"
+    "username": "izzatillomansurov",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:29:20.475Z"
   },
   "321741448": {
     "district": "Qo'shtepa tumani",
@@ -357,14 +413,24 @@
     "school": "3-maktab",
     "fio": "Asqarov Muhammadjon Xolmatovich",
     "phone": "998905619785",
-    "name": "3-maktab MMIBDOʻ"
+    "name": "3-maktab MMIBDOʻ",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:20:19.473Z"
+  },
+  "330134464": {
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "333390147": {
     "fio": "Qunduzov Murodjon Ma’murjonovich",
     "name": "Murodjon",
     "phone": "998903063830",
     "school": "3-maktab",
-    "district": "Rishton tumani"
+    "district": "Rishton tumani",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "337867257": {
     "district": "Beshariq tumani",
@@ -401,21 +467,32 @@
     "school": "18-maktab",
     "fio": "Қузибоев Фарход Абдураззоқович",
     "phone": "911172019",
-    "name": "Фарход Абдураззокович"
+    "name": "Фарход Абдураззокович",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "368991726": {
     "fio": "Odirov Shuxratjon Boxodirivich",
     "name": "Шухрат",
     "phone": "998916738245",
     "school": "27 maktab",
-    "district": "Quva tumani"
+    "district": "Quva tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:07:37.336Z"
   },
   "372213116": {
     "fio": "Xo'jamberdiyeva Hayotxon Sharifovna",
     "name": "🌹⚘🌹🌷🌹",
     "phone": "998903051310",
     "school": "50-maktab",
-    "district": "O‘zbekiston tumani"
+    "district": "O‘zbekiston tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:38:01.328Z",
+    "username": "xh18091977"
   },
   "388446726": {
     "district": "Quvasoy shahri",
@@ -430,7 +507,11 @@
     "school": "51 maktab",
     "fio": "Xolmatov Dilyor Karimovich",
     "phone": "+998904070838",
-    "name": "D.Xolmatov"
+    "name": "D.Xolmatov",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-26",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-26T07:01:54.949Z"
   },
   "402948797": {
     "fio": "Xudoyqulov Obidjon Abduraximovich",
@@ -506,7 +587,11 @@
     "phone": "998916802064",
     "school": "8-maktab",
     "district": "Rishton tumani",
-    "username": "madaminova8"
+    "username": "madaminova8",
+    "channels_subscribed": false,
+    "last_verified_date": null,
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:22:30.035Z"
   },
   "440396902": {
     "fio": "Xalilov Asliddin Zuhriddinovich",
@@ -514,7 +599,11 @@
     "phone": "+998916523231",
     "school": "7 maktab",
     "district": "Quva tumani",
-    "username": "AsliddinHalilov"
+    "username": "AsliddinHalilov",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T07:50:01.578Z"
   },
   "444047614": {
     "district": "O‘zbekiston tumani",
@@ -538,6 +627,17 @@
     "school": "33-maktab",
     "district": "Rishton tumani"
   },
+  "446082107": {
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:24:20.429Z",
+    "district": "Qo‘shtepa tumani",
+    "school": "34-maktab",
+    "fio": "Otajonov Gʻulomjon Toʻxtasinovich",
+    "phone": "998945548844",
+    "name": "Muhammaddiyor"
+  },
   "448708486": {
     "fio": "Андапулатов Музаффар",
     "name": "Музаффар",
@@ -546,12 +646,16 @@
     "district": "Farg‘ona shahri"
   },
   "450675686": {
-    "fio": "Azimov Ahliddin Bannopovich",
+    "fio": "🔄 Maktab/Tumanni o'zgartirish",
     "name": "Ахлиддин",
     "phone": "998902728452",
     "school": "44 maktab",
     "district": "Quva tumani",
-    "username": "Ahliddin_Azimov1973"
+    "username": "Ahliddin_Azimov1973",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-26",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-26T06:59:29.799Z"
   },
   "452534698": {
     "fio": "Mirzakarimova Mukarram Xalimjonovna",
@@ -573,7 +677,11 @@
     "phone": "+998979664522",
     "school": "34-maktab",
     "district": "Dang'ara tumani",
-    "username": "sherkuziyevdilmurod"
+    "username": "sherkuziyevdilmurod",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-26",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-26T07:04:09.024Z"
   },
   "457985794": {
     "fio": "Botirov Islombek Odiljon o‘g‘li",
@@ -596,7 +704,11 @@
     "fio": "Buzurukov Qahramon To'xtasinovich",
     "phone": "+998911113209",
     "name": "Qahramon",
-    "username": "Hhx_466"
+    "username": "Hhx_466",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-26",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-26T07:25:52.508Z"
   },
   "468908335": {
     "fio": "Nishonov Abbos Abdubasirovich",
@@ -618,7 +730,9 @@
     "name": "Ixtiyor",
     "phone": "998976661080",
     "school": "56 мактаб",
-    "district": "Farg'ona tumani"
+    "district": "Farg'ona tumani",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "474578846": {
     "district": "Beshariq tumani",
@@ -632,7 +746,11 @@
     "name": "To'xtasinov Dostonbek",
     "phone": "998936451010",
     "school": "47 maktab",
-    "district": "Quva tumani"
+    "district": "Quva tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-26",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-26T07:22:38.309Z"
   },
   "489158265": {
     "fio": "Dehqonova Nilufar Rafiqjonovna",
@@ -701,7 +819,11 @@
     "phone": "998906333212",
     "school": "27-maktab",
     "district": "Qo‘shtepa tumani",
-    "username": "Yangi_life32"
+    "username": "Yangi_life32",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:20:15.599Z"
   },
   "515194909": {
     "fio": "Qudratova Nodiraxon Imomaliyevna",
@@ -798,14 +920,22 @@
     "school": "42-maktab",
     "fio": "Davomat kiritish",
     "phone": "998912826602",
-    "name": "Isaqova Ximoyat Abdulpattoyevna"
+    "name": "Isaqova Ximoyat Abdulpattoyevna",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T11:41:42.732Z"
   },
   "542166040": {
     "fio": "Ahmadaliyev Rustamjon Komiljonvich",
     "name": "Рустамжон",
     "phone": "998916523555",
     "school": "24-maktab",
-    "district": "Qo‘shtepa tumani"
+    "district": "Qo‘shtepa tumani",
+    "channels_subscribed": false,
+    "last_verified_date": null,
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:23:22.403Z"
   },
   "545128806": {
     "fio": "Ulug'ov Xayitali Xishimovich",
@@ -828,7 +958,11 @@
     "phone": "+998906326446",
     "school": "48-maktab",
     "district": "Rishton tumani",
-    "username": "iqboljon_ulugbekov"
+    "username": "iqboljon_ulugbekov",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T07:45:57.050Z"
   },
   "551400688": {
     "fio": "Haydarova Muqaddam Uraimovna",
@@ -888,7 +1022,9 @@
     "school": "24-maktab",
     "fio": "Usmonov Rustamjon O‘rinboyevich",
     "phone": "998975954435",
-    "name": "Рустамжон"
+    "name": "Рустамжон",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "564248846": {
     "fio": "Рустамбеков Бахтовар",
@@ -931,7 +1067,11 @@
     "name": "Тўлқинжон @МТТ.uz",
     "phone": "998916912872",
     "school": "6-maktab",
-    "district": "Rishton tumani"
+    "district": "Rishton tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T09:00:01.244Z"
   },
   "582160006": {
     "district": "Qo‘qon shahri",
@@ -947,7 +1087,11 @@
     "phone": "998916767874",
     "school": "19 maktab",
     "district": "Quva tumani",
-    "username": "Asrorbek676"
+    "username": "Asrorbek676",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T07:39:39.279Z"
   },
   "602864312": {
     "fio": "Yuldasheva Muhayyoxon Dehqonovna",
@@ -1002,6 +1146,10 @@
     "school": "9-maktab",
     "district": "Rishton tumani",
     "username": "NazokatUzakova"
+  },
+  "649027591": {
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "649122623": {
     "district": "Beshariq tumani",
@@ -1086,7 +1234,9 @@
     "name": "Ш. Меликовна",
     "phone": "998937310660",
     "school": "10-maktab",
-    "district": "Quvasoy shahri"
+    "district": "Quvasoy shahri",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "678126751": {
     "district": "Beshariq tumani",
@@ -1109,7 +1259,11 @@
     "phone": "998916666357",
     "school": "36-maktab",
     "district": "Qo‘shtepa tumani",
-    "username": "fazliddinjumaboyev"
+    "username": "fazliddinjumaboyev",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:21:04.223Z"
   },
   "688621481": {
     "fio": "Madrahimov Azizbek Yakibovich",
@@ -1163,7 +1317,11 @@
     "fio": "Yulchiyev Dilshodjon Sahobiddinovich",
     "phone": "998916881452",
     "name": "Dilshodjon Yulchiyev.",
-    "username": "saxobiddinovich1969"
+    "username": "saxobiddinovich1969",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T09:35:18.279Z"
   },
   "718324272": {
     "fio": "📊 Davomat kiritish",
@@ -1285,7 +1443,11 @@
     "phone": "998913966610",
     "school": "46 мактаб",
     "district": "Farg'ona tumani",
-    "username": "SanamxonRusbayeva"
+    "username": "SanamxonRusbayeva",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:33:27.958Z"
   },
   "754152675": {
     "district": "Farg‘ona tumani",
@@ -1299,8 +1461,12 @@
     "fio": "Tillayeva Vasila Yuldashevna",
     "name": "V.Yuldashevna.",
     "phone": "998916692302",
-    "school": "16-maktab",
-    "district": "Yozyovon tumani"
+    "school": "/start",
+    "district": "Yozyovon tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T09:48:42.569Z"
   },
   "758047698": {
     "fio": "Isomov Iqboljon Ibrohimovich",
@@ -1386,7 +1552,11 @@
     "school": "4-maktab",
     "fio": "Qodirov Shavkat Abdullayevich",
     "phone": "998999800401",
-    "name": "Shavkat"
+    "name": "Shavkat",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T07:49:13.849Z"
   },
   "811499821": {
     "fio": "Otaqulov Javlonbek Xaldarovich",
@@ -1510,7 +1680,11 @@
     "name": "Бахромжон",
     "phone": "+998907858177",
     "school": "18 maktab",
-    "district": "Quva tumani"
+    "district": "Quva tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-26",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-26T07:14:05.221Z"
   },
   "926640543": {
     "fio": "Mamatova Zulxumor Rasulovna",
@@ -1542,6 +1716,10 @@
     "phone": "+998975901272",
     "name": "D.T",
     "username": "Mr_1912"
+  },
+  "943734258": {
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "944838339": {
     "district": "Beshariq tumani",
@@ -1593,7 +1771,11 @@
     "school": "39 мактаб",
     "fio": "Sobirova Muhayyo Mahmudjonovna",
     "phone": "998979661131",
-    "name": "39-мактаб Мухаййохон Собирова"
+    "name": "39-мактаб Мухаййохон Собирова",
+    "channels_subscribed": false,
+    "last_verified_date": null,
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T09:40:20.928Z"
   },
   "998286389": {
     "fio": "Usmonov Rustam Ergashevich",
@@ -1616,7 +1798,11 @@
     "phone": "998916779088",
     "school": "30 мактаб",
     "district": "Farg'ona tumani",
-    "username": "maktab30holmatova"
+    "username": "maktab30holmatova",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T09:54:31.762Z"
   },
   "1014560263": {
     "district": "Uchko‘prik tumani",
@@ -1665,7 +1851,17 @@
     "name": "Машхурбек...",
     "phone": "998904064428",
     "school": "32-maktab",
-    "district": "Yozyovon tumani"
+    "district": "Yozyovon tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-26",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-26T07:24:11.263Z"
+  },
+  "1051642872": {
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-26",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-26T07:28:23.367Z"
   },
   "1055672859": {
     "district": "Farg‘ona tumani",
@@ -1732,6 +1928,12 @@
     "phone": "998905623108",
     "school": "14 maktab",
     "district": "Quva tumani"
+  },
+  "1188798889": {
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:23:37.529Z"
   },
   "1194887809": {
     "fio": "Marasulova Shohsanam Abdumalikovna",
@@ -1866,7 +2068,9 @@
     "name": "Вохиджон",
     "phone": "998916646599",
     "school": "9-maktab",
-    "district": "Yozyovon tumani"
+    "district": "Yozyovon tumani",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "1396077979": {
     "fio": "Rahmonov Zoirjon Mamadaliyevich",
@@ -1912,6 +2116,10 @@
     "district": "Quvasoy shahri",
     "username": "Xurshida1988y"
   },
+  "1484190952": {
+    "channels_subscribed": false,
+    "last_verified_date": null
+  },
   "1542893482": {
     "district": "So‘x tumani",
     "school": "12 -maktab",
@@ -1942,6 +2150,12 @@
     "school": "12 -maktab",
     "district": "So‘x tumani"
   },
+  "1608491706": {
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-24",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:41:50.124Z"
+  },
   "1626254437": {
     "fio": "G'oyibnazarov Kamoliddin Karimovich",
     "name": "777",
@@ -1964,7 +2178,11 @@
     "phone": "998994062266",
     "school": "64-maktab",
     "district": "O'zbekiston tumani",
-    "username": "Akbarov2266"
+    "username": "Akbarov2266",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T07:55:06.009Z"
   },
   "1652857480": {
     "fio": "Eraliyeva Dildora Erkinovna",
@@ -1987,7 +2205,9 @@
     "fio": "Pazilova Maftuna Ma'murjonovna",
     "phone": "+998905641376",
     "name": "Мафтуна Маъмуржоновна",
-    "username": "Maftuna8899"
+    "username": "Maftuna8899",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "1721354291": {
     "fio": "Ernazarova Nigora Yakubovna",
@@ -2003,7 +2223,9 @@
     "phone": "+998999099712",
     "school": "27 -maktab",
     "district": "So‘x tumani",
-    "username": "makta27"
+    "username": "makta27",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "1735311653": {
     "fio": "Madrahimov Muhtorali Akbaraliyevich",
@@ -2033,9 +2255,13 @@
     "fio": "🔄 Maktab/Tumanni o'zgartirish",
     "name": "💐💐BONU. BEK💐💐",
     "phone": "998916891652",
-    "school": "7 мактаб",
+    "school": "15 мактаб",
     "district": "Qo‘qon shahri",
-    "username": "Mamurovna_1983"
+    "username": "Mamurovna_1983",
+    "channels_subscribed": false,
+    "last_verified_date": null,
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T07:54:53.346Z"
   },
   "1808421022": {
     "fio": "Ismanov Abduraxim Abduxalilovich",
@@ -2080,7 +2306,9 @@
     "phone": "998906322995",
     "school": "3 -maktab",
     "district": "So'x tumani",
-    "username": "Xulquhu_al_Quron"
+    "username": "Xulquhu_al_Quron",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "1872866211": {
     "fio": "Ahmedov Haydarali",
@@ -2094,7 +2322,11 @@
     "school": "29-maktab",
     "fio": "Abdusattorov Xushnudbek Zohidjon oʻgʻli",
     "phone": "998901620720",
-    "name": "Хушнудбек"
+    "name": "Хушнудбек",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:46:03.428Z"
   },
   "1885990655": {
     "fio": "Turg`unova Muqaddamxon",
@@ -2147,7 +2379,11 @@
     "fio": "Yuldosheva Sadoqat Abduhalim qizi",
     "phone": "998332458891",
     "name": "21-maktab Sadoqat",
-    "username": "Zebuzarbonu_Tursunali"
+    "username": "Zebuzarbonu_Tursunali",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:27:08.697Z"
   },
   "1964800883": {
     "fio": "Юсупов Сардорбек Анваржонович",
@@ -2212,7 +2448,15 @@
     "phone": "998910464383",
     "school": "15 maktab",
     "district": "Quva tumani",
-    "username": "menejer1993"
+    "username": "menejer1993",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T07:54:08.025Z"
+  },
+  "2087264354": {
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "2090280003": {
     "district": "Marg‘ilon shahri",
@@ -2265,6 +2509,12 @@
     "phone": "+998993952141",
     "name": "Бахтовар"
   },
+  "2122771226": {
+    "channels_subscribed": false,
+    "last_verified_date": null,
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T13:53:43.304Z"
+  },
   "6084115921": {
     "district": "Rishton tumani",
     "school": "2-maktab",
@@ -2274,10 +2524,14 @@
   },
   "8511208845": {
     "district": "Uchko‘prik tumani",
-    "school": "34",
-    "fio": "📋 Suyarova Dilnoza Meliqo‘ziyevna\n🏫 13-maktab",
+    "school": "13-maktab",
+    "fio": "🔄 Maktab/Tumanni o'zgartirish",
     "phone": "998976241482",
-    "name": "Учкўприк туман 13-м ММИБДЎ Д.М.СУЯРОВА"
+    "name": "Учкўприк туман 13-м ММИБДЎ Д.М.СУЯРОВА",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T09:04:18.434Z"
   },
   "5122761726": {
     "district": "Toshloq tumani",
@@ -2324,13 +2578,6 @@
     "fio": "Rustamova Sayyora Soyibjonovna",
     "phone": "+998979571986",
     "name": "<Sayyora>"
-  },
-  "5938970761": {
-    "district": "Rishton tumani",
-    "school": "44-maktab",
-    "fio": "🔄 Maktab/Tumanni o'zgartirish",
-    "phone": "998999879749",
-    "name": "."
   },
   "5774959783": {
     "district": "Marg‘ilon shahri",
@@ -11621,7 +11868,11 @@
     "fio": "Jiyanboyev Akmaljon Adxamovich",
     "phone": "998941188616",
     "name": "Akmaljon",
-    "username": "allogenez_admin"
+    "username": "allogenez_admin",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T07:54:21.035Z"
   },
   "6137094266": {
     "district": "So‘x tumani",
@@ -11706,7 +11957,11 @@
     "fio": "Abdullajonova Zarnigor Imomiddin qizi",
     "phone": "998933019861",
     "name": "🦋🦋Zarnigor",
-    "username": "Uch_aaa"
+    "username": "Uch_aaa",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T11:38:39.405Z"
   },
   "6983828974": {
     "district": "Beshariq tumani",
@@ -11721,7 +11976,11 @@
     "school": "20-maktab",
     "fio": "Tursunov Nozimjon Baxodirjon o'g'li",
     "phone": "998978110370",
-    "name": "707"
+    "name": "707",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-24",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:26:55.396Z"
   },
   "7135695893": {
     "district": "Uchko'prik tumani",
@@ -11767,7 +12026,11 @@
     "school": "29 мактаб",
     "fio": "Xoldorov Ortiqali Xaydarali o'g'li",
     "phone": "+998998967724",
-    "name": "Ортикали"
+    "name": "Ортикали",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-24",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T09:53:14.137Z"
   },
   "6327242456": {
     "district": "Beshariq tumani",
@@ -11810,7 +12073,11 @@
     "school": "31-maktab",
     "fio": "Nazarov Abduraxmon",
     "phone": "998944925821",
-    "name": "Nazarov Abduraxmon"
+    "name": "Nazarov Abduraxmon",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-26",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-26T06:56:42.005Z"
   },
   "5033086291": {
     "district": "Beshariq tumani",
@@ -11824,7 +12091,11 @@
     "school": "52-maktab",
     "fio": "Abduqahhorov Amir Temur Baxtiyor o'g'li",
     "phone": "998916684878",
-    "name": "Amir Temur"
+    "name": "Amir Temur",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-24",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T11:18:31.277Z"
   },
   "7632204261": {
     "district": "Beshariq tumani",
@@ -11846,15 +12117,23 @@
     "fio": "Akmaljon Ortiqov Adhamjon o'g'li",
     "phone": "998944428200",
     "name": "A Ortiqov",
-    "username": "ortiqov_14"
+    "username": "ortiqov_14",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:37:00.380Z"
   },
   "5454072503": {
     "district": "Qo‘shtepa tumani",
     "school": "15-maktab",
     "fio": "Matkomilov Xurshid Oʻrinboyevich",
     "phone": "998913299914",
-    "name": "Xurshidbek 15-maktab MMIBDOʻ",
-    "username": "Xurshidbek_Matkomilov_88"
+    "name": "Xurshid Bek 15-maktab MMIBDOʻ",
+    "username": "Xurshidbek_Matkomilov_88",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T09:58:20.832Z"
   },
   "5111591985": {
     "district": "Rishton tumani",
@@ -11917,7 +12196,11 @@
     "phone": "+998948629922",
     "school": "7-maktab",
     "district": "Quvasoy shahri",
-    "username": "Im_American_teacher"
+    "username": "Im_American_teacher",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T07:45:47.182Z"
   },
   "5935486673": {
     "fio": "Xizirbekova Feruza Ulugʻbek qizi",
@@ -12128,7 +12411,11 @@
     "phone": "998911224688",
     "school": "16-maktab",
     "district": "Quvasoy shahri",
-    "username": "mental2024Turkiya"
+    "username": "mental2024Turkiya",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-24",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T07:44:53.195Z"
   },
   "5425239335": {
     "fio": "G'aybullayev Dilshod Davlatjon o'g'li",
@@ -12428,11 +12715,15 @@
   },
   "7681950130": {
     "fio": "Xodjayev Komiljon",
-    "name": "Комилжон Ходжаев",
+    "name": "Ходжаев Комилжон",
     "phone": "998507007586",
     "school": "11 maktab",
     "district": "Quva tumani",
-    "username": "j1222b"
+    "username": "j1222b",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-24",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:13:05.400Z"
   },
   "7127128097": {
     "fio": "Ortiqova Soxiba Mansurovna",
@@ -12550,7 +12841,11 @@
     "phone": "998921924491",
     "school": "35 мактаб",
     "district": "Farg‘ona tumani",
-    "username": "Obloyorovna"
+    "username": "Obloyorovna",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:21:33.919Z"
   },
   "parent_1317731905": {
     "fio": "Sattarova Munavvarxon",
@@ -12575,7 +12870,11 @@
     "phone": "998979609502",
     "school": "57-maktab",
     "district": "Rishton tumani",
-    "username": "Shukijonim"
+    "username": "Shukijonim",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:32:39.882Z"
   },
   "5244527940": {
     "fio": "Isoqova Gulnozaxon Valiyevna",
@@ -12843,13 +13142,6 @@
     "school": "6 мактаб",
     "district": "Farg'ona tumani"
   },
-  "8733388919": {
-    "fio": "Buribekov Kurbonali Keldibekovich",
-    "name": "Курбонали",
-    "phone": "998999879749",
-    "school": "44-maktab",
-    "district": "Rishton tumani"
-  },
   "5918494613": {
     "fio": "Mamajonov Akmaljon Adxamovich",
     "name": "М.А.А",
@@ -12862,7 +13154,9 @@
     "name": "Javlonbek",
     "phone": "+998942777355",
     "school": "31-maktab",
-    "district": "Qo'shtepa tumani"
+    "district": "Qo'shtepa tumani",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "parent_6493779840": {
     "fio": "Isroiljonov Muhammadumar",
@@ -12951,7 +13245,11 @@
     "name": "52-maktab Gulshanoy",
     "phone": "998908473155",
     "school": "52 мактаб",
-    "district": "Farg'ona tumani"
+    "district": "Farg'ona tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-24",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:18:22.722Z"
   },
   "5752779325": {
     "fio": "🔄 Maktab/Tumanni o'zgartirish",
@@ -13067,10 +13365,14 @@
   },
   "6074213257": {
     "fio": "Toʻlqinov Husanboy Olimjon oʻgʻli",
-    "name": "Husanboy Olimovich",
+    "name": "Toʻlqinov . H",
     "phone": "998908373676",
     "school": "32-maktab",
-    "district": "Qo'shtepa tumani"
+    "district": "Qo‘shtepa tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:21:09.693Z"
   },
   "5500155561": {
     "fio": "Madumarov Mamadali",
@@ -13106,14 +13408,21 @@
     "name": "Иродахон",
     "phone": "+998902935672",
     "school": "2-maktab",
-    "district": "Dang'ara tumani"
+    "district": "Dang'ara tumani",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "7099419519": {
     "fio": "Akbarov Muqimjon Xamidovich",
     "name": "ТЕЛФОНИМ ЎЧИҚ ТЛЕГРАМГА ЁЗИНГ",
     "phone": "998999997701",
     "school": "35-maktab",
-    "district": "Qo'shtepa tumani"
+    "district": "Qo'shtepa tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:27:33.713Z",
+    "username": "sh8616m"
   },
   "6008937409": {
     "fio": "Ibragimov Normirza Holmirzayevich",
@@ -13128,7 +13437,11 @@
     "name": "..",
     "phone": "998916770686",
     "school": "10 maktab",
-    "district": "Quva tumani"
+    "district": "Quva tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T07:40:20.978Z"
   },
   "8226374808": {
     "fio": "Qodirov Botirjon Olimjonnovich",
@@ -13190,7 +13503,11 @@
     "name": "Yoqutxon",
     "phone": "998901604789",
     "school": "29-maktab",
-    "district": "Rishton tumani"
+    "district": "Rishton tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:02:53.849Z"
   },
   "8122995951": {
     "fio": "Olimova Moxiraxon Obloyor qizi",
@@ -13211,7 +13528,11 @@
     "name": "Ўткирбек",
     "phone": "998975028793",
     "school": "52 maktab",
-    "district": "Quva tumani"
+    "district": "Quva tumani",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T07:55:38.702Z"
   },
   "7402608097": {
     "fio": "Mirzakarimova Mukarramxon Xalimjonovna",
@@ -13314,7 +13635,9 @@
     "name": "..Gulbahor",
     "phone": "998905852974",
     "school": "19-maktab",
-    "district": "Yozyovon tumani"
+    "district": "Yozyovon tumani",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "6794009264": {
     "fio": "Siddiqova Hakimaxon Asqaraliyevna",
@@ -13465,7 +13788,9 @@
     "name": "Bolqiz Turdimatova",
     "phone": "998993017581",
     "school": "8 мактаб",
-    "district": "Farg‘ona tumani"
+    "district": "Farg‘ona tumani",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "6500463589": {
     "fio": "Maxsudov Oʻtkirbek Adashevich",
@@ -13620,7 +13945,11 @@
     "phone": "998905600009",
     "school": "16 мактаб",
     "district": "Farg‘ona tumani",
-    "username": "Lobarr1993"
+    "username": "Lobarr1993",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T11:05:19.230Z"
   },
   "5233781901": {
     "fio": "Razzoqova Inobatxon Abdurahimovna",
@@ -13641,7 +13970,9 @@
     "name": "ЗАФАРЖОН",
     "phone": "998916551506",
     "school": "40 maktab",
-    "district": "Quva tumani"
+    "district": "Quva tumani",
+    "channels_subscribed": false,
+    "last_verified_date": null
   },
   "8225414948": {
     "fio": "Nazarova Nurida Rasulovna",
@@ -13702,7 +14033,11 @@
     "phone": "998916671022",
     "school": "6-maktab",
     "district": "Qo‘shtepa tumani",
-    "username": "EminovAbdulaziz"
+    "username": "EminovAbdulaziz",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:22:50.479Z"
   },
   "5783044072": {
     "fio": "Nazarova Nuridaxon Rasulovna",
@@ -13764,7 +14099,11 @@
     "phone": "998946098082",
     "school": "27-maktab",
     "district": "Dang‘ara tumani",
-    "username": "utkirmaxsud"
+    "username": "utkirmaxsud",
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:14:03.740Z"
   },
   "7196125454": {
     "fio": "Saymatov Adxamjon Komil o'g'li",
@@ -13833,5 +14172,111 @@
     "phone": "998950900192",
     "name": "229",
     "username": "zangat229"
+  },
+  "5310405293": {
+    "district": "Farg‘ona shahri",
+    "school": "1 maktab",
+    "fio": "Azimov Abror",
+    "phone": "+998942729194",
+    "name": "A"
+  },
+  "7735879520": {
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-24",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:08:22.404Z",
+    "district": "Furqat tumani",
+    "school": "20-maktab",
+    "fio": "Sultonova Naimaxon Yusupovna",
+    "phone": "+998991673996",
+    "name": "@@###"
+  },
+  "5729700534": {
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T08:32:43.055Z",
+    "district": "Farg‘ona tumani",
+    "school": "49 мактаб",
+    "fio": "Saydullayev Mavlonjon Murtazoxon o'g'li",
+    "phone": "998934885711",
+    "name": "49MMIBDOʻ"
+  },
+  "8914341048": {
+    "channels_subscribed": false,
+    "last_verified_date": null
+  },
+  "8727110552": {
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T09:35:15.077Z",
+    "district": "Farg‘ona tumani",
+    "school": "41 мактаб",
+    "fio": "Yoqubov Sherali Soxibjonovich",
+    "phone": "+998975954108",
+    "name": "Sherali"
+  },
+  "8704416446": {
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:26:54.423Z",
+    "district": "Qo‘shtepa tumani",
+    "school": "9-maktab",
+    "fio": "Ergashev Abdulaziz Valijon o‘g‘li",
+    "phone": "998903279333",
+    "name": "Abdulaziz",
+    "username": "AE9303"
+  },
+  "6811068320": {
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:27:40.377Z",
+    "district": "Qo‘shtepa tumani",
+    "school": "14-maktab",
+    "fio": "Yusupov Bahromjon",
+    "phone": "998905344007",
+    "name": "Bahromjon",
+    "username": "FIYUBAX"
+  },
+  "7348998240": {
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T10:58:19.065Z"
+  },
+  "8759938617": {
+    "channels_subscribed": false,
+    "last_verified_date": null,
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T11:10:56.771Z"
+  },
+  "5815205023": {
+    "channels_subscribed": true,
+    "last_verified_date": "2026-09-21",
+    "instagram_confirmed": true,
+    "subscribed_at": "2026-09-21T11:31:58.503Z"
+  },
+  "8171939063": {
+    "channels_subscribed": false,
+    "last_verified_date": null
+  },
+  "7716018842": {
+    "channels_subscribed": false,
+    "last_verified_date": null
+  },
+  "6495302399": {
+    "channels_subscribed": false,
+    "last_verified_date": null
+  },
+  "6524370139": {
+    "channels_subscribed": false,
+    "last_verified_date": null
+  },
+  "8505205956": {
+    "channels_subscribed": false,
+    "last_verified_date": null
   }
 }

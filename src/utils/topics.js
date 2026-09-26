@@ -1,18 +1,18 @@
-const topicsConfig = require('../config/topics');
+﻿const topicsConfig = require('../config/topics');
 const TOPICS = topicsConfig.getTopics();
 
 /**
- * Normalizes string for comparison (removes различные variants of apostrophes, trim, lowercase)
+ * Normalizes string for comparison (removes all apostrophe variants: ', curly, modifier marks, etc.)
  */
 function normalizeKey(str) {
     if (!str) return '';
     return str.toString()
-        .replace(/['’‘`]/g, "'")
-        .replace(/[-\s]/g, '')
+        .replace(/[\u0027\u2019\u2018\u0060\u02bb\u02bc\u201c\u201d\ufffd\?]/g, '')
+        .replace(/['’‘`ʻʼ"”]/g, '')
+        .replace(/[-\s_]/g, '')
         .trim()
         .toLowerCase();
 }
-
 
 /**
  * Finds topic ID by district name (robust matching)
@@ -23,10 +23,10 @@ function getTopicId(districtName) {
     const normName = normalizeKey(districtName);
     const keys = Object.keys(TOPICS);
 
-    // 1. Direct match (Fast)
+    // 1. Direct match
     if (TOPICS[districtName]) return TOPICS[districtName];
 
-    // 2. Normalized match
+    // 2. Normalized match (ignores all apostrophe types, hyphens, spaces)
     const foundKey = keys.find(k => normalizeKey(k) === normName);
     if (foundKey) return TOPICS[foundKey];
 

@@ -8,6 +8,8 @@ const xorijWizard = require('./src/scenes/xorij');
 const mmibdoRatingWizard = require('./src/scenes/mmibdoRating');
 const { getDistrictStats, getMissingSchools } = require('./src/services/sheet');
 const admin = require('./src/services/admin');
+const subscriptionService = require('./src/services/subscriptionService');
+const paymentService = require('./src/services/paymentService');
 const db = require('./src/database/db');
 const sqlite = require('./src/database/pg'); // Switched to PostgreSQL (Supabase)
 const topicsConfig = require('./src/config/topics');
@@ -100,7 +102,9 @@ app.use(express.json());
 
 // Load Parent Bot
 try {
-    require('./parent_bot');
+    if (fs.existsSync(path.join(__dirname, 'parent_bot.js'))) {
+        require('./parent_bot');
+    }
 } catch (e) {
     console.error("Parent Bot Load Error:", e.message);
 }
@@ -281,6 +285,95 @@ app.post('/api/admin/set-pro', auth, (req, res, next) => { if (req.user.role !==
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
+});
+
+// Admin: Set Standard Attendance Access (10,000 UZS)
+app.post('/api/admin/set-access', auth, (req, res, next) => { if (req.user.role !== 'superadmin') return res.status(403).json({ error: 'Faqat superadmin uchun' }); next(); }, async (req, res) => {
+    const isAuthorized = req.user.username === 'mrqirol' || req.user.role === 'superadmin';
+    if (!isAuthorized) return res.status(403).json({ error: 'Ruxsat yo\'q' });
+
+    try {
+        const { phone, uid, months } = req.body;
+        const m = parseInt(months) || 1;
+        if (phone) {
+            const cleanPhone = phone.replace(/\D/g, '');
+            const aPath = path.join(__dirname, 'src', 'database', 'access_users.json');
+            let accessData = [];
+            if (fs.existsSync(aPath)) {
+                try {
+                    const raw = fs.readFileSync(aPath, 'utf8');
+                    if (raw) accessData = JSON.parse(raw);
+                } catch (e) {}
+            }
+            const expire = new Date();
+            expire.setMonth(expire.getMonth() + m);
+            accessData = accessData.filter(u => u.phone !== cleanPhone);
+            accessData.push({ phone: cleanPhone, has_access: true, access_purchase_date: new Date().toISOString(), access_expire_date: expire.toISOString() });
+            fs.writeFileSync(aPath, JSON.stringify(accessData, null, 2));
+
+            // Also update matching user in db.js if present
+            for (const [id, user] of Object.entries(db.users_db)) {
+                if (user.phone && user.phone.replace(/\D/g, '') === cleanPhone) {
+                    db.updateUserAccessMonths(id, m);
+                }
+            }
+            return res.json({ success: true, message: `Davomat ruxsati faollashtirildi (${cleanPhone}, ${m} oy)` });
+        }
+        if (uid) {
+            const user = db.updateUserAccessMonths(uid, m);
+            return res.json({ success: true, user });
+        }
+        res.status(400).json({ error: 'Phone yoki UID kiritilmadi' });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// User: Check Subscription & Payment Cards Info
+app.get('/api/user/subscription', (req, res) => {
+    const phone = req.query.phone || (req.user && req.user.phone);
+    const uid = req.query.uid || (req.user && req.user.uid);
+
+    let hasAccess = false;
+    let isPro = false;
+    let accessExpire = null;
+    let proExpire = null;
+
+    if (uid) {
+        hasAccess = db.checkAttendanceAccess(uid);
+        isPro = db.checkPro(uid);
+        const u = db.users_db[uid];
+        if (u) {
+            accessExpire = u.access_expire_date || null;
+            proExpire = u.pro_expire_date || null;
+        }
+    }
+
+    if (!hasAccess && phone) {
+        const cleanPhone = phone.replace(/\D/g, '');
+        hasAccess = db.checkAttendanceAccessByPhone(cleanPhone);
+        isPro = db.checkProByPhone(cleanPhone);
+    }
+
+    const todayStr = getFargonaTime().toISOString().split('T')[0];
+    const isEnforced = todayStr >= '2026-10-05';
+
+    res.json({
+        phone: phone || null,
+        is_enforced: isEnforced,
+        has_access: hasAccess,
+        is_pro: isPro,
+        access_expire_date: accessExpire,
+        pro_expire_date: proExpire,
+        cards: {
+            humo: '9860 0366 3576 1863',
+            visa: '4187 8000 0132 1124'
+        },
+        prices: {
+            standard_uzs: 10000,
+            pro_uzs: 25000
+        }
+    });
 });
 
 // ===== INSPEKTOR-PSIXOLOG BOSHQARUVI =====
@@ -555,7 +648,7 @@ bot.start(async (ctx) => {
     const caption = `🌸 <b>Assalomu alaykum!</b>\nFarg'ona viloyati maktabgacha va maktab ta'limi boshqarmasi tizimidagi <b>@Ferghanaregdavomat_bot</b> ga xush kelibsiz.\n\n📅 <b>Bugungi sana:</b> ${date} (${day})\n\nBiz bilan hamkor bo'lganingiz uchun yana bir bor tabriklaymiz!\nKuningiz xayrli va mazmunli o'tsin! ✨`;
 
     // Tugmalarni tayyorlash
-    let buttons = [["📊 Davomat kiritish"], ["✈️ Xorijga ketganlar"]];
+    let buttons = [["▶️ START — Davomat kiritish"], ["✈️ Xorijga ketganlar"]];
 
     const uid = Number(ctx.from.id);
     const isPro = db.checkPro(uid);
@@ -889,6 +982,14 @@ app.get('/api/stats/non-submitting', auth, async (req, res) => {
     res.json(data);
 });
 
+app.get('/api/stats/non-submitting-deep', auth, async (req, res) => {
+    const now = getFargonaTime();
+    const dateStr = req.query.date || now.toISOString().split('T')[0];
+    const ProAnalytics = require('./src/services/proAnalytics');
+    const data = await ProAnalytics.getDeepNonSubmittingAnalysis(dateStr);
+    res.json(data);
+});
+
 app.get('/api/stats/viloyat', auth, async (req, res) => {
     const now = getFargonaTime();
     const date = req.query.date || now.toISOString().split('T')[0];
@@ -1134,7 +1235,14 @@ app.post('/api/push/subscribe', async (req, res) => {
 app.get('/api/schools', async (req, res) => {
     const { district } = req.query;
     if (!district) return res.status(400).json({ error: 'District required' });
-    const schools = await getSchools(district);
+    
+    let schools = db.schools_db[district] || db.schools_db[district.replace(/'/g, "‘")] || db.schools_db[district.replace(/‘/g, "'")] || [];
+    
+    if (schools.length === 0) {
+        const { getSchools } = require('./src/services/sheet');
+        schools = await getSchools(district);
+    }
+    
     res.json(schools || []);
 });
 
@@ -1370,6 +1478,27 @@ app.post('/api/submit', upload.single('bildirgi'), async (req, res) => {
     const d = req.body;
     const today = getFargonaTime().toISOString().split('T')[0];
 
+    // OYLIK TO'LOV TEKSHIRUVI (05.10.2026 DAN E'TIBORAN)
+    if (today >= '2026-10-05') {
+        const isSuper = req.user && req.user.role === 'superadmin';
+        const isInspector = req.user && req.user.role === 'inspektor_psixolog';
+        if (!isSuper && !isInspector) {
+            const userPhone = d.phone || (req.user && req.user.phone);
+            const userUid = req.user && req.user.uid;
+            const hasAccess = (userPhone && db.checkAttendanceAccessByPhone(userPhone)) || (userUid && db.checkAttendanceAccess(userUid));
+            if (!hasAccess) {
+                return res.status(402).json({
+                    error: "PAYMENT_REQUIRED",
+                    message: "05.10.2026 sanasidan e'tiboran kunlik davomat kiritish 10 000 so'm/oy to'lovli hisoblanadi. Davomat kiritish uchun to'lov kartalarimizga 10 000 so'm o'tkazib, adminlarga chek yuboring!",
+                    cards: {
+                        humo: "9860 0366 3576 1863",
+                        visa: "4187 8000 0132 1124"
+                    }
+                });
+            }
+        }
+    }
+
     // TAKRORIY KIRITISHNI OLDINI OLISH
     // If not superadmin, check if already submitted today
     const isSuper = req.user && req.user.role === 'superadmin';
@@ -1535,8 +1664,6 @@ bot.hears(/^revoke (\d+)$/, async (ctx) => {
     }
 });
 
-app.listen(PORT, () => console.log(`Web Dashboard running on port ${PORT}`));
-
 // --- UTILS ---
 function getTodayInfo() {
     const now = getFargonaTime();
@@ -1621,7 +1748,7 @@ bot.hears("ℹ️ Dastur haqida", (ctx) => {
         "🏢 <b>Bo'lim:</b> Ta'lim tashkilotlarida tarbiyaviy ishlarni muvofiqlashtirish sho‘basi\n\n" +
         "👨‍💻 <b>Muallif:</b> Rustam Raushanovich\n" +
         "🤖 <b>Versiya:</b> 2.0 (Modular)\n" +
-        "📅 <b>Yil:</b> 2026\n\n" +
+        "📅 <b>O'quv yili:</b> 2026-2027\n\n" +
         "🔒 <i>© Barcha huquqlar himoyalangan.</i>",
         { parse_mode: 'HTML' }
     );
@@ -2178,12 +2305,61 @@ bot.hears("🏆 Reyting", async (ctx) => {
 // --- ADMIN HANDLERS ---
 bot.hears("🖥 Dashboard Logins", admin.handleDashboardLogins);
 
+
+// --- PAYMENT & PRO MANAGEMENT COMMANDS ---
+bot.command('tolov', (ctx) => paymentService.showPaymentInfo(ctx));
+bot.command('pay', (ctx) => paymentService.showPaymentInfo(ctx));
+bot.hears(/^(💳 )?(Obuna|To'lov|PRO Status)/i, (ctx) => paymentService.showPaymentInfo(ctx));
+bot.command('addpro', (ctx) => paymentService.handleAddProCommand(ctx));
+bot.command('setcard', (ctx) => paymentService.handleSetCardCommand(ctx));
+
 // --- MAIN FLOW ---
-bot.hears(/^(📊 )?Davomat kiritish$/, (ctx) => {
+bot.hears(/^(▶️ )?(START — )?(📊 )?Davomat kiritish( \(START\))?$/i, async (ctx) => {
     if (db.settings.vacation_mode && !config.ALL_ADMINS.includes(ctx.from.id)) {
         return ctx.reply("🔴 Hozir ta'til rejimi yoqilgan. Ma'lumot qabul qilinmaydi.");
     }
+
+    const uid = ctx.from.id;
+    const check = await subscriptionService.checkCanEnterAttendance(ctx, uid);
+    if (!check.canEnter) {
+        return subscriptionService.sendSubscriptionPrompt(ctx, check.reason);
+    }
+
     ctx.scene.enter('attendance_wizard');
+});
+
+bot.action('check_subscription', async (ctx) => {
+    const uid = ctx.from.id;
+    try { await ctx.answerCbQuery("⏳ Obuna tekshirilmoqda..."); } catch (e) { }
+
+    const tgCheck = await subscriptionService.checkTelegramSub(ctx, uid);
+
+    if (tgCheck.ok === false) {
+        return ctx.replyWithHTML(
+            `❌ <b>Siz hali Telegram kanalimizga a'zo bo'lmadingiz!</b>\n\n` +
+            `Iltimos, avval <a href="${subscriptionService.TG_CHANNEL_URL}">@Between_Us_uzb</a> kanaliga kiring va <b>«Qo'shilish / Join»</b> tugmasini bosing.\n` +
+            `Shuningdek <a href="${subscriptionService.INSTAGRAM_URL}">Instagram sahifamizga</a> ham obuna bo'ling.\n\n` +
+            `A'zo bo'lgach, quyidagi tugmani qayta bosing:`,
+            {
+                disable_web_page_preview: true,
+                ...subscriptionService.getSubscriptionKeyboard()
+            }
+        );
+    }
+
+    await subscriptionService.markUserVerified(uid);
+
+    await ctx.replyWithHTML(
+        `✅ <b>Rahmat! Obunangiz muvaffaqiyatli tasdiqlandi.</b>\n\n` +
+        `Endi bemalol davomat kiritishingiz mumkin:`,
+        Markup.keyboard([
+            ["▶️ START — Davomat kiritish"],
+            ["✈️ Xorijga ketganlar"],
+            ["👤 Mening Profilim", "📊 Mening Statistikam"]
+        ]).resize()
+    );
+
+    return ctx.scene.enter('attendance_wizard');
 });
 
 bot.on('text', async (ctx) => {
@@ -2495,50 +2671,105 @@ bot.hears("🖼 Viloyat Rasm (Test)", async (ctx) => {
 
 // PRO: Receipt Handler
 bot.on(['photo', 'document'], async (ctx) => {
-    if (ctx.session && ctx.session.waiting_receipt) {
-        const uid = ctx.from.id;
-        const name = ctx.from.first_name || 'Foydalanuvchi';
-        const userName = ctx.from.username ? '@' + ctx.from.username : 'NoUsername';
-        
-        // Forward to All Super Admins
-        const admins = [65002404]; // Only primary admin
-        
-        for (const adminId of admins) {
-            try {
-                const forwardMsg = `🧾 <b>Yangi to'lov cheki!</b>\n\nKimdan: ${name} (${userName})\nUID: <code>${uid}</code>\n\nPRO статусни фаоллаштириш учун тугмани босинг:`;
-                
-                const keyboard = Markup.inlineKeyboard([
-                    [Markup.button.callback('✅ 1 ойлик (Faollashtirish)', `approve_pro:${uid}:1`)],
-                    [Markup.button.callback('✅ 3 ойлик (Faollashtirish)', `approve_pro:${uid}:3`)],
-                    [Markup.button.callback('❌ Rad etish', `reject_pro:${uid}`)]
-                ]);
+    if (ctx.scene && ctx.scene.current) return;
+    const isWaiting = ctx.session && ctx.session.waiting_receipt;
+    const caption = (ctx.message.caption || '').toLowerCase();
+    const hasReceiptKeyword = /chek|to'?lov|kvitansiya|pay|tolov|kart/i.test(caption);
+    const accessExpired = !db.checkAttendanceAccess(ctx.from.id);
 
-                if (ctx.message.photo) {
-                    await ctx.telegram.sendPhoto(adminId, ctx.message.photo[ctx.message.photo.length - 1].file_id, { caption: forwardMsg, parse_mode: 'HTML', ...keyboard });
-                } else if (ctx.message.document) {
-                    await ctx.telegram.sendDocument(adminId, ctx.message.document.file_id, { caption: forwardMsg, parse_mode: 'HTML', ...keyboard });
-                }
-            } catch (e) { console.error("Admin Forward Error:", e.message); }
-        }
-
-        ctx.session.waiting_receipt = false;
-        return ctx.reply("✅ Чекингиз админларга юборилди. Тез орада тасдиқланади!");
+    if (isWaiting || hasReceiptKeyword || accessExpired) {
+        return paymentService.handleReceiptSubmission(ctx);
     }
-    // If not waiting receipt, maybe other handlers handle it?
 });
 
 // PRO: Inline Buttons Actions
+
+bot.action(/approve_access:(\\d+):([^:]+)/, async (ctx) => {
+    const [, targetUid, receiptId] = ctx.match;
+    if (!config.SUPER_ADMIN_IDS.map(Number).includes(Number(ctx.from.id))) return ctx.answerCbQuery("Ruxsat yo'q.");
+
+    try {
+        const result = db.updateUserAccessMonths(targetUid, 1);
+        const expireDate = result ? result.access_expire_date : '';
+        paymentService.updateReceiptStatus(receiptId, 'approved', ctx.from.id);
+        
+        await ctx.answerCbQuery("Davomat ruxsati faollashtirildi!");
+        await ctx.editMessageCaption(ctx.update.callback_query.message.caption + `\\n\\n✅ <b>DAVOMAT RUXSATI FAOLLASHTIRILDI (1 oy - ${expireDate} gacha)</b>`, { parse_mode: 'HTML' });
+
+        // Notify User
+        await ctx.telegram.sendMessage(
+            targetUid,
+            `🎉 <b>Tabriklaymiz!</b>\\n\\nTo'lovingiz tasdiqlandi va davomat kiritish ruxsatingiz <b>${expireDate}</b> gacha (1 oyga) faollashtirildi!\\n\\nEndi bemalol davomat kiritishingiz mumkin.`,
+            { parse_mode: 'HTML' }
+        );
+    } catch (e) {
+        ctx.answerCbQuery("Xatolik: " + e.message);
+    }
+});
+
+bot.action(/approve_pro:(\\d+):([^:]+)/, async (ctx) => {
+    const [, targetUid, receiptId] = ctx.match;
+    if (!config.SUPER_ADMIN_IDS.map(Number).includes(Number(ctx.from.id))) return ctx.answerCbQuery("Ruxsat yo'q.");
+
+    try {
+        const result = db.updateUserProMonths(targetUid, 1);
+        const expireDate = result ? result.pro_expire_date : '';
+        paymentService.updateReceiptStatus(receiptId, 'approved', ctx.from.id);
+
+        await ctx.answerCbQuery("PRO faollashtirildi!");
+        await ctx.editMessageCaption(ctx.update.callback_query.message.caption + `\\n\\n🌟 <b>PRO REJIM FAOLLASHTIRILDI (1 oy - ${expireDate} gacha)</b>`, { parse_mode: 'HTML' });
+
+        // Notify User
+        await ctx.telegram.sendMessage(
+            targetUid,
+            `🎉 <b>Tabriklaymiz!</b>\\n\\nTo'lovingiz tasdiqlandi va <b>PRO REJIM</b> obunangiz <b>${expireDate}</b> gacha (1 oyga) faollashtirildi!\\n\\nBarcha imkoniyatlardan foydalanishingiz mumkin.`,
+            { parse_mode: 'HTML' }
+        );
+    } catch (e) {
+        ctx.answerCbQuery("Xatolik: " + e.message);
+    }
+});
+
+bot.action(/reject_fake:(\\d+):([^:]+)/, async (ctx) => {
+    const [, targetUid, receiptId] = ctx.match;
+    if (!config.SUPER_ADMIN_IDS.map(Number).includes(Number(ctx.from.id))) return ctx.answerCbQuery("Ruxsat yo'q.");
+
+    try {
+        paymentService.updateReceiptStatus(receiptId, 'fake_rejected', ctx.from.id);
+        await ctx.answerCbQuery("Soxta chek rad etildi.");
+        await ctx.editMessageCaption(ctx.update.callback_query.message.caption + `\\n\\n🚫 <b>SOXTA CHEK: RAD ETILDI</b>`, { parse_mode: 'HTML' });
+
+        await ctx.telegram.sendMessage(
+            targetUid,
+            `❌ <b>To'lovingiz rad etildi!</b>\\n\\nSiz yuborgan to'lov cheki ma'muriyat tomonidan tekshirilib, soxta yoki noto'g'ri deb topildi.\\n\\nIltimos, faqat o'zingiz amalga oshirgan haqiqiy to'lov kvitansiyasini yuboring.`,
+            { parse_mode: 'HTML' }
+        );
+    } catch (e) {
+        ctx.answerCbQuery("Xatolik: " + e.message);
+    }
+});
+
+bot.action('show_payment', (ctx) => {
+    try { ctx.answerCbQuery(); } catch (e) {}
+    return paymentService.showPaymentInfo(ctx);
+});
+
 bot.action(/approve_pro:(\d+):(\d+)/, async (ctx) => {
     const [, targetUid, months] = ctx.match;
-    if (!config.SUPER_ADMIN_IDS.includes(ctx.from.id)) return ctx.answerCbQuery("Ruxsat yo'q.");
+    if (!config.SUPER_ADMIN_IDS.map(Number).includes(Number(ctx.from.id))) return ctx.answerCbQuery("Ruxsat yo'q.");
 
     try {
         const result = db.updateUserProMonths(targetUid, parseInt(months));
+        const expireDate = result ? result.pro_expire_date : '';
         await ctx.answerCbQuery("PRO faollashtirildi!");
-        await ctx.editMessageCaption(ctx.update.callback_query.message.caption + "\n\n✅ <b>FAOLLASHTIRILDI (${months} oy)</b>", { parse_mode: 'HTML' });
-        
+        await ctx.editMessageCaption(ctx.update.callback_query.message.caption + `\n\n✅ <b>FAOLLASHTIRILDI (${months} oy - ${expireDate} gacha)</b>`, { parse_mode: 'HTML' });
+
         // Notify User
-        await ctx.telegram.sendMessage(targetUid, `🎉 <b>Tabriklaymiz!</b>\n\nТўловингиз тасдиқланди ва <b>PRO</b> обунангиз ${months} ойга фаоллаштирилди!`, { parse_mode: 'HTML' });
+        await ctx.telegram.sendMessage(
+            targetUid,
+            `🎉 <b>Tabriklaymiz!</b>\n\nTo'lovingiz tasdiqlandi va davomat kiritish uchun <b>PRO</b> obunangiz <b>${expireDate}</b> gacha (${months} oyga) faollashtirildi! Endi bemalol davomat kiritishingiz mumkin.`,
+            { parse_mode: 'HTML' }
+        );
     } catch (e) {
         ctx.answerCbQuery("Xatolik: " + e.message);
     }
@@ -2546,11 +2777,15 @@ bot.action(/approve_pro:(\d+):(\d+)/, async (ctx) => {
 
 bot.action(/reject_pro:(\d+)/, async (ctx) => {
     const targetUid = ctx.match[1];
-    if (!config.SUPER_ADMIN_IDS.includes(ctx.from.id)) return ctx.answerCbQuery("Ruxsat yo'q.");
-    
+    if (!config.SUPER_ADMIN_IDS.map(Number).includes(Number(ctx.from.id))) return ctx.answerCbQuery("Ruxsat yo'q.");
+
     await ctx.answerCbQuery("Rad etildi.");
     await ctx.editMessageCaption(ctx.update.callback_query.message.caption + "\n\n❌ <b>RAD ETILDI</b>", { parse_mode: 'HTML' });
-    await ctx.telegram.sendMessage(targetUid, "❌ Узр, тўлов чекингиз тасдиқланмади. Хатолик бўлса @qirol га мурожаат қилинг.");
+    await ctx.telegram.sendMessage(
+        targetUid,
+        "❌ Uzr, to'lov chekingiz tasdiqlanmadi. Xatolik bo'lsa adminga murojaat qiling.",
+        { parse_mode: 'HTML' }
+    );
 });
 
 bot.on('location', (ctx) => {
@@ -2602,6 +2837,64 @@ startHourlyCheck();
 
 app.listen(PORT, () => {
     console.log(`🚀 Dashboard API is running on port ${PORT}`);
+});
+
+
+// --- 1-OKTYABR BAYRAM TABRIGI VA TARQATISH ---
+bot.command('tabrik', async (ctx) => {
+    const photoPath = path.join(__dirname, 'assets', 'tabrik_5_oktyabr.jpg');
+    const caption = 
+        `💐 <b>1-OKTYABR – O'QITUVCHI VA MURABBIYLAR KUNI MUBORAK BO'LSIN!</b>\n\n` +
+        `<i>Hurmatli va aziz ustozlar, muhtaram murabbiylar!</i>\n\n` +
+        `Sizlarni kirib kelayotgan qutlug' kasb bayramingiz bilan chin qalbimizdan samimiy muborakbod etamiz!\n\n` +
+        `Yosh avlodga ziyo tarqatish, ularning qalbiga ezgulik, odamiylik va ilm urug'ini qadashdek sharafli va mas'uliyatli mehnatingizda kuch-g'ayrat, yuksak parvozlar va cheksiz muvaffaqiyatlar tilaymiz!\n\n` +
+        `Xonadoningizdan fayz-u baraka, qalbingizdan xotirjamlik, yuzingizdan tabassum aslo arimasin! Bayramingiz muborak bo'lsin!\n\n` +
+        `<i>Hurmat va chuqur ehtirom bilan,</i>\n` +
+        `<b>Rustam Ravshanovich hamda Farg'ona Davomat Tizimi Jamoasi</b> ✨🎓`;
+
+    try {
+        if (fs.existsSync(photoPath)) {
+            await ctx.replyWithPhoto({ source: photoPath }, { caption, parse_mode: 'HTML' });
+        } else {
+            await ctx.replyWithHTML(caption);
+        }
+    } catch (e) {
+        console.error("Tabrik error:", e.message);
+        ctx.replyWithHTML(caption);
+    }
+});
+
+bot.command('tabrik_hamma', async (ctx) => {
+    const uid = ctx.from.id;
+    if (!config.SUPER_ADMIN_IDS.map(Number).includes(Number(uid))) {
+        return ctx.reply("⛔ Ruxsat yo'q. Faqat Super Adminlar uchun.");
+    }
+    const photoPath = path.join(__dirname, 'assets', 'tabrik_5_oktyabr.jpg');
+    const caption = 
+        `💐 <b>1-OKTYABR – O'QITUVCHI VA MURABBIYLAR KUNI MUBORAK BO'LSIN!</b>\n\n` +
+        `<i>Hurmatli va aziz ustozlar, muhtaram murabbiylar!</i>\n\n` +
+        `Sizlarni kirib kelayotgan qutlug' kasb bayramingiz bilan chin qalbimizdan samimiy muborakbod etamiz!\n\n` +
+        `Yosh avlodga ziyo tarqatish, ularning qalbiga ezgulik, odamiylik va ilm urug'ini qadashdek sharafli va mas'uliyatli mehnatingizda kuch-g'ayrat, yuksak parvozlar va cheksiz muvaffaqiyatlar tilaymiz!\n\n` +
+        `Xonadoningizdan fayz-u baraka, qalbingizdan xotirjamlik, yuzingizdan tabassum aslo arimasin! Bayramingiz muborak bo'lsin!\n\n` +
+        `<i>Hurmat va chuqur ehtirom bilan,</i>\n` +
+        `<b>Rustam Ravshanovich hamda Farg'ona Davomat Tizimi Jamoasi</b> ✨🎓`;
+
+    const users = Object.keys(db.users_db || {});
+    await ctx.reply(`🚀 Bayram tabrigi barcha (${users.length} ta) foydalanuvchilarga yuborilmoqda...`);
+    
+    let sent = 0;
+    for (const u of users) {
+        try {
+            if (fs.existsSync(photoPath)) {
+                await ctx.telegram.sendPhoto(u, { source: photoPath }, { caption, parse_mode: 'HTML' });
+            } else {
+                await ctx.telegram.sendMessage(u, caption, { parse_mode: 'HTML' });
+            }
+            sent++;
+            await new Promise(r => setTimeout(r, 60));
+        } catch (err) {}
+    }
+    await ctx.reply(`✅ Bayram tabrigi jami ${sent} ta foydalanuvchiga muvaffaqiyatli yetkazildi!`);
 });
 
 console.log('Attempting to launch bot...');

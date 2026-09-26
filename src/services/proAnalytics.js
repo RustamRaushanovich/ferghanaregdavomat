@@ -154,6 +154,81 @@ const ProAnalytics = {
             console.error("Non-submitting schools error:", e);
             return [];
         }
+    },
+
+    /**
+     * Deep Analysis for Dashboard:
+     * Groups missing schools by: Today, 3 days, 1 week, 2 weeks, 3 weeks, Never
+     */
+    async getDeepNonSubmittingAnalysis(dateStr) {
+        try {
+            const schoolsDb = require('../database/db').schools_db;
+            const districts = Object.keys(schoolsDb).filter(d => !["Test rejimi", "MMT Boshqarma"].includes(d));
+
+            // Fetch the LAST submission date for all schools
+            const res = await db.query(`
+                SELECT district, school, MAX(date) as last_date
+                FROM attendance
+                GROUP BY district, school
+            `);
+            
+            const lastSubmissions = {};
+            res.rows.forEach(r => {
+                if (!lastSubmissions[r.district]) lastSubmissions[r.district] = {};
+                lastSubmissions[r.district][r.school] = r.last_date;
+            });
+
+            const today = new Date(dateStr);
+            today.setHours(0,0,0,0);
+
+            const result = {
+                districtsData: {},
+                categories: {
+                    today: [],
+                    days3: [],
+                    week1: [],
+                    week2: [],
+                    week3: [],
+                    never: []
+                }
+            };
+
+            districts.forEach(d => {
+                result.districtsData[d] = {
+                    totalSchools: schoolsDb[d]?.length || 0,
+                    missingToday: []
+                };
+
+                const dSchools = schoolsDb[d] || [];
+                dSchools.forEach(s => {
+                    const lastDateStr = lastSubmissions[d] && lastSubmissions[d][s];
+                    
+                    if (!lastDateStr) {
+                        result.categories.never.push({ district: d, school: s });
+                        result.districtsData[d].missingToday.push(s);
+                    } else {
+                        const lastDate = new Date(lastDateStr);
+                        lastDate.setHours(0,0,0,0);
+                        
+                        const diffTime = Math.abs(today - lastDate);
+                        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                        if (diffDays >= 1) result.districtsData[d].missingToday.push(s);
+
+                        if (diffDays === 1 || diffDays === 2) result.categories.today.push({ district: d, school: s, days: diffDays });
+                        else if (diffDays >= 3 && diffDays < 7) result.categories.days3.push({ district: d, school: s, days: diffDays });
+                        else if (diffDays >= 7 && diffDays < 14) result.categories.week1.push({ district: d, school: s, days: diffDays });
+                        else if (diffDays >= 14 && diffDays < 21) result.categories.week2.push({ district: d, school: s, days: diffDays });
+                        else if (diffDays >= 21) result.categories.week3.push({ district: d, school: s, days: diffDays });
+                    }
+                });
+            });
+
+            return result;
+        } catch (e) {
+            console.error("Deep analysis error:", e);
+            return null;
+        }
     }
 };
 

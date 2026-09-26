@@ -9,76 +9,167 @@ const memCache = {
     viloyat: {},
     tuman: {}
 };
-const CACHE_TTL = 15000; // 15 soniya davomida keshda saqlash (dashboard tezligi uchun)
+const CACHE_TTL = 15000;
+
+async function getRawAttendanceRecords(date) {
+    if (process.env.DATABASE_URL) {
+        try {
+            const res = await db.query(`
+                WITH latest_attendance AS (
+                    SELECT DISTINCT ON (district, school) *
+                    FROM attendance
+                    WHERE date = $1
+                    ORDER BY district, school, id DESC
+                )
+                SELECT * FROM latest_attendance
+            `, [date]);
+            if (res.rows && res.rows.length > 0) return res.rows;
+        } catch (e) {
+            console.warn("PostgreSQL getRawAttendanceRecords error, using SQLite:", e.message);
+        }
+    }
+    try {
+        const sqliteDb = require('../database/sqlite');
+        const rows = sqliteDb.prepare("SELECT * FROM attendance WHERE date = ? ORDER BY id DESC").all(date);
+        const map = new Map();
+        for (const r of rows) {
+            const k = `${normalizeKey(r.district)}_${normalizeKey(r.school)}`;
+            if (!map.has(k)) map.set(k, r);
+        }
+        return Array.from(map.values());
+    } catch (e) {
+        console.error("SQLite getRawAttendanceRecords error:", e.message);
+        return [];
+    }
+}
+ // 15 soniya davomida keshda saqlash (dashboard tezligi uchun)
 
 
 async function saveAttendance(data) {
+    const time = getFargonaTime().toTimeString().split(' ')[0].substring(0, 5);
+    const date = getFargonaTime().toISOString().split('T')[0];
+
+    const total_students = parseInt(data.total_students) || 1;
+    const total_absent = (parseInt(data.sababli_total) || 0) + (parseInt(data.sababsiz_total) || 0);
+    let percent = ((total_students - total_absent) / total_students * 100);
+    if (percent < 0) percent = 0;
+    if (percent > 100) percent = 100;
+    const academic_year = require('../database/db').settings.academic_year || '2026-2027';
+
+    // ── PostgreSQL yo'lida ──────────────────────────────────────────
+    if (process.env.DATABASE_URL) {
+        try {
+            await db.query(
+                `DELETE FROM absent_students WHERE attendance_id IN (SELECT id FROM attendance WHERE district=$1 AND school=$2 AND date=$3)`,
+                [data.district, data.school, date]);
+            await db.query(
+                `DELETE FROM attendance WHERE district=$1 AND school=$2 AND date=$3`,
+                [data.district, data.school, date]);
+
+            const query = `
+                INSERT INTO attendance (
+                    date, time, district, school, classes_count, total_students,
+                    sababli_kasal, sababli_tadbirlar, sababli_oilaviy, sababli_ijtimoiy, sababli_boshqa, sababli_jami,
+                    sababsiz_muntazam, sababsiz_qidiruv, sababsiz_chetel, sababsiz_boyin, sababsiz_ishlab,
+                    sababsiz_qarshilik, sababsiz_jazo, sababsiz_nazoratsiz, sababsiz_boshqa, sababsiz_turmush, sababsiz_jami,
+                    total_absent, percent, fio, phone, inspector, user_id, source, bildirgi, academic_year
+                ) VALUES (
+                    $1,$2,$3,$4,$5,$6, $7,$8,$9,$10,$11,$12,
+                    $13,$14,$15,$16,$17, $18,$19,$20,$21,$22,$23,
+                    $24,$25,$26,$27,$28,$29,$30,$31,$32
+                ) RETURNING id;
+            `;
+            const values = [
+                date, time, data.district, data.school, data.classes_count, total_students,
+                data.sababli_kasal, data.sababli_tadbirlar, data.sababli_oilaviy, data.sababli_ijtimoiy, data.sababli_boshqa, data.sababli_total,
+                data.sababsiz_muntazam, data.sababsiz_qidiruv, data.sababsiz_chetel, data.sababsiz_boyin, data.sababsiz_ishlab,
+                data.sababsiz_qarshilik, data.sababsiz_jazo, data.sababsiz_nazoratsiz, data.sababsiz_boshqa, data.sababsiz_turmush, data.sababsiz_total,
+                total_absent, percent.toFixed(1),
+                data.fio, data.phone, data.inspector, data.user_id || 0, data.source || 'bot', data.bildirgi || null,
+                academic_year
+            ];
+            const res = await db.query(query, values);
+            const attId = res.rows[0].id;
+
+            if (data.students_list && data.students_list.length > 0) {
+                for (const s of data.students_list) {
+                    const student = typeof s === 'string' ? JSON.parse(s) : s;
+                    await db.query(
+                        `INSERT INTO absent_students (attendance_id, class, name, address, parent_name, parent_phone) VALUES ($1,$2,$3,$4,$5,$6)`,
+                        [attId, student.class, student.name, student.address, student.parent_name, student.parent_phone]
+                    );
+                }
+            }
+            return true;
+        } catch (e) {
+            console.error("Save Attendance PostgreSQL Error:", e.message, "→ SQLite fallback...");
+        }
+    }
+
+    // ── SQLite fallback (mahalliy ishlash uchun) ────────────────────
     try {
-        const time = getFargonaTime().toTimeString().split(' ')[0].substring(0, 5);
-        const date = getFargonaTime().toISOString().split('T')[0];
+        const sqliteDb = require('../database/sqlite');
 
-        // 1. Delete previous entry for this school on this date (Overwrite logic)
-        // Clean up associated children records first to avoid orphans/FK issues
-        await db.query(`DELETE FROM absent_students WHERE attendance_id IN (SELECT id FROM attendance WHERE district = $1 AND school = $2 AND date = $3)`, [data.district, data.school, date]);
-        await db.query(`DELETE FROM attendance WHERE district = $1 AND school = $2 AND date = $3`, [data.district, data.school, date]);
+        // Delete existing entry for overwrite
+        const existing = sqliteDb.prepare(
+            `SELECT id FROM attendance WHERE district=? AND school=? AND date=?`
+        ).get(data.district, data.school, date);
+        if (existing) {
+            sqliteDb.prepare(`DELETE FROM absent_students WHERE attendance_id=?`).run(existing.id);
+            sqliteDb.prepare(`DELETE FROM attendance WHERE id=?`).run(existing.id);
+        }
 
-        const query = `
+        const ins = sqliteDb.prepare(`
             INSERT INTO attendance (
                 date, time, district, school, classes_count, total_students,
                 sababli_kasal, sababli_tadbirlar, sababli_oilaviy, sababli_ijtimoiy, sababli_boshqa, sababli_jami,
                 sababsiz_muntazam, sababsiz_qidiruv, sababsiz_chetel, sababsiz_boyin, sababsiz_ishlab,
                 sababsiz_qarshilik, sababsiz_jazo, sababsiz_nazoratsiz, sababsiz_boshqa, sababsiz_turmush, sababsiz_jami,
-                total_absent, percent, fio, phone, inspector, user_id, source, bildirgi
-            ) VALUES (
-                $1, $2, $3, $4, $5, $6,
-                $7, $8, $9, $10, $11, $12,
-                $13, $14, $15, $16, $17,
-                $18, $19, $20, $21, $22, $23,
-                $24, $25, $26, $27, $28, $29, $30, $31
-            ) RETURNING id;
-        `;
+                total_absent, percent, fio, phone, inspector, user_id, source, bildirgi, academic_year
+            ) VALUES (?,?,?,?,?,?, ?,?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?)
+        `);
 
-        const total_students = parseInt(data.total_students) || 1;
-        const total_absent = (parseInt(data.sababli_total) || 0) + (parseInt(data.sababsiz_total) || 0);
-        let percent = ((total_students - total_absent) / total_students * 100);
-        if (percent < 0) percent = 0;
-        if (percent > 100) percent = 100;
-
-        const values = [
+        const result = ins.run(
             date, time, data.district, data.school, data.classes_count, total_students,
-            data.sababli_kasal, data.sababli_tadbirlar, data.sababli_oilaviy, data.sababli_ijtimoiy, data.sababli_boshqa, data.sababli_total,
-            data.sababsiz_muntazam, data.sababsiz_qidiruv, data.sababsiz_chetel, data.sababsiz_boyin, data.sababsiz_ishlab,
-            data.sababsiz_qarshilik, data.sababsiz_jazo, data.sababsiz_nazoratsiz, data.sababsiz_boshqa, data.sababsiz_turmush, data.sababsiz_total,
-            total_absent, percent.toFixed(1),
-            data.fio, data.phone, data.inspector, data.user_id || 0, data.source || 'bot', data.bildirgi || null
-        ];
+            data.sababli_kasal||0, data.sababli_tadbirlar||0, data.sababli_oilaviy||0, data.sababli_ijtimoiy||0, data.sababli_boshqa||0, data.sababli_total||0,
+            data.sababsiz_muntazam||0, data.sababsiz_qidiruv||0, data.sababsiz_chetel||0, data.sababsiz_boyin||0, data.sababsiz_ishlab||0,
+            data.sababsiz_qarshilik||0, data.sababsiz_jazo||0, data.sababsiz_nazoratsiz||0, data.sababsiz_boshqa||0, data.sababsiz_turmush||0, data.sababsiz_total||0,
+            total_absent, parseFloat(percent.toFixed(1)),
+            data.fio||'', data.phone||'', data.inspector||'', data.user_id||0, data.source||'bot', data.bildirgi||null,
+            academic_year
+        );
+        const attId = result.lastInsertRowid;
 
-        const res = await db.query(query, values);
-        const attId = res.rows[0].id;
-
-        // Save absent students details
         if (data.students_list && data.students_list.length > 0) {
+            const insStudent = sqliteDb.prepare(`
+                INSERT INTO absent_students (attendance_id, class, name, address, parent_name, parent_phone)
+                VALUES (?,?,?,?,?,?)
+            `);
             for (const s of data.students_list) {
-                // Check if JSON parse needed (from web FormData)
                 const student = typeof s === 'string' ? JSON.parse(s) : s;
-                await db.query(`
-                    INSERT INTO absent_students (attendance_id, class, name, address, parent_name, parent_phone)
-                    VALUES ($1, $2, $3, $4, $5, $6)
-                `, [attId, student.class, student.name, student.address, student.parent_name, student.parent_phone]);
+                insStudent.run(attId, student.class, student.name, student.address, student.parent_name, student.parent_phone);
             }
         }
 
+        console.log(`[SQLite] Davomat saqlandi: ${data.district} – ${data.school}`);
         return true;
     } catch (e) {
-        console.error("Save Attendance DB Error:", e);
+        console.error("Save Attendance SQLite Error:", e);
         return false;
     }
 }
 
+
 async function checkIfExists(district, school, date) {
     try {
-        const res = await db.query('SELECT id FROM attendance WHERE district = $1 AND school = $2 AND date = $3 LIMIT 1', [district, school, date]);
-        return res.rows.length > 0;
+        if (process.env.DATABASE_URL) {
+            const res = await db.query('SELECT id FROM attendance WHERE district = $1 AND school = $2 AND date = $3 LIMIT 1', [district, school, date]);
+            return res.rows.length > 0;
+        }
+        // SQLite fallback
+        const sqliteDb = require('../database/sqlite');
+        const row = sqliteDb.prepare('SELECT id FROM attendance WHERE district=? AND school=? AND date=? LIMIT 1').get(district, school, date);
+        return !!row;
     } catch (e) {
         return false;
     }
@@ -125,44 +216,47 @@ async function exportToExcel(date) {
             }
         }
 
-        const entriesRes = await db.query(`
-            WITH latest_attendance AS (
-                SELECT DISTINCT ON (district, school) *
-                FROM attendance
-                WHERE date = $1
-                ORDER BY district, school, id DESC
-            )
-            SELECT 
-                district, 
-                count(school) as entries, 
-                sum(classes_count) as classes, 
-                sum(total_students) as students, 
-                sum(sababli_kasal) as sk, 
-                sum(sababli_tadbirlar) as st, 
-                sum(sababli_oilaviy) as so, 
-                sum(sababli_ijtimoiy) as si, 
-                sum(sababli_boshqa) as sb, 
-                sum(sababsiz_muntazam) as sm, 
-                sum(sababsiz_qidiruv) as sq, 
-                sum(sababsiz_chetel) as sc, 
-                sum(sababsiz_boyin) as sboy, 
-                sum(sababsiz_ishlab) as si_ish, 
-                sum(sababsiz_qarshilik) as sqar, 
-                sum(sababsiz_jazo) as sj, 
-                sum(sababsiz_nazoratsiz) as sn, 
-                sum(sababsiz_boshqa) as sb_ss, 
-                sum(sababsiz_turmush) as stur, 
-                sum(sababsiz_jami) as ss_jami, 
-                sum(total_absent) as t_absent 
-            FROM latest_attendance 
-            GROUP BY district`, [targetDate]);
-        const entries = entriesRes.rows;
+        const rawRows = await getRawAttendanceRecords(targetDate);
+        const entriesByDist = {};
+        for (const r of rawRows) {
+            const nd = normalizeKey(r.district);
+            if (!entriesByDist[nd]) {
+                entriesByDist[nd] = {
+                    entries: 0, classes: 0, students: 0,
+                    sk: 0, st: 0, so: 0, si: 0, sb: 0,
+                    sm: 0, sq: 0, sc: 0, sboy: 0, si_ish: 0,
+                    sqar: 0, sj: 0, sn: 0, sb_ss: 0, stur: 0,
+                    ss_jami: 0, t_absent: 0
+                };
+            }
+            const agg = entriesByDist[nd];
+            agg.entries += 1;
+            agg.classes += (parseInt(r.classes_count) || 0);
+            agg.students += (parseInt(r.total_students) || 0);
+            agg.sk += (parseInt(r.sababli_kasal) || 0);
+            agg.st += (parseInt(r.sababli_tadbirlar) || 0);
+            agg.so += (parseInt(r.sababli_oilaviy) || 0);
+            agg.si += (parseInt(r.sababli_ijtimoiy) || 0);
+            agg.sb += (parseInt(r.sababli_boshqa) || 0);
+            agg.sm += (parseInt(r.sababsiz_muntazam) || 0);
+            agg.sq += (parseInt(r.sababsiz_qidiruv) || 0);
+            agg.sc += (parseInt(r.sababsiz_chetel) || 0);
+            agg.sboy += (parseInt(r.sababsiz_boyin) || 0);
+            agg.si_ish += (parseInt(r.sababsiz_ishlab) || 0);
+            agg.sqar += (parseInt(r.sababsiz_qarshilik) || 0);
+            agg.sj += (parseInt(r.sababsiz_jazo) || 0);
+            agg.sn += (parseInt(r.sababsiz_nazoratsiz) || 0);
+            agg.sb_ss += (parseInt(r.sababsiz_boshqa) || 0);
+            agg.stur += (parseInt(r.sababsiz_turmush) || 0);
+            agg.ss_jami += (parseInt(r.sababsiz_jami) || 0);
+            agg.t_absent += (parseInt(r.total_absent) || 0);
+        }
 
         let v_schools = 0, v_entries = 0, v_classes = 0, v_students = 0, v_tabsent = 0;
         let v_sababli = Array(5).fill(0), v_sababsiz = Array(11).fill(0);
 
         allDistricts.forEach((dName, i) => {
-            const d = entries.find(e => normalizeKey(e.district) === normalizeKey(dName)) || {};
+            const d = entriesByDist[normalizeKey(dName)] || {};
             const totalSchools = schoolsDb[dName] ? schoolsDb[dName].length : 0;
             const students = parseInt(d.students) || 0;
             const tabsent = parseInt(d.t_absent) || 0;
@@ -315,31 +409,8 @@ async function getViloyatSvod(date) {
         const yesterday = new Date(targetDate); yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-        const rawEntriesRes = await db.query(`
-            WITH normalized_attendance AS (
-                SELECT 
-                    TRIM(REPLACE(REPLACE(district, '‘', ''''), '’', '''')) as norm_dist,
-                    TRIM(REPLACE(REPLACE(school, '‘', ''''), '’', '''')) as norm_school,
-                    *
-                FROM attendance
-                WHERE date = $1
-            )
-            SELECT DISTINCT ON (norm_dist, norm_school) *
-            FROM normalized_attendance
-            ORDER BY norm_dist, norm_school, id DESC`, [targetDate]);
-
-        const yestEntriesRes = await db.query(`
-            WITH normalized_yesterday AS (
-                SELECT 
-                    TRIM(REPLACE(REPLACE(district, '‘', ''''), '’', '''')) as norm_dist,
-                    TRIM(REPLACE(REPLACE(school, '‘', ''''), '’', '''')) as norm_school,
-                    *
-                FROM attendance
-                WHERE date = $1
-            )
-            SELECT DISTINCT ON (norm_dist, norm_school) *
-            FROM normalized_yesterday
-            ORDER BY norm_dist, norm_school, id DESC`, [yesterdayStr]);
+        const rawEntries = await getRawAttendanceRecords(targetDate);
+        const yestEntries = await getRawAttendanceRecords(yesterdayStr);
 
         const schoolsDb = require('../database/db').schools_db;
 
@@ -349,8 +420,8 @@ async function getViloyatSvod(date) {
             const districtOfficialSchools = (dbKey ? schoolsDb[dbKey] : []).map(s => normalizeKey(s));
             const totalSchools = districtOfficialSchools.length;
 
-            const tumanRows = rawEntriesRes.rows.filter(r => normalizeKey(r.norm_dist) === normD || normalizeKey(r.district) === normD);
-            const yestRows = yestEntriesRes.rows.filter(r => normalizeKey(r.norm_dist) === normD || normalizeKey(r.district) === normD);
+            const tumanRows = rawEntries.filter(r => normalizeKey(r.district) === normD);
+            const yestRows = yestEntries.filter(r => normalizeKey(r.district) === normD);
 
             const head = DISTRICT_HEADS[dName] || { name: "-", phone: "-" };
 
@@ -422,8 +493,8 @@ async function getTumanSvod(district, date, limit = 50, offset = 0) {
         const normDist = normalizeKey(district);
         const dbKey = Object.keys(schoolsDb).find(k => normalizeKey(k) === normDist);
         const districtSchools = schoolsDb[dbKey || district] || [];
-        const entriesRes = await db.query(`SELECT DISTINCT ON (district, school) * FROM attendance WHERE date = $1 ORDER BY district, school, id DESC`, [date]);
-        const tumanEntries = entriesRes.rows.filter(e => normalizeKey(e.district) === normDist);
+        const allRecords = await getRawAttendanceRecords(date);
+        const tumanEntries = allRecords.filter(e => normalizeKey(e.district) === normDist);
         const allRows = districtSchools.map(sName => {
             const entry = tumanEntries.find(e => normalizeKey(e.school) === normalizeKey(sName));
             if (entry) return { ...entry, percent: parseFloat(entry.percent) };
@@ -435,6 +506,15 @@ async function getTumanSvod(district, date, limit = 50, offset = 0) {
 }
 
 async function getTodayAbsentsDetails(date, limit = 50, offset = 0) {
+    if (!process.env.DATABASE_URL) {
+        try {
+            const sqliteDb = require('../database/sqlite');
+            const totalRow = sqliteDb.prepare("SELECT count(*) as count FROM absent_students s JOIN attendance a ON s.attendance_id = a.id WHERE a.date = ?").get(date);
+            const total = totalRow ? totalRow.count : 0;
+            const rows = sqliteDb.prepare("SELECT a.date, a.district, a.school, s.class, s.name, s.address, s.parent_name, s.parent_phone, a.inspector, a.fio as submitter_fio, a.phone as submitter_phone FROM absent_students s JOIN attendance a ON s.attendance_id = a.id WHERE a.date = ? ORDER BY a.district, a.school, s.class LIMIT ? OFFSET ?").all(date, limit, offset);
+            return { rows: rows.map(r => ({ ...r, streak: 1, status: 'Odatiy' })), total };
+        } catch (e) { return { rows: [], total: 0 }; }
+    }
     try {
         const countRes = await db.query(`SELECT count(*) FROM absent_students s JOIN attendance a ON s.attendance_id = a.id WHERE a.date = $1`, [date]);
         const total = parseInt(countRes.rows[0].count);

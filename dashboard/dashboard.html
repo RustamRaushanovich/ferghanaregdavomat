@@ -540,63 +540,40 @@
 
 
     <div class="dashboard-container">
-        <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('viloyat')" id="tab_viloyat" data-i18n="tab_v_svod">
-                <i class="fas fa-map"></i> Viloyat Svod
-            </button>
-            <button class="tab-btn" onclick="showTab('tuman')" id="tab_tuman" data-i18n="tab_t_svod">
-                <i class="fas fa-school"></i> Tuman Svod
-            </button>
-            <button class="tab-btn" onclick="showTab('students')" id="tab_students" data-i18n="tab_absents">
-                <i class="fas fa-users"></i> Sababsizlar
-            </button>
-            <button class="tab-btn" onclick="showTab('recent')" id="tab_recent" data-i18n="tab_monitor">
-                <i class="fas fa-bolt"></i> Jonli Monitor
-            </button>
-            <button class="tab-btn" onclick="showTab('analysis')" id="tab_analysis" data-i18n="tab_analysis">
-                <i class="fas fa-chart-line"></i> Tahlil
-            </button>
-            <button class="tab-btn" onclick="showTab('reports')" id="tab_reports">
-                <i class="fas fa-file-invoice"></i> Hisobotlar
-            </button>
-            <button class="tab-btn" onclick="showTab('profile')" id="tab_profile" data-i18n="tab_profile">
-                <i class="fas fa-user-cog"></i> Profil
-            </button>
-            <button class="tab-btn" onclick="showTab('school')" id="tab_school" style="display:none"
-                data-i18n="tab_school">
-                <i class="fas fa-school"></i> Mening Maktabim
-            </button>
-            <button class="tab-btn" onclick="showTab('parents')" id="tab_parents">
-                <i class="fas fa-family"></i> Ota-onalar
-            </button>
-            <button class="tab-btn" onclick="showTab('ranking')" id="tab_ranking">
-                <i class="fas fa-trophy"></i> Maktablar reytingi
-            </button>
-            <button class="tab-btn" onclick="showTab('admin')" id="tab_admin" style="display:none"
-                data-i18n="tab_admin">
-                <i class="fas fa-users-cog"></i> Admin Panel
-            </button>
-            <button class="tab-btn" onclick="showTab('inspector')" id="tab_inspector">
-                <i class="fas fa-user-shield"></i> Inspektorlar
-            </button>
-            <button class="tab-btn" onclick="showTab('pro')" id="tab_pro" style="display:none">
-                <i class="fas fa-crown"></i> 👑 PRO Management
-            </button>
-
-
-        </div>
-
-        <!-- 1. VILOYAT SVODI -->
-        <div id="viloyatView" class="report-view active">
-            <div class="controls">
-                <div class="filter-group">
-                    <label data-i18n="v_choose_date">Sana:</label>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <input type="date" id="viloyatDate" onchange="loadViloyatData()">
-                        <button onclick="loadViloyatData()" class="btn btn-pro" style="padding:10px; width:auto;"><i
-                                class="fas fa-sync-alt"></i></button>
+        <!-- 1-Oktyabr O'qituvchi va murabbiylar kuni Banneri -->
+        <div class="dash-welcome-banner" style="background: linear-gradient(135deg, rgba(30, 27, 75, 0.95) 0%, rgba(67, 24, 98, 0.9) 50%, rgba(124, 45, 18, 0.85) 100%); border: 1.5px solid rgba(251, 191, 36, 0.55); border-radius: 18px; padding: 14px 22px; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; gap: 20px; box-shadow: 0 10px 25px -5px rgba(217, 119, 6, 0.3); backdrop-filter: blur(15px); flex-wrap: wrap;">
+            <div style="display:flex; align-items:center; gap: 15px; flex-wrap: wrap;">
+                <img src="/tabrik_5_oktyabr.jpg" alt="5-Oktyabr" style="width: 48px; height: 64px; object-fit: cover; border-radius: 8px; border: 2px solid #fbbf24; cursor: pointer;" onclick="openTabrikModal()">
+                <div>
+                    <span style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #1e1b4b; font-weight: 800; font-size: 0.75rem; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.5px; text-transform: uppercase;"><i class="fas fa-award"></i> 1-OKTYABR BAYRAMI</span>
+                    <div style="font-size: 1.05rem; font-weight: 700; color: #ffffff; margin-top: 4px;">
+                        💐 Hurmatli ustoz va murabbiylar, kasb bayramingiz muborak bo'lsin!
                     </div>
                 </div>
+            </div>
+            <button onclick="openTabrikModal()" style="color: #fde68a; font-size: 0.88rem; white-space: nowrap; background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(251, 191, 36, 0.4); cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-image" style="color:#fbbf24;"></i> Bayram Tabrigini Ko'rish
+            </button>
+        </div>
+
+        <!-- Tabrik Lightbox Modal -->
+        <div id="tabrikModal" style="display: none; position: fixed; z-index: 99999; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); backdrop-filter: blur(10px); justify-content: center; align-items: center;" onclick="closeTabrikModal()">
+            <div style="position: relative; max-width: 90%; max-height: 95%; text-align: center;" onclick="event.stopPropagation()">
+                <button onclick="closeTabrikModal()" style="position: absolute; top: -15px; right: -15px; width: 40px; height: 40px; border-radius: 50%; background: #ef4444; color: white; border: none; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 10;">&times;</button>
+                <img src="/tabrik_5_oktyabr.jpg" style="max-width: 100%; max-height: 90vh; border-radius: 18px; border: 3px solid #fbbf24; box-shadow: 0 20px 60px rgba(0,0,0,0.8);">
+                <div style="margin-top: 10px; color: #fde68a; font-weight: 600; font-size: 1.1rem;">1-Oktyabr "O'qituvchi va murabbiylar kuni" muborak bo'lsin!</div>
+            </div>
+        </div>
+        <script>
+            function openTabrikModal() {
+                const m = document.getElementById('tabrikModal');
+                if (m) { m.style.display = 'flex'; }
+            }
+            function closeTabrikModal() {
+                const m = document.getElementById('tabrikModal');
+                if (m) { m.style.display = 'none'; }
+            }
+        </script>
                 <div style="display:flex; gap:10px;">
                     <button class="btn" style="background:var(--secondary); width:auto; padding:12px 20px;"
                         onclick="toggleTVMode()" id="tvModeBtn"><i class="fas fa-tv"></i> TV-Rejim</button>
@@ -1013,20 +990,61 @@
         </div>
 
         <div class="stat-card" style="margin-bottom: 25px; background: rgba(244, 63, 94, 0.05); border: 1px solid rgba(244, 63, 94, 0.2);">
-            <h4 style="color: #f43f5e;"><i class="fas fa-exclamation-triangle"></i> Davomat kiritishda sustkashlik qilayotgan maktablar (Oxirgi 30 kun)</h4>
-            <div style="overflow-x: auto; margin-top: 15px; max-height: 400px;">
+            <h4 style="color: #f43f5e; margin-bottom:15px;"><i class="fas fa-exclamation-triangle"></i> Kiritmagan Maktablar (Chuqur Tahlil)</h4>
+            
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom: 20px;">
+                <div class="stat-card" style="background: rgba(244,63,94,0.1); cursor:pointer;" onclick="showMissingModal('today')">
+                    <h5 style="color:#cbd5e1; margin:0; font-size:12px;">Bugun kiritmagan</h5>
+                    <div class="value red" id="missing_today">0</div>
+                </div>
+                <div class="stat-card" style="background: rgba(245,158,11,0.1); cursor:pointer;" onclick="showMissingModal('days3')">
+                    <h5 style="color:#cbd5e1; margin:0; font-size:12px;">3 kundan beri yo'q</h5>
+                    <div class="value" style="color:#f59e0b" id="missing_3days">0</div>
+                </div>
+                <div class="stat-card" style="background: rgba(16,185,129,0.1); cursor:pointer;" onclick="showMissingModal('week1')">
+                    <h5 style="color:#cbd5e1; margin:0; font-size:12px;">1 haftadan beri yo'q</h5>
+                    <div class="value" style="color:#10b981" id="missing_1week">0</div>
+                </div>
+                <div class="stat-card" style="background: rgba(59,130,246,0.1); cursor:pointer;" onclick="showMissingModal('week2')">
+                    <h5 style="color:#cbd5e1; margin:0; font-size:12px;">2 haftadan beri yo'q</h5>
+                    <div class="value" style="color:#3b82f6" id="missing_2weeks">0</div>
+                </div>
+                <div class="stat-card" style="background: rgba(99,102,241,0.1); cursor:pointer;" onclick="showMissingModal('week3')">
+                    <h5 style="color:#cbd5e1; margin:0; font-size:12px;">3 haftadan beri yo'q</h5>
+                    <div class="value" style="color:#6366f1" id="missing_3weeks">0</div>
+                </div>
+                <div class="stat-card" style="background: rgba(0,0,0,0.3); cursor:pointer;" onclick="showMissingModal('never')">
+                    <h5 style="color:#cbd5e1; margin:0; font-size:12px;">Umuman kiritmagan</h5>
+                    <div class="value" style="color:#94a3b8" id="missing_never">0</div>
+                </div>
+            </div>
+
+            <h5 style="color:#cbd5e1; margin-bottom:10px;">Hududlar kesimida (Bugun kiritmaganlar)</h5>
+            <div style="overflow-x: auto; max-height: 400px;">
                 <table id="nonSubmittingTable" style="margin-top: 0; font-size: 0.85rem;">
                     <thead>
                         <tr>
                             <th style="background:#1e293b;">Tuman</th>
-                            <th style="background:#1e293b;">Maktab</th>
-                            <th style="background:#1e293b; text-align:center;">Kiritilgan (kun)</th>
-                            <th style="background:#1e293b; text-align:center;">Qoldirilgan (kun)</th>
-                            <th style="background:#1e293b; text-align:center;">Holat</th>
+                            <th style="background:#1e293b; text-align:center;">Jami maktab</th>
+                            <th style="background:#1e293b; text-align:center;">Kiritdi</th>
+                            <th style="background:#1e293b; text-align:center;">Kiritmadi</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Missing Schools Modal -->
+        <div id="missingModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(5px);">
+            <div style="background:#1e293b; padding:25px; border-radius:20px; max-width:600px; width:90%; max-height:80vh; display:flex; flex-direction:column; border:1px solid rgba(255,255,255,0.1);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 id="missingModalTitle" style="margin:0; color:#fff;">Kiritmagan maktablar</h3>
+                    <button onclick="document.getElementById('missingModal').style.display='none'" style="background:none; border:none; color:#f43f5e; font-size:1.5rem; cursor:pointer;"><i class="fas fa-times"></i></button>
+                </div>
+                <div style="overflow-y:auto; flex:1;" id="missingModalContent">
+                    <!-- List injected here -->
+                </div>
             </div>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -2452,7 +2470,9 @@ async function loadViloyatData() {
       }).catch(err => console.log('SW registration failed:', err));
     });
   }
-</script></body>
+</script>    <!-- Between Us Promo Widget -->
+    <script src="promo-widget.js"></script>
+</body>
 
 </html>
 

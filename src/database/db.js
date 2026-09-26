@@ -8,7 +8,7 @@ const PROMO_FILE = path.join(__dirname, 'promocodes.json');
 const SCHOOLS_FILE = path.join(__dirname, 'schools.json');
 const COORDS_FILE = path.join(__dirname, 'coords.json');
 
-let settings = { vacation_mode: false, location_collection_mode: false, check_location: false, maintenance_mode: false };
+let settings = { vacation_mode: false, location_collection_mode: false, check_location: false, maintenance_mode: false, academic_year: '2026-2027' };
 let users_db = {};
 let promocodes = {};
 let schools_db = {};
@@ -88,6 +88,40 @@ function updateUserProMonths(uid, months = 1) {
 
 const { SUPER_ADMIN_IDS, SPECIALIST_IDS } = require('../config/config');
 
+
+function updateUserAccessMonths(uid, months = 1) {
+    if (!users_db[uid]) users_db[uid] = {};
+
+    let now = new Date();
+    let baseDate = (users_db[uid].has_access && new Date(users_db[uid].access_expire_date) > now)
+        ? new Date(users_db[uid].access_expire_date)
+        : now;
+
+    let expireDate = new Date(baseDate);
+    expireDate.setMonth(expireDate.getMonth() + months);
+
+    users_db[uid].has_access = true;
+    users_db[uid].access_expire_date = expireDate.toISOString().split('T')[0];
+    users_db[uid].access_purchase_date = now.toISOString().split('T')[0];
+
+    try {
+        fs.writeFileSync(USERS_DB_FILE, JSON.stringify(users_db, null, 2));
+        pg.query('INSERT INTO tg_users (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = $2, last_active = NOW()', [String(uid), users_db[uid]]);
+    } catch (e) { }
+    return users_db[uid];
+}
+
+function checkAttendanceAccess(uid) {
+    if (SUPER_ADMIN_IDS.map(Number).includes(Number(uid))) return true;
+    if (SPECIALIST_IDS.map(Number).includes(Number(uid))) return true;
+
+    const u = users_db[uid];
+    if (!u) return false;
+    if (u.is_pro && new Date(u.pro_expire_date) > new Date()) return true;
+
+    return u.has_access && new Date(u.access_expire_date) > new Date();
+}
+
 function checkPro(uid) {
     if (SUPER_ADMIN_IDS.map(Number).includes(Number(uid))) return true;
     if (SPECIALIST_IDS.map(Number).includes(Number(uid))) return true;
@@ -105,6 +139,41 @@ function checkProByPhone(phone) {
     );
 }
 
+function checkAttendanceAccessByPhone(phone) {
+    if (!phone) return false;
+    const cleanPhone = phone.replace(/\D/g, '');
+
+    const userMatch = Object.values(users_db).some(u => {
+        if (!u.phone) return false;
+        if (u.phone.replace(/\D/g, '') !== cleanPhone) return false;
+        if (u.uid && (SUPER_ADMIN_IDS.map(Number).includes(Number(u.uid)) || SPECIALIST_IDS.map(Number).includes(Number(u.uid)))) return true;
+        if (u.is_pro && new Date(u.pro_expire_date) > new Date()) return true;
+        if (u.has_access && new Date(u.access_expire_date) > new Date()) return true;
+        return false;
+    });
+    if (userMatch) return true;
+
+    try {
+        const pPath = path.join(__dirname, 'pro_users.json');
+        if (fs.existsSync(pPath)) {
+            const proData = JSON.parse(fs.readFileSync(pPath, 'utf8') || '[]');
+            const match = proData.find(u => u.phone === cleanPhone && new Date(u.pro_expire_date) > new Date());
+            if (match) return true;
+        }
+    } catch (e) {}
+
+    try {
+        const aPath = path.join(__dirname, 'access_users.json');
+        if (fs.existsSync(aPath)) {
+            const accessData = JSON.parse(fs.readFileSync(aPath, 'utf8') || '[]');
+            const match = accessData.find(u => u.phone === cleanPhone && new Date(u.access_expire_date) > new Date());
+            if (match) return true;
+        }
+    } catch (e) {}
+
+    return false;
+}
+
 // Initial load
 loadAll();
 
@@ -119,6 +188,9 @@ module.exports = {
     saveUser,
     updateUserDb,
     updateUserProMonths,
+    updateUserAccessMonths,
+    checkAttendanceAccess,
+    checkAttendanceAccessByPhone,
     checkPro,
     checkProByPhone,
     saveCoords,

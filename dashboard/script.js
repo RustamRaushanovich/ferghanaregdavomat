@@ -922,7 +922,11 @@ if (form) form.addEventListener('submit', async (e) => {
             }
         } else {
             const err = await res.json();
-            alert('Xatolik: ' + (err.error || 'Server xatosi'));
+            if (res.status === 402) {
+                showPaymentModal(err);
+            } else {
+                alert('Xatolik: ' + (err.error || 'Server xatosi'));
+            }
             btn.innerHTML = originalText;
             btn.disabled = false;
         }
@@ -933,6 +937,60 @@ if (form) form.addEventListener('submit', async (e) => {
         if (btn) btn.disabled = false;
     }
 });
+
+function showPaymentModal(data) {
+    let modal = document.getElementById('webPaymentModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'webPaymentModal';
+        modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(10px); z-index:999999; display:flex; align-items:center; justify-content:center; padding:20px;';
+        document.body.appendChild(modal);
+    }
+
+    const humo = (data && data.cards && data.cards.humo) || '9860 0366 3576 1863';
+    const visa = (data && data.cards && data.cards.visa) || '4187 8000 0132 1124';
+    const msg = (data && data.message) || "25.09.2026 sanasidan e'tiboran kunlik davomat kiritish 10 000 so'm/oy to'lovli hisoblanadi. Davomat kiritish uchun to'lov kartalarimizga 10 000 so'm o'tkazib, adminlarga chek yuboring!";
+
+    modal.innerHTML = `
+        <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.15); border-radius:24px; padding:25px; max-width:420px; width:100%; color:#fff; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,0.5); position:relative; font-family:sans-serif;">
+            <button onclick="document.getElementById('webPaymentModal').style.display='none'" style="position:absolute; top:15px; right:15px; background:none; border:none; color:#94a3b8; font-size:22px; cursor:pointer;">&times;</button>
+            
+            <div style="width:60px; height:60px; background:linear-gradient(135deg, #6366f1, #a855f7); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; font-size:26px;">💳</div>
+            
+            <h3 style="margin:0 0 10px; font-size:20px; font-weight:700;">Davomat Kiritish Obunasi</h3>
+            <p style="font-size:13px; color:#cbd5e1; line-height:1.5; margin-bottom:20px;">${msg}</p>
+
+            <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:15px; text-align:left; margin-bottom:15px;">
+                <div style="font-size:12px; color:#94a3b8; margin-bottom:5px;">🔹 <b>HUMO Karta:</b> (10 000 so'm / 25 000 so'm)</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 12px; border-radius:10px; font-family:monospace; font-size:15px; letter-spacing:1px; color:#38bdf8;">
+                    <span>${humo}</span>
+                    <button onclick="navigator.clipboard.writeText('${humo.replace(/\s/g, '')}'); alert('Humo karta raqami nusxalandi!');" style="background:#0284c7; color:#fff; border:none; border-radius:6px; padding:4px 10px; font-size:11px; cursor:pointer;">Nusxalash</button>
+                </div>
+
+                <div style="font-size:12px; color:#94a3b8; margin-top:12px; margin-bottom:5px;">🔹 <b>VISA Karta:</b></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 12px; border-radius:10px; font-family:monospace; font-size:15px; letter-spacing:1px; color:#38bdf8;">
+                    <span>${visa}</span>
+                    <button onclick="navigator.clipboard.writeText('${visa.replace(/\s/g, '')}'); alert('VISA karta raqami nusxalandi!');" style="background:#0284c7; color:#fff; border:none; border-radius:6px; padding:4px 10px; font-size:11px; cursor:pointer;">Nusxalash</button>
+                </div>
+            </div>
+
+            <div style="font-size:12px; color:#94a3b8; margin-bottom:20px; line-height:1.4;">
+                📝 To'lovni amalga oshirgach, chek rasmini Telegram botimizga (<strong>@Between_Us_uzb</strong>) yuboring. Adminlar tez fursatda 1 oyga faollashtirib berishadi!
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <a href="https://t.me/Between_Us_uzb" target="_blank" style="flex:1; background:linear-gradient(135deg, #0088cc, #229ed9); color:#fff; text-decoration:none; padding:12px; border-radius:12px; font-size:13px; font-weight:600;">
+                    📲 Telegram Botga Chek Yuborish
+                </a>
+                <button onclick="document.getElementById('webPaymentModal').style.display='none'" style="background:rgba(255,255,255,0.1); color:#cbd5e1; border:none; padding:12px 18px; border-radius:12px; font-size:13px; cursor:pointer;">
+                    Yopish
+                </button>
+            </div>
+        </div>
+    `;
+
+    modal.style.display = 'flex';
+}
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').then(reg => {
