@@ -243,13 +243,20 @@ app.post('/api/admin/reset-password', auth, async (req, res) => {
 
 // Admin: Get all TG Users
 app.get('/api/admin/tg-users', auth, async (req, res) => {
-    const isOwner = req.user.username === 'mrqirol';
-    if (!isOwner) return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    const isAuthorized = req.user.username === 'mrqirol' || req.user.role === 'superadmin';
+    if (!isAuthorized) return res.status(403).json({ error: 'Ruxsat yo\'q' });
     try {
         const result = await sqlite.query('SELECT * FROM tg_users ORDER BY id DESC');
-        res.json(result.rows);
+        if (result && Array.isArray(result.rows) && result.rows.length > 0) {
+            return res.json(result.rows);
+        }
+        // Fallback to local users_db
+        const usersList = Object.entries(db.users_db || {}).map(([id, data]) => ({ id, data }));
+        res.json(usersList);
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        // Fallback to local users_db if database query errors
+        const usersList = Object.entries(db.users_db || {}).map(([id, data]) => ({ id, data }));
+        res.json(usersList);
     }
 });
 
@@ -1293,7 +1300,7 @@ app.post('/api/admin/settings', auth, async (req, res) => {
     res.json({ success: true, settings: db.settings });
 });
 
-// Admin: Broadcast message (Supports Files)
+// Admin: Broadcast message (Supports Files, HTML fallback, Flood Control)
 app.post('/api/admin/broadcast', auth, (req, res, next) => {
     upload.single('file')(req, res, function (err) {
         if (err) {
@@ -1307,12 +1314,12 @@ app.post('/api/admin/broadcast', auth, (req, res, next) => {
     if (req.user.role !== 'superadmin' && !isOwner) return res.status(403).json({ error: 'Ruxsat yo\'q' });
 
     const { message, group } = req.body;
-    if (!message) return res.status(400).json({ error: 'Xabar matni bo\'sh' });
+    if (!message || !message.trim()) return res.status(400).json({ error: 'Xabar matni bo\'sh' });
 
     const file = req.file;
 
     // Filter recipients from users_db
-    const users = Object.entries(db.users_db);
+    const users = Object.entries(db.users_db || {});
     let targetUids = [];
 
     if (group === 'inspectors') {
@@ -1335,24 +1342,64 @@ app.post('/api/admin/broadcast', auth, (req, res, next) => {
         const path = require('path');
 
         for (const uid of targetUids) {
-            try {
-                if (file) {
-                    const filePath = path.join(__dirname, 'assets', 'uploads', file.filename);
-                    if (file.mimetype.startsWith('image/')) {
-                        await bot.telegram.sendPhoto(uid, { source: filePath }, { caption: message, parse_mode: 'HTML' });
+            let attempts = 0;
+            let success = false;
+
+            while (attempts < 3 && !success) {
+                attempts++;
+                try {
+                    if (file) {
+                        const filePath = file.path || path.join(__dirname, 'assets', 'uploads', file.filename);
+                        const isImage = file.mimetype && file.mimetype.startsWith('image/');
+                        if (fs.existsSync(filePath)) {
+                            try {
+                                if (isImage) {
+                                    await bot.telegram.sendPhoto(uid, { source: filePath }, { caption: message, parse_mode: 'HTML' });
+                                } else {
+                                    await bot.telegram.sendDocument(uid, { source: filePath }, { caption: message, parse_mode: 'HTML' });
+                                }
+                            } catch (htmlErr) {
+                                // Fallback without parse_mode
+                                if (isImage) {
+                                    await bot.telegram.sendPhoto(uid, { source: filePath }, { caption: message });
+                                } else {
+                                    await bot.telegram.sendDocument(uid, { source: filePath }, { caption: message });
+                                }
+                            }
+                        } else {
+                            // File not found on disk, fallback to sending message text
+                            try {
+                                await bot.telegram.sendMessage(uid, message, { parse_mode: 'HTML' });
+                            } catch (htmlErr) {
+                                await bot.telegram.sendMessage(uid, message);
+                            }
+                        }
                     } else {
-                        await bot.telegram.sendDocument(uid, { source: filePath }, { caption: message, parse_mode: 'HTML' });
+                        try {
+                            await bot.telegram.sendMessage(uid, message, { parse_mode: 'HTML' });
+                        } catch (htmlErr) {
+                            // Fallback to plain text if HTML entities parse error
+                            await bot.telegram.sendMessage(uid, message);
+                        }
                     }
-                } else {
-                    await bot.telegram.sendMessage(uid, message, { parse_mode: 'HTML' });
+                    sent++;
+                    success = true;
+                } catch (e) {
+                    // Check Telegram Flood Control (429)
+                    if (e.response && e.response.error_code === 429) {
+                        const waitSeconds = (e.response.parameters && e.response.parameters.retry_after) || 3;
+                        console.warn(`[BROADCAST 429] Rate limit hit. Waiting ${waitSeconds}s before retry...`);
+                        await new Promise(r => setTimeout(r, (waitSeconds + 1) * 1000));
+                        continue;
+                    }
+                    // Blocked, deactivated or invalid chat
+                    blocked++;
+                    break;
                 }
-                sent++;
-            } catch (e) {
-                blocked++;
             }
-            await new Promise(r => setTimeout(r, 60)); // Avoid flood limits
+            await new Promise(r => setTimeout(r, 70)); // Safe interval to prevent rate limit
         }
-        console.log(`[BROADCAST] Finished. Sent: ${sent}, Blocked: ${blocked}`);
+        console.log(`[BROADCAST] Finished. Sent: ${sent}, Blocked/Failed: ${blocked}`);
     })();
 });
 
@@ -1599,21 +1646,46 @@ app.post('/api/submit', upload.single('bildirgi'), async (req, res) => {
         const isProForReport = db.checkProByPhone(d.phone);
         const report = formatAttendanceReport(flatData, isProForReport, 'web');
 
-        const tid = getTopicId(d.district);
-        const reportGroupId = "-1003662758005"; // Shared report group
+        const tid = getTopicId(d.district || flatData.district);
+        const reportGroupId = process.env.REPORT_GROUP_ID || config.REPORT_GROUP_ID || "-1003662758005";
+
+        console.log(`[WEB-SUBMIT] Sending to Telegram Group: ${reportGroupId}, Topic ID: ${tid}, District: ${d.district}`);
 
         try {
-            if (tid) {
-                await bot.telegram.sendMessage(reportGroupId, report, { parse_mode: 'HTML', message_thread_id: tid });
-                // Send Bildirgi to group if exists
-                if (flatData.bildirgi && fs.existsSync(flatData.bildirgi)) {
-                    await bot.telegram.sendDocument(reportGroupId, { source: flatData.bildirgi, filename: path.basename(flatData.bildirgi) }, { caption: `#Bildirgi ${d.school}`, message_thread_id: tid });
-                }
-            } else {
-                await bot.telegram.sendMessage(reportGroupId, report, { parse_mode: 'HTML' });
+            const sendOpts = tid ? { parse_mode: 'HTML', message_thread_id: Number(tid) } : { parse_mode: 'HTML' };
+            try {
+                await bot.telegram.sendMessage(reportGroupId, report, sendOpts);
+            } catch (htmlErr) {
+                console.warn("[WEB-SUBMIT] HTML parse error in TG send, retrying plain text:", htmlErr.message);
+                const plainOpts = tid ? { message_thread_id: Number(tid) } : {};
+                const plainReport = report.replace(/<[^>]*>/g, '');
+                await bot.telegram.sendMessage(reportGroupId, plainReport, plainOpts);
             }
+
+            // Send Bildirgi to group if exists
+            if (flatData.bildirgi && fs.existsSync(flatData.bildirgi)) {
+                const isImage = /\.(jpg|jpeg|png|webp)$/i.test(flatData.bildirgi);
+                const docCaption = `#Bildirgi ${d.school}`;
+                const docOpts = { caption: docCaption, ...(tid ? { message_thread_id: Number(tid) } : {}) };
+
+                try {
+                    if (isImage) {
+                        await bot.telegram.sendPhoto(reportGroupId, { source: flatData.bildirgi }, docOpts);
+                    } else {
+                        await bot.telegram.sendDocument(reportGroupId, { source: flatData.bildirgi, filename: path.basename(flatData.bildirgi) }, docOpts);
+                    }
+                } catch (fileSendErr) {
+                    console.error("[WEB-SUBMIT] Bildirgi send error, trying fallback document:", fileSendErr.message);
+                    try {
+                        await bot.telegram.sendDocument(reportGroupId, { source: flatData.bildirgi, filename: path.basename(flatData.bildirgi) }, docOpts);
+                    } catch (e3) {
+                        console.error("[WEB-SUBMIT] Bildirgi fallback failed:", e3.message);
+                    }
+                }
+            }
+            console.log(`[WEB-SUBMIT] Successfully sent to topic ${tid}`);
         } catch (err) {
-            console.error("TG Send Error:", err.message);
+            console.error("[WEB-SUBMIT] TG Send Error:", err.message);
         }
 
         res.json({
