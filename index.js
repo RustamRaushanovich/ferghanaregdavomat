@@ -3018,16 +3018,32 @@ bot.command('tabrik_hamma', async (ctx) => {
     await ctx.reply(`✅ Bayram tabrigi jami ${sent} ta foydalanuvchiga muvaffaqiyatli yetkazildi!`);
 });
 
-console.log('Attempting to launch bot...');
-bot.launch({
-    polling: {
-        timeout: 60
+async function launchBotSafe(maxRetries = 10, delayMs = 6000) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            console.log(`[Bot] Ishga tushirishga urinish (${attempt}/${maxRetries})...`);
+            await bot.telegram.deleteWebhook({ drop_pending_updates: true }).catch(() => {});
+            await bot.launch({
+                dropPendingUpdates: true,
+                polling: {
+                    timeout: 45
+                }
+            });
+            console.log('✅ Ferghanaredavomat Bot Muvaffaqiyatli Ishga Tushdi!');
+            return;
+        } catch (e) {
+            console.error(`[Bot] Startup Error (${attempt}-urinish):`, e.message || e);
+            if (e.message && (e.message.includes('409') || e.message.includes('Conflict'))) {
+                console.log(`⏳ [Bot] 409 Conflict: Boshqa bot instansiyasi to'xtashini kutish (${delayMs / 1000}s)...`);
+                await new Promise(res => setTimeout(res, delayMs));
+            } else {
+                console.error("[Bot] Qayta ulanish mumkin bo'lmagan xatolik:", e);
+                break;
+            }
+        }
     }
-}).then(() => {
-    console.log('Ferghanaredavomat Bot Started!');
-}).catch(e => {
-    console.error("Startup Error:", e);
-});
+}
+launchBotSafe();
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));

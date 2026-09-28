@@ -1,25 +1,25 @@
-const CACHE_NAME = 'davomat-cache-v1';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/davomat.html',
-  '/admin.html',
-  '/dashboard.html',
-  '/assets/agro_card.png'
-];
+const CACHE_NAME = 'davomat-cache-v2';
 
 self.addEventListener('install', (e) => {
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
+    caches.keys().then((keys) => Promise.all(
+      keys.map((k) => caches.delete(k))
+    )).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', (e) => {
+  if (e.request.mode === 'navigate' || e.request.destination === 'document' || e.request.url.endsWith('.html')) {
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match(e.request))
+    );
+    return;
+  }
   e.respondWith(
-    caches.match(e.request).then((res) => {
-        return res || fetch(e.request);
-    })
+    fetch(e.request).catch(() => caches.match(e.request))
   );
 });
