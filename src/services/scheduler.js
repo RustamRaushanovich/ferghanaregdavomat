@@ -3,17 +3,36 @@ const cron = require('node-cron');
 const { getViloyatSvod, exportToExcel, getTumanSvod } = require('./dataService');
 const { getFargonaTime } = require('../utils/fargona');
 const topicsConfig = require('../config/topics');
-const { getTopicId } = require('../utils/topics');
+const { getTopicId, normalizeKey } = require('../utils/topics');
 const db = require('../database/db');
+const config = require('../config/config');
 const { DISTRICT_HEADS } = require('../config/config');
 require('dotenv').config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
-const REPORT_GROUP_ID = process.env.REPORT_GROUP_ID || '-1003662758005';
+const REPORT_GROUP_ID = process.env.REPORT_GROUP_ID || (config && config.REPORT_GROUP_ID) || '-1003662758005';
 
-/**
- * Daily Summary (Svod) at 16:30
- */
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+function getDistrictSchools(distName, schoolsDb) {
+    if (!distName || !schoolsDb) return [];
+    if (schoolsDb[distName] && schoolsDb[distName].length > 0) return schoolsDb[distName];
+    const straight = distName.replace(/[‘’`]/g, "'");
+    if (schoolsDb[straight] && schoolsDb[straight].length > 0) return schoolsDb[straight];
+    const curly = distName.replace(/['’`]/g, "‘");
+    if (schoolsDb[curly] && schoolsDb[curly].length > 0) return schoolsDb[curly];
+    const norm = normalizeKey(distName);
+    const dbKey = Object.keys(schoolsDb).find(k => normalizeKey(k) === norm);
+    if (dbKey && schoolsDb[dbKey]) return schoolsDb[dbKey];
+    return [];
+}
+
 /**
  * Daily Summary (Svod) at 16:30
  */
@@ -53,35 +72,55 @@ async function sendDailySummary() {
         // Send to Main Topic (MMT Boshqarma)
         const mainTopicId = getTopicId("MMT Boshqarma");
         if (filePath) {
-            await bot.telegram.sendDocument(REPORT_GROUP_ID, { source: filePath }, {
-                caption: mainMsg,
-                parse_mode: 'HTML',
-                message_thread_id: mainTopicId
-            });
+            try {
+                await bot.telegram.sendDocument(REPORT_GROUP_ID, { source: filePath }, {
+                    caption: mainMsg,
+                    parse_mode: 'HTML',
+                    message_thread_id: mainTopicId
+                });
+            } catch (docErr) {
+                console.warn("[CRON] Main topic document send error:", docErr.message);
+                try {
+                    await bot.telegram.sendMessage(REPORT_GROUP_ID, mainMsg.replace(/<[^>]*>/g, ''), {
+                        message_thread_id: mainTopicId
+                    });
+                } catch (mErr) {}
+            }
 
             // 3. Send Individual District Summaries to their Topics
             for (const d of svod) {
-                const topicId = getTopicId(d.district);
-                if (!topicId || topicId === mainTopicId) continue;
-
-                let distMsg = `📊 <b>KUNLIK YAKUNIY HISOBOT</b>\n`;
-                distMsg += `📍 Hudud: <b>${d.district}</b>\n`;
-                distMsg += `📅 Sana: <b>${dateStr}</b>\n\n`;
-                distMsg += `🏢 Kiritgan maktablar: <b>${d.entries} / ${d.total_schools}</b>\n`;
-                distMsg += `👥 Jami o'quvchilar: <b>${(d.students || 0).toLocaleString()}</b>\n`;
-                distMsg += `✅ Sababli kelmaganlar: <b>${d.sababli || 0}</b>\n`;
-                distMsg += `🚫 Sababsiz kelmaganlar: <b>${d.sababsiz || 0}</b>\n`;
-                distMsg += `📉 Davomat ko'rsatkichi: <b>${(d.avg_percent || 0).toFixed(1)}%</b>\n\n`;
-                distMsg += `👉 <a href="https://ferghanaregdavomat.uz/dashboard.html">Batafsil dashboardda</a>`;
-
                 try {
-                    await bot.telegram.sendMessage(REPORT_GROUP_ID, distMsg, {
-                        parse_mode: 'HTML',
-                        message_thread_id: topicId,
-                        disable_web_page_preview: true
-                    });
-                } catch (err) {
-                    console.error(`Error sending individual report to ${d.district}:`, err.message);
+                    const topicId = getTopicId(d.district);
+                    if (!topicId || topicId === mainTopicId) continue;
+
+                    let distMsg = `📊 <b>KUNLIK YAKUNIY HISOBOT</b>\n`;
+                    distMsg += `📍 Hudud: <b>${escapeHtml(d.district)}</b>\n`;
+                    distMsg += `📅 Sana: <b>${dateStr}</b>\n\n`;
+                    distMsg += `🏢 Kiritgan maktablar: <b>${d.entries} / ${d.total_schools}</b>\n`;
+                    distMsg += `👥 Jami o'quvchilar: <b>${(d.students || 0).toLocaleString()}</b>\n`;
+                    distMsg += `✅ Sababli kelmaganlar: <b>${d.sababli || 0}</b>\n`;
+                    distMsg += `🚫 Sababsiz kelmaganlar: <b>${d.sababsiz || 0}</b>\n`;
+                    distMsg += `📉 Davomat ko'rsatkichi: <b>${(d.avg_percent || 0).toFixed(1)}%</b>\n\n`;
+                    distMsg += `👉 <a href="https://ferghanaregdavomat.uz/dashboard.html">Batafsil dashboardda</a>`;
+
+                    try {
+                        await bot.telegram.sendMessage(REPORT_GROUP_ID, distMsg, {
+                            parse_mode: 'HTML',
+                            message_thread_id: topicId,
+                            disable_web_page_preview: true
+                        });
+                    } catch (err) {
+                        console.error(`Error sending individual report to ${d.district}:`, err.message);
+                        const plainDistMsg = distMsg.replace(/<[^>]*>/g, '');
+                        await bot.telegram.sendMessage(REPORT_GROUP_ID, plainDistMsg, {
+                            message_thread_id: topicId,
+                            disable_web_page_preview: true
+                        });
+                    }
+
+                    await new Promise(r => setTimeout(r, 350));
+                } catch (loopErr) {
+                    console.error(`Error in daily summary loop for ${d.district}:`, loopErr.message);
                 }
             }
 
@@ -152,50 +191,66 @@ async function sendWeeklyBestSchools() {
         const db = require('../database/pg');
 
         for (const distName of districts) {
-            const topicId = getTopicId(distName);
-            if (!topicId) continue;
+            try {
+                const topicId = getTopicId(distName);
+                if (!topicId) continue;
 
-            const q = `
-                SELECT school, AVG(percent) as avg_p 
-                FROM attendance 
-                WHERE district = $1 AND date = ANY($2) 
-                GROUP BY school 
-                ORDER BY avg_p DESC LIMIT 5
-            `;
-            const res = await db.query(q, [distName, dateRange]);
+                const straightDist = distName.replace(/[‘’`]/g, "'");
+                const curlyDist = distName.replace(/['’`]/g, "‘");
 
-            if (res.rows.length > 0) {
-                let msg = `🏆 <b>HAFTALIK ENG NAMUNALI MAKTABLAR</b> (TOP-5)\n`;
-                msg += `📍 Hudud: <b>${distName}</b>\n`;
-                msg += `📅 Davr: ${dateRange[dateRange.length - 1]} dan ${dateRange[0]} gacha\n\n`;
+                const q = `
+                    SELECT school, AVG(percent) as avg_p 
+                    FROM attendance 
+                    WHERE (district = $1 OR district = $2 OR district = $3) AND date = ANY($4) 
+                    GROUP BY school 
+                    ORDER BY avg_p DESC LIMIT 5
+                `;
+                const res = await db.query(q, [distName, straightDist, curlyDist, dateRange]);
 
-                res.rows.forEach((r, i) => {
-                    msg += `${getMedal(i + 1)} <b>${r.school}</b> — ${parseFloat(r.avg_p).toFixed(1)}%\n`;
-                });
+                if (res.rows && res.rows.length > 0) {
+                    let msg = `🏆 <b>HAFTALIK ENG NAMUNALI MAKTABLAR</b> (TOP-5)\n`;
+                    msg += `📍 Hudud: <b>${escapeHtml(distName)}</b>\n`;
+                    msg += `📅 Davr: ${dateRange[dateRange.length - 1]} dan ${dateRange[0]} gacha\n\n`;
 
-                msg += `\n👏 <i>Tabriklaymiz! Davomatni namunali saqlashda davom eting.</i>`;
+                    res.rows.forEach((r, i) => {
+                        msg += `${getMedal(i + 1)} <b>${escapeHtml(r.school)}</b> — ${parseFloat(r.avg_p).toFixed(1)}%\n`;
+                    });
 
-                // --- 🎖 NEW: Generate Image Certificate for #1 school ---
-                try {
-                    const topSchool = res.rows[0];
-                    if (parseFloat(topSchool.avg_p) >= 90) { // Faqat 90% dan yuqori bo'lsa
-                        const { generateCertificate } = require('./rewardService');
-                        const buffer = await generateCertificate(topSchool.school, distName, 'Haftalik');
+                    msg += `\n👏 <i>Tabriklaymiz! Davomatni namunali saqlashda davom eting.</i>`;
 
-                        await bot.telegram.sendPhoto(REPORT_GROUP_ID, { source: buffer }, {
-                            caption: `🏆 <b>HAFTANING ENG YAXSHI MAKTABI!</b>\n\n<b>${distName}</b> bo'yicha eng yuqori ko'rsatkich: <b>${topSchool.school}</b> (${parseFloat(topSchool.avg_p).toFixed(1)}%)`,
+                    // --- 🎖 NEW: Generate Image Certificate for #1 school ---
+                    try {
+                        const topSchool = res.rows[0];
+                        if (parseFloat(topSchool.avg_p) >= 90) { // Faqat 90% dan yuqori bo'lsa
+                            const { generateCertificate } = require('./rewardService');
+                            const buffer = await generateCertificate(topSchool.school, distName, 'Haftalik');
+
+                            await bot.telegram.sendPhoto(REPORT_GROUP_ID, { source: buffer }, {
+                                caption: `🏆 <b>HAFTANING ENG YAXSHI MAKTABI!</b>\n\n<b>${escapeHtml(distName)}</b> bo'yicha eng yuqori ko'rsatkich: <b>${escapeHtml(topSchool.school)}</b> (${parseFloat(topSchool.avg_p).toFixed(1)}%)`,
+                                parse_mode: 'HTML',
+                                message_thread_id: topicId
+                            });
+                        }
+                    } catch (imgErr) {
+                        console.error("Reward Image Error:", imgErr.message);
+                    }
+
+                    try {
+                        await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
                             parse_mode: 'HTML',
                             message_thread_id: topicId
                         });
+                    } catch (sendErr) {
+                        const plainMsg = msg.replace(/<[^>]*>/g, '');
+                        await bot.telegram.sendMessage(REPORT_GROUP_ID, plainMsg, {
+                            message_thread_id: topicId
+                        });
                     }
-                } catch (imgErr) {
-                    console.error("Reward Image Error:", imgErr.message);
-                }
 
-                await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
-                    parse_mode: 'HTML',
-                    message_thread_id: topicId
-                });
+                    await new Promise(r => setTimeout(r, 350));
+                }
+            } catch (distErr) {
+                console.error(`❌ [CRON] Error for district ${distName} in weekly best schools:`, distErr.message);
             }
         }
         console.log("✅ [CRON] Weekly best schools report sent.");
@@ -234,12 +289,12 @@ async function sendFlashReport() {
 
         msg += `✅ <b>ENG YAXSHI 3 HUDUD:</b>\n`;
         top3.forEach((d, i) => {
-            msg += `${i + 1}. ${d.district} — <b>${parseFloat(d.avg_percent).toFixed(1)}%</b>\n`;
+            msg += `${i + 1}. ${escapeHtml(d.district)} — <b>${parseFloat(d.avg_percent).toFixed(1)}%</b>\n`;
         });
 
         msg += `\n⚠️ <b>DIQQAT TALAB 3 HUDUD:</b>\n`;
         bottom3.forEach((d, i) => {
-            msg += `${i + 1}. ${d.district} — <b>${parseFloat(d.avg_percent).toFixed(1)}%</b>\n`;
+            msg += `${i + 1}. ${escapeHtml(d.district)} — <b>${parseFloat(d.avg_percent).toFixed(1)}%</b>\n`;
         });
 
         msg += `\n📊 <b>VILOYAT O'RTACHA:</b> <b>${(svod.reduce((acc, curr) => acc + curr.avg_percent, 0) / svod.length).toFixed(1)}%</b>\n`;
@@ -247,7 +302,12 @@ async function sendFlashReport() {
 
         const superAdminIds = [65002404, 786314811];
         for (const sid of superAdminIds) {
-            await bot.telegram.sendMessage(sid, msg, { parse_mode: 'HTML' });
+            try {
+                await bot.telegram.sendMessage(sid, msg, { parse_mode: 'HTML' });
+            } catch (err) {
+                const plainMsg = msg.replace(/<[^>]*>/g, '');
+                await bot.telegram.sendMessage(sid, plainMsg);
+            }
         }
         console.log("✅ [CRON] Flash report sent.");
     } catch (e) {
@@ -272,36 +332,59 @@ async function sendPendingReportsWarning() {
         const districts = Object.keys(topics).filter(d => d !== "Test rejimi" && d !== "MMT Boshqarma");
 
         for (const distName of districts) {
-            const topicId = getTopicId(distName);
-            if (!topicId) continue;
+            try {
+                const topicId = getTopicId(distName);
+                if (!topicId) continue;
 
-            const reportedRes = await db_pg.query(`SELECT school FROM attendance WHERE district = $1 AND date = $2`, [distName, dateStr]);
-            const reportedSchools = reportedRes.rows.map(r => r.school);
+                const straightDist = distName.replace(/[‘’`]/g, "'");
+                const curlyDist = distName.replace(/['’`]/g, "‘");
 
-            const allSchoolsInDist = schools_db[distName] || [];
-            const missingSchools = allSchoolsInDist.filter(s => !reportedSchools.includes(s));
+                const reportedRes = await db_pg.query(
+                    `SELECT school FROM attendance WHERE (district = $1 OR district = $2 OR district = $3) AND date = $4`,
+                    [distName, straightDist, curlyDist, dateStr]
+                );
+                const reportedSchoolsNorm = (reportedRes.rows || []).map(r => normalizeKey(r.school));
 
-            if (missingSchools.length > 0) {
-                let msg = `⚠️ <b>DIQQAT: HISOBOT TOPSHIRMAGAN MAKTABLAR</b>\n`;
-                msg += `📍 Hudud: <b>${distName}</b>\n`;
-                msg += `⏰ Vaqt: <b>${hour}:00</b>\n`;
-                msg += `📅 Sana: <b>${dateStr}</b>\n\n`;
-                msg += `🛑 <b>Topshirmadi: ${missingSchools.length} ta maktab</b>\n`;
+                const allSchoolsInDist = getDistrictSchools(distName, schools_db);
+                if (allSchoolsInDist.length === 0) continue;
 
-                // Show first 30 schools to avoid message length limits
-                const list = missingSchools.slice(0, 30);
-                list.forEach(s => {
-                    msg += `• ${s}\n`;
-                });
+                const missingSchools = allSchoolsInDist.filter(s => !reportedSchoolsNorm.includes(normalizeKey(s)));
 
-                if (missingSchools.length > 30) msg += `...va yana ${missingSchools.length - 30} ta maktab.\n`;
+                if (missingSchools.length > 0) {
+                    let msg = `⚠️ <b>DIQQAT: HISOBOT TOPSHIRMAGAN MAKTABLAR</b>\n`;
+                    msg += `📍 Hudud: <b>${escapeHtml(distName)}</b>\n`;
+                    msg += `⏰ Vaqt: <b>${hour}:00</b>\n`;
+                    msg += `📅 Sana: <b>${dateStr}</b>\n\n`;
+                    msg += `🛑 <b>Topshirmadi: ${missingSchools.length} ta maktab</b>\n`;
 
-                msg += `\n❗ <i>Iltimos, hisobotlarni zudlik bilan kiritishingizni so'raymiz!</i>`;
+                    // Show first 30 schools to avoid message length limits
+                    const list = missingSchools.slice(0, 30);
+                    list.forEach(s => {
+                        msg += `• ${escapeHtml(s)}\n`;
+                    });
 
-                await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
-                    parse_mode: 'HTML',
-                    message_thread_id: topicId
-                });
+                    if (missingSchools.length > 30) msg += `...va yana ${missingSchools.length - 30} ta maktab.\n`;
+
+                    msg += `\n❗ <i>Iltimos, hisobotlarni zudlik bilan kiritishingizni so'raymiz!</i>`;
+
+                    try {
+                        await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
+                            parse_mode: 'HTML',
+                            message_thread_id: topicId
+                        });
+                    } catch (tgErr) {
+                        console.warn(`[CRON] HTML sendMessage failed for ${distName}, retrying plain text:`, tgErr.message);
+                        const plainMsg = msg.replace(/<[^>]*>/g, '');
+                        await bot.telegram.sendMessage(REPORT_GROUP_ID, plainMsg, {
+                            message_thread_id: topicId
+                        });
+                    }
+
+                    // Rate limit protection: 350ms delay between sending to supergroup topics
+                    await new Promise(r => setTimeout(r, 350));
+                }
+            } catch (distErr) {
+                console.error(`❌ [CRON] Error for district ${distName} in pending reports warning:`, distErr.message);
             }
         }
         console.log("✅ [CRON] Non-reporting warnings sent.");
@@ -326,48 +409,70 @@ async function sendFinalReportsSummary(timeStr) {
         const districts = Object.keys(topics).filter(d => d !== "Test rejimi" && d !== "MMT Boshqarma");
 
         for (const distName of districts) {
-            const topicId = getTopicId(distName);
-            if (!topicId) continue;
+            try {
+                const topicId = getTopicId(distName);
+                if (!topicId) continue;
 
-            const reportedRes = await db_pg.query(`SELECT school FROM attendance WHERE district = $1 AND date = $2`, [distName, dateStr]);
-            const reportedSchools = reportedRes.rows.map(r => r.school);
+                const straightDist = distName.replace(/[‘’`]/g, "'");
+                const curlyDist = distName.replace(/['’`]/g, "‘");
 
-            const allSchoolsInDist = schools_db[distName] || [];
-            const missingSchools = allSchoolsInDist.filter(s => !reportedSchools.includes(s));
+                const reportedRes = await db_pg.query(
+                    `SELECT school FROM attendance WHERE (district = $1 OR district = $2 OR district = $3) AND date = $4`,
+                    [distName, straightDist, curlyDist, dateStr]
+                );
+                const reportedSchoolsNorm = (reportedRes.rows || []).map(r => normalizeKey(r.school));
 
-            let msg = "";
-            if (missingSchools.length === 0) {
-                // ALL SCHOOLS REPORTED!
-                const head = DISTRICT_HEADS[distName] || { name: "tuman mas'uli" };
-                msg = `✅ <b>HAMMAGA RAHMAT!</b>\n\n`;
-                msg += `📍 Hudud: <b>${distName}</b>\n`;
-                msg += `👤 Hurmatli <b>${head.name}</b>,\n\n`;
-                msg += `Tizimingizdagi barcha maktablar <b>100%</b> o‘quvchilar davomatini kiritishdi.\n`;
-                msg += `Barcha maktab mas'ullariga ham o'z minnatdorchiligimizni bildiramiz! 👏\n\n`;
-                msg += `📅 Sana: <b>${dateStr}</b>\n`;
-                msg += `🏁 Holat: <b>YAKUNLANDI</b>`;
-            } else {
-                // SOME SCHOOLS MISSING
-                msg = `⚠️ <b>KUNLIK YAKUNIY OGOHLANTIRISH</b>\n`;
-                msg += `📍 Hudud: <b>${distName}</b>\n`;
-                msg += `🕒 Vaqt: <b>${timeStr}</b>\n`;
-                msg += `📅 Sana: <b>${dateStr}</b>\n\n`;
-                msg += `🛑 <b>Hali ham topshirmadi: ${missingSchools.length} ta maktab</b>\n`;
+                const allSchoolsInDist = getDistrictSchools(distName, schools_db);
+                if (allSchoolsInDist.length === 0) continue;
 
-                const list = missingSchools.slice(0, 40);
-                list.forEach((s, i) => {
-                    msg += `${i+1}. ${s}\n`;
-                });
+                const missingSchools = allSchoolsInDist.filter(s => !reportedSchoolsNorm.includes(normalizeKey(s)));
 
-                if (missingSchools.length > 40) msg += `...va yana ${missingSchools.length - 40} ta maktab.\n`;
+                let msg = "";
+                if (missingSchools.length === 0) {
+                    // ALL SCHOOLS REPORTED!
+                    const head = DISTRICT_HEADS[distName] || DISTRICT_HEADS[straightDist] || { name: "tuman mas'uli" };
+                    msg = `✅ <b>HAMMAGA RAHMAT!</b>\n\n`;
+                    msg += `📍 Hudud: <b>${escapeHtml(distName)}</b>\n`;
+                    msg += `👤 Hurmatli <b>${escapeHtml(head.name)}</b>,\n\n`;
+                    msg += `Tizimingizdagi barcha maktablar <b>100%</b> o‘quvchilar davomatini kiritishdi.\n`;
+                    msg += `Barcha maktab mas'ullariga ham o'z minnatdorchiligimizni bildiramiz! 👏\n\n`;
+                    msg += `📅 Sana: <b>${dateStr}</b>\n`;
+                    msg += `🏁 Holat: <b>YAKUNLANDI</b>`;
+                } else {
+                    // SOME SCHOOLS MISSING
+                    msg = `⚠️ <b>KUNLIK YAKUNIY OGOHLANTIRISH</b>\n`;
+                    msg += `📍 Hudud: <b>${escapeHtml(distName)}</b>\n`;
+                    msg += `🕒 Vaqt: <b>${timeStr}</b>\n`;
+                    msg += `📅 Sana: <b>${dateStr}</b>\n\n`;
+                    msg += `🛑 <b>Hali ham topshirmadi: ${missingSchools.length} ta maktab</b>\n`;
 
-                msg += `\n❗ <i>Iltimos, ish kunini yakunlashdan oldin hisobotlarni zudlik bilan kiritishingizni so'raymiz!</i>`;
+                    const list = missingSchools.slice(0, 40);
+                    list.forEach((s, i) => {
+                        msg += `${i+1}. ${escapeHtml(s)}\n`;
+                    });
+
+                    if (missingSchools.length > 40) msg += `...va yana ${missingSchools.length - 40} ta maktab.\n`;
+
+                    msg += `\n❗ <i>Iltimos, ish kunini yakunlashdan oldin hisobotlarni zudlik bilan kiritishingizni so'raymiz!</i>`;
+                }
+
+                try {
+                    await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
+                        parse_mode: 'HTML',
+                        message_thread_id: topicId
+                    });
+                } catch (tgErr) {
+                    console.warn(`[CRON] HTML sendMessage failed for ${distName}, retrying plain text:`, tgErr.message);
+                    const plainMsg = msg.replace(/<[^>]*>/g, '');
+                    await bot.telegram.sendMessage(REPORT_GROUP_ID, plainMsg, {
+                        message_thread_id: topicId
+                    });
+                }
+
+                await new Promise(r => setTimeout(r, 350));
+            } catch (distErr) {
+                console.error(`❌ [CRON] Error for district ${distName} in final summary:`, distErr.message);
             }
-
-            await bot.telegram.sendMessage(REPORT_GROUP_ID, msg, {
-                parse_mode: 'HTML',
-                message_thread_id: topicId
-            });
         }
         console.log(`✅ [CRON] Final summary for ${timeStr} sent.`);
     } catch (e) {

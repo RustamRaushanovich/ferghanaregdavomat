@@ -98,6 +98,24 @@ const attendanceWizard = new Scenes.WizardScene(
                 district: s.district,
                 school: s.school
             };
+
+            // Check if already submitted today (Web or Bot)
+            try {
+                const { checkIfExists } = require('../services/dataService');
+                const now = getFargonaTime();
+                const today = now.toISOString().split('T')[0];
+                const exists = await checkIfExists(s.district, s.school, today);
+                if (exists) {
+                    ctx.wizard.state.awaiting_overwrite_confirm = true;
+                    await ctx.reply(`⚠️ <b>DIQQAT!</b>\n\n🏫 <b>${s.school}</b> (${s.district}) bo'yicha bugun (${today}) uchun ma'lumot allaqachon kiritilgan (Web yoki Bot orqali).\n\nEski ma'lumotni o'chirib, qaytadan kiritishni xohlaysizmi?`,
+                        Markup.keyboard([["HA (Yangilash)", "YO'Q (Bekor qilish)"], ["🏠 Asosiy menyu"]]).resize()
+                    );
+                    return ctx.wizard.selectStep(6);
+                }
+            } catch (dupErr) {
+                console.warn("Step 1 duplicate check error:", dupErr.message);
+            }
+
             await ctx.reply("🏫 <b>Jami sinflar sonini kiriting:</b>\n<i>(1-11 sinflar jami)</i>", { parse_mode: "HTML", ...navButtons() });
             return ctx.wizard.selectStep(7);
         } else if (text === "🔄 Maktab/Tumanni o'zgartirish") {

@@ -106,13 +106,57 @@ async function generatePdf(data) {
 }
 
 async function getMissingSchools() {
+    // 1. Direct database check (Unified between Web & Bot)
     try {
-        const res = await axios.get(GOOGLE_SCRIPT_URL, { params: { action: "missing" } });
-        return res.data;
+        const { getFargonaTime } = require('../utils/fargona');
+        const db_pg = require('../database/pg');
+        const topicsConfig = require('../config/topics');
+        const { normalizeKey } = require('../utils/topics');
+        const schoolsData = require('../database/schools.json');
+
+        const now = getFargonaTime();
+        const today = now.toISOString().split('T')[0];
+
+        if (process.env.DATABASE_URL) {
+            const reportedRes = await db_pg.query(
+                `SELECT DISTINCT school, district FROM attendance WHERE date = $1`,
+                [today]
+            );
+
+            const topics = topicsConfig.getTopics();
+            const districts = Object.keys(topics).filter(d => d !== "Test rejimi" && d !== "MMT Boshqarma");
+
+            const missing = {};
+            for (const distName of districts) {
+                const normD = normalizeKey(distName);
+                const straight = distName.replace(/[‘’`]/g, "'");
+                const allSchools = schoolsData[straight] || schoolsData[distName] || [];
+
+                const reportedSchoolsInDist = (reportedRes.rows || [])
+                    .filter(r => normalizeKey(r.district) === normD)
+                    .map(r => normalizeKey(r.school));
+
+                const missingInDist = allSchools.filter(s => !reportedSchoolsInDist.includes(normalizeKey(s)));
+                missing[distName] = missingInDist;
+            }
+
+            return { missing };
+        }
     } catch (e) {
-        console.error("getMissingSchools Error:", e.message);
-        return null;
+        console.warn("Database getMissingSchools fallback to Google Sheet:", e.message);
     }
+
+    // 2. Google Sheet fallback
+    if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.startsWith('http')) {
+        try {
+            const res = await axios.get(GOOGLE_SCRIPT_URL, { params: { action: "missing" }, timeout: 10000 });
+            return res.data;
+        } catch (e) {
+            console.error("getMissingSchools Error:", e.message);
+            return null;
+        }
+    }
+    return null;
 }
 
 module.exports = { getSchools, saveData, getDistrictStats, generatePdf, getMissingSchools };

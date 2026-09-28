@@ -243,7 +243,7 @@ app.post('/api/admin/reset-password', auth, async (req, res) => {
 
 // Admin: Get all TG Users
 app.get('/api/admin/tg-users', auth, async (req, res) => {
-    const isAuthorized = req.user.username === 'mrqirol' || req.user.role === 'superadmin';
+    const isAuthorized = req.user.username === 'mrqirol' || req.user.role === 'superadmin' || req.user.role === 'admin';
     if (!isAuthorized) return res.status(403).json({ error: 'Ruxsat yo\'q' });
     try {
         const result = await sqlite.query('SELECT * FROM tg_users ORDER BY id DESC');
@@ -1942,7 +1942,6 @@ bot.hears("📊 Mening Statistikam", async (ctx) => {
     const uid = ctx.from.id;
     if (!db.checkPro(uid)) return ctx.reply("⛔️ Bu funksiya faqat PRO foydalanuvchilar uchun.");
 
-
     // Foydalanuvchi ma'lumotlarini olish
     const user = db.users_db[uid];
     if (!user || !user.district || !user.school) {
@@ -1951,44 +1950,94 @@ bot.hears("📊 Mening Statistikam", async (ctx) => {
 
     const waitMsg = await ctx.reply("⏳ <b>Ma'lumotlar yuklanmoqda...</b>", { parse_mode: 'HTML' });
 
+    // 1. Direct database check (Unified between Web & Bot)
     try {
-        const res = await axios.get(process.env.GOOGLE_SCRIPT_URL, {
-            params: {
-                action: "my_stats",
-                district: user.district,
-                school: user.school
-            }
-        });
+        const db_pg = require('./src/database/pg');
+        const now = getFargonaTime();
+        const today = now.toISOString().split('T')[0];
 
-        await ctx.deleteMessage(waitMsg.message_id).catch(() => { });
+        const straightDist = user.district ? user.district.replace(/[‘’`]/g, "'") : '';
+        const curlyDist = user.district ? user.district.replace(/['’`]/g, "‘") : '';
 
-        if (res.data && !res.data.error) {
-            const d = res.data;
+        if (process.env.DATABASE_URL) {
+            const q = `
+                SELECT date, time, percent, total_students, total_absent
+                FROM attendance
+                WHERE school = $1 AND (district = $2 OR district = $3 OR district = $4)
+                ORDER BY date DESC LIMIT 7
+            `;
+            const res = await db_pg.query(q, [user.school, user.district, straightDist, curlyDist]);
+            await ctx.deleteMessage(waitMsg.message_id).catch(() => { });
+
+            const rows = res.rows || [];
+            const todayRow = rows.find(r => r.date === today);
+
             let msg = `📊 <b>MENING STATISTIKAM</b>\n\n`;
             msg += `🏫 <b>${user.school}</b> (${user.district})\n\n`;
 
-            if (d.today) {
-                msg += `📅 <b>Bugun (${d.today.date}):</b>\n`;
-                if (d.today.entered) msg += `✅ Kiritilgan (Soat ${d.today.time})\n📉 Davomat: <b>${d.today.percent}%</b>\n`;
-                else msg += `❌ Hali kiritilmagan!\n`;
+            msg += `📅 <b>Bugun (${today}):</b>\n`;
+            if (todayRow) {
+                msg += `✅ Kiritilgan (Soat ${todayRow.time})\n📉 Davomat: <b>${todayRow.percent}%</b>\n`;
+            } else {
+                msg += `❌ Hali kiritilmagan!\n`;
             }
 
-            if (d.history && d.history.length > 0) {
-                msg += `\n📅 <b>Oxirgi 7 kunlik tarix:</b>\n`;
-                d.history.forEach(h => {
-                    msg += `${h.date}: ${h.entered ? "✅" : "❌"}\n`;
+            if (rows.length > 0) {
+                msg += `\n📅 <b>Oxirgi kiritilgan kunlar:</b>\n`;
+                rows.forEach(h => {
+                    msg += `${h.date}: ✅ (${h.percent}%)\n`;
                 });
             }
 
-            // Maslahat
-            if (d.today && !d.today.entered) msg += `\n❗️ <i>Eslatma: Bugungi davomatni vaqtida kiriting!</i>`;
+            if (!todayRow) {
+                msg += `\n❗️ <i>Eslatma: Bugungi davomatni vaqtida kiriting!</i>`;
+            }
 
-            await ctx.reply(msg, { parse_mode: 'HTML' });
-
-        } else {
-            // Agar bo'sh qaytsa
-            await ctx.reply("❌ Ma'lumot topilmadi. (Ehtimol maktab nomi noto'g'ri yozilgan)");
+            return await ctx.reply(msg, { parse_mode: 'HTML' });
         }
+    } catch (dbErr) {
+        console.warn("DB My stats error, falling back to Google Script:", dbErr.message);
+    }
+
+    // 2. Google Script fallback
+    try {
+        if (process.env.GOOGLE_SCRIPT_URL) {
+            const res = await axios.get(process.env.GOOGLE_SCRIPT_URL, {
+                params: {
+                    action: "my_stats",
+                    district: user.district,
+                    school: user.school
+                },
+                timeout: 10000
+            });
+
+            await ctx.deleteMessage(waitMsg.message_id).catch(() => { });
+
+            if (res.data && !res.data.error) {
+                const d = res.data;
+                let msg = `📊 <b>MENING STATISTIKAM</b>\n\n`;
+                msg += `🏫 <b>${user.school}</b> (${user.district})\n\n`;
+
+                if (d.today) {
+                    msg += `📅 <b>Bugun (${d.today.date}):</b>\n`;
+                    if (d.today.entered) msg += `✅ Kiritilgan (Soat ${d.today.time})\n📉 Davomat: <b>${d.today.percent}%</b>\n`;
+                    else msg += `❌ Hali kiritilmagan!\n`;
+                }
+
+                if (d.history && d.history.length > 0) {
+                    msg += `\n📅 <b>Oxirgi 7 kunlik tarix:</b>\n`;
+                    d.history.forEach(h => {
+                        msg += `${h.date}: ${h.entered ? "✅" : "❌"}\n`;
+                    });
+                }
+
+                if (d.today && !d.today.entered) msg += `\n❗️ <i>Eslatma: Bugungi davomatni vaqtida kiriting!</i>`;
+
+                return await ctx.reply(msg, { parse_mode: 'HTML' });
+            }
+        }
+        await ctx.deleteMessage(waitMsg.message_id).catch(() => { });
+        await ctx.reply("❌ Ma'lumot topilmadi.");
     } catch (e) {
         console.error(e);
         await ctx.deleteMessage(waitMsg.message_id).catch(() => { });

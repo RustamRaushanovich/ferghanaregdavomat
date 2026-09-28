@@ -574,6 +574,56 @@
                 if (m) { m.style.display = 'none'; }
             }
         </script>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="showTab('viloyat')" id="tab_viloyat" data-i18n="tab_v_svod">
+                <i class="fas fa-map"></i> Viloyat Svod
+            </button>
+            <button class="tab-btn" onclick="showTab('tuman')" id="tab_tuman" data-i18n="tab_t_svod">
+                <i class="fas fa-school"></i> Tuman Svod
+            </button>
+            <button class="tab-btn" onclick="showTab('students')" id="tab_students" data-i18n="tab_absents">
+                <i class="fas fa-users"></i> Sababsizlar
+            </button>
+            <button class="tab-btn" onclick="showTab('recent')" id="tab_recent" data-i18n="tab_monitor">
+                <i class="fas fa-bolt"></i> Jonli Monitor
+            </button>
+            <button class="tab-btn" onclick="showTab('inspector')" id="tab_inspector">
+                <i class="fas fa-user-shield"></i> Inspektor
+            </button>
+            <button class="tab-btn" onclick="showTab('analysis')" id="tab_analysis" data-i18n="tab_analysis">
+                <i class="fas fa-chart-line"></i> Tahlil
+            </button>
+            <button class="tab-btn" onclick="showTab('profile')" id="tab_profile" data-i18n="tab_profile">
+                <i class="fas fa-user-cog"></i> Profil
+            </button>
+            <button class="tab-btn" onclick="showTab('parents')" id="tab_parents" style="display:none">
+                <i class="fas fa-user-friends"></i> Ota-onalar
+            </button>
+            <button class="tab-btn" onclick="showTab('ranking')" id="tab_ranking" style="display:none">
+                <i class="fas fa-trophy"></i> Reyting
+            </button>
+            <button class="tab-btn" onclick="showTab('school')" id="tab_school" style="display:none"
+                data-i18n="tab_school">
+                <i class="fas fa-school"></i> Mening Maktabim
+            </button>
+            <button class="tab-btn" onclick="showTab('admin')" id="tab_admin" style="display:none"
+                data-i18n="tab_admin">
+                <i class="fas fa-users-cog"></i> Admin Panel
+            </button>
+            <button class="tab-btn" onclick="showTab('pro')" id="tab_pro" style="display:none">
+                <i class="fas fa-crown"></i> PRO Sozlamalar
+            </button>
+        </div>
+
+        <!-- 1. VILOYAT SVODI -->
+        <div id="viloyatView" class="report-view active">
+            <div class="controls">
+                <div class="filter-group">
+                    <label>Sana</label>
+                    <input type="date" id="viloyatDate" onchange="loadViloyatData()">
+                </div>
                 <div style="display:flex; gap:10px;">
                     <button class="btn" style="background:var(--secondary); width:auto; padding:12px 20px;"
                         onclick="toggleTVMode()" id="tvModeBtn"><i class="fas fa-tv"></i> TV-Rejim</button>
@@ -1532,40 +1582,51 @@
 
         // Adjust for Roles
         if (userRole === 'district') {
-            document.getElementById('tab_viloyat').innerHTML = '<i class="fas fa-map"></i> Mening Hududim';
-            document.getElementById('tumanSelect').innerHTML = `<option value="${userDistrict}">${userDistrict}</option>`;
-            document.getElementById('tumanSelect').disabled = true;
+            const tabV = document.getElementById('tab_viloyat');
+            if (tabV) tabV.innerHTML = '<i class="fas fa-map"></i> Mening Hududim';
+            const tSel = document.getElementById('tumanSelect');
+            if (tSel) {
+                tSel.innerHTML = `<option value="${userDistrict}">${userDistrict}</option>`;
+                tSel.disabled = true;
+            }
         } else if (userRole === 'school') {
-            document.getElementById('tab_viloyat').style.display = 'none';
-            document.getElementById('tab_tuman').style.display = 'none';
-            document.getElementById('tab_students').style.display = 'none';
-            document.getElementById('tab_school').style.display = 'flex';
-            document.getElementById('schoolNameHeader').textContent = userSchool;
+            ['tab_viloyat', 'tab_tuman', 'tab_students'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+            const tabSch = document.getElementById('tab_school');
+            if (tabSch) tabSch.style.display = 'flex';
+            const schHeader = document.getElementById('schoolNameHeader');
+            if (schHeader) schHeader.textContent = userSchool;
             showTab('school');
             loadSchoolData();
         } else if (userRole === 'superadmin') {
-            document.getElementById('tab_admin').style.display = 'flex';
+            const tabAdmin = document.getElementById('tab_admin');
+            if (tabAdmin) tabAdmin.style.display = 'flex';
             const userUsername = localStorage.getItem('dashboard_username');
             if (userUsername === 'qirol') {
-                document.getElementById('tab_pro').style.display = 'flex';
+                const tabPro = document.getElementById('tab_pro');
+                if (tabPro) tabPro.style.display = 'flex';
             }
         }
 
-
         if (userRole === 'district' || userRole === 'superadmin') {
-            document.getElementById('tab_parents').style.display = 'flex';
-            document.getElementById('tab_ranking').style.display = 'flex';
+            const tabParents = document.getElementById('tab_parents');
+            if (tabParents) tabParents.style.display = 'flex';
+            const tabRanking = document.getElementById('tab_ranking');
+            if (tabRanking) tabRanking.style.display = 'flex';
         }
-
-
 
         // Set default dates to Farg'ona time
         const fargonaNow = new Date(new Date().getTime() + (5 * 60 + new Date().getTimezoneOffset()) * 60000);
         const dateStr = fargonaNow.toISOString().split('T')[0];
 
-        document.getElementById('viloyatDate').value = dateStr;
-        document.getElementById('tumanDate').value = dateStr;
-        document.getElementById('absentDate').value = dateStr;
+        const elVDate = document.getElementById('viloyatDate');
+        if (elVDate) elVDate.value = dateStr;
+        const elTDate = document.getElementById('tumanDate');
+        if (elTDate) elTDate.value = dateStr;
+        const elADate = document.getElementById('absentDate');
+        if (elADate) elADate.value = dateStr;
 
         function showTab(id) {
             document.querySelectorAll('.report-view').forEach(v => v.classList.remove('active'));
@@ -1660,7 +1721,8 @@
 
 async function loadViloyatData() {
             try {
-                const date = document.getElementById('viloyatDate').value;
+                const elVDate = document.getElementById('viloyatDate');
+                const date = elVDate ? elVDate.value : (new Date(Date.now() + 5 * 3600 * 1000).toISOString().split('T')[0]);
                 const trendData = await apiFetch(`/api/stats/trend?days=30`).catch(() => []);
                 const data = await apiFetch(`/api/stats/viloyat?date=${date}`);
                 const tbody = document.querySelector('#viloyatTable tbody');
@@ -2151,7 +2213,8 @@ async function loadViloyatData() {
         }
 
         async function exportViloyatExcel() {
-            const date = document.getElementById('viloyatDate').value;
+            const elVDate = document.getElementById('viloyatDate');
+            const date = elVDate ? elVDate.value : (new Date(Date.now() + 5 * 3600 * 1000).toISOString().split('T')[0]);
             const link = document.createElement('a');
             link.href = `/api/export/viloyat?date=${date}&token=${token}`;
             link.download = `VILOYAT_HISOBOT_${date}.xlsx`;

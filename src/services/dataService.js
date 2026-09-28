@@ -162,13 +162,19 @@ async function saveAttendance(data) {
 
 async function checkIfExists(district, school, date) {
     try {
+        const straightDist = district ? district.replace(/[‘’`]/g, "'") : '';
+        const curlyDist = district ? district.replace(/['’`]/g, "‘") : '';
         if (process.env.DATABASE_URL) {
-            const res = await db.query('SELECT id FROM attendance WHERE district = $1 AND school = $2 AND date = $3 LIMIT 1', [district, school, date]);
+            const res = await db.query(
+                'SELECT id FROM attendance WHERE (district = $1 OR district = $2 OR district = $3) AND school = $4 AND date = $5 LIMIT 1',
+                [district, straightDist, curlyDist, school, date]
+            );
             return res.rows.length > 0;
         }
         // SQLite fallback
         const sqliteDb = require('../database/sqlite');
-        const row = sqliteDb.prepare('SELECT id FROM attendance WHERE district=? AND school=? AND date=? LIMIT 1').get(district, school, date);
+        const row = sqliteDb.prepare('SELECT id FROM attendance WHERE (district=? OR district=? OR district=?) AND school=? AND date=? LIMIT 1')
+            .get(district, straightDist, curlyDist, school, date);
         return !!row;
     } catch (e) {
         return false;
