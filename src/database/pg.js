@@ -156,13 +156,34 @@ async function initDb() {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
+            CREATE TABLE IF NOT EXISTS payment_receipts (
+                id TEXT PRIMARY KEY,
+                file_id TEXT,
+                file_url TEXT,
+                file_unique_id TEXT,
+                file_size INTEGER,
+                sender_uid TEXT,
+                sender_name TEXT,
+                school TEXT,
+                district TEXT,
+                phone TEXT,
+                submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                status TEXT DEFAULT 'pending',
+                resolved_at TIMESTAMP,
+                resolved_by TEXT
+            );
+
             CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(date);
             CREATE INDEX IF NOT EXISTS idx_attendance_district ON attendance(district);
             CREATE INDEX IF NOT EXISTS idx_attendance_school ON attendance(school);
+            CREATE INDEX IF NOT EXISTS idx_attendance_date_district_school ON attendance(date, district, school, id DESC);
             CREATE INDEX IF NOT EXISTS idx_absent_students_attendance_id ON absent_students(attendance_id);
             CREATE INDEX IF NOT EXISTS idx_absent_students_name ON absent_students(name);
+            CREATE INDEX IF NOT EXISTS idx_payment_receipts_status ON payment_receipts(status);
+            CREATE INDEX IF NOT EXISTS idx_payment_receipts_sender_uid ON payment_receipts(sender_uid);
 
             ALTER TABLE attendance ADD COLUMN IF NOT EXISTS academic_year TEXT DEFAULT '2026-2027';
+            ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS file_url TEXT;
         `);
         console.log("🐘 PostgreSQL tables initialized successfully.");
     } catch (e) {

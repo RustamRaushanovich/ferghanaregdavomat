@@ -50,11 +50,19 @@ async function saveAttendance(data) {
     const date = getFargonaTime().toISOString().split('T')[0];
 
     const total_students = parseInt(data.total_students) || 1;
-    const total_absent = (parseInt(data.sababli_total) || 0) + (parseInt(data.sababsiz_total) || 0);
+    const sababli_total = parseInt(data.sababli_total !== undefined ? data.sababli_total : data.sababli_jami) || 0;
+    const sababsiz_total = parseInt(data.sababsiz_total !== undefined ? data.sababsiz_total : data.sababsiz_jami) || 0;
+    const total_absent = (data.total_absent !== undefined && !isNaN(parseInt(data.total_absent)))
+        ? parseInt(data.total_absent)
+        : (sababli_total + sababsiz_total);
     let percent = ((total_students - total_absent) / total_students * 100);
     if (percent < 0) percent = 0;
     if (percent > 100) percent = 100;
     const academic_year = require('../database/db').settings.academic_year || '2026-2027';
+
+    // Invalidate cache so changes reflect instantly
+    if (memCache.viloyat) delete memCache.viloyat[date];
+    memCache.tuman = {};
 
     // ── PostgreSQL yo'lida ──────────────────────────────────────────
     if (process.env.DATABASE_URL) {
@@ -80,12 +88,12 @@ async function saveAttendance(data) {
                 ) RETURNING id;
             `;
             const values = [
-                date, time, data.district, data.school, data.classes_count, total_students,
-                data.sababli_kasal, data.sababli_tadbirlar, data.sababli_oilaviy, data.sababli_ijtimoiy, data.sababli_boshqa, data.sababli_total,
-                data.sababsiz_muntazam, data.sababsiz_qidiruv, data.sababsiz_chetel, data.sababsiz_boyin, data.sababsiz_ishlab,
-                data.sababsiz_qarshilik, data.sababsiz_jazo, data.sababsiz_nazoratsiz, data.sababsiz_boshqa, data.sababsiz_turmush, data.sababsiz_total,
-                total_absent, percent.toFixed(1),
-                data.fio, data.phone, data.inspector, data.user_id || 0, data.source || 'bot', data.bildirgi || null,
+                date, time, data.district || '', data.school || '', parseInt(data.classes_count) || 0, total_students,
+                parseInt(data.sababli_kasal) || 0, parseInt(data.sababli_tadbirlar) || 0, parseInt(data.sababli_oilaviy) || 0, parseInt(data.sababli_ijtimoiy) || 0, parseInt(data.sababli_boshqa) || 0, sababli_total,
+                parseInt(data.sababsiz_muntazam) || 0, parseInt(data.sababsiz_qidiruv) || 0, parseInt(data.sababsiz_chetel) || 0, parseInt(data.sababsiz_boyin) || 0, parseInt(data.sababsiz_ishlab) || 0,
+                parseInt(data.sababsiz_qarshilik) || 0, parseInt(data.sababsiz_jazo) || 0, parseInt(data.sababsiz_nazoratsiz) || 0, parseInt(data.sababsiz_boshqa) || 0, parseInt(data.sababsiz_turmush) || 0, sababsiz_total,
+                total_absent, parseFloat(percent.toFixed(1)),
+                data.fio || '', data.phone || '', data.inspector || '', parseInt(data.user_id) || 0, data.source || 'bot', data.bildirgi || null,
                 academic_year
             ];
             const res = await db.query(query, values);
@@ -96,7 +104,7 @@ async function saveAttendance(data) {
                     const student = typeof s === 'string' ? JSON.parse(s) : s;
                     await db.query(
                         `INSERT INTO absent_students (attendance_id, class, name, address, parent_name, parent_phone) VALUES ($1,$2,$3,$4,$5,$6)`,
-                        [attId, student.class, student.name, student.address, student.parent_name, student.parent_phone]
+                        [attId, student.class || '', student.name || '', student.address || '', student.parent_name || '', student.parent_phone || '']
                     );
                 }
             }
@@ -130,12 +138,12 @@ async function saveAttendance(data) {
         `);
 
         const result = ins.run(
-            date, time, data.district, data.school, data.classes_count, total_students,
-            data.sababli_kasal||0, data.sababli_tadbirlar||0, data.sababli_oilaviy||0, data.sababli_ijtimoiy||0, data.sababli_boshqa||0, data.sababli_total||0,
-            data.sababsiz_muntazam||0, data.sababsiz_qidiruv||0, data.sababsiz_chetel||0, data.sababsiz_boyin||0, data.sababsiz_ishlab||0,
-            data.sababsiz_qarshilik||0, data.sababsiz_jazo||0, data.sababsiz_nazoratsiz||0, data.sababsiz_boshqa||0, data.sababsiz_turmush||0, data.sababsiz_total||0,
+            date, time, data.district || '', data.school || '', parseInt(data.classes_count) || 0, total_students,
+            parseInt(data.sababli_kasal) || 0, parseInt(data.sababli_tadbirlar) || 0, parseInt(data.sababli_oilaviy) || 0, parseInt(data.sababli_ijtimoiy) || 0, parseInt(data.sababli_boshqa) || 0, sababli_total,
+            parseInt(data.sababsiz_muntazam) || 0, parseInt(data.sababsiz_qidiruv) || 0, parseInt(data.sababsiz_chetel) || 0, parseInt(data.sababsiz_boyin) || 0, parseInt(data.sababsiz_ishlab) || 0,
+            parseInt(data.sababsiz_qarshilik) || 0, parseInt(data.sababsiz_jazo) || 0, parseInt(data.sababsiz_nazoratsiz) || 0, parseInt(data.sababsiz_boshqa) || 0, parseInt(data.sababsiz_turmush) || 0, sababsiz_total,
             total_absent, parseFloat(percent.toFixed(1)),
-            data.fio||'', data.phone||'', data.inspector||'', data.user_id||0, data.source||'bot', data.bildirgi||null,
+            data.fio || '', data.phone || '', data.inspector || '', parseInt(data.user_id) || 0, data.source || 'bot', data.bildirgi || null,
             academic_year
         );
         const attId = result.lastInsertRowid;
@@ -415,8 +423,10 @@ async function getViloyatSvod(date) {
         const yesterday = new Date(targetDate); yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-        const rawEntries = await getRawAttendanceRecords(targetDate);
-        const yestEntries = await getRawAttendanceRecords(yesterdayStr);
+        const [rawEntries, yestEntries] = await Promise.all([
+            getRawAttendanceRecords(targetDate),
+            getRawAttendanceRecords(yesterdayStr)
+        ]);
 
         const schoolsDb = require('../database/db').schools_db;
 

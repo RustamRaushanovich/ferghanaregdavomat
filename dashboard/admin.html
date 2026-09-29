@@ -437,6 +437,52 @@
             </div>
 
         </div>
+
+        <!-- To'lov Cheklari (Kvitansiyalar) Boshqaruvi -->
+        <div class="card" id="receiptsCard" style="margin-top: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="margin: 0; color: #f8fafc; font-size: 1.25rem;">
+                    <i class="fas fa-receipt" style="color: #38bdf8;"></i> To'lov Cheklari (Kvitansiyalar va Tasdiqlash)
+                </h3>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <select id="receiptFilter" onchange="filterReceipts()" style="width: auto; padding: 8px 12px; font-size: 0.85rem; border-radius: 10px; background: rgba(15,23,42,0.8);">
+                        <option value="pending" selected>⏳ Kutilayotganlar</option>
+                        <option value="approved">✅ Tasdiqlanganlar</option>
+                        <option value="fake_rejected">🚫 Rad etilganlar</option>
+                        <option value="all">📁 Barchasi</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="loadReceipts()" style="padding: 8px 15px; font-size: 0.85rem;">
+                        <i class="fas fa-sync-alt"></i> Yangilash
+                    </button>
+                </div>
+            </div>
+
+            <div style="background: rgba(56, 189, 248, 0.08); border-left: 4px solid #38bdf8; padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; font-size: 0.85rem; color: #cbd5e1; display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-info-circle" style="color: #38bdf8; font-size: 1.3rem;"></i>
+                <div>
+                    Foydalanuvchilar bot orqali yuborgan to'lov cheklarini bevosita shu yerdan ko'rib, <b>Davomat Ruxsati (1 oy)</b> yoki <b>PRO Rejim (1 oy)</b> berishingiz, yoki soxta bo'lsa rad etishingiz mumkin. Foydalanuvchiga Telegram orqali avtomatik tasdiq xabari yuboriladi.
+                </div>
+            </div>
+
+            <div id="receiptsLoading" style="text-align: center; padding: 30px; color: #94a3b8;">
+                <i class="fas fa-spinner fa-spin fa-2x"></i><br><br>Cheklar yuklanmoqda...
+            </div>
+
+            <div id="receiptsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;">
+                <!-- Dinamik to'ldiriladi -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Chek rasmini to'liq ko'rish modali -->
+    <div id="receiptModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center;" onclick="closeReceiptModal()">
+        <div style="position:relative; max-width:92%; max-height:92%; display:flex; flex-direction:column; align-items:center;" onclick="event.stopPropagation()">
+            <button onclick="closeReceiptModal()" style="align-self:flex-end; margin-bottom:8px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:white; font-size:1.2rem; border-radius:8px; padding:4px 12px; cursor:pointer;">
+                <i class="fas fa-times"></i> Yopish
+            </button>
+            <img id="receiptModalImg" src="" style="max-width:100%; max-height:80vh; border-radius:12px; box-shadow:0 15px 35px rgba(0,0,0,0.9); border:1px solid rgba(255,255,255,0.2);" alt="Chek to'liq rasmi" />
+        </div>
     </div>
 
     <!-- Modals placeholder or toast -->
@@ -641,6 +687,140 @@
 
         fetchSettings();
         fetchStats();
+        loadReceipts();
+
+        // --- To'lov Cheklari (Kvitansiyalar) Boshqaruvi ---
+        let allReceipts = [];
+
+        async function loadReceipts() {
+            const loading = document.getElementById('receiptsLoading');
+            const container = document.getElementById('receiptsContainer');
+            if (loading) loading.style.display = 'block';
+
+            try {
+                const res = await fetch('/api/admin/receipts', {
+                    headers: { 'Authorization': token }
+                });
+                if (!res.ok) throw new Error("Cheklarni yuklab bo'lmadi");
+                allReceipts = await res.json();
+                if (loading) loading.style.display = 'none';
+                filterReceipts();
+            } catch (e) {
+                if (loading) loading.innerHTML = `<span style="color:#ef4444;"><i class="fas fa-exclamation-triangle"></i> Xatolik: ${e.message}</span>`;
+            }
+        }
+
+        function filterReceipts() {
+            const filterEl = document.getElementById('receiptFilter');
+            const filter = filterEl ? filterEl.value : 'pending';
+            const container = document.getElementById('receiptsContainer');
+            if (!container) return;
+
+            let filtered = allReceipts;
+            if (filter !== 'all') {
+                filtered = allReceipts.filter(r => (r.status || 'pending') === filter);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #64748b;"><i class="fas fa-folder-open fa-2x"></i><br><br>Ushbu toifada to'lov cheklari mavjud emas</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(r => {
+                const isPending = !r.status || r.status === 'pending';
+                const isApproved = r.status === 'approved';
+                const isRejected = r.status === 'fake_rejected';
+
+                let badge = `<span class="status-badge" style="background:rgba(234,179,8,0.2); color:#facc15; border:1px solid #eab308;"><i class="fas fa-clock"></i> Kutilmoqda</span>`;
+                if (isApproved) badge = `<span class="status-badge status-on"><i class="fas fa-check"></i> Tasdiqlangan</span>`;
+                if (isRejected) badge = `<span class="status-badge status-off"><i class="fas fa-times"></i> Rad etilgan</span>`;
+
+                const imgUrl = r.file_url || (r.file_id ? `/api/admin/receipts/${r.id}/image` : '/assets/main_logo.jpg');
+                const dateStr = r.submitted_at ? new Date(r.submitted_at).toLocaleString('uz-UZ') : '-';
+
+                return `
+                    <div style="background: rgba(15,23,42,0.6); border: 1px solid ${isPending ? 'rgba(99,102,241,0.35)' : 'rgba(255,255,255,0.08)'}; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; transition: 0.2s;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.8rem; color:#94a3b8;"><i class="far fa-calendar-alt"></i> ${dateStr}</span>
+                            ${badge}
+                        </div>
+                        <div style="display:flex; gap:12px;">
+                            <div style="width:90px; height:110px; flex-shrink:0; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.15); cursor:pointer; background:#000;" onclick="openReceiptModal('${imgUrl}')" title="Kattalashtirib ko'rish">
+                                <img src="${imgUrl}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='/assets/main_logo.jpg'" alt="Chek rasmi" />
+                            </div>
+                            <div style="flex:1; font-size:0.85rem; display:flex; flex-direction:column; gap:4px; overflow:hidden;">
+                                <div style="font-weight:600; color:#fff; font-size:0.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    ${r.sender_name || 'Noma\'lum'}
+                                </div>
+                                <div style="color:#cbd5e1;"><i class="fas fa-school" style="width:16px; color:#38bdf8;"></i> ${r.school || '-'}</div>
+                                <div style="color:#94a3b8;"><i class="fas fa-map-marker-alt" style="width:16px;"></i> ${r.district || '-'}</div>
+                                <div style="color:#94a3b8;"><i class="fas fa-phone" style="width:16px;"></i> <a href="tel:${r.phone}" style="color:#38bdf8; text-decoration:none;">${r.phone || '-'}</a></div>
+                                <div style="color:#64748b; font-size:0.75rem;">ID: <code>${r.sender_uid || '-'}</code></div>
+                            </div>
+                        </div>
+
+                        ${isPending ? `
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:5px;">
+                            <button class="btn btn-success" style="padding:8px 10px; font-size:0.8rem; justify-content:center;" onclick="handleReceiptAction('${r.id}', 'approve_access')">
+                                <i class="fas fa-check"></i> 1 oy Davomat
+                            </button>
+                            <button class="btn btn-primary" style="padding:8px 10px; font-size:0.8rem; justify-content:center; background:#8b5cf6;" onclick="handleReceiptAction('${r.id}', 'approve_pro')">
+                                <i class="fas fa-star"></i> 1 oy PRO
+                            </button>
+                            <button class="btn btn-danger" style="grid-column:1 / -1; padding:7px 10px; font-size:0.8rem; justify-content:center;" onclick="handleReceiptAction('${r.id}', 'reject_fake')">
+                                <i class="fas fa-ban"></i> Soxta Chek (Rad etish)
+                            </button>
+                        </div>
+                        ` : `
+                        <div style="font-size:0.78rem; color:#64748b; margin-top:auto; padding-top:6px; border-top:1px dashed rgba(255,255,255,0.08);">
+                            <span>Ko'rib chiqdi: <b>${r.resolved_by || 'Admin'}</b></span>
+                        </div>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openReceiptModal(url) {
+            const modal = document.getElementById('receiptModal');
+            const img = document.getElementById('receiptModalImg');
+            if (modal && img) {
+                img.src = url;
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closeReceiptModal() {
+            const modal = document.getElementById('receiptModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function handleReceiptAction(receiptId, action) {
+            let confirmMsg = "Ushbu amalni tasdiqlaysizmi?";
+            if (action === 'approve_access') confirmMsg = "Foydalanuvchiga 1 oy Davomat Ruxsati berilsinmi?";
+            if (action === 'approve_pro') confirmMsg = "Foydalanuvchiga 1 oy PRO obuna berilsinmi?";
+            if (action === 'reject_fake') confirmMsg = "Ushbu chekni soxta deb rad etmoqchimisiz? Foydalanuvchiga rad etilgani haqida xabar boradi.";
+
+            if (!confirm(confirmMsg)) return;
+
+            try {
+                const res = await fetch(`/api/admin/receipts/${receiptId}/action`, {
+                    method: 'POST',
+                    headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action, months: 1 })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast("Chek muvaffaqiyatli qayta ishlandi!");
+                    addLog(`[ACTION] Chek ${receiptId} holati o'zgartirildi: ${action}`);
+                    await loadReceipts();
+                } else {
+                    alert(data.error || "Xatolik yuz berdi!");
+                }
+            } catch (e) {
+                alert("Server bilan bog'lanishda xatolik: " + e.message);
+            }
+        }
 
         function handleCustomAction(action) {
             if (action === 'backup') {

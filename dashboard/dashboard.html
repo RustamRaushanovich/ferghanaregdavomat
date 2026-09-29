@@ -1557,6 +1557,12 @@
                     window.scrollBy(0, scrollDirection * 1);
                 }, 80);
             }
+        function logout() {
+            localStorage.removeItem('dashboard_token');
+            localStorage.removeItem('dashboard_role');
+            localStorage.removeItem('dashboard_username');
+            localStorage.removeItem('dashboard_user');
+            window.location.href = 'login.html';
         }
 
         async function apiFetch(url) {
@@ -1723,7 +1729,6 @@ async function loadViloyatData() {
             try {
                 const elVDate = document.getElementById('viloyatDate');
                 const date = elVDate ? elVDate.value : (new Date(Date.now() + 5 * 3600 * 1000).toISOString().split('T')[0]);
-                const trendData = await apiFetch(`/api/stats/trend?days=30`).catch(() => []);
                 const data = await apiFetch(`/api/stats/viloyat?date=${date}`);
                 const tbody = document.querySelector('#viloyatTable tbody');
                 tbody.innerHTML = '';

@@ -151,10 +151,19 @@ async function handleReceiptSubmission(ctx) {
     }
 
     const receiptId = Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
+    let fileUrl = '';
+    try {
+        const link = await ctx.telegram.getFileLink(fileId);
+        fileUrl = link.href || link.toString();
+    } catch (e) {
+        console.warn('Could not get telegram file link:', e.message);
+    }
+
     const newReceipt = {
         id: receiptId,
         file_unique_id: fileUniqueId,
         file_id: fileId,
+        file_url: fileUrl,
         file_size: fileSize,
         sender_uid: uid,
         sender_name: name,
@@ -166,6 +175,18 @@ async function handleReceiptSubmission(ctx) {
     };
     receipts.push(newReceipt);
     saveReceipts(receipts);
+
+    try {
+        const pg = require('../database/pg');
+        await pg.query(
+            `INSERT INTO payment_receipts (id, file_id, file_url, file_unique_id, file_size, sender_uid, sender_name, school, district, phone, submitted_at, status)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CURRENT_TIMESTAMP, 'pending')
+             ON CONFLICT (id) DO UPDATE SET file_url = EXCLUDED.file_url`,
+            [receiptId, fileId, fileUrl, fileUniqueId, fileSize, String(uid), name, school, u.district || '', phone]
+        );
+    } catch (e) {
+        console.error('Save receipt to PG error:', e.message);
+    }
 
     const admins = config.SUPER_ADMIN_IDS || [65002404];
 
@@ -208,15 +229,37 @@ async function handleReceiptSubmission(ctx) {
     }
 }
 
-function updateReceiptStatus(receiptId, status, adminId) {
+async function updateReceiptStatus(receiptId, status, adminId) {
+    try {
+        const pg = require('../database/pg');
+        await pg.query(
+            `UPDATE payment_receipts SET status = $1, resolved_at = CURRENT_TIMESTAMP, resolved_by = $2 WHERE id = $3`,
+            [status, String(adminId), receiptId]
+        );
+    } catch (e) {
+        console.error('Update receipt status in PG error:', e.message);
+    }
     const receipts = loadReceipts();
     const r = receipts.find(item => item.id === receiptId);
     if (r) {
         r.status = status;
         r.resolved_at = new Date().toISOString();
-        r.resolved_by = adminId;
+        r.resolved_by = String(adminId);
         saveReceipts(receipts);
     }
+}
+
+async function getReceiptsList() {
+    try {
+        const pg = require('../database/pg');
+        const res = await pg.query('SELECT * FROM payment_receipts ORDER BY submitted_at DESC LIMIT 200');
+        if (res && res.rows && res.rows.length > 0) {
+            return res.rows;
+        }
+    } catch (e) {
+        console.error('Get receipts from PG error:', e.message);
+    }
+    return loadReceipts().slice().reverse();
 }
 
 async function handleAddAccessCommand(ctx) {
@@ -393,5 +436,6 @@ module.exports = {
     handleAddAccessCommand,
     handleAddProCommand,
     handleSetCardCommand,
-    updateReceiptStatus
+    updateReceiptStatus,
+    getReceiptsList
 };

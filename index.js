@@ -336,6 +336,111 @@ app.post('/api/admin/set-access', auth, (req, res, next) => { if (req.user.role 
     }
 });
 
+// Admin: Get all payment receipts
+app.get('/api/admin/receipts', auth, async (req, res) => {
+    const isAuthorized = req.user.username === 'mrqirol' || req.user.role === 'superadmin' || req.user.role === 'admin' || req.user.role === 'specialist';
+    if (!isAuthorized) return res.status(403).json({ error: 'Ruxsat yo\'q' });
+
+    try {
+        const list = await paymentService.getReceiptsList();
+        res.json(list);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Admin: Approve / Reject payment receipt from Web Admin
+app.post('/api/admin/receipts/:id/action', auth, async (req, res) => {
+    const isAuthorized = req.user.username === 'mrqirol' || req.user.role === 'superadmin' || req.user.role === 'admin' || req.user.role === 'specialist';
+    if (!isAuthorized) return res.status(403).json({ error: 'Ruxsat yo\'q' });
+
+    const receiptId = req.params.id;
+    const { action, months = 1 } = req.body; // action: 'approve_access' | 'approve_pro' | 'reject_fake'
+
+    try {
+        const list = await paymentService.getReceiptsList();
+        const receipt = list.find(r => String(r.id) === String(receiptId));
+        if (!receipt) return res.status(404).json({ error: 'Chek topilmadi' });
+
+        const targetUid = receipt.sender_uid;
+        const adminName = req.user.name || req.user.username || 'Web Admin';
+
+        if (action === 'approve_access') {
+            const result = db.updateUserAccessMonths(targetUid, parseInt(months) || 1);
+            const expireDate = result ? result.access_expire_date : '';
+            await paymentService.updateReceiptStatus(receiptId, 'approved', adminName);
+
+            try {
+                await bot.telegram.sendMessage(
+                    targetUid,
+                    `🎉 <b>Tabriklaymiz!</b>\n\nTo'lovingiz veb-admin tomonidan tasdiqlandi va davomat kiritish ruxsatingiz <b>${expireDate}</b> gacha faollashtirildi!\n\nEndi bemalol davomat kiritishingiz mumkin.`,
+                    { parse_mode: 'HTML' }
+                );
+            } catch (e) {
+                console.warn('Could not notify user via Telegram:', e.message);
+            }
+
+            return res.json({ success: true, status: 'approved', expire_date: expireDate });
+        } else if (action === 'approve_pro') {
+            const result = db.updateUserProMonths(targetUid, parseInt(months) || 1);
+            const expireDate = result ? result.pro_expire_date : '';
+            await paymentService.updateReceiptStatus(receiptId, 'approved', adminName);
+
+            try {
+                await bot.telegram.sendMessage(
+                    targetUid,
+                    `🎉 <b>Tabriklaymiz!</b>\n\nTo'lovingiz veb-admin tomonidan tasdiqlandi va <b>PRO REJIM</b> obunangiz <b>${expireDate}</b> gacha faollashtirildi!\n\nBarcha imkoniyatlardan foydalanishingiz mumkin.`,
+                    { parse_mode: 'HTML' }
+                );
+            } catch (e) {
+                console.warn('Could not notify user via Telegram:', e.message);
+            }
+
+            return res.json({ success: true, status: 'approved', expire_date: expireDate });
+        } else if (action === 'reject_fake') {
+            await paymentService.updateReceiptStatus(receiptId, 'fake_rejected', adminName);
+
+            try {
+                await bot.telegram.sendMessage(
+                    targetUid,
+                    `❌ <b>To'lovingiz rad etildi!</b>\n\nSiz yuborgan to'lov cheki ma'muriyat tomonidan tekshirilib, soxta yoki noto'g'ri deb topildi.\n\nIltimos, faqat o'zingiz amalga oshirgan haqiqiy to'lov kvitansiyasini yuboring.`,
+                    { parse_mode: 'HTML' }
+                );
+            } catch (e) {
+                console.warn('Could not notify user via Telegram:', e.message);
+            }
+
+            return res.json({ success: true, status: 'fake_rejected' });
+        } else {
+            return res.status(400).json({ error: 'Noto\'g\'ri amal: ' + action });
+        }
+    } catch (e) {
+        console.error('Receipt action error:', e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Admin: View receipt image directly
+app.get('/api/admin/receipts/:id/image', async (req, res) => {
+    try {
+        const list = await paymentService.getReceiptsList();
+        const receipt = list.find(r => String(r.id) === String(req.params.id));
+        if (!receipt) return res.status(404).send('Chek topilmadi');
+
+        if (receipt.file_url) {
+            return res.redirect(receipt.file_url);
+        }
+        if (receipt.file_id) {
+            const link = await bot.telegram.getFileLink(receipt.file_id);
+            const url = link.href || link.toString();
+            return res.redirect(url);
+        }
+        res.status(404).send('Rasm mavjud emas');
+    } catch (e) {
+        res.status(500).send(e.message);
+    }
+});
+
 // User: Check Subscription & Payment Cards Info
 app.get('/api/user/subscription', (req, res) => {
     const phone = req.query.phone || (req.user && req.user.phone);
@@ -2803,110 +2908,169 @@ bot.on(['photo', 'document'], async (ctx) => {
     }
 });
 
-// PRO: Inline Buttons Actions
+// Helper: verify admin permission for bot callback actions
+function isBotAdmin(fromId) {
+    const num = Number(fromId);
+    if ((config.SUPER_ADMIN_IDS || []).map(Number).includes(num)) return true;
+    if ((config.SPECIALIST_IDS || []).map(Number).includes(num)) return true;
+    if (db.users_db && db.users_db[num] && ['superadmin', 'admin', 'specialist'].includes(db.users_db[num].role)) return true;
+    return false;
+}
 
-bot.action(/approve_access:(\\d+):([^:]+)/, async (ctx) => {
-    const [, targetUid, receiptId] = ctx.match;
-    if (!config.SUPER_ADMIN_IDS.map(Number).includes(Number(ctx.from.id))) return ctx.answerCbQuery("Ruxsat yo'q.");
+// 1. Davomat Ruxsati (10 000 so'm / 1 oy)
+bot.action(/^approve_access:(\d+):(.+)$/, async (ctx) => {
+    if (!isBotAdmin(ctx.from.id)) {
+        return ctx.answerCbQuery("⛔ Ruxsat yo'q. Faqat adminlar tasdiqlashi mumkin.", { show_alert: true });
+    }
+
+    const targetUid = ctx.match[1];
+    const receiptId = ctx.match[2];
 
     try {
         const result = db.updateUserAccessMonths(targetUid, 1);
         const expireDate = result ? result.access_expire_date : '';
-        paymentService.updateReceiptStatus(receiptId, 'approved', ctx.from.id);
-        
-        await ctx.answerCbQuery("Davomat ruxsati faollashtirildi!");
-        await ctx.editMessageCaption(ctx.update.callback_query.message.caption + `\\n\\n✅ <b>DAVOMAT RUXSATI FAOLLASHTIRILDI (1 oy - ${expireDate} gacha)</b>`, { parse_mode: 'HTML' });
+        await paymentService.updateReceiptStatus(receiptId, 'approved', ctx.from.id);
+
+        await ctx.answerCbQuery("✅ Davomat ruxsati faollashtirildi!", { show_alert: true });
+
+        const oldCaption = (ctx.update.callback_query.message && ctx.update.callback_query.message.caption) || '';
+        try {
+            await ctx.editMessageCaption(
+                oldCaption + `\n\n✅ <b>DAVOMAT RUXSATI FAOLLASHTIRILDI (1 oy - ${expireDate} gacha)</b>\n👤 <i>Tasdiqladi:</i> ${ctx.from.first_name || ctx.from.id}`,
+                { parse_mode: 'HTML' }
+            );
+        } catch (e) {
+            console.warn("Caption edit error:", e.message);
+        }
 
         // Notify User
-        await ctx.telegram.sendMessage(
-            targetUid,
-            `🎉 <b>Tabriklaymiz!</b>\\n\\nTo'lovingiz tasdiqlandi va davomat kiritish ruxsatingiz <b>${expireDate}</b> gacha (1 oyga) faollashtirildi!\\n\\nEndi bemalol davomat kiritishingiz mumkin.`,
-            { parse_mode: 'HTML' }
-        );
+        try {
+            await ctx.telegram.sendMessage(
+                targetUid,
+                `🎉 <b>Tabriklaymiz!</b>\n\nTo'lovingiz tasdiqlandi va davomat kiritish ruxsatingiz <b>${expireDate}</b> gacha (1 oyga) faollashtirildi!\n\nEndi bemalol davomat kiritishingiz mumkin.`,
+                { parse_mode: 'HTML' }
+            );
+        } catch (e) {
+            console.warn("User notify error:", e.message);
+        }
     } catch (e) {
-        ctx.answerCbQuery("Xatolik: " + e.message);
+        ctx.answerCbQuery("Xatolik: " + e.message, { show_alert: true });
     }
 });
 
-bot.action(/approve_pro:(\\d+):([^:]+)/, async (ctx) => {
-    const [, targetUid, receiptId] = ctx.match;
-    if (!config.SUPER_ADMIN_IDS.map(Number).includes(Number(ctx.from.id))) return ctx.answerCbQuery("Ruxsat yo'q.");
+// 2. PRO Rejim (25 000 so'm / 1 oy yoki bir necha oy)
+bot.action(/^approve_pro:(\d+):(.+)$/, async (ctx) => {
+    if (!isBotAdmin(ctx.from.id)) {
+        return ctx.answerCbQuery("⛔ Ruxsat yo'q. Faqat adminlar tasdiqlashi mumkin.", { show_alert: true });
+    }
+
+    const targetUid = ctx.match[1];
+    const secondArg = ctx.match[2];
+    const isMonths = !isNaN(secondArg) && Number(secondArg) <= 12;
+    const months = isMonths ? parseInt(secondArg) : 1;
+    const receiptId = isMonths ? null : secondArg;
 
     try {
-        const result = db.updateUserProMonths(targetUid, 1);
+        const result = db.updateUserProMonths(targetUid, months);
         const expireDate = result ? result.pro_expire_date : '';
-        paymentService.updateReceiptStatus(receiptId, 'approved', ctx.from.id);
+        if (receiptId) {
+            await paymentService.updateReceiptStatus(receiptId, 'approved', ctx.from.id);
+        }
 
-        await ctx.answerCbQuery("PRO faollashtirildi!");
-        await ctx.editMessageCaption(ctx.update.callback_query.message.caption + `\\n\\n🌟 <b>PRO REJIM FAOLLASHTIRILDI (1 oy - ${expireDate} gacha)</b>`, { parse_mode: 'HTML' });
+        await ctx.answerCbQuery("🌟 PRO Rejim faollashtirildi!", { show_alert: true });
+
+        const oldCaption = (ctx.update.callback_query.message && ctx.update.callback_query.message.caption) || '';
+        try {
+            await ctx.editMessageCaption(
+                oldCaption + `\n\n🌟 <b>PRO REJIM FAOLLASHTIRILDI (${months} oy - ${expireDate} gacha)</b>\n👤 <i>Tasdiqladi:</i> ${ctx.from.first_name || ctx.from.id}`,
+                { parse_mode: 'HTML' }
+            );
+        } catch (e) {
+            console.warn("Caption edit error:", e.message);
+        }
 
         // Notify User
-        await ctx.telegram.sendMessage(
-            targetUid,
-            `🎉 <b>Tabriklaymiz!</b>\\n\\nTo'lovingiz tasdiqlandi va <b>PRO REJIM</b> obunangiz <b>${expireDate}</b> gacha (1 oyga) faollashtirildi!\\n\\nBarcha imkoniyatlardan foydalanishingiz mumkin.`,
-            { parse_mode: 'HTML' }
-        );
+        try {
+            await ctx.telegram.sendMessage(
+                targetUid,
+                `🎉 <b>Tabriklaymiz!</b>\n\nTo'lovingiz tasdiqlandi va <b>PRO REJIM</b> obunangiz <b>${expireDate}</b> gacha (${months} oyga) faollashtirildi!\n\nBarcha imkoniyatlardan foydalanishingiz mumkin.`,
+                { parse_mode: 'HTML' }
+            );
+        } catch (e) {
+            console.warn("User notify error:", e.message);
+        }
     } catch (e) {
-        ctx.answerCbQuery("Xatolik: " + e.message);
+        ctx.answerCbQuery("Xatolik: " + e.message, { show_alert: true });
     }
 });
 
-bot.action(/reject_fake:(\\d+):([^:]+)/, async (ctx) => {
-    const [, targetUid, receiptId] = ctx.match;
-    if (!config.SUPER_ADMIN_IDS.map(Number).includes(Number(ctx.from.id))) return ctx.answerCbQuery("Ruxsat yo'q.");
+// 3. Soxta Chek (Rad etish)
+bot.action(/^reject_fake:(\d+):(.+)$/, async (ctx) => {
+    if (!isBotAdmin(ctx.from.id)) {
+        return ctx.answerCbQuery("⛔ Ruxsat yo'q. Faqat adminlar rad etishi mumkin.", { show_alert: true });
+    }
+
+    const targetUid = ctx.match[1];
+    const receiptId = ctx.match[2];
 
     try {
-        paymentService.updateReceiptStatus(receiptId, 'fake_rejected', ctx.from.id);
-        await ctx.answerCbQuery("Soxta chek rad etildi.");
-        await ctx.editMessageCaption(ctx.update.callback_query.message.caption + `\\n\\n🚫 <b>SOXTA CHEK: RAD ETILDI</b>`, { parse_mode: 'HTML' });
+        await paymentService.updateReceiptStatus(receiptId, 'fake_rejected', ctx.from.id);
+        await ctx.answerCbQuery("🚫 Soxta chek rad etildi!", { show_alert: true });
 
+        const oldCaption = (ctx.update.callback_query.message && ctx.update.callback_query.message.caption) || '';
+        try {
+            await ctx.editMessageCaption(
+                oldCaption + `\n\n🚫 <b>SOXTA CHEK: RAD ETILDI</b>\n👤 <i>Rad etdi:</i> ${ctx.from.first_name || ctx.from.id}`,
+                { parse_mode: 'HTML' }
+            );
+        } catch (e) {
+            console.warn("Caption edit error:", e.message);
+        }
+
+        try {
+            await ctx.telegram.sendMessage(
+                targetUid,
+                `❌ <b>To'lovingiz rad etildi!</b>\n\nSiz yuborgan to'lov cheki ma'muriyat tomonidan tekshirilib, soxta yoki noto'g'ri deb topildi.\n\nIltimos, faqat o'zingiz amalga oshirgan haqiqiy to'lov kvitansiyasini yuboring.`,
+                { parse_mode: 'HTML' }
+            );
+        } catch (e) {
+            console.warn("User notify error:", e.message);
+        }
+    } catch (e) {
+        ctx.answerCbQuery("Xatolik: " + e.message, { show_alert: true });
+    }
+});
+
+// 4. Legacy reject_pro
+bot.action(/^reject_pro:(\d+)(?::(.+))?$/, async (ctx) => {
+    if (!isBotAdmin(ctx.from.id)) {
+        return ctx.answerCbQuery("⛔ Ruxsat yo'q.", { show_alert: true });
+    }
+
+    const targetUid = ctx.match[1];
+    const receiptId = ctx.match[2];
+    if (receiptId) {
+        await paymentService.updateReceiptStatus(receiptId, 'fake_rejected', ctx.from.id);
+    }
+
+    await ctx.answerCbQuery("Rad etildi.", { show_alert: true });
+    try {
+        const oldCaption = (ctx.update.callback_query.message && ctx.update.callback_query.message.caption) || '';
+        await ctx.editMessageCaption(oldCaption + "\n\n❌ <b>RAD ETILDI</b>", { parse_mode: 'HTML' });
+    } catch (e) {}
+
+    try {
         await ctx.telegram.sendMessage(
             targetUid,
-            `❌ <b>To'lovingiz rad etildi!</b>\\n\\nSiz yuborgan to'lov cheki ma'muriyat tomonidan tekshirilib, soxta yoki noto'g'ri deb topildi.\\n\\nIltimos, faqat o'zingiz amalga oshirgan haqiqiy to'lov kvitansiyasini yuboring.`,
+            "❌ Uzr, to'lov chekingiz tasdiqlanmadi. Xatolik bo'lsa adminga murojaat qiling.",
             { parse_mode: 'HTML' }
         );
-    } catch (e) {
-        ctx.answerCbQuery("Xatolik: " + e.message);
-    }
+    } catch (e) {}
 });
 
 bot.action('show_payment', (ctx) => {
     try { ctx.answerCbQuery(); } catch (e) {}
     return paymentService.showPaymentInfo(ctx);
-});
-
-bot.action(/approve_pro:(\d+):(\d+)/, async (ctx) => {
-    const [, targetUid, months] = ctx.match;
-    if (!config.SUPER_ADMIN_IDS.map(Number).includes(Number(ctx.from.id))) return ctx.answerCbQuery("Ruxsat yo'q.");
-
-    try {
-        const result = db.updateUserProMonths(targetUid, parseInt(months));
-        const expireDate = result ? result.pro_expire_date : '';
-        await ctx.answerCbQuery("PRO faollashtirildi!");
-        await ctx.editMessageCaption(ctx.update.callback_query.message.caption + `\n\n✅ <b>FAOLLASHTIRILDI (${months} oy - ${expireDate} gacha)</b>`, { parse_mode: 'HTML' });
-
-        // Notify User
-        await ctx.telegram.sendMessage(
-            targetUid,
-            `🎉 <b>Tabriklaymiz!</b>\n\nTo'lovingiz tasdiqlandi va davomat kiritish uchun <b>PRO</b> obunangiz <b>${expireDate}</b> gacha (${months} oyga) faollashtirildi! Endi bemalol davomat kiritishingiz mumkin.`,
-            { parse_mode: 'HTML' }
-        );
-    } catch (e) {
-        ctx.answerCbQuery("Xatolik: " + e.message);
-    }
-});
-
-bot.action(/reject_pro:(\d+)/, async (ctx) => {
-    const targetUid = ctx.match[1];
-    if (!config.SUPER_ADMIN_IDS.map(Number).includes(Number(ctx.from.id))) return ctx.answerCbQuery("Ruxsat yo'q.");
-
-    await ctx.answerCbQuery("Rad etildi.");
-    await ctx.editMessageCaption(ctx.update.callback_query.message.caption + "\n\n❌ <b>RAD ETILDI</b>", { parse_mode: 'HTML' });
-    await ctx.telegram.sendMessage(
-        targetUid,
-        "❌ Uzr, to'lov chekingiz tasdiqlanmadi. Xatolik bo'lsa adminga murojaat qiling.",
-        { parse_mode: 'HTML' }
-    );
 });
 
 bot.on('location', (ctx) => {
