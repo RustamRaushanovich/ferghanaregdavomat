@@ -64,6 +64,15 @@ const attendanceWizard = new Scenes.WizardScene(
         // Vaqt check (Admins skip time check if needed, but let's keep it simple)
         if (!checkTime(ctx, db.checkPro(uid))) return;
 
+        // Oferta va Obuna tekshiruvi (Tanishdim demaguncha o'tkazilmaydi)
+        const subscriptionService = require('../services/subscriptionService');
+        const subCheck = await subscriptionService.checkCanEnterAttendance(ctx, uid);
+        if (!subCheck.canEnter) {
+            await subscriptionService.sendSubscriptionPrompt(ctx, subCheck.reason);
+            try { await ctx.scene.leave(); } catch (e) { }
+            return;
+        }
+
         const saved = db.users_db[uid];
 
         if (saved && saved.district && saved.school) {
@@ -583,9 +592,9 @@ const attendanceWizard = new Scenes.WizardScene(
                     }
                 }
 
-                // Generate PDF (Annex 3) for PRO users
-                if (isProFinal && d.sababsiz_jami > 0 && d.students_list.length > 0) {
-                    await ctx.reply("📄 <b>Professional Bildirishnoma (PDF) tayyorlanmoqda...</b>", { parse_mode: 'HTML' });
+                // 3-Ilova (Bildirishnoma PDF) shakllantirish (sababsiz dars qoldirganlar bo'lsa)
+                if (d.sababsiz_jami > 0 && d.students_list && d.students_list.length > 0) {
+                    await ctx.reply("📄 <b>Rasmiy 3-Ilova (Bildirishnoma PDF) tayyorlanmoqda...</b>", { parse_mode: 'HTML' });
                     try {
                         const pdfPath = await generateBildirishnoma({
                             district: d.district,
@@ -596,45 +605,37 @@ const attendanceWizard = new Scenes.WizardScene(
                         });
 
                         const doc = { source: pdfPath, filename: `3-ILOVA_${d.school}.pdf` };
-                        const caption = `✅ <b>3-ILOVA (Bildirishnoma) tayyor!</b>\n\nUshbu hujjatni inspektor-psixologga taqdim etishingiz mumkin.`;
+                        const caption = `✅ <b>3-ILOVA (Bildirishnoma) tayyor!</b>\n\nUshbu rasmiy hujjatni inspektor-psixologga taqdim etishingiz va chop etishingiz mumkin.`;
 
                         await ctx.replyWithDocument(doc, { caption, parse_mode: 'HTML' });
 
                         if (tid) {
-                            await ctx.telegram.sendDocument(REPORT_GROUP_ID, doc, {
-                                caption: `#Bildirishnoma #3_ILOVA\n📍 ${d.district}, ${d.school}\n👤 Mas'ul: ${d.fio}`,
-                                message_thread_id: tid
-                            });
+                            try {
+                                await ctx.telegram.sendDocument(REPORT_GROUP_ID, doc, {
+                                    caption: `#Bildirishnoma #3_ILOVA\n📍 ${d.district}, ${d.school}\n👤 Mas'ul: ${d.fio}`,
+                                    message_thread_id: tid
+                                });
+                            } catch (gErr) { }
                         }
-
-                        // Clean up temp file
-                        // setTimeout(() => { if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath); }, 60000);
-
                     } catch (e) {
-                        console.error("Local PDF Error", e);
-                        await ctx.reply("❌ PDF tayyorlashda xatolik yuz berdi.");
+                        console.error("3-Ilova PDF Error:", e.message);
                     }
-                } else if (d.sababsiz_jami > 0 && d.students_list.length > 0) {
-                    // Non-pro users or cloud version
-                    await ctx.reply("📄 Bildirishnoma tayyorlanmoqda (Cloud)...");
-                    try {
-                        const now = getFargonaTime();
-                        const pdfDate = now.toLocaleDateString('ru-RU');
-                        const pdfRes = await generatePdf({
-                            district: d.district, school: d.school, inspector: d.inspector,
-                            date: pdfDate, students: d.students_list
-                        });
-
-                        if (pdfRes && pdfRes.data && pdfRes.data.url) {
-                            const pdfUrl = pdfRes.data.url;
-                            await ctx.replyWithDocument({ url: pdfUrl, filename: 'Bildirishnoma.pdf' });
-                        }
-                    } catch (e) { console.error("Cloud PDF Error", e); }
                 }
 
-                await ctx.reply("✅ <b>Muvaffaqiyatli saqlandi!</b>", Markup.keyboard([["Davomat kiritish"]]).resize());
+                const finalButtons = [
+                    ["🚀 START - Davomat kiritish"],
+                    ["✈️ Xorijga ketganlar"],
+                    ["👤 Mening Profilim", "📊 Mening Statistikam"],
+                    ["ℹ️ Dastur haqida", "📖 Yo'riqnoma"],
+                    ["📋 Ommaviy Oferta"]
+                ];
+                await ctx.replyWithHTML(
+                    "🎉 <b>Davomat ma'lumotlari muvaffaqiyatli qabul qilindi va saqlandi!</b>\n\n" +
+                    "Kuningiz xayrli va unumli o'tsin!",
+                    Markup.keyboard(finalButtons).resize()
+                );
             } else {
-                await ctx.reply("❌ Xatolik. Qayta urinib ko'ring.");
+                await ctx.reply("❌ Xatolik yuz berdi. Qayta urinib ko'ring.");
             }
         } catch (e) {
             console.error(e);

@@ -13,12 +13,12 @@ function showAdminPanel(ctx) {
             if (db && db.settings && db.settings.vacation_mode) status = "🔴 YOQILGAN";
 
             const buttons = [
-                ["👥 Pro Ro'yxat", "❌ Pro Bekor Qilish"],
-                ["➕ Promokod Yaratish", "📢 Qarzdorlarga ABOROT"],
-                ["📢 E'lon Yuborish", `Status: ${status}`],
+                ["💳 To'lovlar & Obunalar (Excel)", "👥 Pro Ro'yxat"],
+                ["➕ Promokod Yaratish", "❌ Pro Bekor Qilish"],
+                ["📢 Qarzdorlarga ABOROT", `Status: ${status}`],
+                ["📢 E'lon Yuborish", "📥 TEST REPORT"],
                 ["🔴 Ta'tilni YOQISH", "🟢 Ta'tilni O'CHIRISH"],
-                ["📥 TEST REPORT", "📢 Kiritmaganlar (Manual)"],
-                ["📊 Grafika", "🏆 Reyting"],
+                ["📢 Kiritmaganlar (Manual)", "📊 Grafika"],
                 ["📥 Excel Yuklab olish", "🔄 Bazani yangilash"],
                 ["🖥 Dashboard Logins", "📊 Svod va Hisobotlar"],
                 ["📝 Rejalar", "⬅️ Orqaga"]

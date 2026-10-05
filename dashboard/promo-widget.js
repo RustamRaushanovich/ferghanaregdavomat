@@ -1,4 +1,4 @@
-﻿// Between Us Corner Promo Widget
+// Between Us Corner Promo Widget with Smooth Slidebar
 (function() {
     if (document.getElementById('betweenus-promo-widget')) return;
 
@@ -12,19 +12,23 @@
             right: 24px;
             z-index: 999999;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+        .bu-promo-container.bu-slide-collapsed {
+            transform: translateX(calc(100% + 40px));
+            pointer-events: none;
         }
         .bu-promo-card {
-            background: rgba(15, 23, 42, 0.88);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             border-radius: 18px;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45), 0 0 20px rgba(99, 102, 241, 0.2);
-            padding: 14px 18px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(99, 102, 241, 0.25);
+            padding: 15px 18px;
             width: 280px;
             color: #ffffff;
-            transition: transform 0.25s ease, opacity 0.25s ease;
+            position: relative;
         }
         .bu-promo-header {
             display: flex;
@@ -43,18 +47,25 @@
             font-weight: 700;
         }
         .bu-close-btn {
-            background: none;
-            border: none;
-            color: #94a3b8;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             line-height: 1;
-            padding: 2px 4px;
-            border-radius: 6px;
-            transition: color 0.2s;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
         }
         .bu-close-btn:hover {
             color: #fff;
+            background: rgba(239, 68, 68, 0.6);
+            border-color: #ef4444;
+            transform: scale(1.1);
         }
         .bu-title {
             font-size: 15px;
@@ -106,28 +117,43 @@
             height: 15px;
             fill: currentColor;
         }
-        /* Minimized Pill Button */
-        .bu-minimized-pill {
-            display: none;
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 30px;
-            padding: 8px 16px;
-            color: #fff;
+
+        /* Slidebar Edge Opener Tab */
+        .bu-slide-tab {
+            position: fixed;
+            right: 0;
+            bottom: 30px;
+            z-index: 999998;
+            background: linear-gradient(135deg, #1e1b4b, #312e81);
+            border: 1px solid rgba(129, 140, 248, 0.4);
+            border-right: none;
+            border-radius: 20px 0 0 20px;
+            padding: 8px 14px 8px 10px;
+            color: #e0e7ff;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+            box-shadow: -4px 6px 20px rgba(0,0,0,0.4);
+            display: flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.25s ease;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
         }
-        .bu-minimized-pill:hover {
-            transform: translateY(-2px);
-            background: rgba(30, 41, 59, 0.95);
-            border-color: #818cf8;
+        .bu-slide-tab.bu-tab-visible {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
         }
+        .bu-slide-tab:hover {
+            padding-left: 14px;
+            background: linear-gradient(135deg, #312e81, #4338ca);
+            color: #fff;
+            box-shadow: -6px 8px 25px rgba(99, 102, 241, 0.5);
+        }
+
         @media (max-width: 640px) {
             .bu-promo-container {
                 bottom: 14px;
@@ -136,6 +162,11 @@
             .bu-promo-card {
                 width: 250px;
                 padding: 12px 14px;
+            }
+            .bu-slide-tab {
+                bottom: 20px;
+                font-size: 11px;
+                padding: 6px 10px 6px 8px;
             }
         }
     `;
@@ -154,7 +185,7 @@
         <div class="bu-promo-card" id="bu-card">
             <div class="bu-promo-header">
                 <span class="bu-badge">Reklama / Hamkor</span>
-                <button class="bu-close-btn" id="bu-close-btn" title="Kichraytirish">✕</button>
+                <button class="bu-close-btn" id="bu-close-btn" title="Chetga yashirish (Slide)">✕</button>
             </div>
             <div class="bu-title">
                 ✨ Between Us
@@ -171,25 +202,46 @@
                 </a>
             </div>
         </div>
-        <div class="bu-minimized-pill" id="bu-pill">
-            <span>✨ Between Us (Obuna)</span>
-        </div>
     `;
 
-    document.body.appendChild(container);
+    // Slide tab element (Chetda qoluvchi tugma)
+    const slideTab = document.createElement('div');
+    slideTab.id = 'bu-slide-tab';
+    slideTab.className = 'bu-slide-tab';
+    slideTab.innerHTML = `<span>◀ ✨ Between Us</span>`;
+    slideTab.title = "Between Us reklamasini ochish";
 
-    const card = document.getElementById('bu-card');
-    const pill = document.getElementById('bu-pill');
+    document.body.appendChild(container);
+    document.body.appendChild(slideTab);
+
     const closeBtn = document.getElementById('bu-close-btn');
+
+    function collapseToSlidebar() {
+        container.classList.add('bu-slide-collapsed');
+        slideTab.classList.add('bu-tab-visible');
+        try { sessionStorage.setItem('bu_collapsed', 'true'); } catch(e){}
+    }
+
+    function expandFromSlidebar() {
+        container.classList.remove('bu-slide-collapsed');
+        slideTab.classList.remove('bu-tab-visible');
+        try { sessionStorage.removeItem('bu_collapsed'); } catch(e){}
+    }
 
     closeBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        card.style.display = 'none';
-        pill.style.display = 'flex';
+        collapseToSlidebar();
     });
 
-    pill.addEventListener('click', function() {
-        pill.style.display = 'none';
-        card.style.display = 'block';
+    slideTab.addEventListener('click', function(e) {
+        e.stopPropagation();
+        expandFromSlidebar();
     });
+
+    // Check if previously collapsed in this session
+    try {
+        if (sessionStorage.getItem('bu_collapsed') === 'true') {
+            collapseToSlidebar();
+        }
+    } catch(e){}
 })();

@@ -111,6 +111,52 @@ function updateUserAccessMonths(uid, months = 1) {
     return users_db[uid];
 }
 
+function grantSchoolAccess(district, school, months = 1, type = 'access') {
+    const { normalizeKey } = require('../utils/topics');
+    const key = `${normalizeKey(district)}_${normalizeKey(school)}`;
+    if (!settings.school_access) settings.school_access = {};
+
+    let now = new Date();
+    let currentExp = settings.school_access[key] && settings.school_access[key].expire_date;
+    let baseDate = (currentExp && new Date(currentExp) > now) ? new Date(currentExp) : now;
+    let expireDate = new Date(baseDate);
+    expireDate.setMonth(expireDate.getMonth() + months);
+
+    settings.school_access[key] = {
+        district,
+        school,
+        type, // 'access' or 'pro'
+        purchase_date: now.toISOString().split('T')[0],
+        expire_date: expireDate.toISOString().split('T')[0]
+    };
+    saveSettings();
+
+    // Also update any matching users in users_db
+    const normD = normalizeKey(district);
+    const normS = normalizeKey(school);
+    Object.keys(users_db).forEach(uid => {
+        const u = users_db[uid];
+        if (u && u.district && u.school && normalizeKey(u.district) === normD && normalizeKey(u.school) === normS) {
+            if (type === 'pro') {
+                updateUserProMonths(uid, months);
+            } else {
+                updateUserAccessMonths(uid, months);
+            }
+        }
+    });
+
+    return settings.school_access[key];
+}
+
+function checkSchoolAccess(district, school) {
+    if (!district || !school || !settings.school_access) return false;
+    const { normalizeKey } = require('../utils/topics');
+    const key = `${normalizeKey(district)}_${normalizeKey(school)}`;
+    const sa = settings.school_access[key];
+    if (!sa) return false;
+    return new Date(sa.expire_date) > new Date();
+}
+
 function checkAttendanceAccess(uid) {
     if (SUPER_ADMIN_IDS.map(Number).includes(Number(uid))) return true;
     if (SPECIALIST_IDS.map(Number).includes(Number(uid))) return true;
@@ -118,8 +164,11 @@ function checkAttendanceAccess(uid) {
     const u = users_db[uid];
     if (!u) return false;
     if (u.is_pro && new Date(u.pro_expire_date) > new Date()) return true;
+    if (u.has_access && new Date(u.access_expire_date) > new Date()) return true;
 
-    return u.has_access && new Date(u.access_expire_date) > new Date();
+    if (u.district && u.school && checkSchoolAccess(u.district, u.school)) return true;
+
+    return false;
 }
 
 function checkPro(uid) {
@@ -127,7 +176,14 @@ function checkPro(uid) {
     if (SPECIALIST_IDS.map(Number).includes(Number(uid))) return true;
 
     const u = users_db[uid];
-    return u && u.is_pro && new Date(u.pro_expire_date) > new Date();
+    if (u && u.is_pro && new Date(u.pro_expire_date) > new Date()) return true;
+    if (u && u.district && u.school) {
+        const { normalizeKey } = require('../utils/topics');
+        const key = `${normalizeKey(u.district)}_${normalizeKey(u.school)}`;
+        const sa = settings.school_access && settings.school_access[key];
+        if (sa && sa.type === 'pro' && new Date(sa.expire_date) > new Date()) return true;
+    }
+    return false;
 }
 
 function checkProByPhone(phone) {
@@ -193,6 +249,8 @@ module.exports = {
     checkAttendanceAccessByPhone,
     checkPro,
     checkProByPhone,
+    grantSchoolAccess,
+    checkSchoolAccess,
     saveCoords,
     loadAll, // Export for manual sync
     saveSchools: () => { try { fs.writeFileSync(SCHOOLS_FILE, JSON.stringify(schools_db)); } catch (e) { } }

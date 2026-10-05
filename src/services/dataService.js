@@ -705,8 +705,200 @@ async function exportXorijExcel() {
     }
 }
 
+async function exportSubscribersToExcel() {
+    try {
+        const workbook = new ExcelJS.Workbook();
+        const sheet = workbook.addWorksheet('Obunachilar va To\'lovlar');
+
+        const now = getFargonaTime();
+        const todayStr = now.toISOString().split('T')[0];
+
+        // Gather all users
+        const dbLocal = require('../database/db');
+        let users = { ...dbLocal.users_db };
+
+        // Attempt to sync / fetch from PostgreSQL
+        try {
+            const pg = require('../database/pg');
+            const res = await pg.query('SELECT id, data FROM tg_users');
+            if (res && res.rows) {
+                res.rows.forEach(r => {
+                    users[r.id] = { ...users[r.id], ...r.data };
+                });
+            }
+        } catch (e) {
+            console.warn("exportSubscribersToExcel PG query fallback:", e.message);
+        }
+
+        const userList = Object.entries(users).map(([id, u]) => {
+            const isPro = !!(u.is_pro && u.pro_expire_date && new Date(u.pro_expire_date) > now);
+            const hasAccess = !!(u.has_access && u.access_expire_date && new Date(u.access_expire_date) > now);
+
+            let statusType = 'noaktiv'; // 'pro' | 'access' | 'expired' | 'noaktiv'
+            let statusText = 'Noaktiv';
+            let expireDate = '-';
+            let purchaseDate = '-';
+            let daysLeft = 0;
+
+            if (isPro) {
+                statusType = 'pro';
+                statusText = '👑 PRO Obunachi';
+                expireDate = u.pro_expire_date;
+                purchaseDate = u.pro_purchase_date || '-';
+                daysLeft = Math.max(0, Math.ceil((new Date(expireDate) - now) / (1000 * 60 * 60 * 24)));
+            } else if (hasAccess) {
+                statusType = 'access';
+                statusText = '✅ Standart Davomat';
+                expireDate = u.access_expire_date;
+                purchaseDate = u.access_purchase_date || '-';
+                daysLeft = Math.max(0, Math.ceil((new Date(expireDate) - now) / (1000 * 60 * 60 * 24)));
+            } else if ((u.pro_expire_date && new Date(u.pro_expire_date) <= now) || (u.access_expire_date && new Date(u.access_expire_date) <= now)) {
+                statusType = 'expired';
+                statusText = '⏳ Muddati tugagan';
+                expireDate = u.pro_expire_date || u.access_expire_date;
+                purchaseDate = u.pro_purchase_date || u.access_purchase_date || '-';
+                daysLeft = 0;
+            }
+
+            return {
+                id,
+                fio: u.fio || u.name || '-',
+                phone: u.phone || '-',
+                district: u.district || '-',
+                school: u.school || '-',
+                username: u.username ? `@${u.username}` : '-',
+                statusType,
+                statusText,
+                purchaseDate,
+                expireDate,
+                daysLeft
+            };
+        });
+
+        // Sort: Active PRO first, then Active Standart, then Expired, then Noaktiv
+        const priority = { 'pro': 1, 'access': 2, 'expired': 3, 'noaktiv': 4 };
+        userList.sort((a, b) => {
+            if (priority[a.statusType] !== priority[b.statusType]) {
+                return priority[a.statusType] - priority[b.statusType];
+            }
+            return b.daysLeft - a.daysLeft;
+        });
+
+        // Summary counts
+        const totalUsers = userList.length;
+        const totalPro = userList.filter(u => u.statusType === 'pro').length;
+        const totalAccess = userList.filter(u => u.statusType === 'access').length;
+        const totalExpired = userList.filter(u => u.statusType === 'expired').length;
+
+        // Title Row
+        sheet.mergeCells('A1:K1');
+        const titleCell = sheet.getCell('A1');
+        titleCell.value = "FARG'ONA VILOYATI — DAVOMAT PLATFORMASI OBUNACHILARI VA TO'LOVLAR HISOBOTI";
+        titleCell.font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
+        titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E1B4B' } };
+        titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+        sheet.getRow(1).height = 35;
+
+        // Summary Rows
+        sheet.mergeCells('A2:K2');
+        const sumCell = sheet.getCell('A2');
+        sumCell.value = `Sana: ${todayStr} | Jami foydalanuvchilar: ${totalUsers} ta | 👑 PRO: ${totalPro} ta | ✅ Standart Davomat: ${totalAccess} ta | ⏳ Muddati tugaganlar: ${totalExpired} ta`;
+        sumCell.font = { italic: true, size: 10, color: { argb: 'FF334155' } };
+        sumCell.alignment = { vertical: 'middle', horizontal: 'center' };
+        sheet.getRow(2).height = 24;
+
+        // Table Header
+        const headers = [
+            "№", "Telegram ID", "F.I.SH (Mas'ul)", "Telefon",
+            "Tuman / Shahar", "Maktab", "Telegram Login",
+            "Obuna Turi", "Faollashgan Sana", "Tugash Sanasi", "Qolgan Muddat"
+        ];
+        const hRow = sheet.addRow(headers);
+        hRow.height = 28;
+        hRow.eachCell(cell => {
+            cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 10 };
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF312E81' } };
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            cell.border = {
+                top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                right: { style: 'thin', color: { argb: 'FFCBD5E1' } }
+            };
+        });
+
+        // Add Data Rows
+        userList.forEach((u, idx) => {
+            const daysText = (u.statusType === 'pro' || u.statusType === 'access')
+                ? `${u.daysLeft} kun`
+                : (u.statusType === 'expired' ? 'Muddati tugagan' : '-');
+
+            const row = sheet.addRow([
+                idx + 1,
+                u.id,
+                u.fio,
+                u.phone,
+                u.district,
+                u.school,
+                u.username,
+                u.statusText,
+                u.purchaseDate,
+                u.expireDate,
+                daysText
+            ]);
+            row.height = 22;
+
+            row.eachCell((cell, colNum) => {
+                cell.font = { size: 9, color: { argb: 'FF1E293B' } };
+                cell.border = {
+                    top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+                    bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+                    left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+                    right: { style: 'thin', color: { argb: 'FFE2E8F0' } }
+                };
+                cell.alignment = { vertical: 'middle', horizontal: colNum === 1 || colNum === 2 || colNum >= 8 ? 'center' : 'left' };
+
+                // Color code Obuna Turi & Days
+                if (colNum === 8 || colNum === 11) {
+                    if (u.statusType === 'pro') {
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF3C7' } }; // Light amber
+                        cell.font = { bold: true, color: { argb: 'FF92400E' }, size: 9 };
+                    } else if (u.statusType === 'access') {
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD1FAE5' } }; // Light emerald
+                        cell.font = { bold: true, color: { argb: 'FF065F46' }, size: 9 };
+                    } else if (u.statusType === 'expired') {
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } }; // Light rose
+                        cell.font = { color: { argb: 'FF991B1B' }, size: 9 };
+                    }
+                }
+            });
+        });
+
+        // Set column widths
+        sheet.getColumn(1).width = 6;
+        sheet.getColumn(2).width = 16;
+        sheet.getColumn(3).width = 28;
+        sheet.getColumn(4).width = 18;
+        sheet.getColumn(5).width = 20;
+        sheet.getColumn(6).width = 24;
+        sheet.getColumn(7).width = 18;
+        sheet.getColumn(8).width = 22;
+        sheet.getColumn(9).width = 16;
+        sheet.getColumn(10).width = 16;
+        sheet.getColumn(11).width = 16;
+
+        const assetsDir = path.resolve(__dirname, '../../assets');
+        const filePath = path.join(assetsDir, `OBUNACHILAR_TOLOVLAR_${todayStr}.xlsx`);
+        await workbook.xlsx.writeFile(filePath);
+        return filePath;
+    } catch (e) {
+        console.error("Export Subscribers Excel Error:", e);
+        return null;
+    }
+}
+
 module.exports = {
     saveAttendance, exportToExcel, exportDistrictExcel, exportWeeklyExcel, exportMonthlyExcel,
     getViloyatSvod, getTumanSvod, getTodayAbsentsDetails, getRecentActivity, getTrendStats, checkIfExists,
-    exportXorijExcel
+    exportXorijExcel, exportSubscribersToExcel
 };

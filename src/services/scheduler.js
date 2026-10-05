@@ -480,9 +480,89 @@ async function sendFinalReportsSummary(timeStr) {
     }
 }
 
+/**
+ * ⏰ Obuna tugashidan 3 kun va 1 kun oldin avtomatik eslatma yuborish
+ */
+async function sendSubscriptionReminders() {
+    console.log("🕒 [CRON] Checking subscription expiries for reminders...");
+    const now = getFargonaTime();
+    const todayStr = now.toISOString().split('T')[0];
+
+    const users = db.users_db || {};
+    const paymentService = require('./paymentService');
+    const humoCard = (paymentService.getHumoCard() || '').replace(/\s+/g, '');
+    const price = paymentService.getAccessPrice() || 10000;
+
+    const clickUrl = `https://my.click.uz/services/pay?service_id=-1&receiver_card=${humoCard}&amount=${price}`;
+    const paymeUrl = `https://payme.uz/fallback/pay/transfer?card=${humoCard}&amount=${price * 100}`;
+
+    const reminderKeyboard = {
+        inline_keyboard: [
+            [
+                { text: "📲 Click orqali to'lash", url: clickUrl },
+                { text: "📲 Payme orqali to'lash", url: paymeUrl }
+            ]
+        ]
+    };
+
+    let sent3d = 0;
+    let sent1d = 0;
+
+    for (const [uid, u] of Object.entries(users)) {
+        if (!u || !uid) continue;
+        const expDateStr = u.pro_expire_date || u.access_expire_date;
+        if (!expDateStr) continue;
+
+        const expDate = new Date(expDateStr);
+        if (isNaN(expDate.getTime())) continue;
+
+        // Qolgan kunlar
+        const diffMs = expDate - now;
+        const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+        try {
+            // 3 kun qolgan eslatmasi
+            if (daysLeft === 3 && u.last_reminder_3d !== todayStr) {
+                const msg = 
+                    `⏰ <b>DIQQAT: DAVOMAT OBUNASI TUGAMOQDA!</b>\n\n` +
+                    `Hurmatli mas'ul! Maktabingiz (<b>${escapeHtml(u.school || 'Maktab')}</b>) uchun davomat kiritish ruxsati <b>3 kundan so'ng (${expDateStr})</b> tugaydi.\n\n` +
+                    `Ertalab davomat topshirishda uzilish bo'lmasligi uchun oldindan to'lovni amalga oshirib qo'yishingizni tavsiya qilamiz.\n\n` +
+                    `<i>To'lov chekini rasm sifatida ushbu botga yuboring.</i>`;
+
+                await bot.telegram.sendMessage(uid, msg, { parse_mode: 'HTML', reply_markup: reminderKeyboard });
+                u.last_reminder_3d = todayStr;
+                await db.updateUserDb(uid, { last_reminder_3d: todayStr });
+                sent3d++;
+                await new Promise(r => setTimeout(r, 200));
+            }
+            // 1 kun qolgan eslatmasi
+            else if (daysLeft === 1 && u.last_reminder_1d !== todayStr) {
+                const msg = 
+                    `⚠️ <b>DIQQAT: DAVOMAT OBUNASI ERTAGA TUGAYDI!</b>\n\n` +
+                    `Hurmatli mas'ul! Maktabingiz (<b>${escapeHtml(u.school || 'Maktab')}</b>) uchun oylik davomat ruxsati <b>ertaga (${expDateStr})</b> o'z nihoyasiga yetadi.\n\n` +
+                    `Davomat kiritish to'xtab qolmasligi uchun to'lovni amalga oshirishingizni so'raymiz.\n\n` +
+                    `<i>To'lov chekini rasm sifatida ushbu botga yuboring.</i>`;
+
+                await bot.telegram.sendMessage(uid, msg, { parse_mode: 'HTML', reply_markup: reminderKeyboard });
+                u.last_reminder_1d = todayStr;
+                await db.updateUserDb(uid, { last_reminder_1d: todayStr });
+                sent1d++;
+                await new Promise(r => setTimeout(r, 200));
+            }
+        } catch (err) {
+            // Foydalanuvchi botni bloklagan bo'lishi mumkin
+        }
+    }
+    console.log(`✅ [CRON] Subscription reminders sent: ${sent3d} (3-day), ${sent1d} (1-day).`);
+}
 
 // Initialize Cron Jobs
 function initCrons() {
+    // 0. Subscription Expiry Reminders (Every day at 08:30)
+    cron.schedule('30 8 * * *', () => {
+        sendSubscriptionReminders();
+    }, { timezone: "Asia/Tashkent" });
+
     // 1. Daily Summary at 16:30 (Monday-Saturday)
     cron.schedule('30 16 * * 1-6', () => {
         sendDailySummary();
@@ -510,7 +590,7 @@ function initCrons() {
         sendFinalReportsSummary(timeStr);
     }, { timezone: "Asia/Tashkent" });
 
-    console.log("🚀 [Scheduler] Automated reports initialized.");
+    console.log("🚀 [Scheduler] Automated reports and subscription reminders initialized.");
 }
 
-module.exports = { initCrons };
+module.exports = { initCrons, sendSubscriptionReminders };

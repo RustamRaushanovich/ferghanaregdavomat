@@ -185,6 +185,23 @@ async function initDb() {
             ALTER TABLE attendance ADD COLUMN IF NOT EXISTS academic_year TEXT DEFAULT '2026-2027';
             ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS file_url TEXT;
         `);
+
+        // Migratsiya: Uchko'prik 2-IDUM / 2-IDUMI ni 18-maktabga o'tkazish (o'tmishdagi barcha davomat tarixi to'liq saqlanadi)
+        try {
+            await pool.query(`
+                UPDATE attendance 
+                SET school = '18-maktab' 
+                WHERE (district ILIKE '%Uchko%' OR district ILIKE '%Uchko''prik%') 
+                  AND (school = '2-IDUM' OR school = '2-IDUMI' OR school = '2 IDUM' OR school = '2 IDUMI')
+            `);
+            await pool.query(`
+                UPDATE tg_users 
+                SET data = jsonb_set(data, '{school}', '"18-maktab"')
+                WHERE (data->>'district' ILIKE '%Uchko%') 
+                  AND (data->>'school' = '2-IDUM' OR data->>'school' = '2-IDUMI' OR data->>'school' = '2 IDUM' OR data->>'school' = '2 IDUMI')
+            `);
+        } catch (mErr) {}
+
         console.log("🐘 PostgreSQL tables initialized successfully.");
     } catch (e) {
         console.error("🐘 PostgreSQL Init Error:", e.message);

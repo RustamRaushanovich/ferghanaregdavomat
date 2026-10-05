@@ -1,12 +1,53 @@
+const moment = require('moment-timezone');
+
+const UZB_TIMEZONE = 'Asia/Tashkent';
+
 /**
- * Helper to get Date object forced to Farg'ona Timezone (+05:00)
+ * Get current moment in Uzbekistan timezone (UTC+5)
  */
-function getFargonaTime() {
-    const now = new Date();
-    const fargonaOffset = 5 * 60; // Farg'ona is UTC+5
-    const localOffset = now.getTimezoneOffset();
-    const fargonaTime = new Date(now.getTime() + (fargonaOffset + localOffset) * 60000);
-    return fargonaTime;
+function getUzbMoment() {
+    return moment().tz(UZB_TIMEZONE);
 }
 
-module.exports = { getFargonaTime, getTashkentTime: getFargonaTime }; // Keep alias for compatibility during migration
+/**
+ * Helper to get Date object forced to Farg'ona / Tashkent Timezone (+05:00)
+ */
+function getFargonaTime() {
+    return getUzbMoment().toDate();
+}
+
+/**
+ * Returns ISO-like string or formatted string in Tashkent timezone: "YYYY-MM-DD HH:mm:ss"
+ */
+function getFargonaDateTimeString(date) {
+    if (date) {
+        return moment(date).tz(UZB_TIMEZONE).format('YYYY-MM-DD HH:mm:ss');
+    }
+    return getUzbMoment().format('YYYY-MM-DD HH:mm:ss');
+}
+
+/**
+ * Formatted human-readable date & time for Uzbekistan: "DD.MM.YYYY HH:mm"
+ */
+function formatUzbDateTime(date) {
+    if (!date) return '';
+    return moment(date).tz(UZB_TIMEZONE).format('DD.MM.YYYY HH:mm');
+}
+
+/**
+ * Formatted date: "YYYY-MM-DD"
+ */
+function getFargonaDateString() {
+    return getUzbMoment().format('YYYY-MM-DD');
+}
+
+module.exports = {
+    getFargonaTime,
+    getTashkentTime: getFargonaTime,
+    getUzbMoment,
+    getFargonaDateTimeString,
+    formatUzbDateTime,
+    getFargonaDateString,
+    UZB_TIMEZONE
+};
+

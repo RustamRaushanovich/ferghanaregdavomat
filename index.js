@@ -441,49 +441,138 @@ app.get('/api/admin/receipts/:id/image', async (req, res) => {
     }
 });
 
+// Admin: Export Subscribers & Payments to Excel
+app.get('/api/admin/export-subscribers', auth, async (req, res) => {
+    const isAuthorized = req.user.username === 'mrqirol' || req.user.role === 'superadmin' || req.user.role === 'admin' || req.user.role === 'specialist';
+    if (!isAuthorized) return res.status(403).json({ error: 'Ruxsat yo\'q' });
+    try {
+        const { exportSubscribersToExcel } = require('./src/services/dataService');
+        const filePath = await exportSubscribersToExcel();
+        if (filePath && fs.existsSync(filePath)) {
+            return res.download(filePath, path.basename(filePath));
+        }
+        res.status(500).json({ error: 'Fayl yaratib bo\'lmadi' });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Admin: Favqulodda / Qo'lda maktabga ruxsat berish
+app.post('/api/admin/grant-school-access', auth, async (req, res) => {
+    const isAuthorized = req.user.username === 'mrqirol' || req.user.role === 'superadmin' || req.user.role === 'admin' || req.user.role === 'specialist';
+    if (!isAuthorized) return res.status(403).json({ error: 'Ruxsat yo\'q' });
+
+    const { district, school, months = 1, type = 'access' } = req.body;
+    if (!district || !school) return res.status(400).json({ error: 'Tuman va maktabni tanlang' });
+
+    try {
+        const result = db.grantSchoolAccess(district, school, parseInt(months) || 1, type);
+        res.json({
+            success: true,
+            message: `${district} ${school} uchun ${months} oylik ${type === 'pro' ? 'PRO' : 'Standart'} limit muvaffaqiyatli faollashtirildi!`,
+            result
+        });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Get all districts list
+app.get('/api/districts', (req, res) => {
+    const districts = Object.keys(db.schools_db || {});
+    res.json(districts);
+});
+
 // User: Check Subscription & Payment Cards Info
 app.get('/api/user/subscription', (req, res) => {
-    const phone = req.query.phone || (req.user && req.user.phone);
-    const uid = req.query.uid || (req.user && req.user.uid);
+    const token = req.headers['authorization'] || req.query.token;
+    const tokenUser = (token && tokens && tokens.has(token)) ? tokens.get(token) : null;
+
+    const phone = req.query.phone || (tokenUser && tokenUser.phone) || (req.user && req.user.phone);
+    const uid = req.query.uid || (tokenUser && tokenUser.uid) || (req.user && req.user.uid);
+    const userRole = (tokenUser && tokenUser.role) || (req.user && req.user.role) || '';
 
     let hasAccess = false;
     let isPro = false;
     let accessExpire = null;
     let proExpire = null;
+    let purchaseDate = null;
+    const now = getFargonaTime();
 
-    if (uid) {
-        hasAccess = db.checkAttendanceAccess(uid);
-        isPro = db.checkPro(uid);
-        const u = db.users_db[uid];
-        if (u) {
-            accessExpire = u.access_expire_date || null;
-            proExpire = u.pro_expire_date || null;
+    if (userRole === 'superadmin') {
+        hasAccess = true;
+        isPro = true;
+        proExpire = '2099-12-31';
+        accessExpire = '2099-12-31';
+    } else {
+        if (uid) {
+            hasAccess = db.checkAttendanceAccess(uid);
+            isPro = db.checkPro(uid);
+            const u = db.users_db[uid];
+            if (u) {
+                accessExpire = u.access_expire_date || null;
+                proExpire = u.pro_expire_date || null;
+                purchaseDate = u.pro_purchase_date || u.access_purchase_date || null;
+            }
+        }
+
+        if (!hasAccess && phone) {
+            const cleanPhone = phone.replace(/\D/g, '');
+            hasAccess = db.checkAttendanceAccessByPhone(cleanPhone);
+            isPro = db.checkProByPhone(cleanPhone);
+            const matched = Object.values(db.users_db || {}).find(u => u.phone && u.phone.replace(/\D/g, '') === cleanPhone);
+            if (matched) {
+                accessExpire = matched.access_expire_date || accessExpire;
+                proExpire = matched.pro_expire_date || proExpire;
+                purchaseDate = matched.pro_purchase_date || matched.access_purchase_date || purchaseDate;
+            }
         }
     }
 
-    if (!hasAccess && phone) {
-        const cleanPhone = phone.replace(/\D/g, '');
-        hasAccess = db.checkAttendanceAccessByPhone(cleanPhone);
-        isPro = db.checkProByPhone(cleanPhone);
-    }
-
-    const todayStr = getFargonaTime().toISOString().split('T')[0];
+    const todayStr = now.toISOString().split('T')[0];
     const isEnforced = todayStr >= '2026-10-05';
+
+    let daysLeft = 0;
+    let statusType = 'noaktiv';
+    let statusText = 'Noaktiv';
+
+    if (userRole === 'superadmin') {
+        statusType = 'superadmin';
+        statusText = 'Superadmin';
+        daysLeft = 999;
+    } else if (isPro && proExpire && new Date(proExpire) > now) {
+        statusType = 'pro';
+        statusText = '👑 PRO Rejim';
+        daysLeft = Math.max(0, Math.ceil((new Date(proExpire) - now) / (1000 * 60 * 60 * 24)));
+    } else if (hasAccess && accessExpire && new Date(accessExpire) > now) {
+        statusType = 'access';
+        statusText = '✅ Standart Davomat';
+        daysLeft = Math.max(0, Math.ceil((new Date(accessExpire) - now) / (1000 * 60 * 60 * 24)));
+    } else if ((proExpire && new Date(proExpire) <= now) || (accessExpire && new Date(accessExpire) <= now)) {
+        statusType = 'expired';
+        statusText = '⏳ Muddati tugagan';
+        daysLeft = 0;
+    }
 
     res.json({
         phone: phone || null,
+        uid: uid || null,
         is_enforced: isEnforced,
         has_access: hasAccess,
         is_pro: isPro,
+        status_type: statusType,
+        status_text: statusText,
+        days_left: daysLeft,
+        purchase_date: purchaseDate,
         access_expire_date: accessExpire,
         pro_expire_date: proExpire,
         cards: {
-            humo: '9860 0366 3576 1863',
-            visa: '4187 8000 0132 1124'
+            humo: db.settings.humo_card || '9860 0366 3576 1863',
+            visa: db.settings.visa_card || '4187 8000 0132 1124'
         },
         prices: {
-            standard_uzs: 10000,
-            pro_uzs: 25000
+            standard_uzs: db.settings.access_price_uzs || 10000,
+            pro_uzs: db.settings.pro_price_uzs || 25000
         }
     });
 });
@@ -757,13 +846,27 @@ bot.start(async (ctx) => {
     try { await ctx.scene.leave(); } catch (e) { }
 
     const { date, day } = getTodayInfo();
-    const caption = `🌸 <b>Assalomu alaykum!</b>\nFarg'ona viloyati maktabgacha va maktab ta'limi boshqarmasi tizimidagi <b>@Ferghanaregdavomat_bot</b> ga xush kelibsiz.\n\n📅 <b>Bugungi sana:</b> ${date} (${day})\n\nBiz bilan hamkor bo'lganingiz uchun yana bir bor tabriklaymiz!\nKuningiz xayrli va mazmunli o'tsin! ✨`;
+    const uid = Number(ctx.from.id);
+    const isPro = db.checkPro(uid);
+    const hasAccess = db.checkAttendanceAccess(uid);
+    const u = db.users_db[uid] || {};
+    const now = getFargonaTime();
+
+    let subBadge = "⚪ <b>Obuna holati:</b> Noaktiv";
+    if (isPro && u.pro_expire_date && new Date(u.pro_expire_date) > now) {
+        const days = Math.max(0, Math.ceil((new Date(u.pro_expire_date) - now) / (1000 * 60 * 60 * 24)));
+        subBadge = `👑 <b>Obuna:</b> 🌟 PRO Rejim (⏳ <b>${days} kun qoldi</b> — <i>${u.pro_expire_date} gacha</i>)`;
+    } else if (hasAccess && u.access_expire_date && new Date(u.access_expire_date) > now) {
+        const days = Math.max(0, Math.ceil((new Date(u.access_expire_date) - now) / (1000 * 60 * 60 * 24)));
+        subBadge = `✅ <b>Obuna:</b> Standart Davomat (⏳ <b>${days} kun qoldi</b> — <i>${u.access_expire_date} gacha</i>)`;
+    } else if ((u.pro_expire_date && new Date(u.pro_expire_date) <= now) || (u.access_expire_date && new Date(u.access_expire_date) <= now)) {
+        subBadge = `⚠️ <b>Obuna:</b> Muddati tugagan. Davomat kiritish uchun to'lov qiling.`;
+    }
+
+    const caption = `🌸 <b>Assalomu alaykum!</b>\nFarg'ona viloyati maktabgacha va maktab ta'limi boshqarmasi tizimidagi <b>@Ferghanaregdavomat_bot</b> ga xush kelibsiz.\n\n📅 <b>Bugungi sana:</b> ${date} (${day})\n💳 ${subBadge}\n\nBiz bilan hamkor bo'lganingiz uchun yana bir bor tabriklaymiz!\nKuningiz xayrli va mazmunli o'tsin! ✨`;
 
     // Tugmalarni tayyorlash
     let buttons = [["▶️ START — Davomat kiritish"], ["✈️ Xorijga ketganlar"]];
-
-    const uid = Number(ctx.from.id);
-    const isPro = db.checkPro(uid);
 
     // Admin bo'lsa, Admin Panel tugmasini qo'shish
     if (config.ALL_ADMINS.map(Number).includes(uid)) {
@@ -776,8 +879,8 @@ bot.start(async (ctx) => {
     }
 
     buttons.push(["👤 Mening Profilim", "📊 Mening Statistikam"]);
-    if (!isPro) buttons.push([{ text: "👑 PRO Status", web_app: { url: "https://ferghana-davomat.uz/pro.html" } }]);
     buttons.push(["ℹ️ Dastur haqida", "📖 Yo'riqnoma"]);
+    buttons.push(["📋 Ommaviy Oferta"]);
 
     try {
         if (fs.existsSync(LOGO_PATH)) {
@@ -1931,31 +2034,155 @@ bot.hears("ℹ️ Dastur haqida", (ctx) => {
     );
 });
 
-// --- PROFILE & INSTRUCTION HANDLERS ---
-bot.hears("👤 Mening Profilim", async (ctx) => {
-    const u = db.users_db[ctx.from.id];
+// --- PROFILE & SUBSCRIPTION HANDLER ---
+async function showUserProfile(ctx) {
+    const uid = ctx.from.id;
+    const u = db.users_db[uid];
     if (!u) {
-        return ctx.reply("❌ Siz hali ro'yxatdan o'tmagansiz. 'Davomat kiritish' tugmasini bosing.");
+        return ctx.replyWithHTML("👤 <b>Siz hali ro'yxatdan o'tmagansiz.</b>\n\nDavomat kiritishni boshlang, tizim sizni avtomatik eslab qoladi.");
     }
 
-    const msg = `👤 <b>Sizning profilingiz:</b>\n\n` +
-        `📍 <b>Hudud:</b> ${u.district || 'Noma\'lum'}\n` +
-        `🏢 <b>Maktab:</b> ${u.school || 'Noma\'lum'}\n` +
-        `👤 <b>Mas'ul:</b> ${u.fio || 'Noma\'lum'}\n` +
-        `📞 <b>Tel:</b> ${u.phone || 'Noma\'lum'}\n\n` +
-        `<i>Ma'lumotlarni o'zgartirish uchun quyidagi tugmani bosing:</i>`;
+    const now = getFargonaTime();
+    const isPro = db.checkPro(uid);
+    const hasAccess = db.checkAttendanceAccess(uid);
 
-    const keyboard = Markup.inlineKeyboard([
+    let statusHtml = "⚪ <b>Status:</b> Noaktiv / To'lov qilinmagan\n<i>(05.10.2026 dan davomat kiritish uchun oylik obuna talab etiladi)</i>";
+    let daysLeft = 0;
+
+    if (isPro && u.pro_expire_date && new Date(u.pro_expire_date) > now) {
+        daysLeft = Math.max(0, Math.ceil((new Date(u.pro_expire_date) - now) / (1000 * 60 * 60 * 24)));
+        statusHtml = `👑 <b>Status:</b> 🌟 PRO Rejim (Faol)\n` +
+            `⏳ <b>Qolgan muddat:</b> <b>${daysLeft} kun qoldi</b>\n` +
+            `📅 <b>Amal qilish muddati:</b> ${u.pro_expire_date} gacha\n` +
+            `✨ <i>Imkoniyatlar: AI rasm aniqlash, avto 3-Ilova PDF, PRO hisobotlar</i>`;
+    } else if (hasAccess && u.access_expire_date && new Date(u.access_expire_date) > now) {
+        daysLeft = Math.max(0, Math.ceil((new Date(u.access_expire_date) - now) / (1000 * 60 * 60 * 24)));
+        statusHtml = `✅ <b>Status:</b> Standart Davomat Ruxsati (Faol)\n` +
+            `⏳ <b>Qolgan muddat:</b> <b>${daysLeft} kun qoldi</b>\n` +
+            `📅 <b>Amal qilish muddati:</b> ${u.access_expire_date} gacha`;
+    } else if (u.access_expire_date || u.pro_expire_date) {
+        const exp = u.pro_expire_date || u.access_expire_date;
+        statusHtml = `⚠️ <b>Status:</b> To'lov muddati tugagan (${exp})\n` +
+            `<i>Davomat kiritishni davom ettirish uchun obunani yangilang.</i>`;
+    }
+
+    // Oxirgi yuborilgan chek holati
+    let receiptStatusHtml = "";
+    try {
+        const lastReceipt = await paymentService.getUserReceiptStatus(uid);
+        if (lastReceipt) {
+            if (lastReceipt.status === 'pending') {
+                receiptStatusHtml = `\n🧾 <b>Yuborilgan to'lov cheki:</b> ⏳ <b>Ko'rib chiqilmoqda</b>\n` +
+                    `⏰ <i>Vaqti: ${lastReceipt.submitted_at || '-'}</i>\n` +
+                    `🔖 <i>Chek ID: <code>${lastReceipt.id}</code></i>\n`;
+            } else if (lastReceipt.status === 'approved') {
+                receiptStatusHtml = `\n🧾 <b>So'nggi to'lov cheki:</b> ✅ Tasdiqlangan (${lastReceipt.resolved_at || 'Faol'})\n`;
+            } else if (lastReceipt.status === 'rejected') {
+                receiptStatusHtml = `\n🧾 <b>So'nggi to'lov cheki:</b> ❌ Rad etilgan (Qayta to'lov qiling)\n`;
+            }
+        }
+    } catch (rErr) { }
+
+    const msg = `👤 <b>SIZNING PROFILINGIZ:</b>\n\n` +
+        `👨‍💼 <b>F.I.SH:</b> ${u.fio || u.name || 'Kiritilmagan'}\n` +
+        `📞 <b>Telefon:</b> ${u.phone || 'Kiritilmagan'}\n` +
+        `📍 <b>Hudud:</b> ${u.district || 'Tanlanmagan'}\n` +
+        `🏫 <b>Maktab:</b> ${u.school || 'Tanlanmagan'}\n\n` +
+        `💳 <b>OYLIK OBUNA VA TO'LOV MA'LUMOTI:</b>\n` +
+        `${statusHtml}\n` +
+        `${receiptStatusHtml}\n` +
+        `<i>Pastdagi tugmalar orqali obunani yangilashingiz yoki ma'lumotlarni o'zgartirishingiz mumkin:</i>`;
+
+    const buttons = [
+        [Markup.button.callback("💳 Obunani yangilash / To'lov", "pay_subscription")],
+        [Markup.button.callback("🔍 Chek holatini tekshirish", "check_my_receipt")],
         [Markup.button.callback("📝 Ma'lumotlarni tahrirlash", "edit_profile")]
-    ]);
+    ];
 
-    await ctx.replyWithHTML(msg, keyboard);
+    return ctx.replyWithHTML(msg, Markup.inlineKeyboard(buttons));
+}
+
+bot.action("check_my_receipt", async (ctx) => {
+    await ctx.answerCbQuery();
+    const uid = ctx.from.id;
+    const lastReceipt = await paymentService.getUserReceiptStatus(uid);
+
+    if (!lastReceipt) {
+        return ctx.replyWithHTML(
+            "ℹ️ <b>Siz hali to'lov cheki yubormagansiz.</b>\n\n" +
+            "To'lov qilish uchun pastdagi tugmani bosing:",
+            Markup.inlineKeyboard([[Markup.button.callback("💳 To'lov qilish", "pay_subscription")]])
+        );
+    }
+
+    let statusText = "⏳ <b>Adminlar tomonidan ko'rib chiqilmoqda.</b>\nTez orada davomat ruxsatingiz faollashtiriladi.";
+    if (lastReceipt.status === 'approved') {
+        statusText = "✅ <b>To'lovingiz tasdiqlangan!</b> Davomat ruxsatingiz faol.";
+    } else if (lastReceipt.status === 'rejected') {
+        statusText = "❌ <b>To'lov chekingiz rad etilgan.</b>\nIltimos, yangi va to'g'ri to'lov kvitansiyasini yuboring.";
+    }
+
+    const replyMsg = 
+        `🧾 <b>SIZNING TO'LOV CHEKINGIZ MA'LUMOTI:</b>\n\n` +
+        `🔖 <b>Chek ID:</b> <code>${lastReceipt.id}</code>\n` +
+        `⏰ <b>Yuborilgan vaqt:</b> ${lastReceipt.submitted_at || '-'}\n` +
+        `📊 <b>Holati:</b> ${lastReceipt.status === 'approved' ? '✅ Qabul qilingan' : (lastReceipt.status === 'rejected' ? '❌ Rad etilgan' : '⏳ Kutilmoqda')}\n\n` +
+        statusText;
+
+    return ctx.replyWithHTML(replyMsg);
 });
+
+bot.hears(["👤 Mening Profilim", "👤 Profil"], showUserProfile);
+bot.command(["profil", "profile"], showUserProfile);
+
+bot.action("pay_subscription", async (ctx) => {
+    await ctx.answerCbQuery();
+    return paymentService.showPaymentInfo(ctx);
+});
+
+bot.hears(["💳 Oylik Obuna / To'lov", "💳 To'lov ma'lumotlari"], (ctx) => paymentService.showPaymentInfo(ctx));
 
 bot.action("edit_profile", async (ctx) => {
     await ctx.answerCbQuery();
     await ctx.reply("🔄 Ma'lumotlarni yangilash boshlandi. Iltimos, savollarga qaytadan javob bering.");
     return ctx.scene.enter('attendance_wizard');
+});
+
+// Admin: Subscribers & Payment Excel report download
+bot.hears(["💳 To'lovlar & Obunalar (Excel)", "💳 Obunachilar hisoboti (Excel)"], async (ctx) => {
+    const uid = Number(ctx.from.id);
+    const isAuthorized = config.SUPER_ADMIN_IDS.map(Number).includes(uid) || config.SPECIALIST_IDS.map(Number).includes(uid) || uid === 65002404;
+    if (!isAuthorized) return ctx.reply("⛔️ Ruxsat yo'q.");
+
+    await ctx.reply("📊 <b>Obunachilar va to'lovlar hisoboti (Excel) tayyorlanmoqda...</b>", { parse_mode: 'HTML' });
+    const { exportSubscribersToExcel } = require('./src/services/dataService');
+    const filePath = await exportSubscribersToExcel();
+    if (filePath && fs.existsSync(filePath)) {
+        await ctx.replyWithDocument({ source: filePath, filename: path.basename(filePath) }, {
+            caption: "💳 <b>Farg'ona viloyati davomat platformasi obunachilari va to'lovlar hisoboti (Excel)</b>",
+            parse_mode: 'HTML'
+        });
+    } else {
+        await ctx.reply("❌ Hisobotni shakllantirishda xatolik yuz berdi.");
+    }
+});
+
+bot.command("subscribers_excel", async (ctx) => {
+    const uid = Number(ctx.from.id);
+    const isAuthorized = config.SUPER_ADMIN_IDS.map(Number).includes(uid) || config.SPECIALIST_IDS.map(Number).includes(uid) || uid === 65002404;
+    if (!isAuthorized) return ctx.reply("⛔️ Ruxsat yo'q.");
+
+    await ctx.reply("📊 <b>Obunachilar va to'lovlar hisoboti (Excel) tayyorlanmoqda...</b>", { parse_mode: 'HTML' });
+    const { exportSubscribersToExcel } = require('./src/services/dataService');
+    const filePath = await exportSubscribersToExcel();
+    if (filePath && fs.existsSync(filePath)) {
+        await ctx.replyWithDocument({ source: filePath, filename: path.basename(filePath) }, {
+            caption: "💳 <b>Farg'ona viloyati davomat platformasi obunachilari va to'lovlar hisoboti (Excel)</b>",
+            parse_mode: 'HTML'
+        });
+    } else {
+        await ctx.reply("❌ Hisobotni shakllantirishda xatolik yuz berdi.");
+    }
 });
 
 bot.hears("📖 Yo'riqnoma", async (ctx) => {
@@ -2023,24 +2250,7 @@ bot.hears("🤖 AI Bashorat holatlari", async (ctx) => {
     ctx.replyWithHTML(`🤖 <b>AI Tahlil natijalari (${user.school}):</b>\n\n` + (insights || "Ma'lumotlar yetarli emas."));
 });
 
-// --- PROFILE HANDLER ---
-bot.hears("👤 Mening Profilim", async (ctx) => {
-    const uid = ctx.from.id;
-    const user = db.users_db[uid];
 
-    if (!user || (!user.district && !user.school)) {
-        return ctx.replyWithHTML("👤 <b>Siz hali ro'yxatdan o'tmagansiz.</b>\n\nDavomat kiritishni boshlang, tizim sizni avtomatik eslab qoladi.");
-    }
-
-    let msg = `👤 <b>Sizning profilingiz:</b>\n\n` +
-        `👨‍💼 <b>F.I.SH:</b> ${user.fio || 'Kiritilmagan'}\n` +
-        `📞 <b>Tel:</b> ${user.phone || 'Kiritilmagan'}\n` +
-        `📍 <b>Hudud:</b> ${user.district || 'Tanlanmagan'}\n` +
-        `🏫 <b>Maktab:</b> ${user.school || 'Tanlanmagan'}\n\n` +
-        `✨ <i>Ma'lumotlarni o'zgartirish uchun "Davomat kiritish" tugmasini bosing va "Yangi ma'lumot kiritish"ni tanlang.</i>`;
-
-    ctx.replyWithHTML(msg);
-});
 
 // --- GOOGLE SHEETS STATS ---
 bot.hears("📊 Mening Statistikam", async (ctx) => {
@@ -2539,8 +2749,92 @@ bot.hears(/^(💳 )?(Obuna|To'lov|PRO Status)/i, (ctx) => paymentService.showPay
 bot.command('addpro', (ctx) => paymentService.handleAddProCommand(ctx));
 bot.command('setcard', (ctx) => paymentService.handleSetCardCommand(ctx));
 
+bot.command('grant', async (ctx) => {
+    const uid = ctx.from.id;
+    if (!config.SUPER_ADMIN_IDS.map(Number).includes(Number(uid)) && uid !== 65002404) {
+        return ctx.reply("⛔️ Ruxsat yo'q.");
+    }
+    const text = ctx.message.text.trim();
+    const parts = text.split(/\s+/);
+    if (parts.length < 3) {
+        return ctx.replyWithHTML(
+            "🚀 <b>FAVQULODDA: MAKTABGA LIMIT BERISH BUYRUG'I:</b>\n\n" +
+            "Format: <code>/grant [Tuman] [Maktab] [Oylar] [pro/access]</code>\n\n" +
+            "<i>Misollar:</i>\n" +
+            "• <code>/grant Farg'ona_shahri 1-maktab 1</code> (1 oy standart)\n" +
+            "• <code>/grant Marg'ilon_shahri 15-maktab 1 pro</code> (1 oy PRO)\n" +
+            "• <code>/grant Toshloq 2-maktab</code>\n\n" +
+            "<i>Yoki Web Admin panelidan bevosita tanlab bosing.</i>"
+        );
+    }
+    const distArg = parts[1].replace(/_/g, ' ');
+    const schoolArg = parts[2];
+    const months = parseInt(parts[3]) || 1;
+    const type = (parts[4] && parts[4].toLowerCase() === 'pro') ? 'pro' : 'access';
+
+    const res = db.grantSchoolAccess(distArg, schoolArg, months, type);
+    return ctx.replyWithHTML(
+        `✅ <b>Muvaffaqiyatli bajarildi!</b>\n\n` +
+        `🏢 <b>Hudud:</b> ${res.district}\n` +
+        `🏫 <b>Maktab:</b> ${res.school}\n` +
+        `💎 <b>Turi:</b> ${type === 'pro' ? '👑 PRO Rejim' : '✅ Standart Davomat'}\n` +
+        `⏳ <b>Muddat:</b> ${months} oy\n` +
+        `📅 <b>Amal qilish sanasi:</b> ${res.expire_date} gacha.`
+    );
+});
+
+// --- OMMAVIY OFERTA (TERMS OF SERVICE) ---
+bot.command('oferta', async (ctx) => {
+    return ctx.replyWithHTML(subscriptionService.OFERTA_SHORT_TEXT, subscriptionService.getOfertaKeyboard());
+});
+
+bot.hears(['📋 Ommaviy Oferta', 'Ommaviy oferta', 'Oferta'], async (ctx) => {
+    return ctx.replyWithHTML(subscriptionService.OFERTA_SHORT_TEXT, subscriptionService.getOfertaKeyboard());
+});
+
+bot.action('view_full_oferta', async (ctx) => {
+    try { await ctx.answerCbQuery(); } catch (e) { }
+    const fullKeyboard = Markup.inlineKeyboard([
+        [Markup.button.callback('✅ Tanishdim va roziman', 'accept_oferta')]
+    ]);
+    return ctx.replyWithHTML(subscriptionService.OFERTA_FULL_TEXT, fullKeyboard);
+});
+
+bot.action('accept_oferta', async (ctx) => {
+    const uid = ctx.from.id;
+    try { await ctx.answerCbQuery("✅ Ommaviy oferta qabul qilindi!"); } catch (e) { }
+
+    const { getFargonaDateTimeString } = require('./src/utils/fargona');
+    const acceptedAt = getFargonaDateTimeString();
+
+    await db.updateUserDb(uid, {
+        oferta_accepted: true,
+        oferta_accepted_at: acceptedAt
+    });
+
+    await ctx.replyWithHTML(
+        `✅ <b>Ommaviy oferta shartlarini qabul qilganingiz uchun tashakkur!</b>\n\n` +
+        `Siz foydalanish qoidalari bilan to'liq tanishib, ularni tasdiqladingiz.\n` +
+        `<i>Tasdiqlangan vaqt: ${acceptedAt}</i>\n\n` +
+        `Endi tizimdan to'liq foydalanishingiz mumkin. Davomat kiritish uchun quyidagi tugmani bosing:`,
+        Markup.keyboard([
+            ["🚀 START - Davomat kiritish"],
+            ["✈️ Xorijga ketganlar"],
+            ["👤 Mening Profilim", "📊 Mening Statistikam"]
+        ]).resize()
+    );
+
+    // Keyingi qadam: Obuna va to'lov tekshiruvi
+    const check = await subscriptionService.checkCanEnterAttendance(ctx, uid);
+    if (!check.canEnter) {
+        return subscriptionService.sendSubscriptionPrompt(ctx, check.reason);
+    }
+
+    return ctx.scene.enter('attendance_wizard');
+});
+
 // --- MAIN FLOW ---
-bot.hears(/^(▶️ )?(START — )?(📊 )?Davomat kiritish( \(START\))?$/i, async (ctx) => {
+bot.hears(/^(🚀|▶️)?\s*(START\s*[—-]\s*)?(📊\s*)?Davomat kiritish.*$/i, async (ctx) => {
     if (db.settings.vacation_mode && !config.ALL_ADMINS.includes(ctx.from.id)) {
         return ctx.reply("🔴 Hozir ta'til rejimi yoqilgan. Ma'lumot qabul qilinmaydi.");
     }
@@ -2579,7 +2873,7 @@ bot.action('check_subscription', async (ctx) => {
         `✅ <b>Rahmat! Obunangiz muvaffaqiyatli tasdiqlandi.</b>\n\n` +
         `Endi bemalol davomat kiritishingiz mumkin:`,
         Markup.keyboard([
-            ["▶️ START — Davomat kiritish"],
+            ["🚀 START - Davomat kiritish"],
             ["✈️ Xorijga ketganlar"],
             ["👤 Mening Profilim", "📊 Mening Statistikam"]
         ]).resize()

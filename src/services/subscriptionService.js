@@ -1,8 +1,9 @@
-﻿const { Markup } = require('telegraf');
+const { Markup } = require('telegraf');
 const db = require('../database/db');
 const config = require('../config/config');
 const { getFargonaTime } = require('../utils/fargona');
 const paymentService = require('./paymentService');
+const { OFERTA_SHORT_TEXT, OFERTA_FULL_TEXT } = require('../utils/oferta');
 
 const TG_CHANNEL_ID = '@Between_Us_uzb';
 const TG_CHANNEL_URL = 'https://t.me/Between_Us_uzb';
@@ -10,6 +11,17 @@ const INSTAGRAM_URL = 'https://www.instagram.com/betweenusuzb/';
 
 function getTodayStr() {
     return getFargonaTime().toISOString().split('T')[0];
+}
+
+function getOfertaKeyboard() {
+    return Markup.inlineKeyboard([
+        [Markup.button.callback('✅ Tanishdim va roziman', 'accept_oferta')],
+        [Markup.button.callback('📜 To\'liq Ofertani o\'qish', 'view_full_oferta')]
+    ]);
+}
+
+async function sendOfertaPrompt(ctx) {
+    return ctx.replyWithHTML(OFERTA_SHORT_TEXT, getOfertaKeyboard());
 }
 
 /**
@@ -46,6 +58,7 @@ async function checkTelegramSub(ctx, uid) {
 
 /**
  * Davomat kiritishdan oldin obuna va to'lov statusini avtomatik tekshirish:
+ * 0. Ommaviy oferta qabul qilinganligini tekshiradi (Huquqiy himoya).
  * 1. Telegram a'zoligini real-time tekshiradi.
  * 2. 05.10.2026 sanasidan boshlab 10 000 so'mlik oylik PRO to'lovni tekshiradi.
  * 3. Ertasi kuni kelganda ham har kuni avtomatik tekshirib, statusni yangilaydi.
@@ -57,7 +70,14 @@ async function checkCanEnterAttendance(ctx, uid) {
     }
 
     const u = db.users_db[uid] || {};
-    const todayStr = getTodayStr();
+
+    // 0. OMMAVIY OFERTA TASDIQLANGANMI?
+    if (!u.oferta_accepted) {
+        return {
+            canEnter: false,
+            reason: 'oferta_required'
+        };
+    }
 
     // 1. Real-time Telegram tekshiruvi
     const tgCheck = await checkTelegramSub(ctx, uid);
@@ -124,6 +144,10 @@ async function markUserVerified(uid) {
  * Obuna bo'lish, qayta obuna bo'lish yoki To'lov qilish talabini yuborish
  */
 async function sendSubscriptionPrompt(ctx, reason = 'not_subscribed') {
+    if (reason === 'oferta_required') {
+        return sendOfertaPrompt(ctx);
+    }
+
     if (reason === 'pro_expired') {
         return paymentService.showPaymentInfo(ctx);
     }
@@ -157,5 +181,9 @@ module.exports = {
     checkTelegramSub,
     checkCanEnterAttendance,
     markUserVerified,
-    sendSubscriptionPrompt
+    sendSubscriptionPrompt,
+    sendOfertaPrompt,
+    getOfertaKeyboard,
+    OFERTA_SHORT_TEXT,
+    OFERTA_FULL_TEXT
 };

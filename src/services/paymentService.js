@@ -1,7 +1,7 @@
 const { Markup } = require('telegraf');
 const db = require('../database/db');
 const config = require('../config/config');
-const { getFargonaTime } = require('../utils/fargona');
+const { getFargonaTime, getFargonaDateTimeString, formatUzbDateTime } = require('../utils/fargona');
 const fs = require('fs');
 const path = require('path');
 
@@ -74,12 +74,44 @@ async function showPaymentInfo(ctx) {
         '🔹 <b>HUMO Karta:</b>\n<code>' + humoCard + '</code>\n\n' +
         '🔹 <b>VISA Karta:</b>\n<code>' + visaCard + '</code>\n\n' +
         '📝 <b>TO\'LOV QILISH TARTIBI:</b>\n' +
-        '1️⃣ Yuqoridagi kartalardan biriga mablag\' o\'tkazing.\n' +
+        '1️⃣ Yuqoridagi kartalardan biriga mablag\' o\'tkazing (yoki pastdagi Click/Payme tugmasini bosing).\n' +
         '2️⃣ To\'lov cheki (skrinshot yoki kvitansiya)ni <b>to\'g\'ridan-to\'g\'ri ushbu botga rasm sifatida yuboring</b>.\n' +
         '3️⃣ Chekingiz adminlarga yuboriladi va 1 oy muddatga davomat ruxsati faollashtiriladi!\n\n' +
-        '📲 <i>Iltimos, chekni (rasm/skrinshot) shu yerga yuboring:</i>';
+        'ℹ️ <i>Xizmatlar Davlat soliq qo\'mitasining QR-kodli Ma\'lumotnomasi № 0006296129 («Dasturiy ta\'minot ishlab chiqish») asosida ko\'rsatiladi.</i>\n\n' +
+        '📲 <i>Iltimos, to\'lov qilgach, chekni (rasm/skrinshot) shu botga yuboring:</i>';
 
-    return ctx.replyWithHTML(text);
+    const cleanHumo = humoCard.replace(/\s+/g, '');
+    const clickUrl = `https://my.click.uz/services/pay?service_id=-1&receiver_card=${cleanHumo}&amount=${accessPrice}`;
+    const paymeUrl = `https://payme.uz/fallback/pay/transfer?card=${cleanHumo}&amount=${accessPrice * 100}`;
+
+    const paymentKeyboard = Markup.inlineKeyboard([
+        [
+            Markup.button.url('📲 Click orqali to\'lash', clickUrl),
+            Markup.button.url('📲 Payme orqali to\'lash', paymeUrl)
+        ],
+        [
+            Markup.button.callback('🔍 Yuborgan chekim holati', 'check_my_receipt')
+        ]
+    ]);
+
+    return ctx.replyWithHTML(text, paymentKeyboard);
+}
+
+/**
+ * Foydalanuvchining so'nggi cheki statusini olish
+ */
+async function getUserReceiptStatus(uid) {
+    try {
+        const pg = require('../database/pg');
+        const res = await pg.query('SELECT * FROM payment_receipts WHERE sender_uid = $1 ORDER BY submitted_at DESC LIMIT 1', [String(uid)]);
+        if (res && res.rows && res.rows.length > 0) {
+            return res.rows[0];
+        }
+    } catch (e) { }
+
+    const receipts = loadReceipts();
+    const userReceipts = receipts.filter(r => String(r.sender_uid) === String(uid));
+    return userReceipts.length > 0 ? userReceipts[userReceipts.length - 1] : null;
 }
 
 /**
@@ -159,6 +191,9 @@ async function handleReceiptSubmission(ctx) {
         console.warn('Could not get telegram file link:', e.message);
     }
 
+    const uzbNowString = getFargonaDateTimeString();
+    const uzbDisplayTime = formatUzbDateTime(new Date());
+
     const newReceipt = {
         id: receiptId,
         file_unique_id: fileUniqueId,
@@ -170,7 +205,7 @@ async function handleReceiptSubmission(ctx) {
         school: school,
         district: u.district || '',
         phone: phone,
-        submitted_at: new Date().toISOString(),
+        submitted_at: uzbNowString,
         status: 'pending'
     };
     receipts.push(newReceipt);
@@ -180,9 +215,9 @@ async function handleReceiptSubmission(ctx) {
         const pg = require('../database/pg');
         await pg.query(
             `INSERT INTO payment_receipts (id, file_id, file_url, file_unique_id, file_size, sender_uid, sender_name, school, district, phone, submitted_at, status)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CURRENT_TIMESTAMP, 'pending')
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'pending')
              ON CONFLICT (id) DO UPDATE SET file_url = EXCLUDED.file_url`,
-            [receiptId, fileId, fileUrl, fileUniqueId, fileSize, String(uid), name, school, u.district || '', phone]
+            [receiptId, fileId, fileUrl, fileUniqueId, fileSize, String(uid), name, school, u.district || '', phone, uzbNowString]
         );
     } catch (e) {
         console.error('Save receipt to PG error:', e.message);
@@ -196,6 +231,7 @@ async function handleReceiptSubmission(ctx) {
         '🆔 <b>Telegram ID:</b> <code>' + uid + '</code>\n' +
         '🏫 <b>Maktab:</b> ' + school + '\n' +
         '📞 <b>Tel:</b> ' + phone + '\n' +
+        '⏰ <b>Yuborilgan vaqt:</b> ' + uzbDisplayTime + ' (O\'zbekiston vaqti)\n' +
         '🔖 <b>Chek ID:</b> <code>' + receiptId + '</code>\n\n' +
         '👉 <i>Faollashtirish uchun mos tugmani bosing:</i>';
 
@@ -437,5 +473,6 @@ module.exports = {
     handleAddProCommand,
     handleSetCardCommand,
     updateReceiptStatus,
-    getReceiptsList
+    getReceiptsList,
+    getUserReceiptStatus
 };

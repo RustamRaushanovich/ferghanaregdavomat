@@ -402,26 +402,66 @@
                 </div>
             </div>
             
-            <!-- PRO Management Card -->
+            <!-- Favqulodda: Maktabga va Foydalanuvchiga Qo'lda Ruxsat Berish Card -->
             <div class="card" id="proManagerCard">
-                <h3><i class="fas fa-gem"></i> PRO Obunani faollashtirish</h3>
-                <div style="background:rgba(99,102,241,0.05); padding:15px; border-radius:12px; margin-bottom:15px; font-size:0.85rem; color:#94a3b8;">
-                    <i class="fas fa-info-circle"></i> To'lov тасдиқлангандан кейин фойдаланувчи телефонини киритиб, PRO статусни беришингиз мумкин.
+                <h3><i class="fas fa-shield-alt" style="color: #38bdf8;"></i> Favqulodda: Qo'lda Ruxsat / Limit Berish</h3>
+                <div style="background:rgba(56,189,248,0.08); border-left:3px solid #38bdf8; padding:12px 14px; border-radius:12px; margin-bottom:15px; font-size:0.85rem; color:#cbd5e1;">
+                    <i class="fas fa-info-circle"></i> To'lov avtomatik ochmay qolsa yoki favqulodda holatda, to'g'ridan-to'g'ri <b>Tuman va Maktabni tanlab</b> yoki <b>telefon raqam orqali</b> 1 oylik limit qo'shib berishingiz mumkin.
                 </div>
-                <div class="form-group">
-                    <label>Telefon raqam:</label>
-                    <input type="tel" id="proPhone" placeholder="998901234567" style="background:rgba(0,0,0,0.2); border:1px solid var(--glass-border); color:white; padding:10px; border-radius:12px; width:100%;">
+                
+                <div style="display:flex; gap:10px; margin-bottom:12px;">
+                    <button type="button" id="tabBySchoolBtn" onclick="switchManualMode('school')" class="btn btn-primary" style="flex:1; padding:6px 10px; font-size:0.8rem;">
+                        <i class="fas fa-school"></i> Maktab bo'yicha
+                    </button>
+                    <button type="button" id="tabByPhoneBtn" onclick="switchManualMode('phone')" class="btn" style="flex:1; padding:6px 10px; font-size:0.8rem; background:rgba(255,255,255,0.08); color:#cbd5e1;">
+                        <i class="fas fa-phone"></i> Telefon bo'yicha
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label>Oylar soni:</label>
-                    <select id="proMonths" style="background:rgba(0,0,0,0.2); border:1px solid var(--glass-border); color:white; padding:10px; border-radius:12px; width:100%;">
-                        <option value="1">1 oy (25 000 so'm)</option>
-                        <option value="3">3 oy (75 000 so'm)</option>
-                        <option value="6">6 oy (150 000 so'm)</option>
-                        <option value="12">1 yil (300 000 so'm)</option>
+
+                <!-- 1. Maktab bo'yicha ruxsat -->
+                <div id="manualSchoolBlock">
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label style="display:block; margin-bottom:4px; font-size:0.85rem; color:#94a3b8;">Tuman / Shahar:</label>
+                        <select id="manualDistrict" onchange="loadManualSchools()" style="background:rgba(15,23,42,0.8); border:1px solid var(--glass-border); color:white; padding:10px; border-radius:12px; width:100%;">
+                            <option value="">-- Tumanni tanlang --</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label style="display:block; margin-bottom:4px; font-size:0.85rem; color:#94a3b8;">Maktab nomi:</label>
+                        <select id="manualSchool" style="background:rgba(15,23,42,0.8); border:1px solid var(--glass-border); color:white; padding:10px; border-radius:12px; width:100%;">
+                            <option value="">-- Avval tumanni tanlang --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 2. Telefon bo'yicha ruxsat -->
+                <div id="manualPhoneBlock" style="display:none;">
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label style="display:block; margin-bottom:4px; font-size:0.85rem; color:#94a3b8;">Foydalanuvchi telefoni:</label>
+                        <input type="tel" id="proPhone" placeholder="998901234567" style="background:rgba(15,23,42,0.8); border:1px solid var(--glass-border); color:white; padding:10px; border-radius:12px; width:100%;">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label style="display:block; margin-bottom:4px; font-size:0.85rem; color:#94a3b8;">Ruxsat turi:</label>
+                    <select id="manualAccessType" style="background:rgba(15,23,42,0.8); border:1px solid var(--glass-border); color:white; padding:10px; border-radius:12px; width:100%;">
+                        <option value="access" selected>✅ Standart Davomat Ruxsati</option>
+                        <option value="pro">👑 PRO Rejim (Barcha imkoniyatlar)</option>
                     </select>
                 </div>
-                <button onclick="activatePro()" class="btn btn-primary" style="width:100%;"><i class="fas fa-check-circle"></i> PRO-ni faollashtirish</button>
+                <div class="form-group" style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:4px; font-size:0.85rem; color:#94a3b8;">Muddat:</label>
+                    <select id="manualMonths" style="background:rgba(15,23,42,0.8); border:1px solid var(--glass-border); color:white; padding:10px; border-radius:12px; width:100%;">
+                        <option value="1" selected>1 oy muddat</option>
+                        <option value="2">2 oy muddat</option>
+                        <option value="3">3 oy muddat</option>
+                        <option value="6">6 oy muddat</option>
+                        <option value="12">1 yil muddat</option>
+                    </select>
+                </div>
+                <button onclick="submitManualAccess()" class="btn btn-primary" style="width:100%; background:linear-gradient(135deg, #0284c7, #0369a1); border:none; box-shadow:0 8px 20px rgba(2,132,199,0.3);">
+                    <i class="fas fa-bolt"></i> Ruxsatni Darhol Faollashtirish
+                </button>
             </div>
 
             <!-- Database Backup Section -->
@@ -444,7 +484,7 @@
                 <h3 style="margin: 0; color: #f8fafc; font-size: 1.25rem;">
                     <i class="fas fa-receipt" style="color: #38bdf8;"></i> To'lov Cheklari (Kvitansiyalar va Tasdiqlash)
                 </h3>
-                <div style="display: flex; gap: 10px; align-items: center;">
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <select id="receiptFilter" onchange="filterReceipts()" style="width: auto; padding: 8px 12px; font-size: 0.85rem; border-radius: 10px; background: rgba(15,23,42,0.8);">
                         <option value="pending" selected>⏳ Kutilayotganlar</option>
                         <option value="approved">✅ Tasdiqlanganlar</option>
@@ -453,6 +493,9 @@
                     </select>
                     <button class="btn btn-primary" onclick="loadReceipts()" style="padding: 8px 15px; font-size: 0.85rem;">
                         <i class="fas fa-sync-alt"></i> Yangilash
+                    </button>
+                    <button class="btn" onclick="downloadSubscribersExcel()" style="padding: 8px 15px; font-size: 0.85rem; background: linear-gradient(135deg, #10b981, #059669); color: white; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-file-excel"></i> To'lovlar & Obunalar (Excel)
                     </button>
                 </div>
             </div>
@@ -736,7 +779,7 @@
                 if (isRejected) badge = `<span class="status-badge status-off"><i class="fas fa-times"></i> Rad etilgan</span>`;
 
                 const imgUrl = r.file_url || (r.file_id ? `/api/admin/receipts/${r.id}/image` : '/assets/main_logo.jpg');
-                const dateStr = r.submitted_at ? new Date(r.submitted_at).toLocaleString('uz-UZ') : '-';
+                const dateStr = r.submitted_at ? new Date(r.submitted_at).toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' }) : '-';
 
                 return `
                     <div style="background: rgba(15,23,42,0.6); border: 1px solid ${isPending ? 'rgba(99,102,241,0.35)' : 'rgba(255,255,255,0.08)'}; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; transition: 0.2s;">
@@ -869,27 +912,116 @@
             } catch(er) { showToast("Xatolik jiddiy yuz berdi!", true); }
         }
 
-        async function activatePro() {
-            const phone = document.getElementById('proPhone').value;
-            const months = document.getElementById('proMonths').value;
-            if(!phone) return alert("Telefon raqamni kiriting!");
+        let manualMode = 'school';
+        function switchManualMode(mode) {
+            manualMode = mode;
+            const schoolBlock = document.getElementById('manualSchoolBlock');
+            const phoneBlock = document.getElementById('manualPhoneBlock');
+            const schoolBtn = document.getElementById('tabBySchoolBtn');
+            const phoneBtn = document.getElementById('tabByPhoneBtn');
 
-            if(!confirm("Ushbu foydalanuvchiga PRO status berishni tasdiqlaysizmi?")) return;
+            if (mode === 'school') {
+                schoolBlock.style.display = 'block';
+                phoneBlock.style.display = 'none';
+                schoolBtn.className = 'btn btn-primary';
+                phoneBtn.className = 'btn';
+                phoneBtn.style.background = 'rgba(255,255,255,0.08)';
+                phoneBtn.style.color = '#cbd5e1';
+            } else {
+                schoolBlock.style.display = 'none';
+                phoneBlock.style.display = 'block';
+                phoneBtn.className = 'btn btn-primary';
+                schoolBtn.className = 'btn';
+                schoolBtn.style.background = 'rgba(255,255,255,0.08)';
+                schoolBtn.style.color = '#cbd5e1';
+            }
+        }
+
+        async function loadManualDistricts() {
+            try {
+                const res = await fetch('/api/districts');
+                const districts = await res.json();
+                const sel = document.getElementById('manualDistrict');
+                if (!sel) return;
+                sel.innerHTML = '<option value="">-- Tumanni tanlang --</option>' + 
+                    districts.map(d => `<option value="${d}">${d}</option>`).join('');
+            } catch(e) {
+                console.error("loadManualDistricts error:", e);
+            }
+        }
+
+        async function loadManualSchools() {
+            const district = document.getElementById('manualDistrict').value;
+            const sel = document.getElementById('manualSchool');
+            if (!district) {
+                sel.innerHTML = '<option value="">-- Avval tumanni tanlang --</option>';
+                return;
+            }
+            sel.innerHTML = '<option value="">Maktablar yuklanmoqda...</option>';
+            try {
+                const res = await fetch(`/api/schools?district=${encodeURIComponent(district)}`);
+                const schools = await res.json();
+                sel.innerHTML = '<option value="">-- Maktabni tanlang --</option>' + 
+                    schools.map(s => `<option value="${s}">${s}</option>`).join('');
+            } catch(e) {
+                sel.innerHTML = '<option value="">Maktablarni yuklab bo\'lmadi</option>';
+            }
+        }
+
+        async function submitManualAccess() {
+            const type = document.getElementById('manualAccessType').value;
+            const months = document.getElementById('manualMonths').value;
+
+            if (manualMode === 'phone') {
+                const phone = document.getElementById('proPhone').value;
+                if (!phone) return alert("Iltimos, telefon raqamni kiriting!");
+                if (!confirm(`${phone} raqamiga ${months} oylik limit berishni tasdiqlaysizmi?`)) return;
+                
+                try {
+                    const res = await fetch('/api/admin/set-pro', {
+                        method: 'POST',
+                        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone, months, type })
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        showToast(data.message || "Limit muvaffaqiyatli berildi!");
+                        addLog(`[ACTION] Manual limit given to phone: ${phone}`);
+                    } else alert(data.error || "Xatolik!");
+                } catch(e) { alert("Server bilan bog'lanishda xatolik!"); }
+                return;
+            }
+
+            // School mode
+            const district = document.getElementById('manualDistrict').value;
+            const school = document.getElementById('manualSchool').value;
+            if (!district || !school) return alert("Iltimos, tuman va maktabni tanlang!");
+
+            if (!confirm(`${district}, ${school} uchun ${months} oylik ${type === 'pro' ? 'PRO' : 'Standart'} limit berishni tasdiqlaysizmi?`)) return;
 
             try {
-                const res = await fetch('/api/admin/set-pro', {
+                const res = await fetch('/api/admin/grant-school-access', {
                     method: 'POST',
                     headers: { 'Authorization': token, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone, months })
+                    body: JSON.stringify({ district, school, months, type })
                 });
                 const data = await res.json();
-                if(res.ok) {
-                    showToast(data.message || "PRO muvaffaqiyatli faollashtirildi!");
-                    document.getElementById('proPhone').value = '';
-                    addLog(`[ACTION] PRO user activated: ${phone}`);
-                } else alert(data.error || "Xatolik!");
-            } catch(e) { alert("Server bilan bog'lanishda xatolik!"); }
+                if (res.ok) {
+                    showToast(data.message || "Maktab limiti faollashtirildi!");
+                    addLog(`[ACTION] Manual limit granted: ${district} - ${school}`);
+                } else {
+                    alert(data.error || "Xatolik yuz berdi!");
+                }
+            } catch(e) {
+                alert("Server xatosi: " + e.message);
+            }
         }
+
+        async function activatePro() {
+            return submitManualAccess();
+        }
+
+        loadManualDistricts();
 
     
         async function downloadBackup() {
@@ -927,6 +1059,27 @@
                 addLog("[SYSTEM] Admin account access restricted.");
             }
         }
+        async function downloadSubscribersExcel() {
+            const token = localStorage.getItem('token') || localStorage.getItem('dashboard_token');
+            try {
+                const res = await fetch('/api/admin/export-subscribers', {
+                    headers: token ? { 'Authorization': token } : {}
+                });
+                if (!res.ok) throw new Error("Hisobotni yuklab bo'lmadi (" + res.status + ")");
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `OBUNACHILAR_TOLOVLAR_${new Date().toISOString().split('T')[0]}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                addLog("[EXPORT] Obunachilar va to'lovlar hisoboti yuklab olindi.");
+            } catch(e) {
+                alert("Xatolik: " + e.message);
+            }
+        }
+
         applyRoleRestrictions();
 </script>
 <script>

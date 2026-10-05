@@ -1162,7 +1162,7 @@ function displayUserInfo() {
         }
         if (proDetails && role !== 'superadmin') {
             proDetails.style.display = 'block';
-            const expire = localStorage.getItem('d_pro_expire');
+            const expire = localStorage.getItem('d_pro_expire') || localStorage.getItem('d_access_expire');
             const purchase = localStorage.getItem('d_pro_purchase');
 
             const pdEl = document.getElementById('proPurchaseDate');
@@ -1188,6 +1188,9 @@ function displayUserInfo() {
         document.getElementById('schoolProInsights')?.classList.add('hidden');
     }
 
+    // Load dynamic subscription badge from server
+    loadSubscriptionBadge();
+
     // Admin Link Logic
     const adminTab = document.getElementById('tab_admin');
 
@@ -1209,6 +1212,101 @@ function displayUserInfo() {
     }
 
     updateProMiniBtn(isActuallyPro);
+}
+
+async function loadSubscriptionBadge() {
+    try {
+        const token = localStorage.getItem('dashboard_token');
+        const role = localStorage.getItem('dashboard_role');
+        const phone = localStorage.getItem('dashboard_phone') || '';
+        
+        let url = '/api/user/subscription';
+        if (phone) url += `?phone=${encodeURIComponent(phone)}`;
+        
+        const headers = token ? { 'Authorization': token } : {};
+        const res = await fetch(url, { headers });
+        if (!res.ok) return;
+        const sub = await res.json();
+        
+        if (sub.is_pro) localStorage.setItem('d_is_pro', 'true');
+        if (sub.pro_expire_date) localStorage.setItem('d_pro_expire', sub.pro_expire_date);
+        if (sub.access_expire_date) localStorage.setItem('d_access_expire', sub.access_expire_date);
+        if (sub.has_access) localStorage.setItem('d_has_access', 'true');
+        
+        renderUserSubBadge(sub, role);
+    } catch(e) {
+        console.warn("loadSubscriptionBadge error:", e.message);
+    }
+}
+
+function renderUserSubBadge(sub, role) {
+    const container = document.getElementById('userSubBadgeContainer');
+    if (!container) return;
+
+    if (role === 'superadmin') {
+        container.innerHTML = `
+            <span class="sub-status-badge badge-pro" title="Superadmin: To'liq ruxsat">
+                <i class="fas fa-crown"></i> SUPERADMIN
+            </span>
+        `;
+        return;
+    }
+
+    const now = new Date();
+    if (sub.is_pro && sub.pro_expire_date && new Date(sub.pro_expire_date) > now) {
+        const days = sub.days_left !== undefined ? sub.days_left : Math.max(0, Math.ceil((new Date(sub.pro_expire_date) - now) / (1000 * 60 * 60 * 24)));
+        container.innerHTML = `
+            <span class="sub-status-badge badge-pro" onclick="showTab('profile')" title="PRO status: ${sub.pro_expire_date} gacha faol">
+                <i class="fas fa-crown"></i> PRO: ⏳ ${days} kun
+            </span>
+        `;
+    } else if (sub.has_access && sub.access_expire_date && new Date(sub.access_expire_date) > now) {
+        const days = sub.days_left !== undefined ? sub.days_left : Math.max(0, Math.ceil((new Date(sub.access_expire_date) - now) / (1000 * 60 * 60 * 24)));
+        container.innerHTML = `
+            <span class="sub-status-badge badge-standard" onclick="showTab('profile')" title="Standart davomat: ${sub.access_expire_date} gacha faol">
+                <i class="fas fa-check-circle"></i> Standart: ⏳ ${days} kun
+            </span>
+        `;
+    } else if (sub.access_expire_date || sub.pro_expire_date) {
+        container.innerHTML = `
+            <span class="sub-status-badge badge-expired" onclick="showTab('profile')" title="Obunani yangilang">
+                <i class="fas fa-exclamation-triangle"></i> Obuna tugagan
+            </span>
+        `;
+    } else {
+        container.innerHTML = `
+            <span class="sub-status-badge badge-inactive" onclick="showTab('profile')" title="Davomat uchun obuna talab etiladi">
+                <i class="fas fa-clock"></i> Obuna: Noaktiv
+            </span>
+        `;
+    }
+
+    // Also update Profile card
+    const proDetails = document.getElementById('proDetails');
+    if (proDetails) {
+        if (sub.is_pro || sub.has_access || sub.access_expire_date || sub.pro_expire_date) {
+            proDetails.style.display = 'block';
+            const daysEl = document.getElementById('proDaysLeft');
+            const expEl = document.getElementById('proExpireDate');
+            const purEl = document.getElementById('proPurchaseDate');
+            const titleEl = document.getElementById('subStatusTitle');
+
+            if (titleEl) {
+                titleEl.innerHTML = sub.is_pro ? '<i class="fas fa-crown"></i> PRO STATUS' : '<i class="fas fa-check-circle"></i> STANDART DAVOMAT';
+            }
+            if (expEl) expEl.textContent = sub.pro_expire_date || sub.access_expire_date || '-';
+            if (purEl) purEl.textContent = sub.purchase_date || '-';
+            if (daysEl) {
+                if (sub.days_left > 0) {
+                    daysEl.textContent = `${sub.days_left} kun qoldi`;
+                    daysEl.style.background = '#10b981';
+                } else {
+                    daysEl.textContent = "Muddati tugagan";
+                    daysEl.style.background = '#ef4444';
+                }
+            }
+        }
+    }
 }
 
 const UZ_HOLIDAYS = {
