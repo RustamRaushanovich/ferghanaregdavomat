@@ -69,6 +69,7 @@ async function checkCanEnterAttendance(ctx, uid) {
         return { canEnter: true };
     }
 
+    const todayStr = getTodayStr();
     const u = db.users_db[uid] || {};
 
     // 0. OMMAVIY OFERTA TASDIQLANGANMI?

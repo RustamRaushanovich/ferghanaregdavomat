@@ -2835,17 +2835,22 @@ bot.action('accept_oferta', async (ctx) => {
 
 // --- MAIN FLOW ---
 bot.hears(/^(🚀|▶️)?\s*(START\s*[—-]\s*)?(📊\s*)?Davomat kiritish.*$/i, async (ctx) => {
-    if (db.settings.vacation_mode && !config.ALL_ADMINS.includes(ctx.from.id)) {
-        return ctx.reply("🔴 Hozir ta'til rejimi yoqilgan. Ma'lumot qabul qilinmaydi.");
-    }
+    try {
+        if (db.settings.vacation_mode && !config.ALL_ADMINS.includes(ctx.from.id)) {
+            return ctx.reply("🔴 Hozir ta'til rejimi yoqilgan. Ma'lumot qabul qilinmaydi.");
+        }
 
-    const uid = ctx.from.id;
-    const check = await subscriptionService.checkCanEnterAttendance(ctx, uid);
-    if (!check.canEnter) {
-        return subscriptionService.sendSubscriptionPrompt(ctx, check.reason);
-    }
+        const uid = ctx.from.id;
+        const check = await subscriptionService.checkCanEnterAttendance(ctx, uid);
+        if (!check.canEnter) {
+            return subscriptionService.sendSubscriptionPrompt(ctx, check.reason);
+        }
 
-    ctx.scene.enter('attendance_wizard');
+        return ctx.scene.enter('attendance_wizard');
+    } catch (err) {
+        console.error("Davomat kiritish handler error:", err);
+        return ctx.reply("⚠️ Davomat kiritishda xatolik yuz berdi. Iltimos, /start buyrug'ini bosing yoki qaytadan urinib ko'ring.");
+    }
 });
 
 bot.action('check_subscription', async (ctx) => {

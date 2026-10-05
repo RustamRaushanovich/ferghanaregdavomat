@@ -80,14 +80,10 @@ async function showPaymentInfo(ctx) {
         'ℹ️ <i>Xizmatlar Davlat soliq qo\'mitasining QR-kodli Ma\'lumotnomasi № 0006296129 («Dasturiy ta\'minot ishlab chiqish») asosida ko\'rsatiladi.</i>\n\n' +
         '📲 <i>Iltimos, to\'lov qilgach, chekni (rasm/skrinshot) shu botga yuboring:</i>';
 
-    const cleanHumo = humoCard.replace(/\s+/g, '');
-    const clickUrl = `https://my.click.uz/services/pay?service_id=-1&receiver_card=${cleanHumo}&amount=${accessPrice}`;
-    const paymeUrl = `https://payme.uz/fallback/pay/transfer?card=${cleanHumo}&amount=${accessPrice * 100}`;
-
     const paymentKeyboard = Markup.inlineKeyboard([
         [
-            Markup.button.url('📲 Click orqali to\'lash', clickUrl),
-            Markup.button.url('📲 Payme orqali to\'lash', paymeUrl)
+            Markup.button.url('📲 Click ilovasini ochish', 'https://my.click.uz'),
+            Markup.button.url('📲 Payme ilovasini ochish', 'https://payme.uz')
         ],
         [
             Markup.button.callback('🔍 Yuborgan chekim holati', 'check_my_receipt')
