@@ -66,7 +66,10 @@ const attendanceWizard = new Scenes.WizardScene(
         const uid = ctx.from.id;
 
         // Vaqt check (Admins skip time check if needed, but let's keep it simple)
-        if (!checkTime(ctx, db.checkPro(uid))) return;
+        if (!checkTime(ctx, db.checkPro(uid))) {
+            try { await ctx.scene.leave(); } catch (e) { }
+            return;
+        }
 
         // Oferta va Obuna tekshiruvi (Tanishdim demaguncha o'tkazilmaydi)
         const subscriptionService = require('../services/subscriptionService');

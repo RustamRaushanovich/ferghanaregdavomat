@@ -20,12 +20,20 @@ const LATE_MESSAGES = [
     "🔋 Botning quvvati tugadi. Ertalabgacha zaryad oladi."
 ];
 
-const { getFargonaTime } = require('./fargona');
+const { getUzbMoment } = require('./fargona');
+const config = require('../config/config');
 
 function checkTime(ctx, isPro) {
-    const now = getFargonaTime();
-    const h = now.getHours();
-    const m = now.getMinutes();
+    const uid = ctx.from && ctx.from.id;
+    // Admins always have access without time restriction
+    if (uid && config.ALL_ADMINS && config.ALL_ADMINS.map(Number).includes(Number(uid))) {
+        return true;
+    }
+
+    // Always check against Tashkent (UTC+5) timezone directly
+    const uzb = getUzbMoment();
+    const h = uzb.hours();
+    const m = uzb.minutes();
 
     const channelLink = Markup.inlineKeyboard([
         [Markup.button.url("📰 Boshqarma Yangiliklari", "https://t.me/FarVMMTB")]

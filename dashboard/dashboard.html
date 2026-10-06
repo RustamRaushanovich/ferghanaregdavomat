@@ -1673,7 +1673,7 @@
         
         async function fetchXorijDashboardStats() {
             try {
-                const res = await fetch('/api/xorij', {headers:{'Authorization': localStorage.getItem('dashboard_token')||'test'}}).catch(() => null);
+                const res = await fetch('/api/xorij', {headers:{'Authorization': localStorage.getItem('dashboard_token')||'test-token'}}).catch(() => null);
                 if (!res || !res.ok) return;
                 const json = await res.json();
                 let list = json.data || json || [];
@@ -1700,7 +1700,8 @@
 async function loadViloyatData() {
             try {
                 const elVDate = document.getElementById('viloyatDate');
-                const date = elVDate ? elVDate.value : (new Date(Date.now() + 5 * 3600 * 1000).toISOString().split('T')[0]);
+                const date = (elVDate && elVDate.value) ? elVDate.value : (new Date(Date.now() + 5 * 3600 * 1000).toISOString().split('T')[0]);
+                if (elVDate && !elVDate.value) elVDate.value = date;
                 const data = await apiFetch(`/api/stats/viloyat?date=${date}`);
                 const tbody = document.querySelector('#viloyatTable tbody');
                 tbody.innerHTML = '';
@@ -2191,7 +2192,8 @@ async function loadViloyatData() {
 
         async function exportViloyatExcel() {
             const elVDate = document.getElementById('viloyatDate');
-            const date = elVDate ? elVDate.value : (new Date(Date.now() + 5 * 3600 * 1000).toISOString().split('T')[0]);
+            const date = (elVDate && elVDate.value) ? elVDate.value : (new Date(Date.now() + 5 * 3600 * 1000).toISOString().split('T')[0]);
+            if (elVDate && !elVDate.value) elVDate.value = date;
             const link = document.createElement('a');
             link.href = `/api/export/viloyat?date=${date}&token=${token}`;
             link.download = `VILOYAT_HISOBOT_${date}.xlsx`;

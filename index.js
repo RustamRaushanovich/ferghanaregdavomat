@@ -1,4 +1,5 @@
 require('dotenv').config();
+process.env.TZ = 'Asia/Tashkent';
 const { Telegraf, Markup, session, Scenes } = require('telegraf');
 const fs = require('fs');
 const path = require('path');
