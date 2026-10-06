@@ -394,13 +394,10 @@
             <div class="card">
                 <h3><i class="fas fa-link"></i> Tezkor Havolalar</h3>
                 <div class="quick-links">
+                    <a href="#subscriptionsManagerCard" class="quick-link"><i class="fas fa-calendar-check" style="color:#38bdf8;"></i><br>Obunalar / Maktablar</a>
+                    <a href="#receiptsCard" class="quick-link"><i class="fas fa-receipt" style="color:#10b981;"></i><br>To'lov Cheklari</a>
                     <a href="inspektor.html" class="quick-link"><i class="fas fa-user-shield"></i><br>Inspektorlar</a>
-                    <a href="#" class="quick-link" onclick="showPrompt('pro')"><i class="fas fa-gem"></i><br>PRO
-                        Userlar</a>
-                    <a href="#" class="quick-link" onclick="showPrompt('reset')"><i class="fas fa-key"></i><br>Parol
-                        tiklash</a>
-                    <a href="dashboard.html?tab=reports" class="quick-link"><i
-                            class="fas fa-file-excel"></i><br>Hisobotlar</a>
+                    <a href="dashboard.html?tab=reports" class="quick-link"><i class="fas fa-file-excel"></i><br>Hisobotlar</a>
                 </div>
                 <div style="margin-top: 15px; font-size: 0.8rem; color: #64748b; text-align: center;">
                     Boshqa barcha funksiyalar Botdagi Admin Panelda mavjud.
@@ -481,6 +478,146 @@
                 </button>
             </div>
 
+        </div>
+
+        <!-- Maktablar va Foydalanuvchilar To'lov / Obuna Boshqaruvi Card -->
+        <div class="card" id="subscriptionsManagerCard" style="margin-top: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h3 style="margin: 0; color: #f8fafc; font-size: 1.25rem;">
+                        <i class="fas fa-calendar-check" style="color: #38bdf8;"></i> Maktablar va Foydalanuvchilar To'lov / Obuna Boshqaruvi
+                    </h3>
+                    <p style="margin: 5px 0 0; font-size: 0.85rem; color: #94a3b8;">
+                        Hududlar bo'yicha aktiv va to'lov qilgan maktablarni ko'rish, ortiqcha berilgan limitlarni to'g'rilash va muddatlarini tahrirlash.
+                    </p>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="loadSubscriptions()" style="padding: 8px 15px; font-size: 0.85rem;">
+                        <i class="fas fa-sync-alt"></i> Yangilash
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter and Search Bar -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; background: rgba(15,23,42,0.6); padding: 16px; border-radius: 16px; border: 1px solid var(--glass-border);">
+                <div>
+                    <label style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px; display: block;">📍 Hudud (Tuman/Shahar):</label>
+                    <select id="subDistrictFilter" onchange="renderSubscriptions()" style="background: rgba(15,23,42,0.9); border: 1px solid var(--glass-border); color: white; padding: 9px; border-radius: 10px; font-size: 0.85rem; width: 100%;">
+                        <option value="">-- Barcha Hududlar --</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px; display: block;">⚡ Holati:</label>
+                    <select id="subStatusFilter" onchange="renderSubscriptions()" style="background: rgba(15,23,42,0.9); border: 1px solid var(--glass-border); color: white; padding: 9px; border-radius: 10px; font-size: 0.85rem; width: 100%;">
+                        <option value="all">Barchasi</option>
+                        <option value="active" selected>✅ Faol obunalar</option>
+                        <option value="excessive">⚠️ Ortiqcha limit berilganlar (>35 kun)</option>
+                        <option value="expired">❌ Muddati tugaganlar</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px; display: block;">🔍 Qidiruv (Maktab / F.I.SH / Tel):</label>
+                    <input type="text" id="subSearchInput" oninput="renderSubscriptions()" placeholder="Masalan: 15-maktab yoki 901234567" style="background: rgba(15,23,42,0.9); border: 1px solid var(--glass-border); color: white; padding: 9px; border-radius: 10px; font-size: 0.85rem; width: 100%;">
+                </div>
+            </div>
+
+            <!-- Quick Stats Summary -->
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                <div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-check-circle" style="color: #10b981; font-size: 1.2rem;"></i>
+                    <div>
+                        <div style="font-size: 0.75rem; color: #94a3b8;">Faol Maktablar</div>
+                        <div id="statActiveCount" style="font-size: 1.1rem; font-weight: 700; color: #34d399;">0</div>
+                    </div>
+                </div>
+                <div style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-exclamation-triangle" style="color: #f59e0b; font-size: 1.2rem;"></i>
+                    <div>
+                        <div style="font-size: 0.75rem; color: #94a3b8;">Ortiqcha Limit (>35 kun)</div>
+                        <div id="statExcessiveCount" style="font-size: 1.1rem; font-weight: 700; color: #fbbf24;">0</div>
+                    </div>
+                </div>
+                <div style="background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.25); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-users" style="color: #818cf8; font-size: 1.2rem;"></i>
+                    <div>
+                        <div style="font-size: 0.75rem; color: #94a3b8;">Jami Ko'rsatilayotgan</div>
+                        <div id="statTotalShowing" style="font-size: 1.1rem; font-weight: 700; color: #c7d2fe;">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div style="overflow-x: auto; border-radius: 14px; border: 1px solid var(--glass-border);">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem;">
+                    <thead>
+                        <tr style="background: rgba(255,255,255,0.06); border-bottom: 1px solid var(--glass-border); color: #cbd5e1;">
+                            <th style="padding: 12px 14px;">Hudud va Maktab</th>
+                            <th style="padding: 12px 14px;">Biriktirilgan Foydalanuvchi</th>
+                            <th style="padding: 12px 14px;">Ruxsat turi</th>
+                            <th style="padding: 12px 14px;">Tugash sanasi</th>
+                            <th style="padding: 12px 14px;">Qolgan muddat</th>
+                            <th style="padding: 12px 14px; text-align: center;">Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subscriptionsTableBody">
+                        <tr>
+                            <td colspan="6" style="padding: 30px; text-align: center; color: #94a3b8;">
+                                <i class="fas fa-spinner fa-spin"></i> Obunalar yuklanmoqda...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Edit Subscription Modal -->
+        <div id="editSubModal" style="display:none; position:fixed; z-index:99999; left:0; top:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:15px;" onclick="closeEditSubModal()">
+            <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.15); border-radius:22px; padding:25px; max-width:460px; width:100%; color:#fff; box-shadow:0 20px 40px rgba(0,0,0,0.6); position:relative;" onclick="event.stopPropagation()">
+                <button onclick="closeEditSubModal()" style="position:absolute; top:15px; right:15px; background:none; border:none; color:#94a3b8; font-size:22px; cursor:pointer;">&times;</button>
+                
+                <h3 style="margin:0 0 6px; font-size:1.15rem; color:#f8fafc; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-edit" style="color:#38bdf8;"></i> Obuna Muddatini Tahrirlash
+                </h3>
+                <p id="editSubTargetName" style="font-size:0.85rem; color:#94a3b8; margin:0 0 16px;">--</p>
+
+                <div style="margin-bottom:14px;">
+                    <label style="display:block; font-size:0.82rem; color:#cbd5e1; margin-bottom:5px;">Ruxsat turi:</label>
+                    <select id="editSubAccessType" style="background:#0f172a; border:1px solid var(--glass-border); color:white; padding:10px; border-radius:10px; width:100%;">
+                        <option value="access">✅ Standart Davomat Ruxsati</option>
+                        <option value="pro">👑 PRO Rejim (Barcha imkoniyatlar)</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <label style="display:block; font-size:0.82rem; color:#cbd5e1; margin-bottom:5px;">Yangi tugash sanasi:</label>
+                    <input type="date" id="editSubExpireDate" style="background:#0f172a; border:1px solid var(--glass-border); color:white; padding:10px; border-radius:10px; width:100%;">
+                </div>
+
+                <!-- Quick actions buttons -->
+                <div style="background:rgba(255,255,255,0.04); border-radius:12px; padding:12px; margin-bottom:18px;">
+                    <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:8px; font-weight:600;">⚡ Tezkor amallar:</div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button type="button" onclick="setQuickDate(30)" class="btn" style="flex:1; padding:7px 10px; font-size:0.75rem; background:#0284c7; color:white; justify-content:center;">
+                            <i class="fas fa-check"></i> Bugundan 30 kun
+                        </button>
+                        <button type="button" onclick="setQuickDate(60)" class="btn" style="flex:1; padding:7px 10px; font-size:0.75rem; background:rgba(255,255,255,0.1); color:#cbd5e1; justify-content:center;">
+                            60 kun (2 oy)
+                        </button>
+                        <button type="button" onclick="setQuickDate(0)" class="btn btn-danger" style="padding:7px 10px; font-size:0.75rem; justify-content:center;">
+                            <i class="fas fa-ban"></i> Bekor qilish
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:10px;">
+                    <button onclick="saveSubEdit()" class="btn btn-primary" style="flex:1; background:linear-gradient(135deg, #10b981, #059669); border:none; justify-content:center;">
+                        <i class="fas fa-save"></i> Saqlash
+                    </button>
+                    <button onclick="closeEditSubModal()" class="btn" style="background:rgba(255,255,255,0.1); color:#cbd5e1; justify-content:center;">
+                        Yopish
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- To'lov Cheklari (Kvitansiyalar) Boshqaruvi -->
@@ -747,6 +884,325 @@
         fetchSettings();
         fetchStats();
         loadReceipts();
+        loadSubscriptions();
+
+        // --- Maktablar va Foydalanuvchilar Obunalarini Boshqarish ---
+        let allSubscriptions = [];
+        let currentEditingSub = null;
+
+        const ALL_FARGONA_DISTRICTS = [
+            "Farg'ona shahar", "Qo'qon shahar", "Marg'ilon shahar", "Quvasoy shahar",
+            "Bog'dod tumani", "Beshariq tumani", "Buvayda tumani", "Dang'ara tumani",
+            "Farg'ona tumani", "Furqat tumani", "O'zbekiston tumani", "Oltiariq tumani",
+            "Qo'shtepa tumani", "Quva tumani", "Rishton tumani", "So'x tumani",
+            "Toshloq tumani", "Uchko'prik tumani", "Yozyovon tumani"
+        ];
+
+        async function loadSubscriptions() {
+            const tbody = document.getElementById('subscriptionsTableBody');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="padding: 30px; text-align: center; color: #94a3b8;">
+                            <i class="fas fa-spinner fa-spin"></i> Obunalar yuklanmoqda...
+                        </td>
+                    </tr>
+                `;
+            }
+
+            try {
+                const res = await fetch('/api/admin/subscriptions', {
+                    headers: token ? { 'Authorization': token } : {}
+                });
+                if (res.status === 401) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                const data = await res.json();
+                if (res.ok && data.subscriptions) {
+                    allSubscriptions = data.subscriptions;
+                    populateDistrictDropdown();
+                    renderSubscriptions();
+                    addLog(`[SUBSCRIPTIONS] Jami ${allSubscriptions.length} ta obuna yuklandi.`);
+                } else {
+                    if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="padding:20px; text-align:center; color:#ef4444;">Yuklashda xatolik: ${(data && data.error) || 'Noma\'lum xatolik'}</td></tr>`;
+                }
+            } catch (e) {
+                console.error("loadSubscriptions error:", e);
+                if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="padding:20px; text-align:center; color:#ef4444;">Tarmoq xatosi: ${e.message}</td></tr>`;
+            }
+        }
+
+        function populateDistrictDropdown() {
+            const sel = document.getElementById('subDistrictFilter');
+            if (!sel) return;
+            const currentVal = sel.value;
+
+            const districtsSet = new Set(ALL_FARGONA_DISTRICTS);
+            allSubscriptions.forEach(s => {
+                if (s.district) districtsSet.add(s.district);
+            });
+
+            const sortedDistricts = Array.from(districtsSet).sort((a, b) => a.localeCompare(b, 'uz'));
+
+            let html = '<option value="">-- Barcha Hududlar --</option>';
+            sortedDistricts.forEach(d => {
+                html += `<option value="${d}" ${d === currentVal ? 'selected' : ''}>${d}</option>`;
+            });
+            sel.innerHTML = html;
+        }
+
+        function renderSubscriptions() {
+            const distFilter = (document.getElementById('subDistrictFilter')?.value || '').trim().toLowerCase();
+            const statusFilter = document.getElementById('subStatusFilter')?.value || 'active';
+            const searchKeyword = (document.getElementById('subSearchInput')?.value || '').trim().toLowerCase();
+            const tbody = document.getElementById('subscriptionsTableBody');
+
+            let filtered = allSubscriptions.filter(item => {
+                if (distFilter) {
+                    const itemDist = (item.district || '').toLowerCase();
+                    if (!itemDist.includes(distFilter) && !distFilter.includes(itemDist)) {
+                        return false;
+                    }
+                }
+
+                if (statusFilter === 'active' && !item.is_active) return false;
+                if (statusFilter === 'excessive' && !item.is_excessive) return false;
+                if (statusFilter === 'expired' && item.is_active) return false;
+
+                if (searchKeyword) {
+                    const userNames = (item.users || []).map(u => `${u.fio} ${u.phone}`).join(' ').toLowerCase();
+                    const targetStr = `${item.district} ${item.school} ${userNames} ${item.user_fio || ''} ${item.phone || ''}`.toLowerCase();
+                    if (!targetStr.includes(searchKeyword)) return false;
+                }
+
+                return true;
+            });
+
+            filtered.sort((a, b) => {
+                if (a.is_excessive && !b.is_excessive) return -1;
+                if (!a.is_excessive && b.is_excessive) return 1;
+                return b.days_left - a.days_left;
+            });
+
+            const activeCount = allSubscriptions.filter(s => s.is_active).length;
+            const excessiveCount = allSubscriptions.filter(s => s.is_excessive).length;
+            if (document.getElementById('statActiveCount')) document.getElementById('statActiveCount').innerText = activeCount;
+            if (document.getElementById('statExcessiveCount')) document.getElementById('statExcessiveCount').innerText = excessiveCount;
+            if (document.getElementById('statTotalShowing')) document.getElementById('statTotalShowing').innerText = filtered.length;
+
+            if (!tbody) return;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="padding: 30px; text-align: center; color: #94a3b8;">
+                            <i class="fas fa-search"></i> Tanlangan filtrlarga mos obunalar topilmadi.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => {
+                const usersHtml = (item.users && item.users.length > 0)
+                    ? item.users.map(u => `<div style="font-size:0.82rem; margin-bottom:2px;"><i class="fas fa-user" style="color:#94a3b8; font-size:0.75rem;"></i> <b>${u.fio}</b> <span style="color:#38bdf8;">(${u.phone || 'Tel yo\'q'})</span></div>`).join('')
+                    : `<span style="color:#64748b; font-style:italic;">Bog'langan foydalanuvchi yo'q</span>`;
+
+                const typeBadge = item.access_type === 'pro'
+                    ? `<span style="background:linear-gradient(135deg, rgba(234,179,8,0.2), rgba(245,158,11,0.2)); color:#facc15; border:1px solid rgba(234,179,8,0.4); padding:3px 9px; border-radius:12px; font-weight:700; font-size:0.78rem;"><i class="fas fa-crown"></i> PRO (25k)</span>`
+                    : `<span style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:3px 9px; border-radius:12px; font-weight:600; font-size:0.78rem;"><i class="fas fa-calendar-check"></i> Davomat (10k)</span>`;
+
+                let daysBadge = '';
+                if (item.days_left > 35) {
+                    daysBadge = `<span style="background:rgba(239,68,68,0.2); color:#f87171; border:1px solid rgba(239,68,68,0.4); padding:4px 10px; border-radius:10px; font-weight:700; font-size:0.8rem; display:inline-flex; align-items:center; gap:5px;">
+                        <i class="fas fa-exclamation-triangle"></i> ⚠️ ${item.days_left} kun (Ortiqcha!)
+                    </span>`;
+                } else if (item.days_left > 0) {
+                    daysBadge = `<span style="background:rgba(16,185,129,0.18); color:#34d399; border:1px solid rgba(16,185,129,0.3); padding:4px 10px; border-radius:10px; font-weight:700; font-size:0.8rem; display:inline-flex; align-items:center; gap:5px;">
+                        <i class="fas fa-clock"></i> ${item.days_left} kun qoldi
+                    </span>`;
+                } else {
+                    daysBadge = `<span style="background:rgba(100,116,139,0.2); color:#94a3b8; border:1px solid rgba(100,116,139,0.3); padding:4px 10px; border-radius:10px; font-weight:600; font-size:0.8rem;">
+                        <i class="fas fa-times-circle"></i> Tugagan
+                    </span>`;
+                }
+
+                return `
+                    <tr style="border-bottom: 1px solid var(--glass-border); transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
+                        <td style="padding: 12px 14px;">
+                            <div style="font-weight: 700; color: #f8fafc; font-size: 0.95rem;">${item.school || 'Noma\'lum'}</div>
+                            <div style="font-size: 0.8rem; color: #94a3b8;"><i class="fas fa-map-marker-alt" style="color:#38bdf8;"></i> ${item.district || '--'}</div>
+                        </td>
+                        <td style="padding: 12px 14px;">
+                            ${usersHtml}
+                        </td>
+                        <td style="padding: 12px 14px;">
+                            ${typeBadge}
+                        </td>
+                        <td style="padding: 12px 14px; font-family: monospace; font-size: 0.9rem; color: #e2e8f0;">
+                            ${item.expire_date || '--'}
+                        </td>
+                        <td style="padding: 12px 14px;">
+                            ${daysBadge}
+                        </td>
+                        <td style="padding: 12px 14px; text-align: center; white-space: nowrap;">
+                            <button onclick="openEditSubModal('${item.id}')" class="btn" style="padding: 6px 12px; font-size: 0.78rem; background: #0284c7; color: white;" title="Muddatni tahrirlash">
+                                <i class="fas fa-edit"></i> Tahrirlash
+                            </button>
+                            ${item.days_left > 35 ? `
+                                <button onclick="quickResetSub('${item.id}', 30)" class="btn" style="padding: 6px 12px; font-size: 0.78rem; background: #f59e0b; color: white; margin-left: 5px;" title="1 oyga (30 kunga) to'g'rilash">
+                                    <i class="fas fa-magic"></i> 30 kunga tushirish
+                                </button>
+                            ` : ''}
+                            <button onclick="quickRevokeSub('${item.id}')" class="btn btn-danger" style="padding: 6px 10px; font-size: 0.78rem; margin-left: 5px;" title="Obunani bekor qilish">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openEditSubModal(id) {
+            const item = allSubscriptions.find(s => s.id === id);
+            if (!item) return;
+
+            currentEditingSub = item;
+            document.getElementById('editSubTargetName').innerText = `${item.district || ''} - ${item.school || 'Foydalanuvchi'} (${item.users?.map(u => u.fio).join(', ') || ''})`;
+            document.getElementById('editSubAccessType').value = item.access_type || 'access';
+            document.getElementById('editSubExpireDate').value = item.expire_date || '';
+
+            const modal = document.getElementById('editSubModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeEditSubModal() {
+            const modal = document.getElementById('editSubModal');
+            if (modal) modal.style.display = 'none';
+            currentEditingSub = null;
+        }
+
+        function setQuickDate(days) {
+            const d = new Date();
+            if (days === 0) {
+                d.setDate(d.getDate() - 1);
+            } else {
+                d.setDate(d.getDate() + days);
+            }
+            const dateInput = document.getElementById('editSubExpireDate');
+            if (dateInput) {
+                dateInput.value = d.toISOString().split('T')[0];
+            }
+        }
+
+        async function saveSubEdit() {
+            if (!currentEditingSub) return;
+            const newDate = document.getElementById('editSubExpireDate').value;
+            const accessType = document.getElementById('editSubAccessType').value;
+
+            if (!newDate) {
+                alert("Iltimos, tugash sanasini tanlang!");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/subscriptions/update', {
+                    method: 'POST',
+                    headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        target_type: currentEditingSub.target_type,
+                        id: currentEditingSub.id,
+                        district: currentEditingSub.district,
+                        school: currentEditingSub.school,
+                        uid: currentEditingSub.uid,
+                        new_expire_date: newDate,
+                        access_type: accessType,
+                        action: 'set_date'
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(data.message || "Muvaffaqiyatli saqlandi!");
+                    closeEditSubModal();
+                    addLog(`[SUBSCRIPTION UPDATED] ${currentEditingSub.district} ${currentEditingSub.school} -> ${newDate}`);
+                    await loadSubscriptions();
+                } else {
+                    alert(data.error || "Xatolik yuz berdi!");
+                }
+            } catch (e) {
+                alert("Server bilan bog'lanishda xatolik: " + e.message);
+            }
+        }
+
+        async function quickResetSub(id, days = 30) {
+            const item = allSubscriptions.find(s => s.id === id);
+            if (!item) return;
+
+            if (!confirm(`${item.school} (${item.district}) limitini bugundan boshlab 30 kunga to'g'rilashni tasdiqlaysizmi? (Ortiqcha 100-120 kunlik xatolik to'g'rilanadi)`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/subscriptions/update', {
+                    method: 'POST',
+                    headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        target_type: item.target_type,
+                        id: item.id,
+                        district: item.district,
+                        school: item.school,
+                        uid: item.uid,
+                        access_type: item.access_type,
+                        action: 'reset_30_days'
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast("Limit 30 kunga muvaffaqiyatli to'g'rilandi!");
+                    addLog(`[RESET 30 DAYS] ${item.school} (${item.district}) -> ${data.expire_date}`);
+                    await loadSubscriptions();
+                } else {
+                    alert(data.error || "Xatolik!");
+                }
+            } catch (e) {
+                alert("Xatolik: " + e.message);
+            }
+        }
+
+        async function quickRevokeSub(id) {
+            const item = allSubscriptions.find(s => s.id === id);
+            if (!item) return;
+
+            if (!confirm(`${item.school} (${item.district}) obunasini bekor qilishni (ruxsatini tugatishni) tasdiqlaysizmi?`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/subscriptions/update', {
+                    method: 'POST',
+                    headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        target_type: item.target_type,
+                        id: item.id,
+                        district: item.district,
+                        school: item.school,
+                        uid: item.uid,
+                        action: 'revoke'
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast("Obuna bekor qilindi!");
+                    addLog(`[REVOKE SUB] ${item.school} (${item.district}) ruxsati bekor qilindi.`);
+                    await loadSubscriptions();
+                } else {
+                    alert(data.error || "Xatolik!");
+                }
+            } catch (e) {
+                alert("Xatolik: " + e.message);
+            }
+        }
 
         // --- To'lov Cheklari (Kvitansiyalar) Boshqaruvi ---
         let allReceipts = [];
@@ -877,6 +1333,7 @@
                     showToast("Chek muvaffaqiyatli qayta ishlandi!");
                     addLog(`[ACTION] Chek ${receiptId} holati o'zgartirildi: ${action}`);
                     await loadReceipts();
+                    await loadSubscriptions();
                 } else {
                     alert(data.error || "Xatolik yuz berdi!");
                 }

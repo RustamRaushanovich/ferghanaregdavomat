@@ -367,37 +367,67 @@ app.post('/api/admin/receipts/:id/action', auth, async (req, res) => {
         const list = await paymentService.getReceiptsList();
         const receipt = list.find(r => String(r.id) === String(receiptId));
         if (!receipt) return res.status(404).json({ error: 'Chek topilmadi' });
+        if (receipt.status !== 'pending') {
+            return res.status(400).json({ error: `Ushbu chek allaqachon ${receipt.status === 'approved' ? 'tasdiqlangan' : 'rad etilgan'}!` });
+        }
 
         const targetUid = receipt.sender_uid;
         const adminName = req.user.name || req.user.username || 'Web Admin';
 
+        const u = db.users_db[targetUid] || {};
+        let targetDistrict = receipt.district || u.district;
+        let targetSchool = receipt.school || u.school;
+        if (targetSchool && targetSchool.includes('(')) {
+            const m = targetSchool.match(/^(.*?)\s*\((.*?)\)/);
+            if (m) {
+                targetSchool = m[1].trim();
+                targetDistrict = targetDistrict || m[2].trim();
+            }
+        }
+
         if (action === 'approve_access') {
-            const result = db.updateUserAccessMonths(targetUid, parseInt(months) || 1);
-            const expireDate = result ? result.access_expire_date : '';
+            let expireDate = '';
+            if (targetDistrict && targetSchool) {
+                const sc = db.grantSchoolAccess(targetDistrict, targetSchool, parseInt(months) || 1, 'access');
+                expireDate = sc ? sc.expire_date : '';
+            } else {
+                const result = db.updateUserAccessMonths(targetUid, parseInt(months) || 1);
+                expireDate = result ? result.access_expire_date : '';
+            }
             await paymentService.updateReceiptStatus(receiptId, 'approved', adminName);
 
             try {
-                await bot.telegram.sendMessage(
-                    targetUid,
-                    `🎉 <b>Tabriklaymiz!</b>\n\nTo'lovingiz veb-admin tomonidan tasdiqlandi va davomat kiritish ruxsatingiz <b>${expireDate}</b> gacha faollashtirildi!\n\nEndi bemalol davomat kiritishingiz mumkin.`,
-                    { parse_mode: 'HTML' }
-                );
+                if (targetUid && !String(targetUid).startsWith('web_')) {
+                    await bot.telegram.sendMessage(
+                        targetUid,
+                        `🎉 <b>Tabriklaymiz!</b>\n\nTo'lovingiz veb-admin tomonidan tasdiqlandi va davomat kiritish ruxsatingiz <b>${expireDate}</b> gacha faollashtirildi!\n\nEndi bemalol davomat kiritishingiz mumkin.`,
+                        { parse_mode: 'HTML' }
+                    );
+                }
             } catch (e) {
                 console.warn('Could not notify user via Telegram:', e.message);
             }
 
             return res.json({ success: true, status: 'approved', expire_date: expireDate });
         } else if (action === 'approve_pro') {
-            const result = db.updateUserProMonths(targetUid, parseInt(months) || 1);
-            const expireDate = result ? result.pro_expire_date : '';
+            let expireDate = '';
+            if (targetDistrict && targetSchool) {
+                const sc = db.grantSchoolAccess(targetDistrict, targetSchool, parseInt(months) || 1, 'pro');
+                expireDate = sc ? sc.expire_date : '';
+            } else {
+                const result = db.updateUserProMonths(targetUid, parseInt(months) || 1);
+                expireDate = result ? result.pro_expire_date : '';
+            }
             await paymentService.updateReceiptStatus(receiptId, 'approved', adminName);
 
             try {
-                await bot.telegram.sendMessage(
-                    targetUid,
-                    `🎉 <b>Tabriklaymiz!</b>\n\nTo'lovingiz veb-admin tomonidan tasdiqlandi va <b>PRO REJIM</b> obunangiz <b>${expireDate}</b> gacha faollashtirildi!\n\nBarcha imkoniyatlardan foydalanishingiz mumkin.`,
-                    { parse_mode: 'HTML' }
-                );
+                if (targetUid && !String(targetUid).startsWith('web_')) {
+                    await bot.telegram.sendMessage(
+                        targetUid,
+                        `🎉 <b>Tabriklaymiz!</b>\n\nTo'lovingiz veb-admin tomonidan tasdiqlandi va <b>PRO REJIM</b> obunangiz <b>${expireDate}</b> gacha faollashtirildi!\n\nBarcha imkoniyatlardan foydalanishingiz mumkin.`,
+                        { parse_mode: 'HTML' }
+                    );
+                }
             } catch (e) {
                 console.warn('Could not notify user via Telegram:', e.message);
             }
@@ -407,11 +437,13 @@ app.post('/api/admin/receipts/:id/action', auth, async (req, res) => {
             await paymentService.updateReceiptStatus(receiptId, 'fake_rejected', adminName);
 
             try {
-                await bot.telegram.sendMessage(
-                    targetUid,
-                    `❌ <b>To'lovingiz rad etildi!</b>\n\nSiz yuborgan to'lov cheki ma'muriyat tomonidan tekshirilib, soxta yoki noto'g'ri deb topildi.\n\nIltimos, faqat o'zingiz amalga oshirgan haqiqiy to'lov kvitansiyasini yuboring.`,
-                    { parse_mode: 'HTML' }
-                );
+                if (targetUid && !String(targetUid).startsWith('web_')) {
+                    await bot.telegram.sendMessage(
+                        targetUid,
+                        `❌ <b>To'lovingiz rad etildi!</b>\n\nSiz yuborgan to'lov cheki ma'muriyat tomonidan tekshirilib, soxta yoki noto'g'ri deb topildi.\n\nIltimos, faqat o'zingiz amalga oshirgan haqiqiy to'lov kvitansiyasini yuboring.`,
+                        { parse_mode: 'HTML' }
+                    );
+                }
             } catch (e) {
                 console.warn('Could not notify user via Telegram:', e.message);
             }
@@ -444,6 +476,163 @@ app.get('/api/admin/receipts/:id/image', async (req, res) => {
         res.status(404).send('Rasm mavjud emas');
     } catch (e) {
         res.status(500).send(e.message);
+    }
+});
+
+// Check school subscription status
+app.get('/api/check-school-access', (req, res) => {
+    const { district, school } = req.query;
+    if (!district || !school) return res.json({ hasAccess: false });
+    const hasAccess = db.checkSchoolAccess(district, school);
+    const { normalizeKey } = require('./src/utils/topics');
+    const key = `${normalizeKey(district)}_${normalizeKey(school)}`;
+    const sa = db.settings.school_access && db.settings.school_access[key];
+    res.json({
+        hasAccess,
+        expire_date: sa ? sa.expire_date : null,
+        type: sa ? sa.type : null
+    });
+});
+
+// Upload Payment Receipt from Web
+app.post('/api/upload-receipt', upload.single('receipt'), async (req, res) => {
+    try {
+        const { district, school, phone, fio } = req.body;
+        if (!req.file) return res.status(400).json({ error: "Fayl yuklanmadi" });
+
+        const fullDiskPath = path.join(uploadDir, req.file.filename);
+        const crypto = require('crypto');
+        let fileHash = '';
+        try {
+            const buf = fs.readFileSync(fullDiskPath);
+            fileHash = crypto.createHash('md5').update(buf).digest('hex');
+        } catch (e) { }
+
+        const receipts = paymentService.loadReceipts();
+        const duplicate = receipts.find(r => (fileHash && r.file_hash === fileHash) || (r.file_size === req.file.size && r.file_unique_id === req.file.filename));
+        if (duplicate) {
+            if (duplicate.status === 'approved') {
+                return res.status(400).json({ error: "Ushbu to'lov cheki tizimda allaqachon tasdiqlangan va foydalanilgan! Qayta yuklash mumkin emas." });
+            } else if (duplicate.status === 'pending') {
+                return res.status(400).json({ error: "Ushbu to'lov cheki allaqachon yuborilgan va ko'rib chiqilmoqda. Iltimos, adminlar tasdiqlashini kuting." });
+            }
+        }
+
+        const schoolTarget = school ? `${school} (${district})` : '';
+        const schoolPending = receipts.find(r => r.status === 'pending' && r.district === district && r.school === schoolTarget);
+        if (schoolPending) {
+            return res.status(400).json({ error: `Ushbu maktab uchun to'lov cheki allaqachon yuborilgan (${schoolPending.submitted_at}). Adminlar tekshiruvini kuting.` });
+        }
+
+        const receiptId = Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
+        const { getFargonaDateTimeString, formatUzbDateTime } = require('./src/utils/fargona');
+        const uzbNowString = getFargonaDateTimeString();
+        const uzbDisplayTime = formatUzbDateTime(new Date());
+        const filePath = `/assets/uploads/${req.file.filename}`;
+
+        const newReceipt = {
+            id: receiptId,
+            file_unique_id: req.file.filename,
+            file_id: req.file.filename,
+            file_hash: fileHash,
+            file_url: filePath,
+            file_size: req.file.size,
+            sender_uid: 'web_' + (phone ? phone.replace(/\D/g, '') : Date.now()),
+            sender_name: fio || 'Web Foydalanuvchi',
+            school: schoolTarget || 'Web maktab',
+            district: district || '',
+            phone: phone || '',
+            submitted_at: uzbNowString,
+            status: 'pending',
+            source: 'web'
+        };
+        receipts.push(newReceipt);
+        paymentService.saveReceipts(receipts);
+
+        try {
+            const pg = require('./src/database/pg');
+            await pg.query(
+                `INSERT INTO payment_receipts (id, file_id, file_url, file_unique_id, file_size, sender_uid, sender_name, school, district, phone, submitted_at, status)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'pending')
+                 ON CONFLICT (id) DO UPDATE SET file_url = EXCLUDED.file_url`,
+                [receiptId, req.file.filename, filePath, req.file.filename, req.file.size, newReceipt.sender_uid, newReceipt.sender_name, newReceipt.school, district || '', phone || '', uzbNowString]
+            );
+        } catch (e) { }
+
+        // Telegram adminlarga xabar va rasm yuborish
+        const admins = config.SUPER_ADMIN_IDS || [65002404];
+        const forwardMsg =
+            '🧾 <b>WEB ORQALI YANGI TO\'LOV CHEKI!</b>\n\n' +
+            `👤 <b>Kimdan:</b> ${fio || 'Web Foydalanuvchi'}\n` +
+            `🏫 <b>Maktab:</b> ${school} (${district})\n` +
+            `📞 <b>Tel:</b> ${phone || 'Kiritilmagan'}\n` +
+            `⏰ <b>Vaqt:</b> ${uzbDisplayTime}\n` +
+            `🔖 <b>Chek ID:</b> <code>${receiptId}</code>\n\n` +
+            `👉 <i>Tasdiqlash uchun tugmalardan foydalaning:</i>`;
+
+        const keyboard = Markup.inlineKeyboard([
+            [Markup.button.callback('✅ 1 oy Davomat Ruxsati (10 000 so\'m)', `approve_access:${newReceipt.sender_uid}:${receiptId}`)],
+            [Markup.button.callback('⭐ 1 oy PRO Rejim (25 000 so\'m)', `approve_pro:${newReceipt.sender_uid}:${receiptId}`)],
+            [Markup.button.callback('🚫 Soxta Chek (Rad etish)', `reject_fake:${newReceipt.sender_uid}:${receiptId}`)]
+        ]);
+
+        for (const adminId of admins) {
+            try {
+                if (fs.existsSync(fullDiskPath)) {
+                    await bot.telegram.sendPhoto(adminId, { source: fullDiskPath }, { caption: forwardMsg, parse_mode: 'HTML', ...keyboard }).catch(async () => {
+                        await bot.telegram.sendDocument(adminId, { source: fullDiskPath }, { caption: forwardMsg, parse_mode: 'HTML', ...keyboard });
+                    });
+                }
+            } catch (e) {
+                console.error("Web receipt tg notify error:", e.message);
+            }
+        }
+
+        res.json({
+            success: true,
+            receiptId,
+            message: "To'lov chekingiz muvaffaqiyatli qabul qilindi! Adminlar tez orada tasdiqlaydilar va maktabingiz 1 oyga faollashtiriladi."
+        });
+    } catch (e) {
+        console.error("Upload receipt error:", e);
+        res.status(500).json({ error: "Server xatosi: " + e.message });
+    }
+});
+
+// Admin: Get all subscriptions (schools + users) with status and days left
+app.get('/api/admin/subscriptions', auth, (req, res) => {
+    try {
+        const isAuthorized = req.user.username === 'mrqirol' || req.user.role === 'superadmin' || req.user.role === 'admin' || req.user.role === 'specialist';
+        if (!isAuthorized) return res.status(403).json({ error: 'Ruxsat yo\'q' });
+
+        const subscriptions = db.getAllSubscriptions();
+        res.json({ success: true, subscriptions });
+    } catch (e) {
+        console.error("Get subscriptions error:", e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Admin: Update / Edit / Reset subscription expiry date
+app.post('/api/admin/subscriptions/update', auth, (req, res) => {
+    try {
+        const isAuthorized = req.user.username === 'mrqirol' || req.user.role === 'superadmin' || req.user.role === 'admin' || req.user.role === 'specialist';
+        if (!isAuthorized) return res.status(403).json({ error: 'Ruxsat yo\'q' });
+
+        const { target_type, id, district, school, uid, new_expire_date, access_type, action } = req.body;
+        const result = db.updateSubscriptionExpireDate({
+            target_type, id, district, school, uid, new_expire_date, access_type, action
+        });
+
+        res.json({
+            success: true,
+            message: "Obuna muddati muvaffaqiyatli saqlandi!",
+            expire_date: result.expire_date,
+            days_left: result.days_left
+        });
+    } catch (e) {
+        console.error("Update subscription error:", e);
+        res.status(400).json({ error: e.message });
     }
 });
 
@@ -1759,14 +1948,17 @@ app.post('/api/submit', upload.single('bildirgi'), async (req, res) => {
         if (!isSuper && !isInspector) {
             const userPhone = d.phone || (req.user && req.user.phone);
             const userUid = req.user && req.user.uid;
-            const hasAccess = (userPhone && db.checkAttendanceAccessByPhone(userPhone)) || (userUid && db.checkAttendanceAccess(userUid));
-            if (!hasAccess) {
+            const schoolHasAccess = (d.district && d.school && db.checkSchoolAccess(d.district, d.school));
+            const userHasAccess = (userPhone && db.checkAttendanceAccessByPhone(userPhone)) || (userUid && db.checkAttendanceAccess(userUid));
+            if (!schoolHasAccess && !userHasAccess) {
                 return res.status(402).json({
                     error: "PAYMENT_REQUIRED",
-                    message: "05.10.2026 sanasidan e'tiboran kunlik davomat kiritish 10 000 so'm/oy to'lovli hisoblanadi. Davomat kiritish uchun to'lov kartalarimizga 10 000 so'm o'tkazib, adminlarga chek yuboring!",
+                    message: "Ushbu maktab uchun oylik to'lov amalga oshirilmagan yoki muddati tugagan (10 000 so'm/oy). To'lov qilib chek yuboring!",
+                    district: d.district,
+                    school: d.school,
                     cards: {
-                        humo: "9860 0366 3576 1863",
-                        visa: "4187 8000 0132 1124"
+                        humo: db.settings.humo_card || "9860 0366 3576 1863",
+                        visa: db.settings.visa_card || "4187 8000 0132 1124"
                     }
                 });
             }
@@ -3238,7 +3430,7 @@ function isBotAdmin(fromId) {
 }
 
 // 1. Davomat Ruxsati (10 000 so'm / 1 oy)
-bot.action(/^approve_access:(\d+):(.+)$/, async (ctx) => {
+bot.action(/^approve_access:(.+):(.+)$/, async (ctx) => {
     if (!isBotAdmin(ctx.from.id)) {
         return ctx.answerCbQuery("⛔ Ruxsat yo'q. Faqat adminlar tasdiqlashi mumkin.", { show_alert: true });
     }
@@ -3247,8 +3439,32 @@ bot.action(/^approve_access:(\d+):(.+)$/, async (ctx) => {
     const receiptId = ctx.match[2];
 
     try {
-        const result = db.updateUserAccessMonths(targetUid, 1);
-        const expireDate = result ? result.access_expire_date : '';
+        const list = await paymentService.getReceiptsList();
+        const receipt = list.find(r => String(r.id) === String(receiptId));
+        if (receipt && receipt.status !== 'pending') {
+            return ctx.answerCbQuery(`⚠️ Ushbu chek allaqachon ${receipt.status === 'approved' ? 'tasdiqlangan' : 'rad etilgan'}!`, { show_alert: true });
+        }
+
+        const u = db.users_db[targetUid] || {};
+        let targetDistrict = (receipt && receipt.district) || u.district;
+        let targetSchool = (receipt && receipt.school) || u.school;
+        if (targetSchool && targetSchool.includes('(')) {
+            const m = targetSchool.match(/^(.*?)\s*\((.*?)\)/);
+            if (m) {
+                targetSchool = m[1].trim();
+                targetDistrict = targetDistrict || m[2].trim();
+            }
+        }
+
+        let expireDate = '';
+        if (targetDistrict && targetSchool) {
+            const sc = db.grantSchoolAccess(targetDistrict, targetSchool, 1, 'access');
+            expireDate = sc ? sc.expire_date : '';
+        } else {
+            const result = db.updateUserAccessMonths(targetUid, 1);
+            expireDate = result ? result.access_expire_date : '';
+        }
+
         await paymentService.updateReceiptStatus(receiptId, 'approved', ctx.from.id);
 
         await ctx.answerCbQuery("✅ Davomat ruxsati faollashtirildi!", { show_alert: true });
@@ -3263,13 +3479,15 @@ bot.action(/^approve_access:(\d+):(.+)$/, async (ctx) => {
             console.warn("Caption edit error:", e.message);
         }
 
-        // Notify User
+        // Notify User if from Telegram
         try {
-            await ctx.telegram.sendMessage(
-                targetUid,
-                `🎉 <b>Tabriklaymiz!</b>\n\nTo'lovingiz tasdiqlandi va davomat kiritish ruxsatingiz <b>${expireDate}</b> gacha (1 oyga) faollashtirildi!\n\nEndi bemalol davomat kiritishingiz mumkin.`,
-                { parse_mode: 'HTML' }
-            );
+            if (targetUid && !String(targetUid).startsWith('web_')) {
+                await ctx.telegram.sendMessage(
+                    targetUid,
+                    `🎉 <b>Tabriklaymiz!</b>\n\nTo'lovingiz tasdiqlandi va davomat kiritish ruxsatingiz <b>${expireDate}</b> gacha (1 oyga) faollashtirildi!\n\nEndi bemalol davomat kiritishingiz mumkin.`,
+                    { parse_mode: 'HTML' }
+                );
+            }
         } catch (e) {
             console.warn("User notify error:", e.message);
         }
@@ -3279,7 +3497,7 @@ bot.action(/^approve_access:(\d+):(.+)$/, async (ctx) => {
 });
 
 // 2. PRO Rejim (25 000 so'm / 1 oy yoki bir necha oy)
-bot.action(/^approve_pro:(\d+):(.+)$/, async (ctx) => {
+bot.action(/^approve_pro:(.+):(.+)$/, async (ctx) => {
     if (!isBotAdmin(ctx.from.id)) {
         return ctx.answerCbQuery("⛔ Ruxsat yo'q. Faqat adminlar tasdiqlashi mumkin.", { show_alert: true });
     }
@@ -3291,10 +3509,36 @@ bot.action(/^approve_pro:(\d+):(.+)$/, async (ctx) => {
     const receiptId = isMonths ? null : secondArg;
 
     try {
-        const result = db.updateUserProMonths(targetUid, months);
-        const expireDate = result ? result.pro_expire_date : '';
         if (receiptId) {
+            const list = await paymentService.getReceiptsList();
+            const receipt = list.find(r => String(r.id) === String(receiptId));
+            if (receipt && receipt.status !== 'pending') {
+                return ctx.answerCbQuery(`⚠️ Ushbu chek allaqachon ${receipt.status === 'approved' ? 'tasdiqlangan' : 'rad etilgan'}!`, { show_alert: true });
+            }
+
+            const u = db.users_db[targetUid] || {};
+            let targetDistrict = (receipt && receipt.district) || u.district;
+            let targetSchool = (receipt && receipt.school) || u.school;
+            if (targetSchool && targetSchool.includes('(')) {
+                const m = targetSchool.match(/^(.*?)\s*\((.*?)\)/);
+                if (m) {
+                    targetSchool = m[1].trim();
+                    targetDistrict = targetDistrict || m[2].trim();
+                }
+            }
+
+            let expireDate = '';
+            if (targetDistrict && targetSchool) {
+                const sc = db.grantSchoolAccess(targetDistrict, targetSchool, months, 'pro');
+                expireDate = sc ? sc.expire_date : '';
+            } else {
+                const result = db.updateUserProMonths(targetUid, months);
+                expireDate = result ? result.pro_expire_date : '';
+            }
             await paymentService.updateReceiptStatus(receiptId, 'approved', ctx.from.id);
+        } else {
+            const result = db.updateUserProMonths(targetUid, months);
+            expireDate = result ? result.pro_expire_date : '';
         }
 
         await ctx.answerCbQuery("🌟 PRO Rejim faollashtirildi!", { show_alert: true });

@@ -80,6 +80,10 @@ const attendanceWizard = new Scenes.WizardScene(
             return;
         }
 
+        if (subCheck.isPendingGrace) {
+            await ctx.replyWithHTML(`⏳ <i>Siz yuborgan to'lov cheki adminlar tomonidan ko'rib chiqilmoqda. Chek tasdiqlanguniga qadar bugungi davomatni kiritishingiz mumkin.</i>`);
+        }
+
         const saved = db.users_db[uid];
 
         if (saved && saved.district && saved.school) {

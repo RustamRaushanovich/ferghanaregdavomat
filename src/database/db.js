@@ -111,39 +111,64 @@ function updateUserAccessMonths(uid, months = 1) {
     return users_db[uid];
 }
 
-function grantSchoolAccess(district, school, months = 1, type = 'access') {
+function grantSchoolAccess(district, school, months = 1, type = 'access', customExpireDate = null) {
     const { normalizeKey } = require('../utils/topics');
     const key = `${normalizeKey(district)}_${normalizeKey(school)}`;
     if (!settings.school_access) settings.school_access = {};
 
     let now = new Date();
-    let currentExp = settings.school_access[key] && settings.school_access[key].expire_date;
-    let baseDate = (currentExp && new Date(currentExp) > now) ? new Date(currentExp) : now;
-    let expireDate = new Date(baseDate);
-    expireDate.setMonth(expireDate.getMonth() + months);
+    let expireDate;
+    if (customExpireDate) {
+        expireDate = new Date(customExpireDate);
+    } else {
+        let currentExp = settings.school_access[key] && settings.school_access[key].expire_date;
+        let baseDate = now;
+        if (currentExp) {
+            let expD = new Date(currentExp);
+            let diffDays = (expD - now) / (1000 * 60 * 60 * 24);
+            if (diffDays > 0 && diffDays <= 35) {
+                baseDate = expD;
+            } else if (diffDays > 35) {
+                expireDate = expD;
+            }
+        }
+        if (!expireDate) {
+            expireDate = new Date(baseDate);
+            expireDate.setMonth(expireDate.getMonth() + Number(months));
+        }
+    }
 
+    const expStr = expireDate.toISOString().split('T')[0];
     settings.school_access[key] = {
         district,
         school,
         type, // 'access' or 'pro'
-        purchase_date: now.toISOString().split('T')[0],
-        expire_date: expireDate.toISOString().split('T')[0]
+        purchase_date: (settings.school_access[key] && settings.school_access[key].purchase_date) || now.toISOString().split('T')[0],
+        expire_date: expStr
     };
     saveSettings();
 
-    // Also update any matching users in users_db
+    // Directly synchronize matching users to the exact school expire date
     const normD = normalizeKey(district);
     const normS = normalizeKey(school);
     Object.keys(users_db).forEach(uid => {
         const u = users_db[uid];
         if (u && u.district && u.school && normalizeKey(u.district) === normD && normalizeKey(u.school) === normS) {
+            u.has_access = true;
+            u.access_expire_date = expStr;
+            u.access_purchase_date = now.toISOString().split('T')[0];
             if (type === 'pro') {
-                updateUserProMonths(uid, months);
-            } else {
-                updateUserAccessMonths(uid, months);
+                u.is_pro = true;
+                u.pro_expire_date = expStr;
             }
+            try {
+                pg.query('INSERT INTO tg_users (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = $2, last_active = NOW()', [String(uid), users_db[uid]]);
+            } catch (e) { }
         }
     });
+    try {
+        fs.writeFileSync(USERS_DB_FILE, JSON.stringify(users_db, null, 2));
+    } catch (e) { }
 
     return settings.school_access[key];
 }
@@ -155,6 +180,166 @@ function checkSchoolAccess(district, school) {
     const sa = settings.school_access[key];
     if (!sa) return false;
     return new Date(sa.expire_date) > new Date();
+}
+
+function getAllSubscriptions() {
+    const list = [];
+    const now = new Date();
+    const { normalizeKey } = require('../utils/topics');
+
+    // 1. Maktablar ruxsati (school_access)
+    if (settings.school_access) {
+        Object.entries(settings.school_access).forEach(([key, val]) => {
+            if (!val || !val.school) return;
+            const expDate = val.expire_date ? new Date(val.expire_date) : null;
+            const daysLeft = expDate ? Math.ceil((expDate - now) / (1000 * 60 * 60 * 24)) : 0;
+            const isActive = daysLeft > 0;
+
+            const normD = normalizeKey(val.district || '');
+            const normS = normalizeKey(val.school || '');
+            const matchedUsers = [];
+            Object.entries(users_db).forEach(([uid, u]) => {
+                if (u && u.district && u.school && normalizeKey(u.district) === normD && normalizeKey(u.school) === normS) {
+                    matchedUsers.push({
+                        uid,
+                        fio: u.fio || u.first_name || 'Noma\'lum',
+                        phone: u.phone || ''
+                    });
+                }
+            });
+
+            list.push({
+                id: key,
+                target_type: 'school',
+                district: val.district || '',
+                school: val.school || '',
+                access_type: val.type || 'access',
+                purchase_date: val.purchase_date || '',
+                expire_date: val.expire_date || '',
+                days_left: daysLeft,
+                is_active: isActive,
+                is_excessive: daysLeft > 35,
+                users: matchedUsers
+            });
+        });
+    }
+
+    // 2. Individual users in users_db (not yet covered by school_access)
+    Object.entries(users_db).forEach(([uid, u]) => {
+        if (!u) return;
+        const hasAccess = u.has_access && u.access_expire_date;
+        const hasPro = u.is_pro && u.pro_expire_date;
+        if (hasAccess || hasPro) {
+            const expStr = (hasPro && new Date(u.pro_expire_date) > new Date(u.access_expire_date || 0)) 
+                ? u.pro_expire_date 
+                : u.access_expire_date;
+            const accessType = hasPro ? 'pro' : 'access';
+            const expDate = new Date(expStr);
+            const daysLeft = Math.ceil((expDate - now) / (1000 * 60 * 60 * 24));
+
+            const normD = normalizeKey(u.district || '');
+            const normS = normalizeKey(u.school || '');
+            const schoolKey = `${normD}_${normS}`;
+            const coveredBySchool = settings.school_access && settings.school_access[schoolKey];
+
+            if (!coveredBySchool) {
+                list.push({
+                    id: 'user_' + uid,
+                    target_type: 'user',
+                    district: u.district || '',
+                    school: u.school || '',
+                    user_fio: u.fio || u.first_name || 'Noma\'lum',
+                    phone: u.phone || '',
+                    uid: uid,
+                    access_type: accessType,
+                    purchase_date: u.access_purchase_date || u.pro_purchase_date || '',
+                    expire_date: expStr,
+                    days_left: daysLeft,
+                    is_active: daysLeft > 0,
+                    is_excessive: daysLeft > 35,
+                    users: [{ uid, fio: u.fio || u.first_name || 'Noma\'lum', phone: u.phone || '' }]
+                });
+            }
+        }
+    });
+
+    return list;
+}
+
+function updateSubscriptionExpireDate(params) {
+    const { normalizeKey } = require('../utils/topics');
+    let { target_type, district, school, uid, new_expire_date, access_type, action } = params;
+
+    const now = new Date();
+
+    if (action === 'reset_30_days') {
+        const d = new Date();
+        d.setDate(d.getDate() + 30);
+        new_expire_date = d.toISOString().split('T')[0];
+    } else if (action === 'revoke') {
+        const d = new Date();
+        d.setDate(d.getDate() - 1);
+        new_expire_date = d.toISOString().split('T')[0];
+    }
+
+    if (!new_expire_date) {
+        throw new Error("Yangi tugash sanasi belgilanmagan!");
+    }
+
+    const isActive = new Date(new_expire_date) > now;
+
+    if (target_type === 'school' || (district && school)) {
+        const key = `${normalizeKey(district)}_${normalizeKey(school)}`;
+        if (!settings.school_access) settings.school_access = {};
+
+        settings.school_access[key] = {
+            district,
+            school,
+            type: access_type || 'access',
+            purchase_date: (settings.school_access[key] && settings.school_access[key].purchase_date) || now.toISOString().split('T')[0],
+            expire_date: new_expire_date
+        };
+        saveSettings();
+
+        // Sync all users of this school
+        const normD = normalizeKey(district);
+        const normS = normalizeKey(school);
+        Object.keys(users_db).forEach(uId => {
+            const u = users_db[uId];
+            if (u && u.district && u.school && normalizeKey(u.district) === normD && normalizeKey(u.school) === normS) {
+                u.has_access = isActive;
+                u.access_expire_date = new_expire_date;
+                if (access_type === 'pro') {
+                    u.is_pro = isActive;
+                    u.pro_expire_date = new_expire_date;
+                }
+                try {
+                    pg.query('INSERT INTO tg_users (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = $2, last_active = NOW()', [String(uId), u]);
+                } catch (e) { }
+            }
+        });
+        try {
+            fs.writeFileSync(USERS_DB_FILE, JSON.stringify(users_db, null, 2));
+        } catch (e) { }
+
+        return { success: true, expire_date: new_expire_date, days_left: Math.ceil((new Date(new_expire_date) - now) / (1000 * 60 * 60 * 24)) };
+    } else if (target_type === 'user' || uid) {
+        const cleanUid = String(uid).replace(/^user_/, '');
+        if (users_db[cleanUid]) {
+            users_db[cleanUid].has_access = isActive;
+            users_db[cleanUid].access_expire_date = new_expire_date;
+            if (access_type === 'pro') {
+                users_db[cleanUid].is_pro = isActive;
+                users_db[cleanUid].pro_expire_date = new_expire_date;
+            }
+            try {
+                fs.writeFileSync(USERS_DB_FILE, JSON.stringify(users_db, null, 2));
+                pg.query('INSERT INTO tg_users (id, data) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET data = $2, last_active = NOW()', [cleanUid, users_db[cleanUid]]);
+            } catch (e) { }
+            return { success: true, expire_date: new_expire_date, days_left: Math.ceil((new Date(new_expire_date) - now) / (1000 * 60 * 60 * 24)) };
+        }
+    }
+    throw new Error("Tahrirlanuvchi maktab yoki foydalanuvchi topilmadi!");
 }
 
 function checkAttendanceAccess(uid) {
@@ -251,6 +436,8 @@ module.exports = {
     checkProByPhone,
     grantSchoolAccess,
     checkSchoolAccess,
+    getAllSubscriptions,
+    updateSubscriptionExpireDate,
     saveCoords,
     loadAll, // Export for manual sync
     saveSchools: () => { try { fs.writeFileSync(SCHOOLS_FILE, JSON.stringify(schools_db)); } catch (e) { } }

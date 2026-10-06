@@ -109,6 +109,17 @@ async function checkCanEnterAttendance(ctx, uid) {
     if (isPaidPeriod) {
         const isPro = db.checkAttendanceAccess(uid);
         if (!isPro) {
+            // Agar foydalanuvchi to'lov chekini yuborgan va u ko'rib chiqilayotgan bo'lsa,
+            // ikkinchi marta to'lov so'ramaslik va bugungi davomatni kiritishga ruxsat berish
+            const lastReceipt = await paymentService.getUserReceiptStatus(uid);
+            if (lastReceipt && lastReceipt.status === 'pending') {
+                return {
+                    canEnter: true,
+                    isPendingGrace: true,
+                    receiptId: lastReceipt.id
+                };
+            }
+
             return {
                 canEnter: false,
                 reason: 'pro_expired'

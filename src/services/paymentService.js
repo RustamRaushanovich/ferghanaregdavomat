@@ -147,34 +147,54 @@ async function handleReceiptSubmission(ctx) {
     const receipts = loadReceipts();
     const duplicate = receipts.find(r => r.file_unique_id === fileUniqueId);
 
-    if (duplicate && duplicate.status === 'approved') {
-        // Repeated fake or borrowed check
+    if (duplicate) {
+        ctx.session.waiting_receipt = false;
+        if (duplicate.status === 'approved') {
+            await ctx.replyWithHTML(
+                '❌ <b>DIQQAT: TO\'LOV CHEKI QABUL QILINMADI!</b>\n\n' +
+                'Ushbu to\'lov cheki tizimda allaqachon ro\'yxatga olingan va tasdiqlangan!\n\n' +
+                '⚠️ <i>Iltimos, faqat o\'zingiz amalga oshirgan yangi va haqiqiy to\'lov kvitansiyasini yuboring.</i>'
+            );
+
+            // Alert superadmins about suspected fake check
+            const alertMsg = 
+                '🚨 <b>SOXTA / QAYTA ISHLATILGAN CHEK ANIQLANDI!</b>\n\n' +
+                '👤 <b>Kim yubordi:</b> ' + name + ' (' + userName + ')\n' +
+                '🆔 <b>Telegram ID:</b> <code>' + uid + '</code>\n' +
+                '🏫 <b>Maktab:</b> ' + school + '\n' +
+                '📞 <b>Tel:</b> ' + phone + '\n\n' +
+                '⚠️ <b>Avvalgi to\'lovchi:</b> ' + duplicate.sender_name + ' (' + duplicate.school + ')\n' +
+                '📅 <b>Birinchi marta topshirilgan vaqt:</b> ' + duplicate.submitted_at;
+
+            for (const adminId of (config.SUPER_ADMIN_IDS || [65002404])) {
+                try {
+                    if (ctx.message.photo) {
+                        await ctx.telegram.sendPhoto(adminId, fileId, { caption: alertMsg, parse_mode: 'HTML' });
+                    } else {
+                        await ctx.telegram.sendDocument(adminId, fileId, { caption: alertMsg, parse_mode: 'HTML' });
+                    }
+                } catch (e) {}
+            }
+            return;
+        } else if (duplicate.status === 'pending') {
+            await ctx.replyWithHTML(
+                '⏳ <b>DIQQAT: USHBU CHEK ALLAQACHON YUBORILGAN!</b>\n\n' +
+                'Siz yuborgan ushbu to\'lov cheki hozirda adminlar tomonidan ko\'rib chiqilmoqda.\n\n' +
+                '⚠️ <i>Qayta-qayta yuborishingiz shart emas. Chek tasdiqlanguniga qadar bugungi davomatni erkin kiritishingiz mumkin.</i>'
+            );
+            return;
+        }
+    }
+
+    // Check if user already has an active pending receipt
+    const userPending = receipts.find(r => String(r.sender_uid) === String(uid) && r.status === 'pending');
+    if (userPending) {
         ctx.session.waiting_receipt = false;
         await ctx.replyWithHTML(
-            '❌ <b>DIQQAT: TO\'LOV CHEKI QABUL QILINMADI!</b>\n\n' +
-            'Ushbu to\'lov cheki tizimda allaqachon ro\'yxatga olingan va boshqa to\'lov uchun ishlatilgan!\n\n' +
-            '⚠️ <i>Iltimos, faqat o\'zingiz amalga oshirgan yangi va haqiqiy to\'lov kvitansiyasini yuboring.</i>'
+            '⏳ <b>Sizning avvalgi to\'lov chekingiz hali tekshirilmoqda!</b>\n\n' +
+            `Yuborilgan vaqti: <b>${userPending.submitted_at}</b>\n\n` +
+            'Adminlar tez orada tasdiqlaydilar. Tasdiqlanishini kutmasdan bugungi davomatni bemalol kiritishingiz mumkin.'
         );
-
-        // Alert superadmins about suspected fake check
-        const alertMsg = 
-            '🚨 <b>SOXTA / QAYTA ISHLATILGAN CHEK ANIQLANDI!</b>\n\n' +
-            '👤 <b>Kim yubordi:</b> ' + name + ' (' + userName + ')\n' +
-            '🆔 <b>Telegram ID:</b> <code>' + uid + '</code>\n' +
-            '🏫 <b>Maktab:</b> ' + school + '\n' +
-            '📞 <b>Tel:</b> ' + phone + '\n\n' +
-            '⚠️ <b>Avvalgi to\'lovchi:</b> ' + duplicate.sender_name + ' (' + duplicate.school + ')\n' +
-            '📅 <b>Birinchi marta topshirilgan vaqt:</b> ' + duplicate.submitted_at;
-
-        for (const adminId of (config.SUPER_ADMIN_IDS || [65002404])) {
-            try {
-                if (ctx.message.photo) {
-                    await ctx.telegram.sendPhoto(adminId, fileId, { caption: alertMsg, parse_mode: 'HTML' });
-                } else {
-                    await ctx.telegram.sendDocument(adminId, fileId, { caption: alertMsg, parse_mode: 'HTML' });
-                }
-            } catch (e) {}
-        }
         return;
     }
 
@@ -470,5 +490,7 @@ module.exports = {
     handleSetCardCommand,
     updateReceiptStatus,
     getReceiptsList,
-    getUserReceiptStatus
+    getUserReceiptStatus,
+    loadReceipts,
+    saveReceipts
 };

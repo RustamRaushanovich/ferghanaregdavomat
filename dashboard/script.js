@@ -699,6 +699,8 @@ function validateStep(step) {
 async function loadSchools() {
     const dist = document.getElementById('district').value;
     const schoolSelect = document.getElementById('school');
+    const badge = document.getElementById('schoolAccessBadge');
+    if (badge) badge.style.display = 'none';
     schoolSelect.innerHTML = '<option value="">Yuklanmoqda...</option>';
     schoolSelect.disabled = true;
     try {
@@ -938,51 +940,109 @@ if (form) form.addEventListener('submit', async (e) => {
     }
 });
 
+async function checkSchoolSubscription() {
+    const distEl = document.getElementById('district');
+    const schoolEl = document.getElementById('school');
+    const badge = document.getElementById('schoolAccessBadge');
+    if (!badge || !distEl || !schoolEl) return;
+
+    const district = distEl.value;
+    const school = schoolEl.value;
+    if (!district || !school) {
+        badge.style.display = 'none';
+        return;
+    }
+
+    try {
+        badge.style.display = 'block';
+        badge.style.background = 'rgba(255,255,255,0.05)';
+        badge.style.border = '1px solid rgba(255,255,255,0.1)';
+        badge.style.color = '#94a3b8';
+        badge.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Maktab to\'lov holati tekshirilmoqda...';
+
+        const res = await fetch(`/api/check-school-access?district=${encodeURIComponent(district)}&school=${encodeURIComponent(school)}`);
+        if (res.ok) {
+            const data = await res.json();
+            if (data.hasAccess) {
+                badge.style.background = 'rgba(16, 185, 129, 0.15)';
+                badge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+                badge.style.color = '#34d399';
+                badge.innerHTML = `<i class="fas fa-check-circle"></i> <b>Maktab uchun to'lov faol!</b> (${data.expire_date} gacha ruxsat mavjud. Qayta to'lov talab etilmaydi)`;
+            } else {
+                badge.style.background = 'rgba(245, 158, 11, 0.12)';
+                badge.style.border = '1px solid rgba(245, 158, 11, 0.25)';
+                badge.style.color = '#fbbf24';
+                badge.innerHTML = `<i class="fas fa-info-circle"></i> Maktab to'lovi kiritilmagan bo'lsa, pastdagi "To'lov qilish / Chek yuklash" tugmasi orqali chek yuborishingiz mumkin (10 000 so'm/oy).`;
+            }
+        } else {
+            badge.style.display = 'none';
+        }
+    } catch (e) {
+        console.error("checkSchoolSubscription error:", e);
+        badge.style.display = 'none';
+    }
+}
+
 function showPaymentModal(data) {
     let modal = document.getElementById('webPaymentModal');
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'webPaymentModal';
-        modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(10px); z-index:999999; display:flex; align-items:center; justify-content:center; padding:20px;';
+        modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(10px); z-index:999999; display:flex; align-items:center; justify-content:center; padding:20px; overflow-y:auto;';
         document.body.appendChild(modal);
     }
 
     const humo = (data && data.cards && data.cards.humo) || '9860 0366 3576 1863';
     const visa = (data && data.cards && data.cards.visa) || '4187 8000 0132 1124';
-    const msg = (data && data.message) || "25.09.2026 sanasidan e'tiboran kunlik davomat kiritish 10 000 so'm/oy to'lovli hisoblanadi. Davomat kiritish uchun to'lov kartalarimizga 10 000 so'm o'tkazib, adminlarga chek yuboring!";
+    const msg = (data && data.message) || "Kunlik davomat kiritish 10 000 so'm/oy to'lovli hisoblanadi. Bir kishi to'lasa, butun maktab uchun 1 oy davomida bot va webda cheklovlarsiz ishlaydi!";
 
     modal.innerHTML = `
-        <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.15); border-radius:24px; padding:25px; max-width:420px; width:100%; color:#fff; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,0.5); position:relative; font-family:sans-serif;">
+        <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.15); border-radius:24px; padding:25px; max-width:440px; width:100%; color:#fff; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,0.5); position:relative; font-family:sans-serif; max-height:90vh; overflow-y:auto;">
             <button onclick="document.getElementById('webPaymentModal').style.display='none'" style="position:absolute; top:15px; right:15px; background:none; border:none; color:#94a3b8; font-size:22px; cursor:pointer;">&times;</button>
             
-            <div style="width:60px; height:60px; background:linear-gradient(135deg, #6366f1, #a855f7); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; font-size:26px;">💳</div>
+            <div style="width:54px; height:54px; background:linear-gradient(135deg, #6366f1, #a855f7); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; font-size:24px;">💳</div>
             
-            <h3 style="margin:0 0 10px; font-size:20px; font-weight:700;">Davomat Kiritish Obunasi</h3>
-            <p style="font-size:13px; color:#cbd5e1; line-height:1.5; margin-bottom:20px;">${msg}</p>
+            <h3 style="margin:0 0 8px; font-size:19px; font-weight:700;">Davomat Kiritish Obunasi</h3>
+            <p style="font-size:12.5px; color:#cbd5e1; line-height:1.5; margin-bottom:16px;">${msg}</p>
 
-            <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:15px; text-align:left; margin-bottom:15px;">
-                <div style="font-size:12px; color:#94a3b8; margin-bottom:5px;">🔹 <b>HUMO Karta:</b> (10 000 so'm / 25 000 so'm)</div>
-                <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 12px; border-radius:10px; font-family:monospace; font-size:15px; letter-spacing:1px; color:#38bdf8;">
+            <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:12px; text-align:left; margin-bottom:14px;">
+                <div style="font-size:12px; color:#94a3b8; margin-bottom:5px;">🔹 <b>HUMO Karta:</b> (10 000 so'm / oyiga)</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:8px 12px; border-radius:10px; font-family:monospace; font-size:14px; letter-spacing:1px; color:#38bdf8;">
                     <span>${humo}</span>
                     <button onclick="navigator.clipboard.writeText('${humo.replace(/\s/g, '')}'); alert('Humo karta raqami nusxalandi!');" style="background:#0284c7; color:#fff; border:none; border-radius:6px; padding:4px 10px; font-size:11px; cursor:pointer;">Nusxalash</button>
                 </div>
 
-                <div style="font-size:12px; color:#94a3b8; margin-top:12px; margin-bottom:5px;">🔹 <b>VISA Karta:</b></div>
-                <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:10px 12px; border-radius:10px; font-family:monospace; font-size:15px; letter-spacing:1px; color:#38bdf8;">
+                <div style="font-size:12px; color:#94a3b8; margin-top:10px; margin-bottom:5px;">🔹 <b>VISA Karta:</b></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:8px 12px; border-radius:10px; font-family:monospace; font-size:14px; letter-spacing:1px; color:#38bdf8;">
                     <span>${visa}</span>
                     <button onclick="navigator.clipboard.writeText('${visa.replace(/\s/g, '')}'); alert('VISA karta raqami nusxalandi!');" style="background:#0284c7; color:#fff; border:none; border-radius:6px; padding:4px 10px; font-size:11px; cursor:pointer;">Nusxalash</button>
                 </div>
             </div>
 
-            <div style="font-size:12px; color:#94a3b8; margin-bottom:20px; line-height:1.4;">
-                📝 To'lovni amalga oshirgach, chek rasmini Telegram botimizga (<strong>@Between_Us_uzb</strong>) yuboring. Adminlar tez fursatda 1 oyga faollashtirib berishadi!
+            <!-- Web Direct Receipt Upload -->
+            <div style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.25); border-radius:16px; padding:14px; text-align:left; margin-bottom:14px;">
+                <div style="font-size:13px; font-weight:700; color:#818cf8; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+                    <i class="fas fa-file-upload"></i> Web orqali chekni yuborish:
+                </div>
+                <div style="font-size:11.5px; color:#94a3b8; margin-bottom:8px; line-height:1.4;">
+                    To'lov qilganingizdan so'ng chek rasmini (yoki PDF) tanlang. Adminlar tasdiqlashi bilan maktabingiz 1 oyga faollashtiriladi:
+                </div>
+                <input type="file" id="webReceiptFileInput" accept="image/*,application/pdf" style="width:100%; box-sizing:border-box; padding:7px; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#cbd5e1; font-size:11.5px; margin-bottom:8px; cursor:pointer;" />
+                <button id="webReceiptSubmitBtn" onclick="submitWebReceipt()" style="width:100%; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; padding:9px; border-radius:9px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+                    <i class="fas fa-cloud-upload-alt"></i> Chekni Adminlarga Yuborish
+                </button>
+                <div id="webReceiptStatusMsg" style="font-size:11.5px; margin-top:8px; display:none; line-height:1.4;"></div>
+            </div>
+
+            <div style="font-size:11.5px; color:#94a3b8; margin-bottom:14px; line-height:1.4;">
+                Yoki chekni rasmiy Telegram botimiz orqali ham yuborishingiz mumkin:
             </div>
 
             <div style="display:flex; gap:10px;">
-                <a href="https://t.me/Between_Us_uzb" target="_blank" style="flex:1; background:linear-gradient(135deg, #0088cc, #229ed9); color:#fff; text-decoration:none; padding:12px; border-radius:12px; font-size:13px; font-weight:600;">
-                    📲 Telegram Botga Chek Yuborish
+                <a href="https://t.me/ferghanaregdavomat_bot" target="_blank" style="flex:1; background:linear-gradient(135deg, #0088cc, #229ed9); color:#fff; text-decoration:none; padding:10px; border-radius:10px; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:6px;">
+                    <i class="fab fa-telegram-plane"></i> Telegram Botga Yuborish
                 </a>
-                <button onclick="document.getElementById('webPaymentModal').style.display='none'" style="background:rgba(255,255,255,0.1); color:#cbd5e1; border:none; padding:12px 18px; border-radius:12px; font-size:13px; cursor:pointer;">
+                <button onclick="document.getElementById('webPaymentModal').style.display='none'" style="background:rgba(255,255,255,0.1); color:#cbd5e1; border:none; padding:10px 16px; border-radius:10px; font-size:12px; cursor:pointer;">
                     Yopish
                 </button>
             </div>
@@ -990,6 +1050,65 @@ function showPaymentModal(data) {
     `;
 
     modal.style.display = 'flex';
+}
+
+async function submitWebReceipt() {
+    const fileInput = document.getElementById('webReceiptFileInput');
+    const statusMsg = document.getElementById('webReceiptStatusMsg');
+    const submitBtn = document.getElementById('webReceiptSubmitBtn');
+
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+        alert("Iltimos, to'lov cheki faylini (rasm yoki PDF) tanlang!");
+        return;
+    }
+
+    const file = fileInput.files[0];
+    const district = document.getElementById('district') ? document.getElementById('district').value : '';
+    const school = document.getElementById('school') ? document.getElementById('school').value : '';
+    const phone = document.getElementById('phone') ? document.getElementById('phone').value : '';
+    const fio = document.getElementById('fio') ? document.getElementById('fio').value : '';
+
+    const formData = new FormData();
+    formData.append('receipt', file);
+    formData.append('district', district);
+    formData.append('school', school);
+    formData.append('phone', phone);
+    formData.append('fio', fio);
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...';
+    statusMsg.style.display = 'block';
+    statusMsg.style.color = '#38bdf8';
+    statusMsg.innerText = 'Chek yuklanmoqda va adminlarga yuborilmoqda...';
+
+    try {
+        const res = await fetch('/api/upload-receipt', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            statusMsg.style.color = '#10b981';
+            statusMsg.innerHTML = '✅ ' + (data.message || "To'lov cheki muvaffaqiyatli qabul qilindi!");
+            submitBtn.innerHTML = '✅ Yuborildi';
+            setTimeout(() => {
+                const modal = document.getElementById('webPaymentModal');
+                if (modal) modal.style.display = 'none';
+                if (typeof checkSchoolSubscription === 'function') checkSchoolSubscription();
+                alert("Chekingiz adminlarga yetkazildi! Adminlar tasdiqlashi bilan maktabingiz 1 oyga faollashtiriladi.");
+            }, 2500);
+        } else {
+            statusMsg.style.color = '#ef4444';
+            statusMsg.innerText = '❌ Xatolik: ' + (data.error || 'Yuklashda xatolik yuz berdi');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Qayta urinish';
+        }
+    } catch (e) {
+        statusMsg.style.color = '#ef4444';
+        statusMsg.innerText = '❌ Tarmoq xatoligi: ' + e.message;
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Qayta urinish';
+    }
 }
 
 if ('serviceWorker' in navigator) {
