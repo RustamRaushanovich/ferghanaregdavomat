@@ -879,8 +879,8 @@ bot.start(async (ctx) => {
     }
 
     buttons.push(["👤 Mening Profilim", "📊 Mening Statistikam"]);
+    buttons.push(["💳 To'lov / Obuna", "📋 Ommaviy Oferta"]);
     buttons.push(["ℹ️ Dastur haqida", "📖 Yo'riqnoma"]);
-    buttons.push(["📋 Ommaviy Oferta"]);
 
     try {
         if (fs.existsSync(LOGO_PATH)) {
@@ -2140,7 +2140,7 @@ bot.action("pay_subscription", async (ctx) => {
     return paymentService.showPaymentInfo(ctx);
 });
 
-bot.hears(["💳 Oylik Obuna / To'lov", "💳 To'lov ma'lumotlari"], (ctx) => paymentService.showPaymentInfo(ctx));
+bot.hears(["💳 To'lov / Obuna", "To'lov / Obuna", "💳 Oylik Obuna / To'lov", "💳 To'lov ma'lumotlari", "💳 To'lov", "To'lov", "Obuna"], (ctx) => paymentService.showPaymentInfo(ctx));
 
 bot.action("edit_profile", async (ctx) => {
     await ctx.answerCbQuery();
@@ -2820,7 +2820,8 @@ bot.action('accept_oferta', async (ctx) => {
         Markup.keyboard([
             ["🚀 START - Davomat kiritish"],
             ["✈️ Xorijga ketganlar"],
-            ["👤 Mening Profilim", "📊 Mening Statistikam"]
+            ["👤 Mening Profilim", "📊 Mening Statistikam"],
+            ["💳 To'lov / Obuna", "📋 Ommaviy Oferta"]
         ]).resize()
     );
 
@@ -2880,7 +2881,8 @@ bot.action('check_subscription', async (ctx) => {
         Markup.keyboard([
             ["🚀 START - Davomat kiritish"],
             ["✈️ Xorijga ketganlar"],
-            ["👤 Mening Profilim", "📊 Mening Statistikam"]
+            ["👤 Mening Profilim", "📊 Mening Statistikam"],
+            ["💳 To'lov / Obuna", "📋 Ommaviy Oferta"]
         ]).resize()
     );
 
