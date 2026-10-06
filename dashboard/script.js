@@ -1081,10 +1081,11 @@ function displayUserInfo() {
     });
 
     if (!token) {
-        userContainer.innerHTML = ''; // Hide profile if guest
-        // Ensure Login Button is Visible
-        const mainLoginBtn = document.getElementById('loginMainBtn'); // If we added ID
-        if (mainLoginBtn) mainLoginBtn.style.display = 'flex';
+        userContainer.innerHTML = `
+            <a href="login.html" class="btn" style="padding: 6px 14px; font-size: 0.82rem; border-radius: 20px; text-decoration: none; background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.4); display: inline-flex; align-items: center; gap: 6px; font-weight: 600;">
+                <i class="fas fa-sign-in-alt"></i> Kirish
+            </a>
+        `;
         return;
     }
 
@@ -1127,14 +1128,17 @@ function displayUserInfo() {
     }
 
     userContainer.innerHTML = `
-        <div class="user-badge ${role}" style="display:flex; align-items:center; gap:10px; padding:5px 12px; background:rgba(255,255,255,0.05); border-radius:30px; border:1px solid rgba(255,255,255,0.1);">
-            <div style="width:32px; height:32px; background:linear-gradient(135deg, #6366f1, #a855f7); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">
+        <div class="user-badge ${role}" style="display:flex; align-items:center; gap:8px; padding:4px 12px; background:rgba(255,255,255,0.06); border-radius:30px; border:1px solid rgba(255,255,255,0.12);">
+            <div style="width:30px; height:30px; background:linear-gradient(135deg, #6366f1, #a855f7); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:0.85rem;">
                 ${displayName[0]}
             </div>
-            <div class="user-details" style="display:flex; flex-direction:column;">
-                <span class="user-name" style="font-size:0.85rem; font-weight:600; color:var(--text-main);">${displayName}</span>
-                <span class="user-role" style="font-size:0.7rem; color:var(--text-muted);">${displayRole}</span>
+            <div class="user-details" style="display:flex; flex-direction:column; text-align:left;">
+                <span class="user-name" style="font-size:0.85rem; font-weight:600; color:var(--text-main); line-height:1.2;">${displayName}</span>
+                <span class="user-role" style="font-size:0.68rem; color:var(--text-muted); text-transform:uppercase;">${displayRole}</span>
             </div>
+            <button onclick="logout()" title="Tizimdan chiqish" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 50%; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; margin-left: 4px; transition: 0.2s;" onmouseover="this.style.background='#ef4444'; this.style.color='white';" onmouseout="this.style.background='rgba(239, 68, 68, 0.2)'; this.style.color='#f87171';">
+                <i class="fas fa-sign-out-alt" style="font-size: 0.75rem;"></i>
+            </button>
         </div>
     `;
 
@@ -1380,11 +1384,15 @@ function downloadMonthlyReport() {
 
 
 function logout() {
-    localStorage.removeItem('dashboard_token');
-    localStorage.removeItem('dashboard_role');
-    localStorage.removeItem('dashboard_district');
-    localStorage.removeItem('dashboard_school');
-    window.location.href = '/login.html';
+    if (confirm("Haqiqatan ham hisobingizdan chiqmoqchimisiz?")) {
+        localStorage.removeItem('dashboard_token');
+        localStorage.removeItem('dashboard_role');
+        localStorage.removeItem('dashboard_username');
+        localStorage.removeItem('dashboard_district');
+        localStorage.removeItem('dashboard_school');
+        localStorage.removeItem('token');
+        window.location.href = 'login.html';
+    }
 }
 
 /* DASHBOARD LOGIC START */

@@ -36,6 +36,10 @@ function maskPhone(phone) {
 }
 
 function checkNav(ctx) {
+    if (ctx.message && ctx.message.text && /^\/start/i.test(ctx.message.text.trim())) {
+        try { ctx.scene.leave(); } catch (e) { }
+        return true;
+    }
     if (ctx.message && ctx.message.text === "🏠 Asosiy menyu") {
         ctx.reply("🏠 Bosh sahifa.", Markup.keyboard([["Davomat kiritish"]]).resize());
         try { ctx.scene.leave(); } catch (e) { }

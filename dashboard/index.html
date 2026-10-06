@@ -322,9 +322,8 @@
         <a href="xorij.html" class="nav-item "><i class="fas fa-globe"></i> <span>Xorij</span></a>
         <a href="dashboard.html" class="nav-item "><i class="fas fa-chart-pie"></i> <span>Dashboard</span></a>
         <a href="admin.html" class="nav-item "><i class="fas fa-cog"></i> <span>Admin</span></a>
-        <a href="about.html?tab=hujjatlar" class="nav-item"><i class="fas fa-file-contract"></i> <span>Hujjatlar</span></a>
-        <a href="about.html" class="nav-item "><i class="fas fa-info-circle"></i> <span>Biz haqimizda</span></a>
         <a href="oferta.html" class="nav-item" style="color:#facc15;"><i class="fas fa-file-signature" style="color:#facc15;"></i> <span style="color:#facc15; font-weight:700;">Ommaviy Oferta</span></a>
+        <div id="indexNavAuth" style="display:inline-flex; align-items:center; margin-left:6px;"></div>
     </div>
 </nav>
 
@@ -389,17 +388,25 @@
                         <span style="font-size:0.8rem; background:rgba(99,102,241,0.2); color:#818cf8; padding:3px 10px; border-radius:12px; border:1px solid rgba(99,102,241,0.3);">10 000 so'm / oy</span>
                     </div>
 
-                    <!-- TO'LOV TUGMALARI -->
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:16px; text-align:center;">
-                        <a href="https://my.click.uz" target="_blank" style="background:#00a3ff; color:#fff; padding:12px; border-radius:12px; text-decoration:none; display:flex; flex-direction:column; align-items:center; gap:6px; font-weight:700; box-shadow:0 4px 12px rgba(0,163,255,0.3);">
-                            <i class="fas fa-mobile-alt" style="font-size:1.4rem;"></i>
-                            <span>Click orqali to'lash</span>
-                        </a>
+                    <!-- QR KODLAR -->
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:12px; margin-bottom:16px; text-align:center;">
+                        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://my.click.uz/services/pay?service_id=-1%26receiver_card=9860036635761863%26amount=10000" alt="Click QR" style="width:100%; max-width:120px; border-radius:8px; background:#fff; padding:4px;">
+                            <div style="margin-top:6px;">
+                                <a href="https://my.click.uz/services/pay?service_id=-1&receiver_card=9860036635761863&amount=10000" target="_blank" style="background:#00a3ff; color:#fff; padding:5px 10px; font-size:0.75rem; border-radius:6px; text-decoration:none; display:inline-block; font-weight:700;">
+                                    <i class="fas fa-mobile-alt"></i> Click to'lash
+                                </a>
+                            </div>
+                        </div>
 
-                        <a href="https://payme.uz" target="_blank" style="background:#00cccc; color:#0f172a; padding:12px; border-radius:12px; text-decoration:none; display:flex; flex-direction:column; align-items:center; gap:6px; font-weight:700; box-shadow:0 4px 12px rgba(0,204,204,0.3);">
-                            <i class="fas fa-wallet" style="font-size:1.4rem;"></i>
-                            <span>Payme orqali to'lash</span>
-                        </a>
+                        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://payme.uz/fallback/pay/transfer?card=9860036635761863%26amount=1000000" alt="Payme QR" style="width:100%; max-width:120px; border-radius:8px; background:#fff; padding:4px;">
+                            <div style="margin-top:6px;">
+                                <a href="https://payme.uz/fallback/pay/transfer?card=9860036635761863&amount=1000000" target="_blank" style="background:#00cccc; color:#0f172a; padding:5px 10px; font-size:0.75rem; border-radius:6px; text-decoration:none; display:inline-block; font-weight:700;">
+                                    <i class="fas fa-mobile-alt"></i> Payme to'lash
+                                </a>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- KARTA RAQAMLARI -->
@@ -510,6 +517,37 @@
   }
 </script>    <!-- Between Us Promo Widget -->
     <script src="promo-widget.js"></script>
+    <script>
+        (function() {
+            const token = localStorage.getItem('dashboard_token') || localStorage.getItem('token');
+            const authBox = document.getElementById('indexNavAuth');
+            if (authBox) {
+                if (token) {
+                    authBox.innerHTML = `
+                        <button onclick="siteLogout()" style="background:rgba(239,68,68,0.2); color:#f87171; border:1px solid rgba(239,68,68,0.4); padding:6px 14px; border-radius:10px; cursor:pointer; font-weight:700; font-size:0.85rem; display:inline-flex; align-items:center; gap:6px;">
+                            <i class="fas fa-sign-out-alt"></i> Chiqish
+                        </button>
+                    `;
+                } else {
+                    authBox.innerHTML = `
+                        <a href="login.html" class="nav-item" style="background:linear-gradient(135deg, #6366f1, #4f46e5); color:white !important; padding:6px 16px; border-radius:10px; text-decoration:none; font-weight:700; font-size:0.85rem; display:inline-flex; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(99,102,241,0.3);">
+                            <i class="fas fa-sign-in-alt"></i> Kirish
+                        </a>
+                    `;
+                }
+            }
+        })();
+        function siteLogout() {
+            if (confirm("Haqiqatan ham hisobingizdan chiqmoqchimisiz?")) {
+                localStorage.removeItem('dashboard_token');
+                localStorage.removeItem('dashboard_role');
+                localStorage.removeItem('dashboard_username');
+                localStorage.removeItem('dashboard_district');
+                localStorage.removeItem('token');
+                window.location.reload();
+            }
+        }
+    </script>
 </body>
 
 </html>

@@ -887,6 +887,106 @@ async function exportSubscribersToExcel() {
         sheet.getColumn(10).width = 16;
         sheet.getColumn(11).width = 16;
 
+        // ==================== 2-VAROQ: TO'LOV CHEKLARI (KVITANSIYALAR) ====================
+        const receiptsSheet = workbook.addWorksheet("To'lov Cheklari (Kvitansiyalar)");
+        const paymentService = require('./paymentService');
+        const receiptsList = await paymentService.getReceiptsList();
+
+        receiptsSheet.mergeCells('A1:J1');
+        const recTitle = receiptsSheet.getCell('A1');
+        recTitle.value = "FARG'ONA VILOYATI — BARCHA YUBORILGAN TO'LOV CHEKLARI VA KVITANSIYALAR";
+        recTitle.font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
+        recTitle.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF065F46' } };
+        recTitle.alignment = { vertical: 'middle', horizontal: 'center' };
+        receiptsSheet.getRow(1).height = 35;
+
+        receiptsSheet.mergeCells('A2:J2');
+        const recSubTitle = receiptsSheet.getCell('A2');
+        const approvedCount = receiptsList.filter(r => r.status === 'approved').length;
+        const pendingCount = receiptsList.filter(r => r.status === 'pending').length;
+        const rejectedCount = receiptsList.filter(r => r.status === 'rejected').length;
+        recSubTitle.value = `Sana: ${todayStr} | Jami cheklar: ${receiptsList.length} ta | ✅ Tasdiqlangan: ${approvedCount} ta | ⏳ Kutilmoqda: ${pendingCount} ta | ❌ Rad etilgan: ${rejectedCount} ta`;
+        recSubTitle.font = { italic: true, size: 10, color: { argb: 'FF334155' } };
+        recSubTitle.alignment = { vertical: 'middle', horizontal: 'center' };
+        receiptsSheet.getRow(2).height = 24;
+
+        const recHeaders = [
+            "№", "Chek ID", "Yuborilgan sana va vaqt", "Kimdan (F.I.SH)",
+            "Telegram ID", "Tuman / Shahar", "Maktab", "Telefon",
+            "Holati", "Tasdiqlagan Admin"
+        ];
+        const recHeaderRow = receiptsSheet.addRow(recHeaders);
+        recHeaderRow.height = 28;
+        recHeaderRow.eachCell(cell => {
+            cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 10 };
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF047857' } };
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            cell.border = {
+                top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                right: { style: 'thin', color: { argb: 'FFCBD5E1' } }
+            };
+        });
+
+        receiptsList.forEach((r, idx) => {
+            let statusText = '⏳ Kutilmoqda';
+            if (r.status === 'approved') statusText = '✅ Tasdiqlangan';
+            else if (r.status === 'rejected') statusText = '❌ Rad etilgan';
+
+            const row = receiptsSheet.addRow([
+                idx + 1,
+                r.id,
+                r.submitted_at || '-',
+                r.sender_name || '-',
+                r.sender_uid || '-',
+                r.district || '-',
+                r.school || '-',
+                r.phone || '-',
+                statusText,
+                r.resolved_by || '-'
+            ]);
+            row.height = 22;
+
+            row.eachCell((cell, colNumber) => {
+                cell.border = {
+                    top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+                    bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+                    left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+                    right: { style: 'thin', color: { argb: 'FFE2E8F0' } }
+                };
+                if (colNumber === 1 || colNumber === 2 || colNumber === 5 || colNumber === 8 || colNumber === 9 || colNumber === 10) {
+                    cell.alignment = { vertical: 'middle', horizontal: 'center' };
+                } else {
+                    cell.alignment = { vertical: 'middle', horizontal: 'left' };
+                }
+
+                if (colNumber === 9) {
+                    if (r.status === 'approved') {
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD1FAE5' } };
+                        cell.font = { bold: true, color: { argb: 'FF065F46' }, size: 9 };
+                    } else if (r.status === 'rejected') {
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
+                        cell.font = { bold: true, color: { argb: 'FF991B1B' }, size: 9 };
+                    } else {
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF3C7' } };
+                        cell.font = { bold: true, color: { argb: 'FF92400E' }, size: 9 };
+                    }
+                }
+            });
+        });
+
+        receiptsSheet.getColumn(1).width = 6;
+        receiptsSheet.getColumn(2).width = 16;
+        receiptsSheet.getColumn(3).width = 22;
+        receiptsSheet.getColumn(4).width = 24;
+        receiptsSheet.getColumn(5).width = 16;
+        receiptsSheet.getColumn(6).width = 20;
+        receiptsSheet.getColumn(7).width = 22;
+        receiptsSheet.getColumn(8).width = 18;
+        receiptsSheet.getColumn(9).width = 18;
+        receiptsSheet.getColumn(10).width = 20;
+
         const assetsDir = path.resolve(__dirname, '../../assets');
         const filePath = path.join(assetsDir, `OBUNACHILAR_TOLOVLAR_${todayStr}.xlsx`);
         await workbook.xlsx.writeFile(filePath);

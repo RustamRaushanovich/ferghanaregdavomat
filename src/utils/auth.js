@@ -5,6 +5,7 @@ const topicsConfig = require('../config/topics');
 const TOPICS = topicsConfig.getTopics();
 
 const DB_PATH = path.join(__dirname, '../../src/database/dashboard_users.json');
+const TOKENS_PATH = path.join(__dirname, '../../src/database/tokens.json');
 
 const sanitizeLogin = (name) => {
     return name.toLowerCase()
@@ -18,7 +19,7 @@ const USERS = {};
 
 async function loadUsers() {
     // 1. Seed defaults
-        const seedUsers = {
+    const seedUsers = {
         "mrqirol": { password: "2323", role: "superadmin", district: null },
         "VMMTB": { password: "1234", role: "admin", district: null }
     };
@@ -46,7 +47,9 @@ async function loadUsers() {
 }
 
 async function saveUsers() {
-    fs.writeFileSync(DB_PATH, JSON.stringify(USERS, null, 2));
+    try {
+        fs.writeFileSync(DB_PATH, JSON.stringify(USERS, null, 2));
+    } catch (e) { }
     // Persist to Supabase
     try {
         for (const [login, data] of Object.entries(USERS)) {
@@ -62,6 +65,34 @@ loadUsers();
 
 const tokens = new Map();
 
+function loadTokens() {
+    try {
+        if (fs.existsSync(TOKENS_PATH)) {
+            const raw = JSON.parse(fs.readFileSync(TOKENS_PATH, 'utf8') || '{}');
+            for (const [t, u] of Object.entries(raw)) {
+                tokens.set(t, u);
+            }
+            console.log(`🔑 ${tokens.size} ta avtorizatsiya tokenlari yuklandi.`);
+        }
+    } catch (e) {
+        console.warn("Tokens load error:", e.message);
+    }
+}
+
+function saveTokens() {
+    try {
+        const obj = {};
+        for (const [t, u] of tokens.entries()) {
+            obj[t] = u;
+        }
+        fs.writeFileSync(TOKENS_PATH, JSON.stringify(obj, null, 2));
+    } catch (e) {
+        console.warn("Tokens save error:", e.message);
+    }
+}
+
+loadTokens();
+
 function generateToken() {
     return Math.random().toString(36).substring(2) + Date.now().toString(36);
 }
@@ -70,6 +101,8 @@ module.exports = {
     USERS,
     tokens,
     generateToken,
+    saveTokens,
+    loadTokens,
     sanitizeLogin,
     saveUsers,
     loadUsers

